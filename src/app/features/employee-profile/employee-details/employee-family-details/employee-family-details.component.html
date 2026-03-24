@@ -1,0 +1,98 @@
+<div class="form-container">
+   <div *ngIf="!canCreate" style="color:red;">
+        You don't have permission to add employee family details
+      </div>
+  <form [formGroup]="familyForm" (ngSubmit)="submit()" class="form-grid">
+
+    <div class="form-group">
+      <label>Name <span class="required">*</span></label>
+      <input type="text" formControlName="name" placeholder="Enter full name">
+    </div>
+
+    <div class="form-group">
+      <label>Relationship<span class="required">*</span> </label>
+      <select formControlName="relationship">
+        <option value="">Select relationship</option>
+        <option *ngFor="let r of relationList" [value]="r.relationshipName">{{ r.relationshipName }}</option>
+       
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Date of Birth<span class="required">*</span> </label>
+      <input type="date" formControlName="dateofbirth">
+    </div>
+
+    <div class="form-group">
+      <label>Gender<span class="required">*</span> </label>
+      <select formControlName="gender">
+        <option value="">Select gender</option>
+        <option *ngFor="let g of genderList" [value]="g.genderName">{{ g.genderName }}</option>
+       
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Occupation</label>
+      <input type="text" formControlName="occupation">
+    </div>
+
+    <div class="form-group">
+      <label>Phone</label>
+      <input type="tel" formControlName="phone">
+    </div>
+
+    <div class="form-group">
+      <label>Address</label>
+      <textarea formControlName="address"></textarea>
+    </div>
+
+    <div class="form-group-checkbox">
+      <input type="checkbox" formControlName="isDependent">
+      <label>Is Dependent?</label>
+    </div>
+
+    <div style="flex-basis: 100%;">
+      <button type="submit" class="submit-btn" *ngIf="canCreate">
+        {{ isEdit ? 'Update' : 'Save' }}
+      </button>
+    </div>
+
+  </form>
+
+  <hr>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Relationship</th>
+        <th>DOB</th>
+        <th>Gender</th>
+        <th>Occupation</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>Dependent</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let f of familyList">
+        <td>{{ f.name }}</td>
+        <td>{{ f.relationship }}</td>
+        <td>{{ f.dateOfBirth | date:'dd/MM/yyyy' }}</td>
+        <td>{{ f.gender }}</td>
+        <td>{{ f.occupation }}</td>
+        <td>{{ f.phone }}</td>
+        <td>{{ f.address }}</td>
+        <td>{{ f.isDependent ? 'Yes' : 'No' }}</td>
+        <td class="action-icons">
+          <i class="fa-solid fa-pen" (click)="edit(f)"></i>
+          <i class="fa-solid fa-trash" (click)="delete(f.familyId)"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

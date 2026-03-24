@@ -1,0 +1,26 @@
+<div class="admin-layout">
+
+<app-super-admin-topbar (toggleSidebar)="toggleSidebar()"></app-super-admin-topbar>
+
+<div class="main-content">
+
+<app-super-admin-sidebar
+[collapsed]="collapsed"
+(menuSelected)="onMenuSelected($event)">
+</app-super-admin-sidebar>
+
+<div class="content-body">
+
+<app-super-admin-submenu
+[submenus]="submenus">
+</app-super-admin-submenu>
+
+<router-outlet></router-outlet>
+
+</div>
+
+</div>
+
+<app-super-admin-footer></app-super-admin-footer>
+
+</div>

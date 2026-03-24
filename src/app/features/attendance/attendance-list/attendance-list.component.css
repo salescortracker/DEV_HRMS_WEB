@@ -1,0 +1,323 @@
+.attendance-wrapper{
+  padding:20px 30px;
+}
+
+/* Date title */
+.attendance-date{
+  font-size:18px;
+  font-weight:600;
+  text-align:center;
+  margin-bottom:20px;
+}
+
+/* Card */
+.attendance-card{
+  background:#fff;
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Header inside card */
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.card-header h3{
+  color:#b02828;
+  margin:0;
+}
+
+/* Save button */
+.btn-save{
+  background:#b02828;
+  color:#fff;
+  border:none;
+  padding:8px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.btn-save:hover{
+  background:#901f1f;
+}
+
+/* Table */
+.attendance-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.attendance-table th{
+  background:#f6f6f6;
+  padding:10px;
+  text-align:left;
+}
+
+.attendance-table td{
+  padding:10px;
+  border-top:1px solid #eee;
+}
+
+.attendance-table tr:hover{
+  background:#ffebeb;
+}
+
+/* Dropdown */
+.status-dropdown{
+  width:100%;
+  padding:6px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+
+/* Report buttons */
+.report-buttons{
+  display:flex;
+  gap:15px;
+}
+
+.btn-report{
+  padding:8px 16px;
+  border:none;
+  border-radius:6px;
+  color:#fff;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.weekly{
+  background:#007bff;
+}
+
+.monthly{
+  background:#ff9800;
+}
+
+.weekly:hover{
+  background:#0056b3;
+}
+
+.monthly:hover{
+  background:#e68900;
+}
+
+/* =========================
+   STATUS BADGES (FIXED)
+   ========================= */
+
+.status-badge{
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:600;
+  color:#fff;
+  display:inline-block;
+  min-width:95px;
+  text-align:center;
+  letter-spacing:0.3px;
+}
+
+/* Strong visible colors */
+
+.present{
+  background:#16a34a; /* strong green */
+}
+
+.halfday{
+  background:#f59e0b; /* amber */
+  color:#000;
+}
+
+.absent{
+  background:#dc2626; /* strong red */
+}
+
+.paid{
+  background:#0ea5e9; /* blue */
+}
+
+.sick{
+  background:#7c3aed; /* purple */
+}
+
+.casual{
+  background:#374151; /* dark gray */
+}
+
+.lop{
+  background:#ef4444;
+}
+
+/* Report title */
+.report-title{
+  color:#b02828;
+  margin-bottom:15px;
+}
+
+/* =========================
+   EMPLOYEE PAGINATION
+   ========================= */
+
+.pagination{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+}
+
+.pagination button{
+  padding:6px 12px;
+  border:none;
+  background:#b02828;
+  color:white;
+  border-radius:4px;
+  cursor:pointer;
+  font-weight:500;
+}
+
+.pagination button:hover{
+  background:#8d1e1e;
+}
+
+.pagination button.active{
+  background:black;
+}
+
+/* =========================
+   REPORT PAGINATION
+   ========================= */
+
+.pagination-container{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+}
+
+.page-btn{
+  padding:6px 14px;
+  border:none;
+  background:#b02828;
+  color:white;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.page-btn:hover{
+  background:#8d1e1e;
+}
+
+.page-btn.active{
+  background:black;
+}
+
+.page-btn:disabled{
+  background:#ccc;
+  cursor:not-allowed;
+}
+
+
+.report-filter {
+display:flex;
+gap:15px;
+align-items:center;
+margin-bottom:15px;
+}
+
+.btn-search {
+background:#007bff;
+color:white;
+padding:6px 14px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+/* FILTER CARD */
+.report-filter-card {
+    margin-top: 20px;
+    padding: 18px 22px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+/* FILTER ROW */
+.report-filter {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* LABEL STYLE */
+.report-filter label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+}
+
+/* DATE INPUT */
+.report-filter input[type="date"] {
+    padding: 7px 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.report-filter input[type="date"]:focus {
+    border-color: #d32f2f;
+}
+
+/* COMMON BUTTON STYLE */
+.report-filter button {
+    border: none;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* SEARCH BUTTON */
+.btn-search {
+    background: #d32f2f;
+    color: white;
+}
+
+/* WEEKLY BUTTON */
+.btn-report.weekly {
+    background: #d32f2f;
+    color: white;
+}
+
+/* MONTHLY BUTTON */
+.btn-report.monthly {
+    background: #d32f2f;
+    color: white;
+}
+
+/* BUTTON HOVER EFFECT */
+.btn-search:hover,
+.btn-report.weekly:hover,
+.btn-report.monthly:hover {
+    background: #b71c1c;
+    transform: translateY(-1px);
+}
+
+/* BUTTON CLICK EFFECT */
+.report-filter button:active {
+    transform: scale(0.96);
+}

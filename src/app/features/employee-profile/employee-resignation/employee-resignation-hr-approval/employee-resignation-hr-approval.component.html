@@ -1,0 +1,75 @@
+<h5 class="mb-3 fw-bold">Resignation Requests — HR Review</h5>
+
+<table class="table table-bordered align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>#</th>
+      <th>Employee Code</th>
+      <th>Type</th>
+      <th>Notice</th>
+      <th>Last Day</th>
+      <th>Reason</th>
+      <th>Status</th>
+
+      <!-- ✅ NEW COLUMN -->
+      <th>HR Comments</th>
+
+      <th>HR Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let item of filteredResignations; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ item.employeeCode }}</td>
+      <td>{{ item.resignationType }}</td>
+      <td>{{ item.noticePeriod }}</td>
+      <td>{{ item.lastWorkingDay | date }}</td>
+      <td>{{ item.resignationReason }}</td>
+
+      <td>
+        <span
+          [ngClass]="{
+            'badge bg-warning text-dark': item.status === 'Pending',
+            'badge bg-success': item.status?.includes('Approved'),
+            'badge bg-danger': item.status?.includes('Rejected')
+          }">
+          {{ item.status }}
+        </span>
+      </td>
+
+      <!-- ✅ HR COMMENTS -->
+      <td style="min-width: 220px;">
+        <textarea
+          class="form-control"
+          rows="2"
+          [(ngModel)]="item.hrReason"
+          placeholder="Enter HR comments"
+          [disabled]="item.status?.includes('Approved') || item.status?.includes('Rejected')">
+        </textarea>
+      </td>
+
+      <td>
+        <button
+          class="btn btn-primary btn-sm me-2"
+          [disabled]="item.status?.includes('Approved') || item.status?.includes('Rejected')"
+          (click)="approveByHR(item)">
+          Approve
+        </button>
+
+        <button
+          class="btn btn-warning btn-sm"
+          [disabled]="item.status?.includes('Approved') || item.status?.includes('Rejected')"
+          (click)="rejectByHR(item)">
+          Reject
+        </button>
+      </td>
+    </tr>
+
+    <tr *ngIf="filteredResignations.length === 0">
+      <td colspan="9" class="text-center text-muted">
+        No resignation requests found
+      </td>
+    </tr>
+  </tbody>
+</table>

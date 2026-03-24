@@ -1,0 +1,128 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Employee Policies</h2>
+</div>
+
+<div class="container mt-4">
+
+  <!-- FILTER SECTION -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+      <div class="row g-3">
+
+        <!-- Category -->
+        <div class="col-md-4">
+          <label class="form-label">Category</label>
+
+          <select class="form-select"
+                  [(ngModel)]="selectedCategory">
+
+            <option value="">All Categories</option>
+            <option>HR Policy</option>
+            <option>Leave Policy</option>
+            <option>Attendance Policy</option>
+            <option>IT Security Policy</option>
+            <option>Work From Home Policy</option>
+            <option>Travel Policy</option>
+
+          </select>
+
+        </div>
+
+        <!-- From Date -->
+        <div class="col-md-4">
+          <label class="form-label">From Date</label>
+
+          <input type="date"
+                 class="form-control"
+                 [(ngModel)]="fromDate">
+
+        </div>
+
+        <!-- Filter Button -->
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-primary w-100"
+                  (click)="applyFilter()">
+            Filter Policies
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- POLICY CARDS -->
+  <div class="row g-4 justify-content-center"
+       *ngIf="filteredPoliciesList.length > 0">
+
+    <div class="col-md-6 col-lg-4"
+         *ngFor="let p of filteredPoliciesList">
+
+      <div class="card policy-card shadow-sm h-100">
+
+        <div class="card-body">
+
+          <!-- Category + Date -->
+          <div class="d-flex justify-content-between mb-2">
+
+            <span class="badge bg-primary">
+              {{p.Category}}
+            </span>
+
+            <small class="text-muted">
+              {{p.EffectiveDate | date:'dd-MMM-yyyy'}}
+            </small>
+
+          </div>
+
+          <!-- Title -->
+          <h5 class="card-title">
+            {{p.Title}}
+          </h5>
+
+          <!-- Description -->
+          <p class="card-text text-muted">
+            {{p.Description}}
+          </p>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="card-footer bg-white border-0 text-end">
+
+          <a *ngIf="p.FileUrl"
+             [href]="p.FileUrl"
+             target="_blank"
+             class="btn btn-sm btn-success">
+
+             Download Policy
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- NO DATA -->
+  <div *ngIf="filteredPoliciesList.length == 0"
+       class="text-center mt-5">
+
+    <h5 class="text-muted">
+      No Policies Available
+    </h5>
+
+  </div>
+
+</div>
+
+<app-footer></app-footer>

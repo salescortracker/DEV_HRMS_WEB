@@ -1,0 +1,114 @@
+
+<div class="card shadow-sm"> 
+  <div class="container-fluid p-4 news-management">
+
+
+<div class="card shadow-sm p-3 mb-3">
+  <h5>Add / Configure Event</h5>
+    <form (ngSubmit)="saveEvent()" #eventForm="ngForm">
+  <div class="row g-3">
+
+    <div class="col-md-4">
+      <label class="form-label">Event Name</label>
+      <input type="text"
+             class="form-control"
+             [(ngModel)]="event.eventName"
+             name="eventName"
+             required>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Event Type</label>
+      <select class="form-select"
+              [(ngModel)]="event.eventTypeId"
+              name="eventTypeId"
+              required>
+        <option value="">Select type</option>
+        <option *ngFor="let t of eventTypes" [value]="t.id">
+          {{t.name}}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Date</label>
+      <input type="date"
+             class="form-control"
+             [(ngModel)]="event.eventDate"
+             name="eventDate"
+             required>
+    </div>
+
+    <div class="col-md-12">
+      <label class="form-label">Description</label>
+      <textarea class="form-control"
+                [(ngModel)]="event.description"
+                name="description"></textarea>
+    </div>
+
+    <div class="col-md-12 text-end">
+      <button type="submit" class="btn btn-primary">
+        {{ isEditMode ? 'Update' : 'Save' }} Event
+      </button>
+    </div>
+
+  </div>
+</form>
+</div>
+
+<!-- Filter and List -->
+<div class="card shadow-sm p-3">
+  <h5>Events List</h5>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-3">
+      <input type="text" class="form-control" placeholder="Search event">
+    </div>
+    <div class="col-md-3">
+      <input type="date" class="form-control" placeholder="From Date">
+    </div>
+    <div class="col-md-3">
+      <input type="date" class="form-control" placeholder="To Date">
+    </div>
+    <div class="col-md-3">
+      <button class="btn btn-secondary w-100">Filter</button>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>S.No</th>
+        <th>Event Name</th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Description</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+   <tbody>
+  <tr *ngFor="let e of events; let i = index">
+    <td>{{i + 1}}</td>
+    <td>{{e.eventName}}</td>
+    <td>{{e.eventTypeName}}</td>
+    <td>{{e.eventDate}}</td>
+    <td>{{e.description}}</td>
+    <td class="text-center">
+      <button class="btn btn-sm btn-outline-primary me-1"
+              (click)="editEvent(e)">
+        <i class="fa-solid fa-pen"></i>
+      </button>
+
+      <button class="btn btn-sm btn-outline-danger"
+              (click)="deleteEvent(e.eventId)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </td>
+  </tr>
+</tbody>
+  </table>
+</div>
+</div>
+</div>
+
+<!-- .find(m => m.id === e.managerId)?.name || '-'  -->

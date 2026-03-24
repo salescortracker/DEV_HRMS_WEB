@@ -1,0 +1,205 @@
+<div class="form-container">
+
+  <form class="form-grid" [formGroup]="personalForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+
+    <!-- First Name -->
+    <div class="form-group">
+      <label>First Name<span class="required">*</span></label>
+      <input type="text" formControlName="firstName" placeholder="Enter first name">
+    </div>
+
+    <!-- Last Name -->
+    <div class="form-group">
+      <label>Last Name<span class="required">*</span></label>
+      <input type="text" formControlName="lastName" placeholder="Enter last name">
+    </div>
+
+    <!-- DOB -->
+    <div class="form-group">
+      <label>Date of Birth<span class="required">*</span></label>
+      <input type="date" formControlName="dateOfBirth">
+    </div>
+
+    <!-- Gender -->
+    <div class="form-group">
+      <label>Gender<span class="required">*</span></label>
+    <select formControlName="genderId">
+        <option value="">Select gender</option>
+        <option *ngFor="let g of genderList" [value]="g.genderId">{{ g.genderName }}</option>
+       
+      </select>
+    </div>
+
+    <!-- Mobile -->
+    <div class="form-group">
+      <label>Mobile Number<span class="required">*</span></label>
+      <input type="tel" formControlName="mobileNumber" placeholder="Enter mobile number">
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label>Personal Email<span class="required">*</span></label>
+      <input type="email" formControlName="personalEmail" placeholder="Enter personal email">
+    </div>
+
+    <!-- Permanent Address -->
+    <div class="form-group">
+      <label>Permanent Address<span class="required">*</span></label>
+      <textarea formControlName="permanentAddress" placeholder="Enter permanent address"></textarea>
+    </div>
+
+    <!-- Present Address -->
+    <div class="form-group">
+      <label>Present Address<span class="required">*</span></label>
+      <textarea formControlName="presentAddress" placeholder="Enter present address"></textarea>
+    </div>
+
+    <!-- PAN -->
+    <div class="form-group">
+      <label>PAN Number<span class="required">*</span></label>
+      <input type="text" formControlName="panNumber" placeholder="Enter PAN number">
+    </div>
+
+    <!-- Aadhaar -->
+    <div class="form-group">
+      <label>Aadhaar Number<span class="required">*</span></label>
+      <input type="text" formControlName="aadhaarNumber" placeholder="Enter Aadhaar number">
+    </div>
+
+    <!-- Profile Picture -->
+    <div class="form-group">
+      <label>Profile Picture</label>
+      <input type="file" (change)="onFileSelected($event)" accept=".jpg,.jpeg,.png">
+    </div>
+
+    <!-- Passport -->
+    <div class="form-group">
+      <label>Passport Number<span class="required">*</span></label>
+      <input type="text" formControlName="passportNumber" placeholder="Enter passport number">
+    </div>
+
+    <!-- Place of Birth -->
+    <div class="form-group">
+      <label>Place of Birth<span class="required">*</span></label>
+      <input type="text" formControlName="placeOfBirth" placeholder="Enter place of birth">
+    </div>
+
+    <!-- UAN -->
+    <div class="form-group">
+      <label>UAN<span class="required">*</span></label>
+      <input type="text" formControlName="uan" placeholder="Enter UAN number">
+    </div>
+
+    <!-- Blood Group -->
+    <div class="form-group">
+      <label>Blood Group<span class="required">*</span></label>
+     <!-- <select formControlName="bloodGroup">
+        <option value="">Select blood group</option>
+        <option>A+</option>
+        <option>A-</option>
+        <option>B+</option>
+        <option>B-</option>
+        <option>AB+</option>
+        <option>AB-</option>
+        <option>O+</option>
+        <option>O-</option>
+      </select> -->
+      <select formControlName="bloodGroup">
+  <option value="">Select blood group</option>
+  <option *ngFor="let bg of bloodGroupList"
+          [value]="bg.bloodGroupID">
+    {{ bg.bloodGroupName }}
+  </option>
+</select>
+    </div>
+
+    <!-- Citizenship -->
+    <div class="form-group">
+      <label>Citizenship<span class="required">*</span></label>
+      <input type="text" formControlName="citizenship" placeholder="Enter citizenship">
+    </div>
+
+    <!-- Religion -->
+    <div class="form-group">
+      <label>Religion<span class="required">*</span></label>
+      <input type="text" formControlName="religion" placeholder="Enter religion">
+    </div>
+
+    <!-- Driving Licence -->
+    <div class="form-group">
+      <label>Driving Licence<span class="required">*</span></label>
+      <input type="text" formControlName="drivingLicence" placeholder="Enter driving licence number">
+    </div>
+
+    <!-- Marital Status -->
+    <div class="form-group">
+      <label>Marital Status<span class="required">*</span></label>
+     <!-- <select formControlName="maritalStatusId">
+        <option value="">Select marital status</option>
+        <option value="4">Single</option>
+        <option value="5">Married</option>
+        <option value="6">Divorced</option>
+      </select> -->
+      <select formControlName="maritalStatusId">
+  <option value="">Select marital status</option>
+  <option *ngFor="let ms of maritalStatusList"
+          [value]="ms.maritalStatusId">
+    {{ ms.maritalStatusName }}
+  </option>
+</select>
+    </div>
+
+    <!-- Marriage Date -->
+    <div class="form-group"   >
+      <label>Marriage Date<span class="required">*</span></label>
+      <input type="date" formControlName="marriageDate">
+    </div>
+
+    <!-- Work Phone -->
+    <div class="form-group">
+      <label>Work Phone<span class="required">*</span></label>
+      <input type="tel" formControlName="workPhone" placeholder="Enter work phone number">
+    </div>
+
+     <div class="form-group">
+      <label>Band/Grade<span class="required">*</span></label>
+      <input type="text" formControlName="brandGrade" placeholder="Enter band/grade">
+    </div>
+    <div class="form-group">
+      <label>ESIC Number<span class="required">*</span></label>
+      <input type="text" formControlName="esicNumber" placeholder="Enter ESIC number">
+    </div>
+     <div class="form-group">
+      <label>PF Number<span class="required">*</span></label>
+      <input type="text" formControlName="pfNumber" placeholder="Enter PF number">
+    </div>
+     <div class="form-group">
+      <label>Employment Type<span class="required">*</span></label>
+      <input type="text" formControlName="employmentType" placeholder="Enter employment type">
+    </div>
+      <div class="form-group">
+      <label>Date of Joining<span class="required">*</span></label>
+      <input type="date" formControlName="dateofJoining" placeholder="Enter date of joining">
+    </div>
+
+    <!-- LinkedIn -->
+    <div class="form-group">
+      <label>LinkedIn Profile<span class="required">*</span></label>
+      <input type="url" formControlName="linkedInProfile" placeholder="Enter LinkedIn profile URL">
+    </div>
+
+    <!-- Previous Experience -->
+    <div class="form-group">
+      <label>Previous Experience<span class="required">*</span></label>
+      <textarea formControlName="previousExperience" placeholder="Enter previous experience details"></textarea>
+    </div>
+
+    <!-- Submit Button -->
+    <div style="flex-basis: 100%;">
+      <button type="submit" class="submit-btn">
+        {{ editId == null ? 'Save Details' : 'Update Details' }}
+      </button>
+    </div>
+
+  </form>
+</div>

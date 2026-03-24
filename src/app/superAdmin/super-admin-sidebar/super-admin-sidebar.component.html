@@ -1,0 +1,100 @@
+<div class="sidebar" [class.collapsed]="collapsed">
+
+<!-- Dashboard -->
+<div class="menu-item" (click)="selectMenu('Dashboard')">
+<i class="fas fa-home"></i>
+<span *ngIf="!collapsed">Dashboard</span>
+</div>
+
+
+<!-- Control Panel -->
+<div class="menu-item" (click)="toggleControlPanel()">
+<i class="fas fa-sliders-h"></i>
+<span *ngIf="!collapsed">Control Panel</span>
+<i *ngIf="!collapsed" class="fas fa-chevron-down ms-auto"></i>
+</div>
+
+<div class="submenu" *ngIf="controlPanelOpen && !collapsed">
+
+<div class="submenu-item" routerLink="/demo-users">
+User Management
+</div>
+
+<div class="submenu-item"  routerLink="/subscription-plans">
+Subscription Master
+</div>
+
+<div class="submenu-item" (click)="selectMenu('DesignationMaster')">
+Menu Master
+</div>
+<!-- 
+<div class="submenu-item" (click)="selectMenu('BranchMaster')">
+Branch / Region
+</div>
+
+<div class="submenu-item" (click)="selectMenu('HolidayMaster')">
+Holiday Calendar
+</div>
+
+<div class="submenu-item" (click)="selectMenu('LeaveTypes')">
+Leave Types
+</div>
+
+<div class="submenu-item" (click)="selectMenu('ExpenseCategory')">
+Expense Categories
+</div>
+
+<div class="submenu-item" (click)="selectMenu('AssetCategory')">
+Asset Categories
+</div>
+
+<div class="submenu-item" (click)="selectMenu('ProjectMaster')">
+Project Master
+</div>
+
+<div class="submenu-item" (click)="selectMenu('AnnouncementCategory')">
+Announcement Categories
+</div>
+
+</div>
+
+
+<div class="menu-item" (click)="toggleSecurity()">
+<i class="fas fa-shield-alt"></i>
+<span *ngIf="!collapsed">System & Security</span>
+<i *ngIf="!collapsed" class="fas fa-chevron-down ms-auto"></i>
+</div>
+
+<div class="submenu" *ngIf="securityOpen && !collapsed">
+
+<div class="submenu-item" (click)="selectMenu('Users')">
+User Management
+</div>
+
+<div class="submenu-item" (click)="selectMenu('Roles')">
+Role Management
+</div>
+
+<div class="submenu-item" (click)="selectMenu('Permissions')">
+Permissions
+</div>
+
+<div class="submenu-item" (click)="selectMenu('LoginLogs')">
+Login Activity Logs
+</div>
+
+<div class="submenu-item" (click)="selectMenu('EmailTemplates')">
+Email Templates
+</div>
+
+<div class="submenu-item" (click)="selectMenu('NotificationSettings')">
+Notification Settings
+</div>
+
+<div class="submenu-item" (click)="selectMenu('AuditLogs')">
+Audit Logs
+</div>
+
+</div> -->
+
+</div>

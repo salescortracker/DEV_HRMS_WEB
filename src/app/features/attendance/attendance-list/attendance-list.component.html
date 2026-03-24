@@ -1,0 +1,184 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="attendance-wrapper">
+
+    <!-- PAGE HEADER -->
+    <div class="attendance-card">
+        <h2 class="dashboard-title">Attendance Management</h2>
+    </div>
+
+
+    <!-- ATTENDANCE ENTRY CARD -->
+    <div class="attendance-card">
+
+        <!-- CURRENT DATE -->
+        <div class="attendance-date">
+            Employees Attendance - {{ todayDate | date:'dd MMM yyyy' }}
+        </div>
+
+        <div class="card-header">
+            <h3>Employee Attendance</h3>
+
+            <button class="btn-save" (click)="saveAllAttendance()">
+                Save All Attendance
+            </button>
+        </div>
+
+        <table class="attendance-table">
+
+            <thead>
+                <tr>
+                    <th>Employee Code</th>
+                    <th>Employee Name</th>
+                    <th>Clock In</th>
+                    <th>Clock Out</th>
+                    <th>Gross Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <!-- PAGINATED EMPLOYEE LIST -->
+                <tr *ngFor="let emp of paginatedEmployees">
+
+                    <td>{{ emp.employeeCode }}</td>
+
+                    <td>{{ emp.employeeName }}</td>
+
+                    <td>
+                        {{ emp.clockIn ? emp.clockIn : '--:--' }}
+                    </td>
+
+                    <td>
+                        {{ emp.clockOut ? emp.clockOut : '--:--' }}
+                    </td>
+                    <td>
+                        {{ emp.grossTime ? emp.grossTime : '--:--' }}
+                    </td>
+
+                    <td>
+                        {{ emp.status }}
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <!-- EMPLOYEE TABLE PAGINATION -->
+        <div class="pagination" *ngIf="employees.length > itemsPerPage">
+
+            <button *ngFor="let page of [].constructor(totalPages); let i = index" (click)="changePage(i+1)"
+                [class.active]="currentPage === (i+1)">
+
+                {{i+1}}
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+
+    <!-- DATE RANGE FILTER -->
+    <div class="attendance-card report-filter-card">
+
+        <div class="report-filter">
+
+            <label>From Date:</label>
+            <input type="date" [(ngModel)]="fromDate">
+
+            <label>To Date:</label>
+            <input type="date" [(ngModel)]="toDate">
+
+            <button class="btn-search" (click)="searchReport()">
+                Search
+            </button>
+
+            <button class="btn-report weekly" (click)="weekly()">
+                Weekly Report
+            </button>
+
+            <button class="btn-report monthly" (click)="monthly()">
+                Monthly Report
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- REPORT TABLE -->
+    <div class="attendance-card" *ngIf="showReport">
+
+        <h3 class="report-title">Attendance Report</h3>
+
+        <table class="attendance-table">
+
+            <thead>
+                <tr>
+                    <th>Employee Code</th>
+                    <th>Employee Name</th>
+                    <th>Date</th>
+                    <th>Clock In</th>
+                    <th>Clock Out</th>
+                    <th>Gross Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <!-- PAGINATED REPORT LIST -->
+                <tr *ngFor="let r of paginatedReports">
+
+                    <td>{{ r.employeeCode }}</td>
+
+                    <td>{{ r.employeeName }}</td>
+
+                    <td>{{ r.attendanceDate | date:'dd-MM-yyyy' }}</td>
+                    <td>{{ r.clockIn }}</td>
+                    <td>{{ r.clockOut }}</td>
+                    <td>{{ r.grossTime }}</td>
+
+                    <td>
+                        {{ r.status }}
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+        <!-- REPORT TABLE PAGINATION -->
+        <div class="pagination-container" *ngIf="reportTotalPages > 1">
+
+            <button class="page-btn" (click)="previousPage()" [disabled]="reportPage === 1">
+
+                << Previous </button>
+
+                    <button class="page-btn" *ngFor="let page of [].constructor(reportTotalPages); let i = index"
+                        (click)="changeReportPage(i+1)" [class.active]="reportPage === (i+1)">
+
+                        {{i+1}}
+
+                    </button>
+
+                    <button class="page-btn" (click)="nextPage()" [disabled]="reportPage === reportTotalPages">
+
+                        Next >>
+                    </button>
+
+        </div>
+    </div>
+
+</div>
+
+<app-footer></app-footer>

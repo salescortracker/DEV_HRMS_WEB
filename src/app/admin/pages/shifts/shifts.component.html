@@ -1,0 +1,146 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4 shift-container">
+
+    <h4 class="fw-semibold mb-3">
+      <i class="fa-solid fa-clock me-2 text-primary"></i> Shift Management
+    </h4>
+
+    <!-- Add Shift Button -->
+    <button class="btn btn-dark mb-3" (click)="openForm()">+ Add Shift</button>
+
+    <!-- Shift Form -->
+    <div *ngIf="showForm" class="card shadow-sm mb-4">
+      <div class="card-body">
+        <form (ngSubmit)="onSubmit()" #shiftForm="ngForm" novalidate>
+          <div class="row g-3">
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Shift Name</label>
+              <input type="text" class="form-control" name="shiftName" [(ngModel)]="shift.shiftName" placeholder="Enter Shift Name" required />
+            </div>
+
+            <div class="col-md-6">
+            <label class="form-label fw-semibold">Company <span class="text-danger">*</span></label>
+            <select class="form-select" name="CompanyID" [(ngModel)]="shift.companyID" (change)="onCompanyChange()" required>
+                <option [ngValue]="0">Select Company</option>
+                <option *ngFor="let c of companies" [ngValue]="c.companyId">{{ c.companyName }}</option>
+            </select>
+            </div>
+
+            <div class="col-md-6">
+            <label class="form-label fw-semibold">Region <span class="text-danger">*</span></label>
+            <select class="form-select" name="RegionID" [(ngModel)]="shift.regionID" required>
+                <option [ngValue]="0">Select Region</option>
+                <option *ngFor="let r of filteredRegions" [ngValue]="r.regionID">{{ r.regionName }}</option>
+            </select>
+            </div>
+            <div class="col-md-4">
+            <label class="form-label fw-semibold">Shift Start Time</label>
+            <input type="time" class="form-control" [(ngModel)]="shift.shiftStartTime" name="shiftStartTime" required>
+            </div>
+
+            <div class="col-md-4">
+            <label class="form-label fw-semibold">Shift End Time</label>
+            <input type="time" class="form-control" [(ngModel)]="shift.shiftEndTime" name="shiftEndTime" required>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-center">
+              <div class="form-check form-switch mt-3">
+                <input class="form-check-input" type="checkbox" name="isActive" [(ngModel)]="shift.isActive" />
+                <label class="form-check-label ms-2">{{ shift.isActive ? 'Active' : 'Inactive' }}</label>
+              </div>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!shiftForm.valid">
+                {{ isEditMode ? 'Update Shift' : 'Save Shift' }}
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Filter + Table -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <!-- Filters -->
+        <div class="mb-3 row g-3 align-items-end">
+          <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Search by Shift Name" [(ngModel)]="searchText" />
+          </div>
+          <div class="col-md-4">
+            <select class="form-select" [(ngModel)]="statusFilter">
+              <option value="">All Status</option>
+              <option [ngValue]="true">Active</option>
+              <option [ngValue]="false">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Shift Name</th>
+                <th>Company</th>
+                <th>Region</th>
+                <th>Shift Start</th>
+                <th>Shift End</th>
+                <th>Status</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of pagedShifts; let i = index">
+                <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+                <td>{{ s.shiftName }}</td>
+                <td>{{ s.companyName }}</td>
+                <td>{{ s.regionName }}</td>
+                <td>{{ s.shiftStartTime }}</td>
+                <td>{{ s.shiftEndTime }}</td>
+                <td>
+                  <span class="badge" [ngClass]="s.isActive ? 'bg-success' : 'bg-secondary'">
+                    {{ s.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-outline-primary me-2" (click)="editShift(s)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteShift(s)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="pagedShifts.length === 0">
+                <td colspan="6" class="text-center text-muted">No records found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav *ngIf="totalPages > 1" class="d-flex justify-content-end mt-3">
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
+            </li>
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="currentPage === i + 1">
+              <a class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <a class="page-link" (click)="goToPage(currentPage + 1)">Next</a>
+            </li>
+          </ul>
+        </nav>
+
+      </div>
+    </div>
+
+  </div>
+</div>

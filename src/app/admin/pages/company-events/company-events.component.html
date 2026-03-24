@@ -1,0 +1,183 @@
+<div class="card shadow-sm">
+<div class="container-fluid p-4">
+
+<div class="d-flex justify-content-between mb-4">
+<h4><i class="fa-solid fa-calendar-days me-2 text-danger"></i>Company Events</h4>
+</div>
+
+<hr>
+
+<div class="card mb-4">
+<div class="card-body">
+
+<form (ngSubmit)="onSubmit()" #eventForm="ngForm">
+
+<div class="row g-3">
+
+<div class="col-md-6">
+<label>Event Title</label>
+<input class="form-control" [(ngModel)]="event.EventTitle" name="EventTitle">
+</div>
+
+<div class="col-md-6">
+<label>Department</label>
+
+<select class="form-select"
+[(ngModel)]="event.DepartmentId"
+name="DepartmentId">
+
+<option value="">Select Department</option>
+
+<option *ngFor="let d of departments"
+[value]="d.departmentId">
+
+{{d.description}}
+
+</option>
+
+</select>
+</div>
+
+<div class="col-md-6">
+<label>Event Date</label>
+<input type="date"
+class="form-control"
+[(ngModel)]="event.EventDateString"
+name="EventDate">
+</div>
+
+<div class="col-md-3">
+<label>Start Time</label>
+<input type="time"
+class="form-control"
+[(ngModel)]="event.StartTime"
+name="StartTime">
+</div>
+
+<div class="col-md-3">
+<label>End Time</label>
+<input type="time"
+class="form-control"
+[(ngModel)]="event.EndTime"
+name="EndTime">
+</div>
+
+<div class="col-md-6">
+<label>Event Location</label>
+<input class="form-control"
+[(ngModel)]="event.EventLocation"
+name="EventLocation">
+</div>
+
+<div class="col-md-6">
+<label>Event Type</label>
+<select class="form-select"
+[(ngModel)]="event.EventType"
+name="EventType">
+
+<option value="Meeting">Meeting</option>
+<option value="Training">Training</option>
+<option value="Celebration">Celebration</option>
+
+</select>
+</div>
+
+<div class="col-md-6">
+<label>Meeting Link</label>
+<input class="form-control"
+[(ngModel)]="event.MeetingLink"
+name="MeetingLink">
+</div>
+
+<div class="col-md-12">
+<label>Description</label>
+<textarea class="form-control"
+[(ngModel)]="event.EventDescription"
+name="EventDescription"></textarea>
+</div>
+
+<div class="col-md-6">
+<label>
+<input type="checkbox"
+[(ngModel)]="event.IsMeeting"
+name="IsMeeting">
+ Is Meeting
+</label>
+</div>
+
+<div class="col-md-6 d-flex align-items-end">
+
+<button class="btn btn-dark w-100">
+{{isEditMode?'Update':'Save'}}
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+</div>
+
+<div class="card">
+<div class="card-body">
+
+<input class="form-control mb-3"
+placeholder="Search Event"
+[(ngModel)]="searchText">
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+<th>#</th>
+<th>Title</th>
+<th>Date</th>
+<th>Department</th>
+<th>Type</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr *ngFor="let e of filteredEvents();let i=index">
+
+<td>{{i+1}}</td>
+
+<td>{{e.EventTitle}}</td>
+
+<td>{{e.EventDate | date:'dd-MMM-yyyy'}}</td>
+
+<td>{{getDepartmentName(e.DepartmentId)}}</td>
+
+<td>{{e.EventType}}</td>
+
+<td>
+
+<button class="btn btn-sm btn-primary me-2"
+(click)="editEvent(e)">
+Edit
+</button>
+
+<button class="btn btn-sm btn-danger"
+(click)="confirmDelete(e)">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+</div>
+
+</div>
+</div>

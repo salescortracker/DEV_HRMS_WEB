@@ -1,0 +1,142 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4">
+
+    <h4 class="fw-semibold mb-3">
+      <i class="fa-solid fa-user-minus text-primary me-2"></i>
+      Resignation Master
+    </h4>
+
+    <hr>
+
+    <!-- FORM -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <form #resignationForm="ngForm" (ngSubmit)="onSubmit()">
+
+          <div class="row g-3">
+
+            <!-- Resignation Type -->
+            <div class="col-md-4">
+              <label>Resignation Type *</label>
+              <input type="text" class="form-control"
+                     name="resignationType"
+                     [(ngModel)]="resignation.resignationType"
+                     required>
+            </div>
+
+            <!-- Notice Period -->
+            <div class="col-md-4">
+              <label>Notice Period (Days) *</label>
+              <input type="number" class="form-control"
+                     name="noticePeriodDays"
+                     [(ngModel)]="resignation.noticePeriodDays"
+                     required>
+            </div>
+
+            <!-- Company -->
+            <div class="col-md-4">
+              <label>Company *</label>
+              <select class="form-select"
+                      name="companyId"
+                      [(ngModel)]="companyId"
+                      (change)="loadRegions()"
+                      required>
+                <option value="">-- Select Company --</option>
+                <option *ngFor="let c of companies" [value]="c.companyId">{{ c.companyName }}</option>
+              </select>
+            </div>
+
+            <!-- Region -->
+            <div class="col-md-4">
+              <label>Region *</label>
+              <select class="form-select"
+                      name="regionId"
+                      [(ngModel)]="regionId"
+                      required>
+                <option value="">-- Select Region --</option>
+                <option *ngFor="let r of regions" [value]="r.regionID">{{ r.regionName }}</option>
+              </select>
+            </div>
+
+            <!-- Active -->
+            <div class="col-md-12 mt-3">
+              <label class="me-2">Active</label>
+              <input type="checkbox" name="isActive" [(ngModel)]="resignation.isActive">
+            </div>
+
+            <div class="col-md-12 text-end mt-3">
+              <button class="btn btn-success me-2" type="submit" [disabled]="!resignationForm.valid">
+                {{ isEditMode ? 'Update' : 'Save' }}
+              </button>
+
+              <button class="btn btn-secondary" type="button" (click)="clearForm()">
+                Reset
+              </button>
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <div class="d-flex justify-content-end mb-3">
+          <input type="text" class="form-control w-25"
+                 placeholder="Search..."
+                 [(ngModel)]="searchText">
+        </div>
+
+        <table class="table table-bordered table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>S.No</th>
+              <th>Resignation Type</th>
+              <th>Notice Period</th>
+              <th>Company</th>
+              <th>Region</th>
+              <th class="text-center">Active</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let r of filteredResignations(); let i=index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ r.resignationType }}</td>
+              <td>{{ r.noticePeriodDays }} days</td>
+              <td>{{ companyMap[r.companyId] }}</td>
+              <td>{{ regionMap[r.regionId] }}</td>
+
+              <td class="text-center">
+                <i class="fa-solid"
+                   [ngClass]="r.isActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'"></i>
+              </td>
+
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editResignation(r)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteResignation(r)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredResignations().length === 0">
+              <td colspan="7" class="text-center text-muted">No records found</td>
+            </tr>
+
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+  </div>
+</div>

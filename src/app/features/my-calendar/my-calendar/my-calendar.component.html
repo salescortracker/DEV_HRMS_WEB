@@ -1,0 +1,148 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="container-fluid mt-4">
+
+<!-- Legend -->
+<div class="legend-card">
+
+<h5>Legend (Toggle)</h5>
+
+<div class="legend-container">
+<!-- 
+<label class="legend-item asset">
+<input type="checkbox" [(ngModel)]="showAssets"> Assets
+</label> -->
+
+<!-- <label class="legend-item expense">
+<input type="checkbox" [(ngModel)]="showExpenses"> Expenses
+</label> -->
+<!-- 
+<label class="legend-item companyNews">
+<input type="checkbox" [(ngModel)]="showCompanyNews"> Company News
+</label>
+
+<label class="legend-item policy">
+<input type="checkbox" [(ngModel)]="showPolicies"> Policies
+</label> -->
+
+<!-- <label class="legend-item helpdesk">
+<input type="checkbox" [(ngModel)]="showHelpdesk"> Help Desk
+</label> -->
+
+<!-- <label class="legend-item performance">
+<input type="checkbox" [(ngModel)]="showPerformance"> Performance
+</label> -->
+
+<label class="legend-item leave">
+<input type="checkbox" [(ngModel)]="showLeaves"> Leaves
+</label>
+<label class="legend-item weekoff">
+<input type="checkbox" [(ngModel)]="showWeekoff"> Weekoff
+</label>
+
+<label class="legend-item holiday">
+<input type="checkbox" [(ngModel)]="showHoliday"> Holiday
+
+</label>
+<!-- <label class="legend-item timesheet">
+<input type="checkbox" [(ngModel)]="showTimesheet"> Timesheet
+</label>
+
+<label class="legend-item profile">
+<input type="checkbox" [(ngModel)]="showProfile"> Employee Profile
+</label> -->
+<!-- 
+<label class="legend-item birthday">
+<input type="checkbox" [(ngModel)]="showBirthdays"> Birthdays
+</label>
+
+<label class="legend-item workAnniversary">
+<input type="checkbox" [(ngModel)]="showAnniversary"> Work Anniversary
+</label> -->
+
+</div>
+</div>
+
+<!-- Calendar -->
+<div class="calendar-card">
+
+<div class="calendar-header-bar">
+
+<button class="nav-btn" (click)="previousMonth()">‹</button>
+
+<h3>{{ monthNames[currentMonth] }} {{ currentYear }}</h3>
+
+<button class="nav-btn" (click)="nextMonth()">›</button>
+
+</div>
+
+<div class="calendar-grid">
+
+<div class="calendar-day-header" *ngFor="let d of weekDays">
+{{d}}
+</div>
+
+<!-- <div class="calendar-cell"
+     *ngFor="let date of getCalendarDays()"
+     [ngClass]="{'weekend': !isWeekoffDate(date), 'today': isToday(date)}"> -->
+
+
+     <div class="calendar-cell"
+     *ngFor="let date of getCalendarDays()"
+     [ngClass]="{
+       'weekend': isWeekend(date),
+       'today': isToday(date),
+       'disabled-day': isWeekoffDate(date)
+     }">
+<div *ngIf="date" class="date-number">
+{{date.getDate()}}
+</div>
+
+<div class="events">
+
+<div
+*ngFor="let item of isWeekoffDate(date) ? [] : getItemsForDate(date)"
+class="event-text"
+[ngClass]="item.type"
+(click)="!isWeekend(date) && openEvent(item)"
+title="{{item.title}} ({{item.type | titlecase}})"    >
+
+{{item.title}}
+
+
+<span *ngIf="item.status"
+      class="st"
+      [ngClass]="item.status.toLowerCase()">
+ ({{item.status}})
+</span>
+
+</div>
+
+</div>
+
+</div>
+</div>
+</div>
+
+</div>
+
+
+<!-- Popup -->
+
+<div class="popup-overlay" *ngIf="selectedEvent">
+
+<div class="popup-card">
+
+<h4>{{selectedEvent.title}}</h4>
+
+<p><b>Module:</b> {{selectedEvent.type}}</p>
+<p><b>Date:</b> {{selectedEvent.date}}</p>
+
+<button (click)="closePopup()">Close</button>
+
+</div>
+
+</div>
+
+<app-footer></app-footer>

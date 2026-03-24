@@ -1,0 +1,46 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Leave Management</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Leave</a> &gt;
+    <span>Leave Management</span>
+  </nav>
+</div>
+
+<div class="tab-container mt-4">
+
+  <!-- TAB RADIO BUTTONS -->
+  <input type="radio" id="tab1" name="tab" checked>
+  <input type="radio" id="tab2" name="tab">
+  <input type="radio" id="tab3" name="tab">
+
+  <!-- TAB HEADERS -->
+  <div class="tab-header">
+    <label for="tab1" class="tab-label">Apply Leave</label>
+    <label for="tab2" class="tab-label">Leave Approvals</label>
+    <label for="tab3" class="tab-label">Leave Calendar</label>
+  </div>
+
+  <!-- ========================= APPLY LEAVE TAB ========================= -->
+  <div class="tab-content" id="content1">
+    <app-apply-leave></app-apply-leave>
+  </div>
+
+  <!-- ========================= LEAVE APPROVALS TAB ========================= -->
+  <div class="tab-content" id="content2">
+    <app-leave-approvals></app-leave-approvals>
+  </div>
+
+  <!-- ========================= LEAVE CALENDAR TAB ========================= -->
+  <div class="tab-content" id="content3">
+    <app-leave-calendar></app-leave-calendar>
+  </div>
+</div>
+
+<!-- VIEW LEAVE MODAL -->
+
+
+<app-footer></app-footer>

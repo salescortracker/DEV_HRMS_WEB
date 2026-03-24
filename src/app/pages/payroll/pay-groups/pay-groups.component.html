@@ -1,0 +1,145 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold">Assign Salary</h4>
+    </div>
+
+    <!-- FORM -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <form (ngSubmit)="onSubmit()" #form="ngForm" novalidate>
+
+          <div class="row g-3">
+
+            <!-- Company -->
+            <div class="col-md-4">
+              <label class="form-label">Company</label>
+              <select class="form-select" [(ngModel)]="salary.companyId" name="companyId">
+                <option value="null">Select Company</option>
+                <option *ngFor="let c of companies" [value]="c.companyId">
+                  {{ c.companyName }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Region -->
+            <div class="col-md-4">
+              <label class="form-label">Region</label>
+              <select class="form-select" [(ngModel)]="salary.regionId" name="regionId">
+                <option value="null">Select Region</option>
+                <option *ngFor="let r of regions" [value]="r.regionId">
+                  {{ r.regionName }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Employee -->
+            <!-- Employee -->
+            <div class="col-md-4">
+              <label class="form-label">Employee *</label>
+              <select class="form-select" [(ngModel)]="salary.employeeId" name="employeeId" required
+                (change)="onEmployeeChange()">
+
+                <option [ngValue]="null">Select Employee</option>
+
+                <option *ngFor="let e of employees" [ngValue]="e.userId">
+                  {{ e.employeeCode }} - {{ e.fullName }}
+                </option>
+
+              </select>
+            </div>
+
+            <!-- Structure -->
+            <div class="col-md-4">
+              <label class="form-label">Salary Structure *</label>
+              <select class="form-select" [(ngModel)]="salary.structureId" name="structureId" required>
+                <option value="null">Select Structure</option>
+                <option *ngFor="let s of structures" [value]="s.structureId">
+                  {{ s.structureName }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Effective Date -->
+            <div class="col-md-4">
+              <label class="form-label">Effective Date</label>
+              <input type="date" class="form-control" [(ngModel)]="salary.effectiveFrom" name="effectiveFrom">
+            </div>
+
+            <!-- CTC -->
+            <div class="col-md-4">
+              <label class="form-label">CTC *</label>
+              <input type="number" class="form-control" [(ngModel)]="salary.ctc" name="ctc" required>
+            </div>
+
+            <!-- Buttons -->
+            <!-- Buttons -->
+            <div class="col-12 text-end mt-3">
+              <button class="btn btn-success me-2" type="submit" [disabled]="!form.valid">
+                Assign
+              </button>
+
+              <button class="btn btn-secondary" type="button" (click)="resetForm()">
+                Reset
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <input type="text" class="form-control w-25 mb-3" placeholder="Search" [(ngModel)]="searchText">
+
+        <table class="table table-bordered table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>S.No</th>
+              <th>Employee</th>
+              <th>Effective From</th>
+              <th>Structure</th>
+              <th>Company</th>
+              <th>Region</th>
+              <th>Active</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let s of salaries; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ getEmployeeName(s.employeeId) }}</td>
+              <td>{{s.effectiveFrom}}</td>
+              <td>{{ getStructureName(s.structureId) }}</td>
+              <td>{{ companyMap[s.companyId] }}</td>
+              <td>{{ regionMap[s.regionId] }}</td>
+              <td>{{ s.isActive ? 'Yes' : 'No' }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+
+          <button class="btn btn-sm btn-outline-primary" (click)="currentPage = currentPage - 1"
+            [disabled]="currentPage === 1">
+            Previous
+          </button>
+
+          <span>
+            Page {{ currentPage }} of {{ totalPages }}
+          </span>
+
+          <button class="btn btn-sm btn-outline-primary" (click)="currentPage = currentPage + 1"
+            [disabled]="currentPage === totalPages">
+            Next
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

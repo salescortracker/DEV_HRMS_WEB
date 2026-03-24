@@ -1,0 +1,87 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Company News</h2>
+</div>
+
+<div class="container mt-4">
+
+  <!-- FILTER SECTION -->
+<!-- FILTER SECTION -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+
+    <div class="row g-3">
+
+      <!-- Category -->
+      <div class="col-md-4">
+        <label class="form-label">Category</label>
+      <select class="form-select"
+              [(ngModel)]="searchCategory"
+              name="searchCategory">
+              <option value="">Select Category</option>
+
+    <option *ngFor="let c of categories"
+            [value]="c.categoryName">
+      {{ c.categoryName }}
+    </option>
+      </select>
+      </div>
+
+      <!-- Date -->
+      <div class="col-md-4">
+        <label class="form-label">Select Date</label>
+        <input type="date" class="form-control" [(ngModel)]="searchDate">
+      </div>
+
+      <!-- Button -->
+      <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-primary w-100" (click)="applyFilter()">
+          Filter News
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+  <!-- NEWS CARDS -->
+  <div class="row g-4" *ngIf="filteredNewsList.length > 0">
+
+    <div class="col-md-6 col-lg-4" *ngFor="let n of filteredNewsList">
+
+      <div class="card news-card shadow-sm h-100">
+
+        <div class="card-body">
+
+          <div class="d-flex justify-content-between mb-2">
+            <span class="badge bg-primary">{{n.Category}}</span>
+            <small class="text-muted">
+              {{n.Date | date:'dd-MMM-yyyy'}}
+            </small>
+          </div>
+
+          <h5 class="card-title">{{n.Title}}</h5>
+
+          <p class="card-text text-muted">
+            {{n.Description}}
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- NO NEWS -->
+  <div *ngIf="filteredNewsList.length == 0" class="text-center mt-5">
+    <h5 class="text-muted">No news available for this day</h5>
+  </div>
+
+</div>
+
+<app-footer></app-footer>

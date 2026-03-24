@@ -1,0 +1,145 @@
+<div class="card shadow-sm">
+    <div class="container-fluid p-4 priority-master">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-semibold mb-0">
+                <i class="fa-solid fa-layer-group me-2 text-danger"></i> Priority
+            </h4>
+
+            <div class="d-flex gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-download me-2"></i> Export
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" (click)="exportAs('pdf')">Download PDF</a></li>
+                        <li><a class="dropdown-item" (click)="exportAs('excel')">Download Excel</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <!-- FORM -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form #priorityForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+                    <div class="row g-3">
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Priority *</label>
+                            <input type="text" class="form-control" name="PriorityName"
+                                [(ngModel)]="priority.priorityName" required placeholder="Enter Priority">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Description</label>
+                            <input type="text" class="form-control" name="Description"
+                                [(ngModel)]="priority.description" placeholder="Enter Description">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Company *</label>
+                            <select class="form-select" name="CompanyId" [(ngModel)]="priority.companyId"
+                                (change)="onCompanyChange()" required>
+
+                                <option [ngValue]="0">-- Select Company --</option>
+
+                                <option *ngFor="let c of companies" [ngValue]="c.companyId">
+                                    {{ c.companyName }}
+                                </option>
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Region *</label>
+                            <select class="form-select" name="RegionId" [(ngModel)]="priority.regionId" required>
+
+                                <option [ngValue]="0">-- Select Region --</option>
+
+                                <option *ngFor="let r of regions" [ngValue]="r.regionID">
+                                    {{ r.regionName }}
+                                </option>
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-2 d-flex align-items-center mt-4">
+                            <label class="me-2 fw-semibold">Is Active</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="IsActive"
+                                    [(ngModel)]="priority.isActive">
+                            </div>
+                        </div>
+
+                        <div class="col-md-10 mt-4 text-end">
+                            <button class="btn btn-success me-2" type="submit" [disabled]="!priorityForm.valid">
+                                {{ isEditMode ? 'Update' : 'Save' }}
+                            </button>
+                            <button class="btn btn-secondary" type="button" (click)="resetForm()">Reset</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <div class="mb-3 d-flex justify-content-end">
+                    <input class="form-control w-25" placeholder="Search Priority" [(ngModel)]="searchText">
+                </div>
+
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Priority</th>
+                            <th>Description</th>
+                            <th>Company</th>
+                            <th>Region</th>
+                            <th class="text-center">Active</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let p of pagedPriorities; let i = index">
+                            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+                            <td>{{ p.priorityName }}</td>
+                            <td>{{ p.description }}</td>
+                            <td>{{ companyMap[p.companyId] || '—' }}</td>
+                            <td>{{ regionMap[p.regionId] || '—' }}</td>
+
+
+                            <td class="text-center">
+                                <i class="fa-solid"
+                                    [ngClass]="p.isActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'"></i>
+                            </td>
+
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary me-2" (click)="editPriority(p)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" (click)="deletePriority(p)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr *ngIf="filteredPriorities().length === 0">
+                            <td colspan="7" class="text-center text-muted">No records found</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+</div>

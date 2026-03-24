@@ -1,0 +1,189 @@
+
+<div class="card">
+  <h3 class="section-title">Approve Tickets</h3>
+
+  <!-- ================= FILTER BAR ================= -->
+  <form class="filter-container mb-3">
+    <div class="row">
+      <!-- Employee -->
+      <div class="col-md-3">
+        <label class="form-label">Employee Name</label>
+        <select class="form-select" [(ngModel)]="model.employeeId" name="employeeId">
+          <option value="">All Employees</option>
+          <option *ngFor="let e of employees" [value]="e.userId">
+            {{ e.fullName }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Status -->
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" [(ngModel)]="model.status" name="status">
+          <option value="">All Status</option>
+          <option>Open</option>
+          <option>Approved</option>
+          <option>Rejected</option>
+        </select>
+      </div>
+
+      <!-- From Date -->
+      <div class="col-md-3">
+        <label class="form-label">From Date</label>
+        <input type="date" class="form-control" [(ngModel)]="model.fromDate" name="fromDate">
+      </div>
+
+      <!-- To Date -->
+      <div class="col-md-3">
+        <label class="form-label">To Date</label>
+        <input type="date" class="form-control" [(ngModel)]="model.toDate" name="toDate">
+      </div>
+    </div>
+
+    <div class="text-end mt-2">
+      <button type="button" class="btn btn-primary" (click)="applyFilter()">
+        Filter
+      </button>
+
+      <button type="button" class="btn btn-secondary ms-2" (click)="resetFilter()">
+        Reset
+      </button>
+    </div>
+  </form>
+
+  <!-- ================= TABLE ================= -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>
+            <input type="checkbox" (change)="toggleAll($event)">
+          </th>
+
+          <th (click)="sortBy('ticketNumber')" style="cursor:pointer">
+            Ticket No
+            <span *ngIf="sortColumn === 'ticketNumber'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('employeeName')" style="cursor:pointer">
+            Employee
+            <span *ngIf="sortColumn === 'employeeName'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('categoryName')" style="cursor:pointer">
+            Category
+            <span *ngIf="sortColumn === 'categoryName'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('subject')" style="cursor:pointer">
+            Subject
+            <span *ngIf="sortColumn === 'subject'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('status')" style="cursor:pointer">
+            Status
+            <span *ngIf="sortColumn === 'status'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('priorityName')" style="cursor:pointer">
+            Priority
+            <span *ngIf="sortColumn === 'priorityName'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('createdAt')" style="cursor:pointer">
+            Raised On
+            <span *ngIf="sortColumn === 'createdAt'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th>Manager Comments</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let t of paginatedTickets(); let i = index">
+         <td>
+  <input type="checkbox"
+         [(ngModel)]="t.selected"
+         [disabled]="t.status === 'Approved' || t.status === 'Rejected'">
+</td>
+
+
+          <td>{{ t.ticketNumber }}</td>
+          <td>{{ t.employeeName }}</td>
+          <td>{{ t.categoryName }}</td>
+          <td>{{ t.subject }}</td>
+
+          <td>
+            <span class="badge" [ngClass]="{
+                'bg-warning text-dark': t.status === 'Open',
+                'bg-success': t.status === 'Approved',
+                'bg-danger': t.status === 'Rejected'
+              }">
+              {{ t.status }}
+            </span>
+          </td>
+
+          <td>{{ t.priorityName }}</td>
+          <td>{{ t.createdAt | date:'dd-MMM-yyyy' }}</td>
+
+          <td>
+            <textarea class="form-control" rows="1" [(ngModel)]="t.managerComments" placeholder="Add remarks...">
+            </textarea>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ================= PAGINATION ================= -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div>
+        <label>Show:
+          <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+              {{ size }}
+            </option>
+          </select>
+          entries
+        </label>
+      </div>
+
+      <div>
+        <button class="btn btn-outline-secondary btn-sm me-2" (click)="changePage(currentPage - 1)"
+          [disabled]="currentPage === 1">
+          Previous
+        </button>
+
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+        <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changePage(currentPage + 1)"
+          [disabled]="currentPage === totalPages">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ACTION BUTTONS ================= -->
+  <div class="action-buttons text-end mt-3">
+    <button class="btn btn-success me-2" (click)="approveSelected()">
+      Approve Selected
+    </button>
+    <button class="btn btn-danger" (click)="rejectSelected()">
+      Reject Selected
+    </button>
+  </div>
+</div>

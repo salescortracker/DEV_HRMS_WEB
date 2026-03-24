@@ -1,0 +1,138 @@
+<div class="admin-layout">
+
+<app-super-admin-topbar (toggleSidebar)="toggleSidebar()"></app-super-admin-topbar>
+
+<div class="main-content">
+
+<app-super-admin-sidebar
+[collapsed]="collapsed"
+(menuSelected)="onMenuSelected($event)">
+</app-super-admin-sidebar>
+
+<div class="content-body">
+
+<app-super-admin-submenu
+[submenus]="submenus">
+</app-super-admin-submenu>
+
+
+<h4>Subscription Plans</h4>
+
+<button class="btn btn-success mb-2"
+(click)="openModal()">
+Create Plan
+</button>
+
+<table class="table table-bordered">
+
+<thead class="table-dark">
+<tr>
+<th>Plan</th>
+<th>Price</th>
+<th>Duration</th>
+<th>Users</th>
+<th>Employees</th>
+<th>Storage</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr *ngFor="let p of plans">
+
+<td>{{p.planName}}</td>
+<td>{{p.price}}</td>
+<td>{{p.durationDays}}</td>
+<td>{{p.maxUsers}}</td>
+<td>{{p.maxEmployees}}</td>
+<td>{{p.storageLimitGB}}</td>
+
+<td>
+
+<button class="btn btn-primary btn-sm"
+(click)="editPlan(p)">
+Edit
+</button>
+
+<button class="btn btn-danger btn-sm ms-1"
+(click)="deletePlan(p.planId)">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<div class="modal fade show"
+*ngIf="showModal"
+style="display:block;background:rgba(0,0,0,0.5)">
+
+<div class="modal-dialog">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h5>{{editMode ? 'Edit Plan' : 'Create Plan'}}</h5>
+<button class="btn-close"
+(click)="showModal=false"></button>
+</div>
+
+<div class="modal-body">
+
+<input class="form-control mb-2"
+placeholder="Plan Name"
+[(ngModel)]="plan.planName">
+
+<input class="form-control mb-2"
+placeholder="Description"
+[(ngModel)]="plan.description">
+
+<input type="number"
+class="form-control mb-2"
+placeholder="Price"
+[(ngModel)]="plan.price">
+
+<input type="number"
+class="form-control mb-2"
+placeholder="Duration Days"
+[(ngModel)]="plan.durationDays">
+
+<input type="number"
+class="form-control mb-2"
+placeholder="Max Users"
+[(ngModel)]="plan.maxUsers">
+
+<input type="number"
+class="form-control mb-2"
+placeholder="Max Employees"
+[(ngModel)]="plan.maxEmployees">
+
+<input type="number"
+class="form-control"
+placeholder="Storage GB"
+[(ngModel)]="plan.storageLimitGB">
+
+</div>
+
+<div class="modal-footer">
+
+<button class="btn btn-secondary"
+(click)="showModal=false">
+Cancel
+</button>
+
+<button class="btn btn-success"
+(click)="savePlan()">
+Save
+</button>
+
+</div>
+
+</div>
+</div>
+</div>

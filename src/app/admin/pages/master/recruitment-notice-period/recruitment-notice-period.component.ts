@@ -1,0 +1,266 @@
+import { Component } from '@angular/core';
+import { AdminService, Company, Region } from '../../../servies/admin.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import Swal from 'sweetalert2';
+
+export interface RecruitmentNoticePeriod {
+  RecruitmentNoticePeriodID: number;
+  CompanyID: number;
+  RegionID: number;
+  NoticePeriod: string;
+  IsActive: boolean;
+  UserId?: number;
+}
+
+@Component({
+  selector: 'app-recruitment-notice-period',
+  standalone: false,
+  templateUrl: './recruitment-notice-period.component.html',
+  styleUrl: './recruitment-notice-period.component.css'
+})
+export class RecruitmentNoticePeriodComponent {
+searchText = '';
+  noticePeriodList: RecruitmentNoticePeriod[] = [];
+  noticePeriod!: RecruitmentNoticePeriod;
+
+  companies: Company[] = [];
+  regions: Region[] = [];
+
+  companyMap: Record<number, string> = {};
+  regionMap: Record<number, string> = {};
+
+  userId!: number;
+  companyId!: number;
+  regionId!: number;
+
+  isEditMode = false;
+
+  constructor(
+    private adminService: AdminService,
+    private spinner: NgxSpinnerService
+  ) { }
+
+  ngOnInit(): void {
+
+    this.userId = Number(sessionStorage.getItem("UserId"));
+    this.companyId = Number(sessionStorage.getItem("CompanyId"));
+    this.regionId = Number(sessionStorage.getItem("RegionId"));
+
+    if (!this.userId) {
+      console.error("UserId missing in sessionStorage");
+      return;
+    }
+
+    this.noticePeriod = {
+      RecruitmentNoticePeriodID: 0,
+      CompanyID: this.companyId,
+      RegionID: this.regionId,
+      NoticePeriod: '',
+      IsActive: true
+    };
+
+    this.loadCompanies();
+    this.loadNoticePeriods();
+  }
+
+  // ================= LOAD DATA =================
+
+  loadNoticePeriods() {
+
+    this.spinner.show();
+
+    this.adminService.getRecruitmentNoticePeriodList(this.userId).subscribe({
+      next: (res: any) => {
+
+        const data = res.data || [];
+
+        this.noticePeriodList = data.map((n: any) => ({
+          RecruitmentNoticePeriodID: n.recruitmentNoticePeriodID,
+          CompanyID: n.companyID,
+          RegionID: n.regionID,
+          NoticePeriod: n.noticePeriod,
+          IsActive: n.isActive
+        }));
+
+        this.spinner.hide();
+      },
+      error: () => {
+        this.spinner.hide();
+        Swal.fire('Error', 'Failed to load data', 'error');
+      }
+    });
+  }
+
+  // ================= SUBMIT =================
+
+  onSubmit() {
+
+    this.noticePeriod.CompanyID = this.companyId;
+    this.noticePeriod.RegionID = this.regionId;
+    this.noticePeriod.UserId = this.userId;
+
+    this.spinner.show();
+
+    const obs = this.isEditMode
+      ? this.adminService.updateRecruitmentNoticePeriod(this.noticePeriod)
+      : this.adminService.createRecruitmentNoticePeriod(this.noticePeriod);
+
+    obs.subscribe({
+      next: () => {
+
+        this.spinner.hide();
+
+        Swal.fire(
+          this.isEditMode ? 'Updated!' : 'Added!',
+          `Notice Period ${this.isEditMode ? 'updated' : 'created'} successfully.`,
+          'success'
+        );
+
+        this.loadNoticePeriods();
+        this.clearForm();
+      },
+      error: () => {
+        this.spinner.hide();
+        Swal.fire('Error', 'Operation failed.', 'error');
+      }
+    });
+  }
+
+  // ================= EDIT =================
+
+  editNoticePeriod(item: RecruitmentNoticePeriod) {
+
+    this.noticePeriod = { ...item };
+
+    this.companyId = item.CompanyID;
+    this.regionId = item.RegionID;
+
+    this.loadRegions();
+
+    this.isEditMode = true;
+  }
+
+  // ================= DELETE =================
+
+  deleteNoticePeriod(item: RecruitmentNoticePeriod) {
+
+    Swal.fire({
+      title: 'Delete this Notice Period?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete'
+    }).then(result => {
+
+      if (result.isConfirmed) {
+
+        this.spinner.show();
+
+        this.adminService.deleteRecruitmentNoticePeriod(item.RecruitmentNoticePeriodID)
+          .subscribe({
+            next: () => {
+              this.spinner.hide();
+              Swal.fire('Deleted!', 'Notice Period deleted successfully.', 'success');
+              this.loadNoticePeriods();
+            },
+            error: () => {
+              this.spinner.hide();
+              Swal.fire('Error', 'Delete failed.', 'error');
+            }
+          });
+      }
+    });
+  }
+
+  // ================= FILTER =================
+
+  filteredNoticePeriods(): RecruitmentNoticePeriod[] {
+
+    const search = this.searchText?.toLowerCase() || '';
+
+    return this.noticePeriodList.filter(n =>
+      n.NoticePeriod?.toLowerCase().includes(search)
+    );
+  }
+
+  // ================= LOAD COMPANIES =================
+
+  loadCompanies(): void {
+
+    this.adminService.getCompanies(null, this.userId).subscribe({
+      next: (res: Company[]) => {
+
+        this.companies = res || [];
+
+        this.companyMap = {};
+        this.companies.forEach(c =>
+          this.companyMap[c.companyId] = c.companyName
+        );
+
+        if (this.companyId) {
+          this.loadRegions();
+        }
+      },
+      error: () => Swal.fire('Error', 'Failed to load companies', 'error')
+    });
+  }
+
+  // ================= LOAD REGIONS =================
+
+  loadRegions(): void {
+
+    this.adminService.getRegions(null, this.userId).subscribe({
+      next: (res: Region[]) => {
+
+        const allRegions = res || [];
+
+        this.regionMap = {};
+        allRegions.forEach(r =>
+          this.regionMap[r.regionID] = r.regionName
+        );
+
+        this.regions = allRegions.filter(r =>
+          r.companyID == this.companyId
+        );
+
+        if (!this.regionId && this.regions.length > 0) {
+          this.regionId = this.regions[0].regionID;
+        }
+
+        this.noticePeriod.RegionID = this.regionId;
+      },
+      error: () => Swal.fire('Error', 'Failed to load regions', 'error')
+    });
+  }
+
+  onCompanyChange(): void {
+
+    sessionStorage.setItem('CompanyId', this.companyId.toString());
+
+    this.noticePeriod.CompanyID = this.companyId;
+    this.regionId = 0;
+    this.regions = [];
+
+    this.loadRegions();
+  }
+
+  onRegionChange(): void {
+
+    sessionStorage.setItem('RegionId', this.regionId.toString());
+    this.noticePeriod.RegionID = this.regionId;
+  }
+
+  // ================= RESET =================
+
+  clearForm() {
+
+    this.noticePeriod = {
+      RecruitmentNoticePeriodID: 0,
+      CompanyID: this.companyId,
+      RegionID: this.regionId,
+      NoticePeriod: '',
+      IsActive: true
+    };
+
+    this.isEditMode = false;
+  }
+}

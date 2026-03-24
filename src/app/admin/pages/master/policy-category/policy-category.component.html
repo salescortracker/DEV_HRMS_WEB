@@ -1,0 +1,144 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold mb-0">
+        <i class="fa-solid fa-layer-group me-2 text-primary"></i> Policy Category
+      </h4>
+    </div>
+
+    <hr />
+
+    <!-- FORM -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <form #categoryForm="ngForm" (ngSubmit)="onSubmit()">
+
+          <div class="row g-3">
+
+            <div class="col-md-4">
+              <label class="fw-semibold">Category Name *</label>
+              <input type="text" class="form-control"
+                name="PolicyCategoryName"
+                [(ngModel)]="category.PolicyCategoryName"
+                required />
+            </div>
+
+            <div class="col-md-4">
+              <label class="fw-semibold">Company *</label>
+              <select class="form-select"
+                [(ngModel)]="companyId"
+                name="CompanyId"
+                (change)="loadRegions()"
+                required>
+                <option value="">-- Select Company --</option>
+                <option *ngFor="let c of companies" [value]="c.companyId">
+                  {{ c.companyName }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="fw-semibold">Region *</label>
+              <select class="form-select"
+                [(ngModel)]="regionId"
+                name="RegionId"
+                required>
+                <option value="">-- Select Region --</option>
+                <option *ngFor="let r of regions" [value]="r.regionID">
+                  {{ r.regionName }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-12">
+              <label class="fw-semibold">Description</label>
+              <textarea class="form-control" rows="2"
+                name="Description"
+                [(ngModel)]="category.Description"></textarea>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-center mt-3">
+              <label class="me-2 fw-semibold">Active</label>
+              <input type="checkbox" class="form-check-input"
+                name="IsActive"
+                [(ngModel)]="category.IsActive" />
+            </div>
+
+            <div class="col-md-10 text-end mt-3">
+              <button class="btn btn-success me-2"
+                type="submit"
+                [disabled]="!categoryForm.valid">
+                {{ isEditMode ? 'Update' : 'Save' }}
+              </button>
+              <button class="btn btn-secondary"
+                type="button"
+                (click)="clearForm()">
+                Reset
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <div class="mb-3 d-flex justify-content-end">
+          <input class="form-control w-25"
+            placeholder="Search Category"
+            [(ngModel)]="searchText">
+        </div>
+
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>S.No</th>
+              <th>Category Name</th>
+              <th>Description</th>
+              <th>Company</th>
+              <th>Region</th>
+              <th class="text-center">Active</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let c of filteredCategories(); let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ c.PolicyCategoryName }}</td>
+              <td>{{ c.Description || '—' }}</td>
+              <td>{{ companyMap[c.CompanyID] }}</td>
+              <td>{{ regionMap[c.RegionID] }}</td>
+              <td class="text-center">
+                <i class="fa-solid"
+                  [ngClass]="c.IsActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'"></i>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-2"
+                  (click)="editCategory(c)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger"
+                  (click)="deleteCategory(c)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredCategories().length === 0">
+              <td colspan="7" class="text-center text-muted">
+                No records found
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+  </div>
+</div>

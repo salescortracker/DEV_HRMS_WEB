@@ -1,0 +1,100 @@
+<div class="welcome-wrapper container-fluid">
+  <div class="row align-items-center min-vh-100">
+
+    <!-- LEFT CONTENT -->
+    <div class="col-lg-7 col-md-12 p-5">
+      <div class="left-card">
+
+        <div class="icon-box mb-4">
+          <i class="fa-solid fa-gear"></i>
+        </div>
+
+        <h1 class="title">Welcome to <span>CORtracker</span></h1>
+
+        <p class="description">
+          CORtracker is a robust ERP solution designed to optimize business process
+          management. With seamless integration, real-time data analytics, and
+          customizable functionalities, it empowers enterprises to enhance
+          efficiency and drive sustainable growth.
+        </p>
+
+        <div class="features row mt-5">
+          <div class="col-md-4 feature">
+            <i class="fa-solid fa-cloud"></i>
+            <p>Cloud Ready</p>
+          </div>
+          <div class="col-md-4 feature">
+            <i class="fa-solid fa-layer-group"></i>
+            <p>Scalable</p>
+          </div>
+          <div class="col-md-4 feature">
+            <i class="fa-solid fa-shield-halved"></i>
+            <p>Secure</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT FORM -->
+    <div class="col-lg-5 col-md-12 p-4">
+      <div class="demo-card shadow">
+
+        <div class="demo-header">
+          <i class="fa-solid fa-play"></i>
+          <div>
+            <h5>Request a Live Demo</h5>
+            <small>See CORtracker in action – 30 min personalised demo</small>
+          </div>
+        </div>
+
+        <form [formGroup]="demoForm" (ngSubmit)="submit()">
+
+          <div class="form-group">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" formControlName="name" placeholder="Full name">
+          </div>
+
+          <div class="form-group">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" formControlName="email" placeholder="Work email">
+          </div>
+
+          <div class="form-group">
+            <i class="fa-solid fa-phone"></i>
+            <input type="text" formControlName="phone" placeholder="Phone number">
+          </div>
+
+          <div class="form-group">
+            <i class="fa-solid fa-building"></i>
+            <input type="text" formControlName="company" placeholder="Company (optional)">
+          </div>
+
+          <div class="form-group">
+            <select formControlName="module">
+              <option value="">Interested modules (select)</option>
+              <option value="HRMS">HRMS</option>
+              <option value="CRM`">CRM</option>
+              <option value="ACCOUNTS">ACCOUNTS</option>
+              <option value="INVENTORY">INVENTORY</option>
+            
+            </select>
+          </div>
+
+          <div class="checkbox">
+            <input type="checkbox" checked>
+            <label>Contact via Email</label>
+            <span>We respect your privacy</span>
+          </div>
+
+          <button class="btn-submit" type="submit">
+            <i class="fa-solid fa-calendar"></i>
+            Schedule My Demo
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>

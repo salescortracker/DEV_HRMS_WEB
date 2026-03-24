@@ -1,0 +1,119 @@
+<div class="dashboard-container">
+ 
+  <h2 class="dashboard-title">Super Admin Dashboard</h2>
+ 
+  <!-- KPI CARDS -->
+ 
+  <div class="dashboard-cards">
+ 
+    <div class="dashboard-card companies">
+      <i class="fa fa-building"></i>
+      <div>
+        <h4>Total Companies</h4>
+        <p>{{totalCompanies}}</p>
+      </div>
+    </div>
+ 
+    <div class="dashboard-card users">
+      <i class="fa fa-users"></i>
+      <div>
+        <h4>Total Users</h4>
+        <p>{{totalUsers}}</p>
+      </div>
+    </div>
+ 
+    <div class="dashboard-card plans">
+      <i class="fa fa-layer-group"></i>
+      <div>
+        <h4>Active Plans</h4>
+        <p>{{activePlans}}</p>
+      </div>
+    </div>
+ 
+    <div class="dashboard-card revenue">
+      <i class="fa fa-chart-line"></i>
+      <div>
+        <h4>Monthly Revenue</h4>
+        <p>₹{{revenue}}</p>
+      </div>
+    </div>
+ 
+  </div>
+ 
+  <!-- CHARTS -->
+ 
+  <div class="charts-container">
+ 
+    <div class="chart-card">
+      <h4>Company Growth</h4>
+      <canvas id="companyChart"></canvas>
+    </div>
+ 
+    <div class="chart-card">
+      <h4>User Distribution</h4>
+      <canvas id="userChart"></canvas>
+    </div>
+ 
+  </div>
+ 
+  <!-- TABLES -->
+ 
+  <div class="tables-container">
+ 
+    <div class="table-card">
+ 
+      <h4>Recent Companies</h4>
+ 
+      <table class="table table-striped">
+ 
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Plan</th>
+            <th>Users</th>
+          </tr>
+        </thead>
+ 
+        <tbody>
+ 
+          <tr *ngFor="let c of recentCompanies">
+            <td>{{c.name}}</td>
+            <td>{{c.plan}}</td>
+            <td>{{c.users}}</td>
+          </tr>
+ 
+        </tbody>
+ 
+      </table>
+ 
+    </div>
+ 
+    <div class="table-card">
+ 
+      <h4>⚠ Expiring Soon</h4>
+ 
+      <table class="table table-striped">
+ 
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Expiry</th>
+          </tr>
+        </thead>
+ 
+        <tbody>
+ 
+          <tr *ngFor="let e of expiringCompanies">
+            <td>{{e.name}}</td>
+            <td>{{e.expiry}}</td>
+          </tr>
+ 
+        </tbody>
+ 
+      </table>
+ 
+    </div>
+ 
+  </div>
+ 
+</div>

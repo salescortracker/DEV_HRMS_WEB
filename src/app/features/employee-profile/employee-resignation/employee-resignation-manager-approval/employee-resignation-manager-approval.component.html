@@ -1,0 +1,93 @@
+<h5 class="mb-3 fw-bold">Resignation Requests — Manager Review</h5>
+
+<table class="table table-bordered align-middle">
+  <thead class="table-dark">
+    <tr>
+      <!-- ✅ CHECKBOX HEADER -->
+      <th style="width: 40px;" class="text-center">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          [(ngModel)]="selectAll"
+          (change)="toggleSelectAll()"
+        />
+      </th>
+
+      <th>Employee Code</th>
+      <th>Type</th>
+      <th>Notice</th>
+      <th>Last Day</th>
+      <th>Reason</th>
+      <th>Status</th>
+      <th>Manager Comments</th>
+      <th>Manager Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let res of filteredResignations">
+      <!-- ✅ ROW CHECKBOX -->
+      <td class="text-center">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          [(ngModel)]="res.approveChecked"
+          [disabled]="res.status !== 'Pending'"
+        />
+      </td>
+
+      <td>{{ res.employeeId }}</td>
+      <td>{{ res.resignationType }}</td>
+      <td>{{ res.noticePeriod }}</td>
+      <td>{{ res.lastWorkingDay | date }}</td>
+
+      <td class="reason-col" title="{{ res.resignationReason }}">
+        {{ res.resignationReason }}
+      </td>
+
+      <td>
+        <span
+          [ngClass]="{
+            'badge bg-warning text-dark': res.status === 'Pending',
+            'badge bg-success': res.status === 'Approved',
+            'badge bg-danger': res.status === 'Rejected'
+          }">
+          {{ res.status }}
+        </span>
+      </td>
+
+      <td>
+        <textarea
+          class="form-control"
+          rows="2"
+          [(ngModel)]="res.managerReason"
+          [disabled]="res.status !== 'Pending'"
+          placeholder="Enter comments">
+        </textarea>
+      </td>
+
+      <td class="action-col">
+        <button
+          class="btn btn-success btn-sm"
+          [disabled]="res.status !== 'Pending'"
+          (click)="approveResignation(res)">
+          Approve
+        </button>
+
+        <button
+          class="btn btn-danger btn-sm ms-2"
+          [disabled]="res.status !== 'Pending'"
+          (click)="rejectResignation(res)">
+          Reject
+        </button>
+      </td>
+    </tr>
+
+    <!-- No data -->
+    <tr *ngIf="filteredResignations.length === 0">
+      <td colspan="9" class="text-center text-muted">
+        No resignation requests found
+      </td>
+    </tr>
+  </tbody>
+</table>

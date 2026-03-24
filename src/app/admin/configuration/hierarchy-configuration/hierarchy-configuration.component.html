@@ -1,0 +1,113 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4 news-management">
+
+    <!-- ================= FORM ================= -->
+    <div class="card mb-4 p-3 shadow-sm">
+      <h4>Admin: Employee Master</h4>
+      <hr />
+
+      <form (ngSubmit)="saveEmployee()">
+        <div class="row g-3">
+
+          <div class="col-md-3">
+            <label class="form-label">Full Name</label>
+            <select class="form-select"
+        [(ngModel)]="newEmployee.employeeMasterId"
+        name="employeeSelect"
+        (change)="onUserSelect(newEmployee.employeeMasterId)"
+        required>
+
+  <option [ngValue]="undefined">Select User</option>
+
+  <option *ngFor="let u of users" [ngValue]="u.userId">
+    {{ u.fullName }}
+  </option>
+
+</select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Role</label>
+            <input type="text"
+       [(ngModel)]="newEmployee.role"
+       name="role"
+       class="form-control"
+       readonly />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Department</label>
+          <input type="text"
+       [(ngModel)]="newEmployee.department"
+       name="department"
+       class="form-control"
+       readonly />
+          </div>
+
+<div class="col-md-3">
+  <label class="form-label">Manager</label>
+  <input type="text"
+         class="form-control"
+         [value]="getManagerName(newEmployee.managerId)"
+         readonly />
+</div>
+
+          <div class="col-12 text-end mt-2">
+            <button type="submit" class="btn btn-success me-2">
+              {{ isEditMode ? 'Update' : 'Add Employee' }}
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="resetForm()">
+              Reset
+            </button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <!-- ================= LIST ================= -->
+    <div class="card mb-4 p-3 shadow-sm">
+      <h5>Employee List</h5>
+
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>S.No</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Department</th>
+            <th>Manager</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let e of paginatedEmployees; let i = index">
+            <td>{{ ((currentPage-1) * pageSize) + i + 1 }}</td>
+            <td>{{ e.fullName }}</td>
+            <td>{{ e.role || '-' }}</td>
+            <td>{{ e.department }}</td>
+            <td>{{ getManagerName(e.managerId ?? undefined) }}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-primary me-2" (click)="editEmployee(e)">
+                Edit
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="deleteEmployee(e)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- PAGINATION CONTROLS -->
+      <div class="d-flex justify-content-between align-items-center mt-2">
+        <button class="btn btn-outline-primary" (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
+        <span>Page {{currentPage}} of {{totalPages}}</span>
+        <button class="btn btn-outline-primary" (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+      </div>
+
+    </div>
+
+  </div>
+</div>

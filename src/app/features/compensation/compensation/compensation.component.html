@@ -1,0 +1,98 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Employee Compensation</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Payroll</a> &gt;
+    <span>Compensation</span>
+  </nav>
+</div>
+
+<div class="tab-container p-3">
+
+  <!-- Tabs -->
+  <div class="tab-header">
+
+    <a routerLink="earning-deductions" routerLinkActive="active-tab" [routerLinkActiveOptions]="{ exact: true }"
+      class="tab-label">
+      Earning & Deductions
+    </a>
+
+    <a routerLink="tax-settings" routerLinkActive="active-tab" [routerLinkActiveOptions]="{ exact: true }"
+      class="tab-label">
+      Salary Structure
+    </a>
+
+    <a routerLink="pay-groups" routerLinkActive="active-tab" [routerLinkActiveOptions]="{ exact: true }"
+      class="tab-label">
+      Assign Salary
+    </a> 
+
+    <a routerLink="payslip-template" routerLinkActive="active-tab" [routerLinkActiveOptions]="{ exact: true }"
+      class="tab-label">
+      Payroll Processing
+    </a>
+
+  </div>
+
+  <!-- Routed Components Render Here -->
+  <router-outlet></router-outlet>
+
+  <!-- Local Tab Content -->
+  <div *ngIf="activeTab === 'benefits'" class="mt-4">
+    <div class="card p-3">
+      <h4>Benefits & Perks</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Benefit</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of benefits">
+            <td>{{ b.name }}</td>
+            <td>{{ b.details }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'deductions'" class="mt-4">
+    <div class="card p-3">
+      <h4>Deductions</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of deductions">
+            <td>{{ d.type }}</td>
+            <td>{{ d.amount | currency }}</td>
+            <td>{{ d.reason }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'summary'" class="mt-4">
+    <div class="card p-3">
+      <h4>Yearly Compensation Summary</h4>
+      <p>Total Gross: {{ totalGross | currency }}</p>
+      <p>Total Net: {{ totalNet | currency }}</p>
+      <p>Total Bonuses: {{ totalBonus | currency }}</p>
+      <p>Total Deductions: {{ totalDeduction | currency }}</p>
+    </div>
+  </div>
+
+</div>
+
+<app-footer></app-footer>

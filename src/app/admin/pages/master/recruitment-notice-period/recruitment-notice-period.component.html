@@ -1,0 +1,176 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold mb-0">
+        <i class="fa-solid fa-file-contract me-2 text-primary"></i>
+        Recruitment Notice Period
+      </h4>
+    </div>
+
+    <hr />
+
+    <!-- ================= FORM ================= -->
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <form #noticeForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+
+          <div class="row g-3">
+
+            <!-- Notice Period -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Notice Period *</label>
+              <input type="text"
+                     class="form-control"
+                     name="NoticePeriod"
+                     [(ngModel)]="noticePeriod.NoticePeriod"
+                     required>
+            </div>
+
+            <!-- Company -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Company *</label>
+              <select class="form-select"
+                      name="CompanyId"
+                      [(ngModel)]="companyId"
+                      (change)="onCompanyChange()"
+                      required>
+
+                <option value="">-- Select Company --</option>
+
+                <option *ngFor="let c of companies"
+                        [value]="c.companyId">
+                  {{ c.companyName }}
+                </option>
+
+              </select>
+            </div>
+
+            <!-- Region -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Region *</label>
+              <select class="form-select"
+                      name="RegionId"
+                      [(ngModel)]="regionId"
+                      (change)="onRegionChange()"
+                      required>
+
+                <option value="">-- Select Region --</option>
+
+                <option *ngFor="let r of regions"
+                        [value]="r.regionID">
+                  {{ r.regionName }}
+                </option>
+
+              </select>
+            </div>
+
+            <!-- Is Active -->
+            <div class="col-md-2 d-flex align-items-center mt-4">
+              <label class="me-2 fw-semibold">Is Active</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="IsActive"
+                       [(ngModel)]="noticePeriod.IsActive">
+              </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-md-10 mt-4 text-end">
+              <button class="btn btn-success me-2"
+                      type="submit"
+                      [disabled]="!noticeForm.valid">
+
+                <i class="fa-solid fa-save me-2"></i>
+                {{ isEditMode ? 'Update' : 'Save' }}
+              </button>
+
+              <button class="btn btn-secondary"
+                      type="button"
+                      (click)="clearForm()">
+                <i class="fa-solid fa-rotate-left me-2"></i>
+                Reset
+              </button>
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+    <!-- ================= TABLE ================= -->
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <!-- Search -->
+        <div class="mb-3 d-flex justify-content-end">
+          <input class="form-control w-25"
+                 placeholder="Search Notice Period"
+                 [(ngModel)]="searchText">
+        </div>
+
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width:80px;">S.No</th>
+              <th>Notice Period</th>
+              <th>Company</th>
+              <th>Region</th>
+              <th class="text-center">Active</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let n of filteredNoticePeriods(); let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ n.NoticePeriod }}</td>
+              <td>{{ companyMap[n.CompanyID] || '—' }}</td>
+              <td>{{ regionMap[n.RegionID] || '—' }}</td>
+
+              <td class="text-center">
+                <i class="fa-solid"
+                   [ngClass]="n.IsActive ?
+                   'fa-circle-check text-success' :
+                   'fa-circle-xmark text-danger'">
+                </i>
+              </td>
+
+              <td class="text-center">
+
+                <button class="btn btn-sm btn-outline-primary me-2"
+                        (click)="editNoticePeriod(n)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+
+                <button class="btn btn-sm btn-outline-danger"
+                        (click)="deleteNoticePeriod(n)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredNoticePeriods().length === 0">
+              <td colspan="6"
+                  class="text-center text-muted">
+                No records found
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+  </div>
+</div>

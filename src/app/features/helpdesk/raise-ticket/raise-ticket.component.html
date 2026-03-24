@@ -1,0 +1,175 @@
+
+<form (ngSubmit)="submitTicket()" #ticketForm="ngForm" enctype="multipart/form-data">
+
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">Employee Name / ID</label>
+      <input type="text" class="form-control" [value]="employeeName" readonly>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Department</label>
+      <input type="text" class="form-control" [value]="departmentName" readonly>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Category <span class="text-danger">*</span></label>
+      <select class="form-select" [(ngModel)]="model.categoryId" name="categoryId" required>
+        <option value="">Select Category</option>
+        <option *ngFor="let c of Category" [value]="c.helpDeskCategoryId">
+          {{ c.helpDeskCategoryName }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label class="form-label">Issue Subject <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" [(ngModel)]="model.subject" name="subject" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Priority <span class="text-danger">*</span></label>
+      <select class="form-select" [(ngModel)]="model.priorityId" name="priorityId" required>
+        <option value="">Select Priority</option>
+        <option *ngFor="let p of priorities" [value]="p.priorityId">
+          {{ p.priorityName }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-12">
+      <label class="form-label">Description <span class="text-danger">*</span></label>
+      <textarea class="form-control" rows="4" [(ngModel)]="model.description" name="description" required></textarea>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label class="form-label">Attachment <span class="text-danger">*</span> </label>
+      <input type="file" class="form-control" (change)="onFileSelected($event)" #fileInput>
+    </div>
+    <div class="col-md-6 text-end align-self-end">
+      <button type="button" class="btn btn-secondary me-2" (click)="resetForm(ticketForm)">
+        Reset
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="ticketForm.invalid">
+        Submit Ticket
+      </button>
+    </div>
+  </div>
+</form>
+
+<!-- ================= LISTING ================= -->
+
+<!-- ================= LISTING ================= -->
+
+<div class="card mt-3 p-3 shadow-sm">
+  <h3 class="section-title mb-3">My Raised Tickets</h3>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>S.No</th>
+
+          <th (click)="sortBy('ticketNumber')" style="cursor:pointer">
+            Ticket No
+            <span *ngIf="sortColumn === 'ticketNumber'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('categoryName')" style="cursor:pointer">
+            Category
+            <span *ngIf="sortColumn === 'categoryName'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('subject')" style="cursor:pointer">
+            Subject
+            <span *ngIf="sortColumn === 'subject'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('priorityName')" style="cursor:pointer">
+            Priority
+            <span *ngIf="sortColumn === 'priorityName'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+          <th>File</th>
+
+          <th (click)="sortBy('status')" style="cursor:pointer">
+            Status
+            <span *ngIf="sortColumn === 'status'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('createdAt')" style="cursor:pointer">
+            Raised On
+            <span *ngIf="sortColumn === 'createdAt'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let t of pagedTickets(); let i = index">
+          <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+          <td>{{ t.ticketNumber }}</td>
+          <td>{{ t.categoryName }}</td>
+          <td>{{ t.subject }}</td>
+          <td>{{ t.priorityName }}</td>
+          <td>
+            <!-- If file exists -->
+            <a *ngIf="t.filePath; else noFile" (click)="viewDocument(t.filePath)">
+              View
+            </a>
+
+
+            <!-- If no file -->
+            <ng-template #noFile>
+              <span class="text-muted">No File</span>
+            </ng-template>
+          </td>
+          <td>{{ t.status }}</td>
+          <td>{{ t.createdAt | date:'dd-MMM-yyyy' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination Footer -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div>
+        <label>
+          Show:
+          <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+              {{ size }}
+            </option>
+          </select>
+          entries
+        </label>
+      </div>
+
+      <div>
+        <button class="btn btn-outline-secondary btn-sm me-2" (click)="changePage(currentPage - 1)"
+          [disabled]="currentPage === 1">
+          Previous
+        </button>
+
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+        <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changePage(currentPage + 1)"
+          [disabled]="currentPage === totalPages">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

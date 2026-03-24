@@ -1,0 +1,103 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Recruitment (ATS)</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    
+    <span>Recruitment</span>
+  </nav>
+</div>
+
+<div class="">
+<div class="tab-container my-4 recruitment-container">
+  <h2 class="text-center mb-3">Recruitment Process (ATS)</h2>
+
+  <!-- Top row: global filters + overall progress for selected candidate -->
+  <!-- <div class="row mb-3">
+    <div class="col-md-6 d-flex gap-2">
+      <input type="text" class="form-control" placeholder="Search candidate / tech..." [(ngModel)]="globalFilter">
+      <select class="form-select w-auto" [(ngModel)]="filterStage">
+        <option value="">All stages</option>
+        <option *ngFor="let t of tabs; let idx = index" [value]="idx+1">{{ t }}</option>
+      </select>
+      <button class="btn btn-outline-secondary" (click)="applyFilter()">Apply</button>
+      <button class="btn btn-outline-secondary" (click)="clearFilter()">Clear</button>
+    </div>
+
+    <div class="col-md-6">
+      <div class="d-flex align-items-center justify-content-end gap-3">
+        <div class="text-end">
+          <small class="text-muted">Selected Candidate</small>
+          <div><strong>{{ selectedCandidate?.name || '— none —' }}</strong></div>
+        </div>
+        <div style="min-width:260px;">
+          <div class="progress mb-1" style="height:12px;">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              [style.width.%]="selectedCandidate ? calculateProgress(selectedCandidate) : 0"
+              [ngClass]="getProgressColor(selectedCandidate)">
+            </div>
+          </div>
+          <small class="text-muted">{{ selectedCandidate ? calculateProgress(selectedCandidate) + '%' : '0%' }}</small>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- Tabs header -->
+  <div class="card mb-3">
+    <div class="card-body p-2">
+      <div class="d-flex">
+        <button *ngFor="let t of tabs; let i = index"
+                class="btn flex-fill me-1"
+                [class.btn-primary]="activeTab === i+1"
+                [class.btn-outline-primary]="activeTab !== i+1"
+                (click)="setActiveTab(i+1)">
+          {{ t }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- main content area -->
+  <div class="card">
+    <div class="card-body">
+
+      <!-- TAB 1: Resume Upload / Candidate Intake -->
+      <div *ngIf="activeTab === 1">
+         <app-resume-upload></app-resume-upload>
+      </div>
+
+      <!-- TAB 2: Screening / Shortlisting -->
+      <div *ngIf="activeTab === 2">
+        <app-screening></app-screening>
+      </div>
+
+      <!-- TAB 3: Interview Process (dynamic rounds) -->
+      <div *ngIf="activeTab === 3">
+        <app-interview></app-interview>
+      </div>
+
+      <!-- TAB 4: Offer Management -->
+      <div *ngIf="activeTab === 4">
+        <app-appointment></app-appointment>
+      </div>
+
+      <!-- TAB 5: Onboarding -->
+      <div *ngIf="activeTab === 5">
+     <app-offer></app-offer>
+        </div>
+
+      <div *ngIf="activeTab === 6">
+        <app-onboarding></app-onboarding>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+<app-footer></app-footer>

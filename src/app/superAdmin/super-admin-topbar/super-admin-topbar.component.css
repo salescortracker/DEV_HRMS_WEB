@@ -1,0 +1,11 @@
+.nav-icon{
+font-size:18px;
+cursor:pointer;
+}
+
+.profile-icon{
+width:35px;
+height:35px;
+background:#b02828;
+border-radius:50%;
+}

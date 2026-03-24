@@ -1,0 +1,46 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Employee Resignation</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Employee Profile</a> &gt;
+    <span>Employee Resignation</span>
+  </nav>
+</div>
+
+<div class="tab-container">
+  <!-- Radios -->
+  <input type="radio" id="tab1" name="tab" checked>
+  <input type="radio" id="tab2" name="tab">
+  <input type="radio" id="tab3" name="tab">
+
+
+  <!-- Tab Header -->
+  <div class="tab-header">
+    <label class="tab-label" for="tab1">Employee Resignation Details</label>
+    <label class="tab-label" for="tab2">Manager Approval</label>
+    <!-- <label class="tab-label" for="tab3">HR Approval</label> -->
+
+  </div>
+
+  <div class="content">
+    <div id="content1" class="tab-content">
+      <app-employee-resignation-details></app-employee-resignation-details>
+    </div>
+  </div>
+  <!-- 🟦 TAB 2: MANAGER APPROVAL -->
+  <div id="content2" class="tab-content">
+   <app-employee-resignation-manager-approval></app-employee-resignation-manager-approval>
+  </div>
+
+
+  <!-- 🟩 TAB 3: HR APPROVAL -->
+  <!-- <div id="content3" class="tab-content">
+    <app-employee-resignation-hr-approval></app-employee-resignation-hr-approval>
+    </div> -->
+
+</div>
+
+<app-footer></app-footer>

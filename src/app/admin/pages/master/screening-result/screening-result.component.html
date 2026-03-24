@@ -1,0 +1,192 @@
+<div class="card shadow-sm">
+    <div class="container-fluid p-4">
+
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-semibold mb-0">
+                <i class="fa-solid fa-user-check me-2 text-primary"></i> Screening Result
+            </h4>
+        </div>
+
+        <hr />
+
+        <!-- FORM -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+
+                <form #screeningForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+
+                    <div class="row g-3">
+
+                        <!-- Screening Result -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Screening Result *</label>
+
+                            <input type="text" class="form-control" name="Weekoff" [(ngModel)]="screening.Weekoff"
+                                required placeholder="Enter Screening Result" aria-placeholder="Only Pass/Reject/Hold">
+                        </div>
+
+
+                        <!-- Company -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Company *</label>
+
+                            <select class="form-select" name="CompanyId" [(ngModel)]="companyId"
+                                (change)="onCompanyChange()" required>
+
+                                <option value="">-- Select Company --</option>
+
+                                <option *ngFor="let c of companies" [value]="c.companyId">
+                                    {{ c.companyName }}
+                                </option>
+
+                            </select>
+                        </div>
+
+
+                        <!-- Region -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Region *</label>
+
+                            <select class="form-select" name="RegionId" [(ngModel)]="regionId"
+                                (change)="onRegionChange()" required>
+
+                                <option value="">-- Select Region --</option>
+
+                                <option *ngFor="let r of regions" [value]="r.regionID">
+                                    {{ r.regionName }}
+                                </option>
+
+                            </select>
+                        </div>
+
+
+                        <!-- IsActive -->
+                        <div class="col-md-2 d-flex align-items-center mt-4">
+
+                            <label class="me-2 fw-semibold">Is Active</label>
+
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="IsActive"
+                                    [(ngModel)]="screening.IsActive">
+                            </div>
+
+                        </div>
+
+
+                        <!-- BUTTONS -->
+                        <div class="col-md-10 mt-4 text-end">
+
+                            <button class="btn btn-success me-2" type="submit" [disabled]="!screeningForm.valid">
+
+                                <i class="fa-solid fa-save me-2"></i>
+                                {{ isEditMode ? 'Update' : 'Save' }}
+
+                            </button>
+
+
+                            <button class="btn btn-secondary" type="button" (click)="resetForm()">
+
+                                <i class="fa-solid fa-rotate-left me-2"></i> Reset
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+
+        <!-- TABLE -->
+        <div class="card shadow-sm">
+
+            <div class="card-body">
+
+                <!-- SEARCH -->
+                <div class="mb-3 d-flex justify-content-end">
+
+                    <input class="form-control w-25" placeholder="Search Screening Result" [(ngModel)]="searchText">
+
+                </div>
+
+
+                <table class="table table-bordered table-hover align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th style="width:80px;">S.No</th>
+                            <th>Screening Result</th>
+                            <th>Company</th>
+                            <th>Region</th>
+                            <th class="text-center">Active</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr *ngFor="let s of filteredResults(); let i = index">
+
+                            <td>{{ i + 1 }}</td>
+
+                            <td>{{ s.Weekoff }}</td>
+
+                            <td>{{ companyMap[s.CompanyID] || '-' }}</td>
+
+                            <td>{{ regionMap[s.RegionID] || '-' }}</td>
+
+
+                            <td class="text-center">
+
+                                <i class="fa-solid"
+                                    [ngClass]="s.IsActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'">
+                                </i>
+
+                            </td>
+
+
+                            <td class="text-center">
+
+                                <button class="btn btn-sm btn-outline-primary me-2" (click)="editResult(s)">
+
+                                    <i class="fa-solid fa-pen-to-square"></i>
+
+                                </button>
+
+
+                                <button class="btn btn-sm btn-outline-danger" (click)="deleteResult(s)">
+
+                                    <i class="fa-solid fa-trash"></i>
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr *ngIf="filteredResults().length === 0">
+
+                            <td colspan="6" class="text-center text-muted">
+                                No records found
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
