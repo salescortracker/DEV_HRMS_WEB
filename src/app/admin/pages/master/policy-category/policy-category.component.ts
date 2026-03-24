@@ -12,7 +12,7 @@ import autoTable from 'jspdf-autotable';
   styleUrl: './policy-category.component.css'
 })
 export class PolicyCategoryComponent {
-   
+    
   searchText = '';
   categories: PolicyCategory[] = [];
   category!: PolicyCategory;
@@ -142,33 +142,62 @@ export class PolicyCategoryComponent {
     );
   }
 
-  loadCompanies() {
-    this.adminService.getCompanies(null, this.userId).subscribe({
-      next: (res: Company[]) => {
-        this.companies = res || [];
-        this.companyMap = {};
-        this.companies.forEach(c => this.companyMap[c.companyId] = c.companyName);
-        this.loadRegions();
+loadCompanies() {
+  this.adminService.getCompanies(null, this.userId).subscribe({
+    next: (res: any) => {
+      console.log('All Companies 👉', res);
+
+      const data = res?.data ?? res ?? [];
+
+      // 🔥 Only active companies
+      this.companies = data.filter((c: any) => c.isActive === true);
+
+      // ✅ Build map from active only
+      this.companyMap = {};
+      this.companies.forEach((c: any) => {
+        this.companyMap[c.companyId] = c.companyName;
+      });
+
+      console.log('Active Companies 👉', this.companies);
+
+      // ✅ Load regions after companies
+      this.loadRegions();
+    }
+  });
+}
+
+ loadRegions() {
+  this.adminService.getRegions(null, this.userId).subscribe({
+    next: (res: any) => {
+      console.log('All Regions 👉', res);
+
+      const data = res?.data ?? res ?? [];
+
+      // 🔥 Only active regions
+      const activeRegions = data.filter((r: any) => r.isActive === true);
+
+      // ✅ Build map from active regions
+      this.regionMap = {};
+      activeRegions.forEach((r: any) => {
+        this.regionMap[r.regionID] = r.regionName;
+      });
+
+      // ✅ Filter by selected company
+      this.regions = activeRegions.filter(
+        (r: any) => r.companyID == this.companyId
+      );
+
+      console.log('Filtered Regions 👉', this.regions);
+
+      // ✅ Auto-select region if not selected
+      if (!this.regionId && this.regions.length > 0) {
+        this.regionId = this.regions[0].regionID;
       }
-    });
-  }
 
-  loadRegions() {
-    this.adminService.getRegions(null, this.userId).subscribe({
-      next: (res: Region[]) => {
-        const all = res || [];
-        this.regionMap = {};
-        all.forEach(r => this.regionMap[r.regionID] = r.regionName);
-
-        this.regions = all.filter(r => r.companyID == this.companyId);
-
-        if (!this.regionId && this.regions.length > 0)
-          this.regionId = this.regions[0].regionID;
-
-        this.category.RegionID = this.regionId;
-      }
-    });
-  }
+      this.category.RegionID = this.regionId;
+    }
+  });
+}
 
   clearForm() {
     this.category = {

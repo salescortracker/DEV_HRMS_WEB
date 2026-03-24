@@ -22,6 +22,8 @@ familyForm!: FormGroup;
  menuId = Number(sessionStorage.getItem("menuId"));
   //canCreate: boolean = true;
   canCreate: boolean = false;
+   canEdit: boolean = false;
+  canDelete: boolean = false;
   constructor(
     private fb: FormBuilder,
     private empFamilyService: EmployeeResignationService,   private adminService:AdminService
@@ -126,6 +128,10 @@ this.loadgender();
   }
 
   delete(id: number) {
+    if (!this.canDelete) {
+    Swal.fire("You don't have permission to delete this record", "", "warning");
+    return;
+  }
     if (confirm('Are you sure?')) {
       this.empFamilyService.deleteempfamily(id).subscribe(() => {
         this.loadFamily();
@@ -167,6 +173,8 @@ loadPermission() {
   //   this.canEdit = familyMenu.canEdit;
   //   this.canDelete = familyMenu.canDelete;
   //   this.canView = familyMenu.canView;
+   this.canEdit = familyMenu.canEdit;
+     this.canDelete = familyMenu.canDelete;
    }
 
   console.log("UserId:", userId);
