@@ -46,16 +46,36 @@ canCreate: boolean = false;
       regionId: [this.regionId],
     });
   }
-relationshipMap: any;
+relationshipMap: { [key: number]: string } = {};
 
-  // 📄 Load Relationships
-  loadrelationship() {
-    this.empFamilyService
-      .GetAllRelationShip(this.userId, this.companyId, this.regionId)
-      .subscribe(res => {
-        this.relationList = res;
-      });
-  }
+loadrelationship() {
+
+  this.empFamilyService
+    .GetAllRelationShip(this.userId, this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
+        console.log('All Relationships 👉', res);
+
+        // ✅ Filter Active + Company + Region
+        this.relationList = (res || []).filter((r: any) =>
+          r.companyId == this.companyId &&
+          r.regionId == this.regionId &&
+          r.isActive === true
+        );
+
+        // ✅ Build Map
+        this.relationshipMap = {};
+        this.relationList.forEach((r: any) => {
+          this.relationshipMap[r.relationshipId] = r.relationshipName;
+        });
+
+        console.log('Filtered Relationships 👉', this.relationList);
+        console.log('Relationship Map 👉', this.relationshipMap);
+      },
+      error: (err) => console.error(err)
+    });
+}
 
  getEmergencyContacts() {
   this.empFamilyService.getEmergencyContactsByUserId(this.userId)

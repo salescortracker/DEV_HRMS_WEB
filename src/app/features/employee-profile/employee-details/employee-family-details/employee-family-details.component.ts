@@ -146,18 +146,51 @@ this.loadgender();
     this.editId = null;
   }
   relationList: any[] = [];
-   loadrelationship() {
-    
-    this.empFamilyService.GetAllRelationShip(this.userId,this.companyId,this.regionId).subscribe(res => {
-      this.relationList = res;
+
+loadrelationship() {
+
+  this.empFamilyService
+    .GetAllRelationShip(this.userId, this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
+        console.log('All Relationships 👉', res);
+
+        // ✅ Apply same filter logic
+        this.relationList = (res || []).filter((r: any) =>
+          r.companyId == this.companyId &&
+          r.regionId == this.regionId &&
+          r.isActive === true
+        );
+
+        console.log('Filtered Relationships 👉', this.relationList);
+      },
+      error: (err) => console.error(err)
     });
-  }
-  genderList: any[] = [];
-   loadgender() {
-    this.empFamilyService.Getempgender(this.userId,this.companyId,this.regionId).subscribe(res => {
-      this.genderList = res;
+}
+genderList: any[] = [];
+
+loadgender() {
+
+  this.empFamilyService
+    .Getempgender(this.userId, this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
+        console.log('All Genders 👉', res);
+
+        // ✅ Apply filter (same as marital status)
+        this.genderList = (res || []).filter((g: any) =>
+          g.companyId == this.companyId &&
+          g.regionId == this.regionId &&
+          g.isActive === true
+        );
+
+        console.log('Filtered Genders 👉', this.genderList);
+      },
+      error: (err) => console.error(err)
     });
-  }
+}
 loadPermission() {
   debugger;
 
