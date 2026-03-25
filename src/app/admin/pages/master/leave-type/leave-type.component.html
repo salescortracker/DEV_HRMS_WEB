@@ -89,7 +89,7 @@
                 required>
             </div>
 
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label class="form-label fw-semibold">Leave Days *</label>
               <input
                 type="number"
@@ -97,9 +97,30 @@
                 name="LeaveDays"
                 [(ngModel)]="leave.leaveDays"
                 min="1"
-                required>
-            </div>
+                >
+            </div> -->
+<div class="col-md-12">
+  <label class="form-label fw-semibold">Grade-wise Leave Allocation <span style="color: red;">*</span> </label>
 
+  <div *ngFor="let g of grades" class="d-flex align-items-center mb-2 gap-3">
+
+    <!-- Checkbox -->
+    <input type="checkbox"
+           [checked]="isGradeSelected(g.gradeID)"
+           (change)="onGradeToggle(g, $event)" />
+
+    <!-- Grade Name -->
+    <span style="min-width: 150px;">{{ g.gradeName }}</span>
+
+    <!-- Days Input -->
+    <input type="number"
+           class="form-control w-25"
+           placeholder="Days"
+           [value]="getGradeDays(g.gradeID)"
+           (input)="onGradeDaysChange(g, $event)"
+           [disabled]="!isGradeSelected(g.gradeID)" />
+  </div>
+</div>
             <div class="col-md-12">
               <div class="form-check form-switch mt-2">
                 <input
@@ -163,11 +184,11 @@
                   Leave Type
                   <i class="fa" [ngClass]="getSortIcon('LeaveTypeName')"></i>
                 </th>
-                <th (click)="sortTable('LeaveDays')" class="sortable">
+                <!-- <th (click)="sortTable('LeaveDays')" class="sortable">
                   Days
                   <i class="fa" [ngClass]="getSortIcon('LeaveDays')"></i>
-                </th>
-               
+                </th> -->
+               <th>Grades</th>
                 <th class="text-center">Actions</th>
               </tr>
             </thead>
@@ -178,8 +199,12 @@
                 <td>{{ lt.companyName }}</td>
                 <td>{{ lt.regionName }}</td>
                 <td>{{ lt.leaveTypeName }}</td>
-                <td>{{ lt.leaveDays }}</td>
-              
+                <!-- <td>{{ lt.leaveDays }}</td> -->
+                <td>
+  <span *ngFor="let g of lt.gradeAllocations">
+    {{ g.gradename }} ({{ g.leaveDays }})<br>
+  </span>
+</td>
                 <td class="text-center">
                   <button
                     class="btn btn-sm btn-outline-primary me-2"
