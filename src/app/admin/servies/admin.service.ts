@@ -289,11 +289,14 @@ export interface ExpenseCategory {
   expenseCategoryID: number;
   expenseCategoryName: string;
   isActive: boolean;
-  CompanyID: number;
-  RegionID: number;
+  companyId: number;
+  regionId: number;
   SortOrder: number;
   Description: string;
   UserId: number;
+   // ✅ MUST ADD THESE
+  companyName: string;
+  regionName: string;
 }
 export interface LeaveStatus {
   LeaveStatusID: number;
@@ -1210,8 +1213,11 @@ updatePolicyCategory(data: any) {
   return this.http.post(`${this.baseUrl}/MasterData/UpdatePolicyCategory`, data);
 }
 
-deletePolicyCategory(id: number) {
-  return this.http.post(`${this.baseUrl}/MasterData/DeletePolicyCategory?id=${id}`, {});
+// deletePolicyCategory(id: number) {
+// //   return this.http.post(`${this.baseUrl}/MasterData/DeletePolicyCategory?id=${id}`, {});
+// }
+deletePolicyCategory(policyCategoryId: number) {
+  return this.http.post(`${this.baseUrl}/MasterData/DeletePolicyCategory?policyCategoryId=${policyCategoryId}`, {});
 }
 // ===================== POLICIES =====================
 
