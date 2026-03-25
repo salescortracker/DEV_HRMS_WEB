@@ -221,7 +221,9 @@ export interface Designation {
   companyName:string,
   regionName:string,
   departmentId:number,
-  departmentName:string
+  departmentName:string,
+   gradeId?: number,
+  gradeName?: string,
 }
 
 export interface AssetStatus {
@@ -243,6 +245,17 @@ export interface PolicyCategory {
   IsActive: boolean;
   UserId?: number;
 } 
+export interface Grade {
+  gradeID: number;
+  gradeName: string;
+  companyID: number;
+  regionId: number;
+  isActive: boolean;
+
+  companyName?: string;
+  regionName?: string;
+  userId?: number;
+}
 export interface AttachmentType {
   AttachmentTypeID?: number;
   AttachmentTypeName: string;
@@ -2467,6 +2480,32 @@ getAllMenus(){
 }
 getMenusByType(type: string){
   return this.http.get<any[]>(`${this.baseUrl}/SubscriptionPlan/GetMenusByType/${type}`);
+}
+getDesignation(companyId: number, regionId: number) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/GetDesignations?companyId=${companyId}&regionId=${regionId}`
+  );
+}
+
+getGrades(companyId: number) {
+  return this.http.get<any>(`${this.baseUrl}/MasterData/GetGradeAll`, {
+    params: { companyId}
+  });
+}
+
+createGrade(data: Grade) {
+  return this.http.post(`${this.baseUrl}/MasterData/CreateGrade`, data);
+}
+
+updateGrade(data: Grade) {
+  return this.http.post(`${this.baseUrl}/MasterData/UpdateGrade`, data);
+}
+
+deleteGrade(id: number) {
+  return this.http.post(`${this.baseUrl}/MasterData/DeleteGrade?id=${id}`, {});
+}
+ getRegionsByCompany(companyId: number) {
+  return this.getAll(`MasterData/GetRegionsByCompany?companyId=${companyId}`);
 }
 
 }

@@ -66,7 +66,7 @@ import { RecruitmentNoticePeriodComponent } from './pages/master/recruitment-not
 import { CompanyEventsComponent } from './pages/company-events/company-events.component';
 import { CompanyNewsCategoryComponent } from './company-news-category/company-news-category.component';
 import { EmploymentTypeComponent } from './pages/master/employment-type/employment-type.component';
-
+import { GradeComponent } from './pages/master/grade/grade.component';
 const routes: Routes = [
   {
     path: '',
@@ -139,7 +139,8 @@ const routes: Routes = [
             { path: 'company-news-category', component: CompanyNewsCategoryComponent },
       // Add more admin pages here
     
-     { path: 'employment-type', component: EmploymentTypeComponent}
+     { path: 'employment-type', component: EmploymentTypeComponent},
+       {path: 'grade', component: GradeComponent}
 ]
   }
 ];
