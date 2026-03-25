@@ -398,7 +398,7 @@ export interface KpiCategory {
 }
 
 export interface Relationship {
-  relationshipId: number;
+  RelationshipID: number;
   relationshipName: string;
   companyId:number;
   regionId:number;
@@ -408,7 +408,6 @@ export interface Relationship {
   isActive: boolean;
 }
 export interface MenuItem {
-   menuId?: number; 
   label: string;           // <-- what UI expects
   link?: string;
   icon?: string;
@@ -1166,15 +1165,13 @@ createRelationship(data: any) {
 }
 
 updateRelationship(data: any) {
-    return this.http.post<any>(`${this.baseUrl}/UserManagement/UpdateRelationship`, data);
+  return this.http.post<any>(`${this.baseUrl}/UpdateRelationship`, data);
 }
 
 deleteRelationship(id: number) {
-  return this.http.post<any>(`${this.baseUrl}/UserManagement/DeleteRelationship?relationshipId=${id}`, {});
+  return this.http.post<any>(`${this.baseUrl}/UserManagement/DeleteRelationship?id=${id}`, {});
 }
- getWeekoffLists(companyId: number, regionId: number) {
-    return this.http.get(`${this.baseUrl}/MasterData/weekoff-list?companyId=${companyId}&regionId=${regionId}`);
-  }
+ 
   // Policy Category
 createPolicyCategory(data: any) {
   return this.http.post(`${this.baseUrl}/MasterData/CreatePolicyCategory`, data);
@@ -2419,19 +2416,5 @@ deletePlan(id:any){
 
 applyPlan(data:any){
  return this.http.post(this.baseUrl + '/SubscriptionPlan/ApplyPlan',data);
-}
-getPermission(userId: number, menuId: number, action: string) {
-  return this.http.get<boolean>(
-    `${this.baseUrl}/Employee/GetPermission?userId=${userId}&menuId=${menuId}&action=${action}`
-  );
-}
-savePlanMenus(data:any){
-  return this.http.post(`${this.baseUrl}/SubscriptionPlan/SavePlanMenus`, data);
-}
-getAllMenus(){
-  return this.http.get(`${this.baseUrl}/SubscriptionPlan/GetAllMenus`);
-}
-getMenusByType(type: string){
-  return this.http.get<any[]>(`${this.baseUrl}/SubscriptionPlan/GetMenusByType/${type}`);
 }
 }

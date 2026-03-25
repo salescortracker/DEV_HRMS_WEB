@@ -50,7 +50,7 @@ relationshipModel: any = {
   // Empty model
   getEmptyRelationship(): Relationship {
     return {
-      relationshipId: 0,
+      RelationshipID: 0,
       relationshipName: '',
       companyName: '',
       regionName: '',
@@ -100,7 +100,7 @@ loadCompanies(): void {
           companyName: this.companyMap[r.companyId] ?? '',
           regionName: this.regionMap[r.regionId] ?? ''
         }))
-        .sort((a: any, b: any) => b.RelationshipID - a.relationshipId);
+        .sort((a: any, b: any) => b.RelationshipID - a.RelationshipID);
 
       this.spinner.hide();
     },
@@ -111,57 +111,9 @@ loadCompanies(): void {
   });
   }
 
-  // // Submit (Create / Update)
-  // onSubmit(): void {
-  //   this.spinner.show();
-  //   if (this.isEditMode) {
-  //     this.adminService.updateRelationship(this.relationship).subscribe({
-  //       next: () => {
-  //         this.spinner.hide();
-  //         Swal.fire('Updated', `${this.relationship.relationshipName} updated successfully!`, 'success');
-  //         this.loadRelationships();
-  //         this.resetForm();
-  //       },
-  //       error: () => {
-  //         this.spinner.hide();
-  //         Swal.fire('Error', 'Update failed. Please contact IT Administrator.', 'error');
-  //       }
-  //     });
-  //   } else {
-  //     this.adminService.createRelationship(this.relationship).subscribe({
-  //       next: () => {
-  //         this.spinner.hide();
-  //         Swal.fire('Added', `${this.relationship.relationshipName} added successfully!`, 'success');
-  //         this.loadRelationships();
-  //         this.resetForm();
-  //       },
-  //       error: () => {
-  //         this.spinner.hide();
-  //         Swal.fire('Error', 'Create failed. Please contact IT Administrator.', 'error');
-  //       }
-  //     });
-  //   }
-  // }
-   // Submit (Create / Update)
+  // Submit (Create / Update)
   onSubmit(): void {
     this.spinner.show();
-    if (this.isEditMode) {
-
-  const exists = this.relationships.some(r =>
-    r.relationshipId !== this.relationship.relationshipId && // 👈 important
-    r.relationshipName.toLowerCase().trim() === this.relationship.relationshipName.toLowerCase().trim() &&
-    r.companyId === this.relationship.companyId &&
-    r.regionId === this.relationship.regionId
-  );
-
-  if (exists) {
-    this.spinner.hide();
-    Swal.fire('Warning', 'Relationship already exists!', 'warning');
-    return;
-  }
-
-  // continue update API
-}
     if (this.isEditMode) {
       this.adminService.updateRelationship(this.relationship).subscribe({
         next: () => {
@@ -176,18 +128,6 @@ loadCompanies(): void {
         }
       });
     } else {
-
-      const exists = this.relationships.some(r =>
-        r.relationshipName.toLowerCase() === this.relationship.relationshipName.toLowerCase() &&
-        r.companyId === this.relationship.companyId &&
-        r.regionId === this.relationship.regionId
-      );
-
-      if (exists) {
-        Swal.fire('Warning', 'Relationship already exists!', 'warning');
-        return;
-      }
-
       this.adminService.createRelationship(this.relationship).subscribe({
         next: () => {
           this.spinner.hide();
@@ -195,11 +135,10 @@ loadCompanies(): void {
           this.loadRelationships();
           this.resetForm();
         },
-        
-       error: (err) => {
-        this.spinner.hide();
-        Swal.fire('Error', err.error?.message || 'Create failed', 'error');
-      }
+        error: () => {
+          this.spinner.hide();
+          Swal.fire('Error', 'Create failed. Please contact IT Administrator.', 'error');
+        }
       });
     }
   }
@@ -219,7 +158,7 @@ loadCompanies(): void {
     }).then((result) => {
       if (result.isConfirmed) {
         this.spinner.show();
-        this.adminService.deleteRelationship(r.relationshipId).subscribe({
+        this.adminService.deleteRelationship(r.RelationshipID).subscribe({
           next: () => {
             this.spinner.hide();
             Swal.fire('Deleted', `${r.relationshipName} deleted successfully.`, 'success');

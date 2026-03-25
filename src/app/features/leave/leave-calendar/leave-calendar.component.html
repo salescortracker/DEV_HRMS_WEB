@@ -34,7 +34,6 @@
            *ngFor="let day of week"
            [class.today]="isToday(day)"
            [class.weekend]="isWeekendForDay(day)"
-            [class.disabled]="isWeekendForDay(day)"
            [class.has-leave]="hasLeave(day)"
            (mouseenter)="onCellMouseEnter($event, day)"
            (mousemove)="onCellMouseMove($event)"
@@ -43,7 +42,7 @@
         <div class="date">{{ day }}</div>
 
         <!-- show small weekly-off dot -->
-        <div *ngIf="isWeekendForDay(day)" class="weekoff-label" title="Weekly Off"></div>
+        <div *ngIf="isWeekendForDay(day)" class="weekly-off-dot" title="Weekly Off"></div>
 
         <!-- leave badges (show leaveType and status) -->
         <div class="leave-badges">

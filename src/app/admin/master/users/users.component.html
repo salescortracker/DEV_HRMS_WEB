@@ -24,7 +24,7 @@
             <div class="col-md-6">
               <label class="form-label fw-semibold">Company <span class="text-danger">*</span></label>
               <select class="form-select" name="CompanyID" [(ngModel)]="user.companyId" (ngModelChange)="onCompanyChange($event)" required>
-                <option value="0">Select Company</option>
+                <option value="">Select Company</option>
                 <option *ngFor="let c of companies" [ngValue]="c.companyId">{{ c.companyName }}</option>
               </select>
             </div>
@@ -33,7 +33,7 @@
             <div class="col-md-6">
               <label class="form-label fw-semibold">Region <span class="text-danger">*</span></label>
                <select class="form-select" name="RegionID" [(ngModel)]="user.regionId" (change)="onRegionChange(user.regionId)" required>
-                <option value="0">Select Region</option>
+                <option value="">Select Region</option>
                   <option *ngFor="let r of filteredRegions" [ngValue]="r.regionID">{{ r.regionName }}</option>
               </select>
             </div>
@@ -63,7 +63,7 @@
             <div class="col-md-6">
               <label class="form-label fw-semibold">Role <span class="text-danger">*</span></label>
               <select class="form-select" name="Role" [(ngModel)]="user.roleId" [disabled]="!user.regionId" required>
-                <option value="0">Select Role</option>
+                <option value="">Select Role</option>
                  <option *ngFor="let r of roles" [ngValue]="r.roleId">
     {{ r.roleName }}
   </option>

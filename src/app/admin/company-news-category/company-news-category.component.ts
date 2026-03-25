@@ -8,7 +8,8 @@ import Swal from 'sweetalert2';
   styleUrl: './company-news-category.component.css'
 })
 export class CompanyNewsCategoryComponent {
-categories: CompanyNewsCategory[] = [];
+
+  categories: CompanyNewsCategory[] = [];
   companies: Company[] = [];
   regions: Region[] = [];
   category: CompanyNewsCategory = this.getEmptyCategory();
@@ -60,37 +61,19 @@ categories: CompanyNewsCategory[] = [];
   this.category.regionId = 0;
 }
 
-loadCompanies(): void {
-  this.adminService.getCompanies(null, this.UserId).subscribe({
-    next: (res: any) => {
-      console.log('All Companies 👉', res);
+  loadCompanies(): void {
+    this.adminService.getCompanies(null, this.UserId).subscribe({
+      next: (res: any) => this.companies = res,
+      error: () => Swal.fire('Error', 'Failed to load companies.', 'error')
+    });
+  }
 
-      const data = res?.data ?? res ?? [];
-
-      // 🔥 Only active companies
-      this.companies = data.filter((c: any) => c.isActive === true);
-
-      console.log('Active Companies 👉', this.companies);
-    },
-    error: () => Swal.fire('Error', 'Failed to load companies.', 'error')
-  });
-}
-
-loadRegions(): void {
-  this.adminService.getRegions(null, this.UserId).subscribe({
-    next: (res: any) => {
-      console.log('All Regions 👉', res);
-
-      const data = res?.data ?? res ?? [];
-
-      // 🔥 Only active regions
-      this.regions = data.filter((r: any) => r.isActive === true);
-
-      console.log('Active Regions 👉', this.regions);
-    },
-    error: () => Swal.fire('Error', 'Failed to load regions.', 'error')
-  });
-}
+  loadRegions(): void {
+      this.adminService.getRegions(null,this.UserId).subscribe({
+        next: (res:any) => (this.regions = res),
+        error: () => Swal.fire('Error', 'Failed to load regions.', 'error')
+      });
+    }
 onSubmit(): void {
   this.category.userId = this.UserId;
     if (this.isEditMode) {

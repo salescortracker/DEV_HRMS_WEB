@@ -208,74 +208,8 @@
     </div>
   </div> -->
   <!-- Chat Toggle -->
-<div class="chatbot-toggle" (click)="toggleChat()">
+<!-- <div class="chatbot-toggle" (click)="toggleChat()">
   <i class="fa fa-comments"></i>
-</div>
+</div> -->
 
 <!-- Chat Window -->
-<!-- Chat Toggle -->
-<div class="chatbot-toggle" (click)="toggleChat()">💬</div>
-
-<div class="chatbot" *ngIf="isOpen">
-
-  <!-- Header -->
-  <div class="chatbot-header">
-    🤖 HRMS Assistant
-    <span class="close" (click)="toggleChat()">×</span>
-  </div>
-
-  <!-- Messages -->
-  <div class="chatbot-messages">
-
-    <div *ngFor="let msg of messages"
-         class="message"
-         [ngClass]="msg.sender === 'User' ? 'user' : 'bot'">
-
-      <div class="bubble">
-        <span *ngIf="msg.text">{{ msg.text }}</span>
-        <span *ngIf="msg.attachmentName">📎 {{ msg.attachmentName }}</span>
-      </div>
-    </div>
-
-    <!-- Intro -->
-    <div *ngIf="showIntro" class="intro-actions">
-      <button class="primary-btn" (click)="openModules()">
-        📂 View Modules
-      </button>
-    </div>
-
-    <!-- Modules (NO auto close) -->
-    <div *ngIf="showModules" class="module-list">
-      <button *ngFor="let m of modules">{{ m }}</button>
-    </div>
-
-  </div>
-
-  <!-- Emoji Picker -->
-  <div class="emoji-picker" *ngIf="showEmojiPicker">
-    <span *ngFor="let e of emojis" (click)="addEmoji(e)">
-      {{ e }}
-    </span>
-  </div>
-
-  <!-- Input -->
-  <div class="chatbot-input">
-
-    <!-- Emoji (NO background) -->
-    <button class="icon-btn" (click)="toggleEmojiPicker()">😊</button>
-
-    <!-- Attachment (NO background) -->
-    <button class="icon-btn" (click)="triggerFileUpload()">📎</button>
-
-    <input type="text"
-           [(ngModel)]="userMessage"
-           placeholder="Type your message..."
-           (keyup.enter)="sendMessage()" />
-
-    <!-- SEND BUTTON (FIXED & VISIBLE) -->
-    <button class="send-btn" (click)="sendMessage()">➤</button>
-
-    <input type="file" hidden #fileInput (change)="onFileSelected($event)" />
-  </div>
-
-</div>

@@ -52,7 +52,7 @@
                       name="companyId"
                       [(ngModel)]="gender.companyId"
                       required>
-                <option value="0">Select Company</option>
+                <option value="">Select Company</option>
                 <option *ngFor="let c of companies" [value]="c.companyId">
                   {{ c.companyName }}
                 </option>
@@ -66,7 +66,7 @@
                       name="regionId"
                       [(ngModel)]="gender.regionId"
                       required>
-                <option value="0">Select Region</option>
+                <option value="">Select Region</option>
                 <option *ngFor="let r of regions" [value]="r.regionID">
                   {{ r.regionName }}
                 </option>

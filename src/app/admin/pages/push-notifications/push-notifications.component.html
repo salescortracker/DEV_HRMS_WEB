@@ -42,7 +42,7 @@
             <label class="form-label">Message <span class="text-danger">*</span></label>
             <textarea class="form-control" rows="3" name="Message" [(ngModel)]="notification.Message" required
               placeholder="Enter push notification message (max 250 characters)" maxlength="250"></textarea>
-            <small class="text-muted float-end mt-1">{{ notification.Message?.length || 0 }}/250 characters</small>
+            <small class="text-muted float-end mt-1">{{ notification.Message.length || 0 }}/250 characters</small>
           </div>
 
           <div class="col-md-6">

@@ -43,17 +43,10 @@ export class RegionComponent {
 
   // ✅ Load Companies
   loadCompanies(): void {
-    this.adminService.getCompanies(null, this.region.userId).subscribe({
-    next: (data: any[]) => {
-      console.log('All Companies 👉', data);
-
-      // 🔥 Filter only active companies
-      this.companies = (data || []).filter((c: any) => c.isActive === true);
-
-      console.log('Active Companies 👉', this.companies);
-    },
-    error: (err) => console.error('Error loading companies:', err)
-  });
+    this.adminService.getCompanies(null,this.region.userId).subscribe({
+      next: (data) => (this.companies = data),
+      error: (err) => console.error('Error loading companies:', err)
+    });
   }
 
   // ✅ Get Company Name

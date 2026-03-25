@@ -1,0 +1,31 @@
+<!-- 💬 Floating Button -->
+<button class="chat-toggle" (click)="toggleChat()">
+  💬
+</button>
+
+<!-- 🧠 Chat Window -->
+<div class="chatbot-wrapper" *ngIf="isOpen">
+
+  <!-- Header -->
+  <div class="chat-header">
+    🤖 HRMS Assistant
+    <span class="close-btn" (click)="toggleChat()">✖</span>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-body"  #chatBody>
+    <div *ngFor="let msg of messages"
+         [ngClass]="msg.sender === 'user' ? 'user-msg' : 'bot-msg'">
+      {{msg.text}}
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-footer">
+    <input [(ngModel)]="userMessage"
+           (keyup.enter)="sendMessage()"
+           placeholder="Type your message..." />
+    <button (click)="sendMessage()">➤</button>
+  </div>
+
+</div>

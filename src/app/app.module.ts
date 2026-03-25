@@ -116,6 +116,8 @@ import { MainUsersComponent } from './main-users/main-users.component';
 import { SuperAdminDashboardComponent } from './superAdmin/super-admin-dashboard/super-admin-dashboard.component';
 import { SuperAdminDemousersComponent } from './superAdmin/super-admin-demousers/super-admin-demousers.component';
 import { SubscriptionPlansComponent } from './superAdmin/subscription-plans/subscription-plans.component';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { ChatbotComponent } from './chatbot/chatbot.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -226,6 +228,7 @@ import { SubscriptionPlansComponent } from './superAdmin/subscription-plans/subs
     
     SuperAdminDemousersComponent,
           SubscriptionPlansComponent,
+          // ChatbotComponent,
    
     
     
@@ -233,7 +236,7 @@ import { SubscriptionPlansComponent } from './superAdmin/subscription-plans/subs
   imports: [
     BrowserModule, ReactiveFormsModule,FullCalendarModule,
     AppRoutingModule, FormsModule, HttpClientModule, NgxSpinnerModule,
-    StrongPasswordDirective
+    StrongPasswordDirective,ChatbotComponent
 ],
 
   providers: [
@@ -242,7 +245,8 @@ import { SubscriptionPlansComponent } from './superAdmin/subscription-plans/subs
      { provide: MAT_DATE_FORMATS, useValue: {
     parse: { dateInput: 'DD/MM/YYYY' },
     display: { dateInput: 'DD/MM/YYYY' }
-  }}
+  }},
+     provideAnimationsAsync()
 
   ],
   bootstrap: [AppComponent]
