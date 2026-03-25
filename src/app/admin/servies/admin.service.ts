@@ -316,6 +316,12 @@ export interface LeaveType {
    CompanyID: number;
   RegionID: number;
   userId:number;
+   gradeAllocations: GradeAllocation[];
+}
+export interface GradeAllocation {
+  gradeID: number;
+  leaveDays: number;
+  gradename: string;
 }
 export interface ExpenseStatus {
   ExpenseStatusID: number;
@@ -2433,5 +2439,8 @@ getAllMenus(){
 }
 getMenusByType(type: string){
   return this.http.get<any[]>(`${this.baseUrl}/SubscriptionPlan/GetMenusByType/${type}`);
+}
+getGrades(userId:number){
+  return this.getAll(`MasterData/GetGradeAll?companyId=${userId}`);
 }
 }
