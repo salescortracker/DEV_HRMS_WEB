@@ -55,7 +55,8 @@ export class AdminLayoutComponent {
        { title: 'Screnning Result', route: '/admin/screening-result' },
        { title: 'Interview Level', route: '/admin/interview-level' },
      { title: 'company-news-category', route: '/admin/company-news-category' },
-     { title: 'EmploymentType', route: '/admin/employment-type'} 
+     { title: 'EmploymentType', route: '/admin/employment-type'},
+     { title: 'Grade', route: '/admin/grade'} 
     ],
     // 'Configuration': [
     //   { title: 'Approval Workflows', route: '/admin/approval-workflow' },
