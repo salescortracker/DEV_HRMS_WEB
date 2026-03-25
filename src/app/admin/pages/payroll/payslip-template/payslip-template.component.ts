@@ -194,7 +194,6 @@ export class PayslipTemplateComponent {
         }
       });
   }
-
 downloadPDF(p: any) {
 
   const doc = new jsPDF();
@@ -278,6 +277,27 @@ downloadPDF(p: any) {
 
   doc.setFontSize(10);
 
+ 
+  // LEFT SIDE
+  doc.text(`Name: ${safeText(emp?.fullName)}`, 20, y);
+  doc.text(`Designation: ${this.designationMap[emp?.designationId] || ''}`, 20, y + 6);
+  doc.text(`Department: ${this.departmentMap[emp?.departmentId] || ''}`, 20, y + 12);
+  doc.text(`Location: Madhapur`, 20, y + 18);
+  doc.text(`Joining Date: ${emp?.createdDate || ''}`, 20, y + 24);
+ 
+  // RIGHT SIDE
+  doc.text(`Employee No: ${safeText(emp?.employeeCode)}`, pageWidth / 2, y);
+  doc.text(`Bank: -`, pageWidth / 2, y + 6);
+  doc.text(`A/C No: -`, pageWidth / 2, y + 12);
+  doc.text(`PAN: -`, pageWidth / 2, y + 18);
+ 
+  /* ================= TABLE ================= */
+ 
+  let tableY = y + 35;
+ 
+  doc.setFillColor("240");
+  doc.rect(20, tableY, pageWidth - 40, 10, 'F');
+ 
   doc.setFont('helvetica', 'bold');
   doc.text('Working Days:', 20, 88);
   doc.text('Present:', 60, 88);
@@ -418,7 +438,6 @@ downloadPDF(p: any) {
 
   doc.save(`Payslip_${employeeCode}_${monthName}.pdf`);
 }
-
   get paginatedPayroll() {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.payrollList.slice(start, start + this.pageSize);

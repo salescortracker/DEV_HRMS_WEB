@@ -123,13 +123,19 @@ shift: ShiftMasterDto = this.getEmptyShift();
 
     if (this.isEditMode) {
       this.userService.updateShift(this.shift).subscribe({
-        next: (res:any) => {
-          
-      this.loadShifts();
-      Swal.fire('Updated', res.message, 'success');
-      this.resetForm();
-     
-        },
+        next: (res: any) => {
+
+  if (!res.success) {
+    Swal.fire('Warning', res.message, 'warning');
+    return;
+  }
+
+  this.loadShifts();
+
+  Swal.fire('Updated', res.message, 'success');
+
+  this.resetForm();
+},
       
       });
     } else {
@@ -144,10 +150,17 @@ shift: ShiftMasterDto = this.getEmptyShift();
       Swal.fire('Error', res.message, 'error');
     }
   },
-  error: (err:any) => {
-    console.error(err);
-    Swal.fire('Error', 'Failed to create shift', 'error');
-  }
+ error: (err: any) => {
+
+  console.error(err);
+
+  // 🔥 SHOW BACKEND MESSAGE
+  Swal.fire(
+    'Warning',
+    err.error?.message || 'Operation failed',
+    'warning'
+  );
+}
 });
 
     }

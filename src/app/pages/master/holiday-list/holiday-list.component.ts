@@ -125,6 +125,50 @@ resetForm() {
     if (result.isConfirmed) {
       this.clearForm();   // call silent reset
     }
+    obs.subscribe({
+  next: (res: any) => {
+
+    this.spinner.hide();   // ✅ keep this
+
+    if (!res.success) {
+      Swal.fire('Warning', res.message, 'warning');
+      return;
+    }
+
+    Swal.fire(
+      this.isEditMode ? 'Updated!' : 'Added!',
+      res.message,
+      'success'
+    );
+
+    this.loadHolidays();
+    this.clearForm();
+  },
+  error: (err) => {
+
+    this.spinner.hide();   // ✅ important
+
+    Swal.fire(
+      'Error',
+      err.error?.message || 'Operation failed',
+      'error'
+    );
+  }
+});
+  }
+  resetForm() {
+
+    Swal.fire({
+      title: 'Reset Form?',
+      text: 'All entered data will be cleared.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, reset'
+    }).then(result => {
+
+      if (result.isConfirmed) {
+        this.clearForm();   // call silent reset
+      }
 
   });
 }

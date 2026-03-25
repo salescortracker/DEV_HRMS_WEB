@@ -60,21 +60,21 @@ userId:any;
 
   // ================= FORM =================
   resetForm(): void {
-    this.certification = {
-      certificationTypeID: 0,
-      certificationTypeName: '',
-      isActive: true,
-      companyID: this.companyId,
-      regionID: this.regionId,
-      userId:Number(sessionStorage.getItem("UserId"))
-    };
+    // this.certification = {
+    //   CertificationTypeID: 0,
+    //   CertificationTypeName: '',
+    //   isActive: true,
+    //   companyID: this.companyId,
+    //   regionId: this.regionId,
+    //   userId:Number(sessionStorage.getItem("UserId"))
+    // };
     this.isEditMode = false;
   }
 
   onSubmit(): void {
     const api$ = this.isEditMode
       ? this.adminService.updateCertificationType(
-          this.certification.certificationTypeID,
+         
           this.certification
         )
       : this.adminService.createCertificationType(this.certification);
@@ -127,8 +127,7 @@ userId:any;
   // ================= LIST =================
   loadCertifications(): void {
     this.adminService
-      .getCertificationTypes(this.userId, this.regionId)
-      .subscribe(res => {
+      .getCertificationTypes(this.userId).subscribe(res => {
         debugger;
      this.certifications = (res as any[]).map(item => ({
           ...item,

@@ -12,7 +12,7 @@ import autoTable from 'jspdf-autotable';
   styleUrl: './relationship.component.css'
 })
 export class RelationshipComponent {
-    userId!: number;
+   userId!: number;
   companyId!: number;
   regionId!: number;
 relationship: Relationship = this.getEmptyRelationship();
@@ -63,26 +63,46 @@ relationshipModel: any = {
   companies: any[] = [];
   regions: any[] = [];
 loadCompanies(): void {
-   this.adminService.getCompanies(null,this.userId).subscribe((res: any[]) => {
-    this.companyMap = res.reduce((map, c) => {
-      map[c.companyId] = c.companyName;
-      this.companies = res;
-      return map;
-    }, {} as Record<number, string>);
-  });
-  }
+  this.adminService.getCompanies(null, this.userId).subscribe((res: any) => {
+    console.log('All Companies 👉', res);
 
-  loadRegions(): void {
-    debugger;
-    this.adminService.getRegions(null,this.userId).subscribe((res: any[]) => {
-    this.regionMap = res.reduce((map, r) => {
-      debugger;
-      map[r.regionID] = r.regionName;
-      this.regions = res;
+    const data = res?.data ?? res ?? [];
+
+    // 🔥 Filter only active companies
+    this.companies = data.filter((c: any) => c.isActive === true);
+
+    // ✅ Build company map correctly
+    this.companyMap = this.companies.reduce((map: any, c: any) => {
+      map[c.companyId] = c.companyName;
       return map;
-    }, {} as Record<number, string>);
+    }, {});
+
+    console.log('Active Companies 👉', this.companies);
+    console.log('Company Map 👉', this.companyMap);
   });
-  }
+}
+
+loadRegions(): void {
+  debugger;
+
+  this.adminService.getRegions(null, this.userId).subscribe((res: any) => {
+    console.log('All Regions 👉', res);
+
+    const data = res?.data ?? res ?? [];
+
+    // 🔥 Filter only active regions
+    this.regions = data.filter((r: any) => r.isActive === true);
+
+    // ✅ Build region map correctly
+    this.regionMap = this.regions.reduce((map: any, r: any) => {
+      map[r.regionID] = r.regionName;
+      return map;
+    }, {});
+
+    console.log('Active Regions 👉', this.regions);
+    console.log('Region Map 👉', this.regionMap);
+  });
+}
   // Load
   loadRelationships(): void {
 

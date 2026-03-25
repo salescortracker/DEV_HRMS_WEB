@@ -17,6 +17,11 @@ familyForm!: FormGroup;
   userId = Number(sessionStorage.getItem("UserId")); // 🔹 replace with logged-in userId
   companyId=Number(sessionStorage.getItem("CompanyId"));
   regionId=Number(sessionStorage.getItem("RegionId"));
+ menuId = Number(sessionStorage.getItem("menuId"));
+  //canCreate: boolean = true;
+  canCreate: boolean = false;
+   canEdit: boolean = false;
+  canDelete: boolean = false;
   constructor(
     private fb: FormBuilder,
     private empFamilyService: EmployeeResignationService
@@ -81,6 +86,10 @@ this.loadgender();
   }
 
   delete(id: number) {
+    if (!this.canDelete) {
+    Swal.fire("You don't have permission to delete this record", "", "warning");
+    return;
+  }
     if (confirm('Are you sure?')) {
       this.empFamilyService.deleteempfamily(id).subscribe(() => {
         this.loadFamily();
@@ -95,17 +104,84 @@ this.loadgender();
     this.editId = null;
   }
   relationList: any[] = [];
-   loadrelationship() {
-    
-    this.empFamilyService.GetAllRelationShip(this.userId,this.companyId,this.regionId).subscribe(res => {
-      this.relationList = res;
+
+loadrelationship() {
+
+  this.empFamilyService
+    .GetAllRelationShip(this.userId, this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
+        console.log('All Relationships 👉', res);
+
+        // ✅ Apply same filter logic
+        this.relationList = (res || []).filter((r: any) =>
+          r.companyId == this.companyId &&
+          r.regionId == this.regionId &&
+          r.isActive === true
+        );
+
+        console.log('Filtered Relationships 👉', this.relationList);
+      },
+      error: (err) => console.error(err)
+    });
+}
+genderList: any[] = [];
+
+loadgender() {
+
+  this.empFamilyService
+    .Getempgender(this.userId, this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
+        console.log('All Genders 👉', res);
+
+        // ✅ Apply filter (same as marital status)
+        this.genderList = (res || []).filter((g: any) =>
+          g.companyId == this.companyId &&
+          g.regionId == this.regionId &&
+          g.isActive === true
+        );
+
+        console.log('Filtered Genders 👉', this.genderList);
+      },
+      error: (err) => console.error(err)
     });
   }
-  genderList: any[] = [];
-   loadgender() {
-    this.empFamilyService.Getempgender(this.userId,this.companyId,this.regionId).subscribe(res => {
-      this.genderList = res;
-    });
-  }
+}
+loadPermission() {
+  debugger;
+
+  const userId = Number(sessionStorage.getItem("UserId"));
+
+  const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+
+  const familyMenu = menus.find((m: any) => m.menuName === "Family Details");
+
+  const menuId = familyMenu ? familyMenu.menuId : 0;
+    if (familyMenu) {
+    this.canCreate = familyMenu.canAdd;
+  //   this.canEdit = familyMenu.canEdit;
+  //   this.canDelete = familyMenu.canDelete;
+  //   this.canView = familyMenu.canView;
+   this.canEdit = familyMenu.canEdit;
+     this.canDelete = familyMenu.canDelete;
+   }
+
+  console.log("UserId:", userId);
+  console.log("MenuId:", menuId);
+
+  this.adminService.getPermission(userId, menuId, 'create').subscribe({
+    next: (res: boolean) => {
+      console.log("Create Permission:", res);
+      this.canCreate = res;
+    },
+    error: (err) => {
+      console.error("Permission API error:", err);
+      this.canCreate = false;
+    }
+  });
+}
 
 }

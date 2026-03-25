@@ -371,7 +371,7 @@ getAllAllocations(userId: number): Observable<ShiftAllocationDto[]> {
 
    // 📄 Get ALL emergency contacts (Admin use)
   getAllEmergencyContacts(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.baseurl}/Employee/GetAllempEmerAsync`);
+    return this.http.get<any[]>(`${environment.apiUrl}/Employee/GetAllempEmerAsync`);
   }
 
   // 👤 Get emergency contacts by UserId
