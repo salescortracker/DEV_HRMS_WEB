@@ -70,6 +70,7 @@ import { ScreeningResultComponent } from './pages/master/screening-result/screen
 import { CompanyEventsComponent } from './pages/company-events/company-events.component';
 import { CompanyNewsCategoryComponent } from './company-news-category/company-news-category.component';
 import { EmploymentTypeComponent } from './pages/master/employment-type/employment-type.component';
+import { GradeComponent } from './pages/master/grade/grade.component';
 
 @NgModule({
   declarations: [
@@ -141,7 +142,8 @@ import { EmploymentTypeComponent } from './pages/master/employment-type/employme
     ScreeningResultComponent,
     CompanyEventsComponent,
     CompanyNewsCategoryComponent,
-    EmploymentTypeComponent
+    EmploymentTypeComponent,
+    GradeComponent
  
   
 

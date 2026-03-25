@@ -41,7 +41,7 @@ export class TaxSettingsComponent {
 
   ngOnInit(): void {
 
-    this.userId = Number(sessionStorage.getItem('UserId'));
+    this.userId = Number(sessionStorage.getItem('userCompanyId'));
     this.companyId = sessionStorage.getItem('CompanyId') || '';
     this.regionId = sessionStorage.getItem('RegionId') || '';
 

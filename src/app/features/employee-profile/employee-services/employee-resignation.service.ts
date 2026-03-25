@@ -371,7 +371,7 @@ getAllAllocations(userId: number): Observable<ShiftAllocationDto[]> {
 
    // 📄 Get ALL emergency contacts (Admin use)
   getAllEmergencyContacts(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.baseurl}/Employee/GetAllempEmerAsync`);
+    return this.http.get<any[]>(`${environment.apiUrl}/Employee/GetAllempEmerAsync`);
   }
 
   // 👤 Get emergency contacts by UserId
@@ -427,13 +427,23 @@ getAllAllocations(userId: number): Observable<ShiftAllocationDto[]> {
         }
       });
     }
-    // ✅ GET RESIGNATIONS FOR REPORTING MANAGER
+//     // ✅ GET RESIGNATIONS FOR REPORTING MANAGER
+// getResignationsForManager(managerUserId: number): Observable<EmployeeResignation[]> {
+//   return this.http.get<EmployeeResignation[]>(
+//     `${this.apiUrl}/GetResignationsForManager`,
+//     {
+//       params: {
+//         managerUserId
+//       }
+//     }
+//   );
+// }
 getResignationsForManager(managerUserId: number): Observable<EmployeeResignation[]> {
   return this.http.get<EmployeeResignation[]>(
     `${this.apiUrl}/GetResignationsForManager`,
     {
       params: {
-        managerUserId
+        managerUserId: managerUserId.toString() // ✅ FIX (avoids 400 error)
       }
     }
   );
