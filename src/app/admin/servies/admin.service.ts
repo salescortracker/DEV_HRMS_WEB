@@ -897,9 +897,9 @@ export class AdminService {
     return this.http.post<User>(`${this.baseUrl}/UserManagement/UpdateUser`, user);
   }
 
-  deleteUser(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/UserManagement/DeleteUser/${id}`);
-  }
+  deleteUser(id: number): Observable<any> {
+    return this.http.post(`${this.baseUrl}/UserManagement/DeleteUser`, id);
+ }
   login(username: string, password: string): Observable<any> {
     const model = {email: username,password: password };
     return this.http.post<any>(`${this.baseUrl}/UserManagement/Login`, model).pipe(
