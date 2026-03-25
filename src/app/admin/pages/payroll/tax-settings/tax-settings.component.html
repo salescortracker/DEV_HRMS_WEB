@@ -24,11 +24,9 @@
             <div class="col-md-4">
               <label class="form-label">Department</label>
               <select class="form-select" [(ngModel)]="structure.departmentId" name="departmentId">
-
-                <option [ngValue]="null">Select Department</option>
-
-                <option *ngFor="let d of departments" [ngValue]="d.departmentId">
-                  {{ d.description }}
+                <option value="">Select Department</option>
+                <option *ngFor="let d of departments" [value]="d.departmentId">
+                  {{ d.departmentName }}
                 </option>
               </select>
             </div>
@@ -37,12 +35,10 @@
             <div class="col-md-4">
               <label class="form-label">Designation</label>
               <select class="form-select" [(ngModel)]="structure.designationId" name="designationId">
-
-                <option [ngValue]="null">Select Designation</option>
-
-<option *ngFor="let d of designations" [ngValue]="d.designationId">
-  {{ d.designationName }}
-</option>
+                <option value="">Select Designation</option>
+                <option *ngFor="let d of designations" [value]="d.designationId">
+                  {{ d.designationName }}
+                </option>
               </select>
             </div>
 
@@ -55,29 +51,23 @@
             <!-- Company -->
             <div class="col-md-4">
               <label class="form-label">Company</label>
-            <select class="form-select" [(ngModel)]="structure.companyId" name="companyId">
-
-  <option [ngValue]="null">Select Company</option>
-
-  <option *ngFor="let c of companies" [ngValue]="c.companyId">
-    {{ c.companyName }}
-  </option>
-
-</select>
+              <select class="form-select" [(ngModel)]="structure.companyId" name="companyId">
+                <option value="">Select Company</option>
+                <option *ngFor="let c of companies" [value]="c.companyId">
+                  {{ c.companyName }}
+                </option>
+              </select>
             </div>
 
             <!-- Region -->
             <div class="col-md-4">
               <label class="form-label">Region</label>
-<select class="form-select" [(ngModel)]="structure.regionId" name="regionId">
-
-  <option [ngValue]="null">Select Region</option>
-
-  <option *ngFor="let r of regions" [ngValue]="r.regionId">
-    {{ r.regionName }}
-  </option>
-
-</select>
+              <select class="form-select" [(ngModel)]="structure.regionId" name="regionId">
+                <option value="">Select Region</option>
+                <option *ngFor="let r of regions" [value]="r.regionId">
+                  {{ r.regionName }}
+                </option>
+              </select>
             </div>
 
             <!-- Dynamic Components Section -->
@@ -151,8 +141,7 @@
     <div class="card shadow-sm">
       <div class="card-body">
 
-        <input type="text" class="form-control w-25 mb-3" placeholder="Search" [(ngModel)]="searchText"
-          (ngModelChange)="onSearchChange()">
+        <input type="text" class="form-control w-25 mb-3" placeholder="Search" [(ngModel)]="searchText">
 
         <table class="table table-bordered table-hover">
           <thead class="table-light">
@@ -185,20 +174,6 @@
             </tr>
           </tbody>
         </table>
-
-       <div class="d-flex justify-content-end align-items-center mt-3">
- 
-          <button class="btn btn-sm btn-secondary me-2" (click)="prevPage()" [disabled]="currentPage === 1">
-            Prev
-          </button>
- 
-          <span>Page {{ currentPage }} of {{ totalPages() }}</span>
- 
-          <button class="btn btn-sm btn-secondary ms-2" (click)="nextPage()" [disabled]="currentPage === totalPages()">
-            Next
-          </button>
- 
-        </div>
 
       </div>
     </div>

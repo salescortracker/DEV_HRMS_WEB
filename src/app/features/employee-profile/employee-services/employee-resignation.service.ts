@@ -491,10 +491,4 @@ getHolidays(companyId: number, regionId: number) {
   getEvents(companyId: number, regionId: number) {
     return this.http.get(`${this.apiUrl}/Geteventsbycompanyidandregionid?CompanyID=${companyId}&RegionId=${regionId}`);
   }
-  getWeekoffLists(companyId: number, regionId: number) {
-    return this.http.get(`${this.apiUrl}/MasterData/weekoff-list?companyId=${companyId}&regionId=${regionId}`);
-  }
-  getWeekoffList(companyId: number, regionId: number): Observable<any> {
-  return this.http.get(`${this.apiUrl}/MasterData/weekoffCalender?companyId=${companyId}&regionId=${regionId}`);
-}
 }

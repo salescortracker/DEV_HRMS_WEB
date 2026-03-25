@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EmployeeResignationService } from '../../employee-services/employee-resignation.service';
 import { EmployeeResignation } from '../../employee-models/EmployeeResignation';
 import Swal from 'sweetalert2';
-import { AdminService } from '../../../../admin/servies/admin.service';
 @Component({
   selector: 'app-employee-family-details',
   standalone: false,
@@ -14,7 +13,6 @@ export class EmployeeFamilyDetailsComponent {
 familyForm!: FormGroup;
   familyList: any[] = [];
   isEdit = false;
-   menus:any[]=[];
   editId: number | null = null;
   userId = Number(sessionStorage.getItem("UserId")); // 🔹 replace with logged-in userId
   companyId=Number(sessionStorage.getItem("CompanyId"));
@@ -26,11 +24,10 @@ familyForm!: FormGroup;
   canDelete: boolean = false;
   constructor(
     private fb: FormBuilder,
-    private empFamilyService: EmployeeResignationService,   private adminService:AdminService
+    private empFamilyService: EmployeeResignationService
   ) {}
 
   ngOnInit(): void {
-       this.loadPermission();
     this.familyForm = this.fb.group({
       name: ['', Validators.required],
       relationship: ['', Validators.required],
@@ -56,70 +53,31 @@ this.loadgender();
     });
   }
 
-  // submit() {
-  //   debugger;
-  //   // if (this.familyForm.invalid) return;
+  submit() {
+    debugger;
+    // if (this.familyForm.invalid) return;
 
-  //   const formData = new FormData();
-  //   Object.keys(this.familyForm.value).forEach(key => {
-  //     formData.append(key, this.familyForm.value[key]);
-  //   });
-  //   formData.append('userId', this.userId.toString());
+    const formData = new FormData();
+    Object.keys(this.familyForm.value).forEach(key => {
+      formData.append(key, this.familyForm.value[key]);
+    });
+    formData.append('userId', this.userId.toString());
 
-  //   if (this.isEdit && this.editId) {
-  //     formData.append('familyId', this.editId.toString());
-  //     this.empFamilyService.updateempfamily(formData).subscribe(() => {
-  //       this.resetForm();
-  //       this.loadFamily();
-  //        Swal.fire("Updated successfully!", '', 'success');
-  //     });
-  //   } else {
-  //     this.empFamilyService.createempfamily(formData).subscribe(() => {
-  //       this.resetForm();
-  //       this.loadFamily();
-  //         Swal.fire("Created successfully!", '', 'success');
-  //     });
-  //   }
-  // }
-   submit() {
-  const formData = new FormData();
-
-  Object.keys(this.familyForm.value).forEach(key => {
-    formData.append(key, this.familyForm.value[key]);
-  });
-
-  formData.append('userId', this.userId.toString());
-
-  if (this.isEdit && this.editId) {
-
-    formData.append('familyId', this.editId.toString());
-
-    this.empFamilyService.updateempfamily(formData).subscribe({
-      next: () => {
+    if (this.isEdit && this.editId) {
+      formData.append('familyId', this.editId.toString());
+      this.empFamilyService.updateempfamily(formData).subscribe(() => {
         this.resetForm();
         this.loadFamily();
-        Swal.fire("Updated successfully!", "", "success");
-      },
-      error: (err) => {
-        Swal.fire("Permission Denied", err.error, "error");
-      }
-    });
-
-  } else {
-
-    this.empFamilyService.createempfamily(formData).subscribe({
-      next: () => {
+         Swal.fire("Updated successfully!", '', 'success');
+      });
+    } else {
+      this.empFamilyService.createempfamily(formData).subscribe(() => {
         this.resetForm();
         this.loadFamily();
-        Swal.fire("Created successfully!", "", "success");
-      },
-      error: (err) => {
-        Swal.fire("Permission Denied", err.error, "error");
-      }
-    });
-
+          Swal.fire("Created successfully!", '', 'success');
+      });
+    }
   }
-}
 
   edit(row: any) {
     this.isEdit = true;
@@ -190,6 +148,7 @@ loadgender() {
       },
       error: (err) => console.error(err)
     });
+  }
 }
 loadPermission() {
   debugger;

@@ -50,7 +50,7 @@ relationshipModel: any = {
   // Empty model
   getEmptyRelationship(): Relationship {
     return {
-      relationshipId: 0,
+      RelationshipID: 0,
       relationshipName: '',
       companyName: '',
       regionName: '',
@@ -178,7 +178,7 @@ loadRegions(): void {
     }).then((result) => {
       if (result.isConfirmed) {
         this.spinner.show();
-        this.adminService.deleteRelationship(r.relationshipId).subscribe({
+        this.adminService.deleteRelationship(r.RelationshipID).subscribe({
           next: () => {
             this.spinner.hide();
             Swal.fire('Deleted', `${r.relationshipName} deleted successfully.`, 'success');

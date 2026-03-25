@@ -65,7 +65,7 @@ userId: number = sessionStorage.getItem('UserId') ? Number(sessionStorage.getIte
     this.departmentService.getDepartments(Number(sessionStorage.getItem("UserId"))).subscribe({
       next: (res:any) => {
         debugger;
-        this.departments = res.data;
+        this.departments = res.data.data;
       },
       error: () => Swal.fire('Error', 'Failed to load departments.', 'error')
     });
@@ -73,10 +73,7 @@ userId: number = sessionStorage.getItem('UserId') ? Number(sessionStorage.getIte
 
   loadCompanies(): void {
     this.departmentService.getCompanies(null,this.userId).subscribe({
-      next: (res:any) => {
-        debugger;
-        this.companies = res;
-      },
+      next: (res:any) => (this.companies = res),
       error: () => Swal.fire('Error', 'Failed to load companies.', 'error')
     });
   }

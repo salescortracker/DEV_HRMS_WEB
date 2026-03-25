@@ -1,0 +1,111 @@
+/* 💬 Floating Button */
+.chat-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #c62828;   /* 🔴 RED */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999;
+  transition: 0.3s;
+}
+
+.chat-toggle:hover {
+  transform: scale(1.1);
+  background: #b71c1c;
+}
+
+/* 🧠 Chat Box */
+.chatbot-wrapper {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 330px;
+  height: 450px;
+  background: #fff;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  z-index: 9999;
+}
+
+/* 🔴 Header */
+.chat-header {
+  background: linear-gradient(45deg, #c62828, #e53935);
+  color: white;
+  padding: 12px;
+  font-weight: bold;
+  border-radius: 15px 15px 0 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Close button */
+.close-btn {
+  cursor: pointer;
+}
+
+/* Chat body */
+.chat-body {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background: #fbe9e7; /* light red background */
+}
+
+/* 🔴 User message */
+.user-msg {
+  background: #c62828;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 15px 15px 0 15px;
+  margin: 6px 0;
+  text-align: right;
+  max-width: 75%;
+  margin-left: auto;
+}
+
+/* ⚪ Bot message */
+.bot-msg {
+  background: #eeeeee;
+  padding: 8px 12px;
+  border-radius: 15px 15px 15px 0;
+  margin: 6px 0;
+  text-align: left;
+  max-width: 75%;
+}
+
+/* Footer */
+.chat-footer {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+
+/* Input */
+.chat-footer input {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  outline: none;
+}
+
+/* Send button */
+.chat-footer button {
+  background: #c62828;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+/* Hover effect */
+.chat-footer button:hover {
+  background: #b71c1c;
+}

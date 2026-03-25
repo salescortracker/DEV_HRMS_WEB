@@ -1817,7 +1817,3 @@ button:hover {
   grid-template-columns: repeat(7, 1fr);
   gap: 0 !important; /* remove space caused by missing cells */
 }
-.disabled {
-  pointer-events: none;  /* ❌ no hover/click */
-  opacity: 0.6;          /* faded look */
-}

@@ -1,25 +1,36 @@
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   standalone: false,
   styleUrl: './app.component.css'
 })
-export class AppComponent {
- private inactivityTimer: any;
+export class AppComponent implements OnInit, OnDestroy {
+
+  private inactivityTimer: any;
   private warningTimer: any;
 
-  private readonly INACTIVITY_TIME = 20 * 60 * 1000; // 5 minutes
-  private readonly WARNING_TIME = 30 * 1000; // 30 seconds
+  private readonly INACTIVITY_TIME = 20 * 60 * 1000;
+  private readonly WARNING_TIME = 30 * 1000;
 
-  constructor(private router: Router) {}
+  private isBrowser: boolean;
+
+  constructor(
+    public router: Router,   // ✅ changed to public (needed in HTML)
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit() {
 
-    // Start timer whenever route changes (after login)
+    if (!this.isBrowser) return;
+
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -30,11 +41,32 @@ export class AppComponent {
       });
   }
 
-  // Detect user activity globally
+  // ✅ ADD THIS METHOD (CHATBOT VISIBILITY CONTROL)
+  // showChatbot(): boolean {
+
+  //   if (!this.isBrowser) return false;
+
+  //   // show only when user logged in AND inside admin pages
+  //   return !!sessionStorage.getItem('UserId') &&
+  //          this.router.url.includes('admin');
+  // }
+
+  showChatbot(): boolean {
+  if (!this.isBrowser) return false;
+
+  // show chatbot for all logged-in users
+  return !!sessionStorage.getItem('UserId');
+}
+
+
+
+
   @HostListener('document:mousemove')
   @HostListener('document:keydown')
   @HostListener('document:click')
   resetTimer() {
+
+    if (!this.isBrowser) return;
 
     if (!sessionStorage.getItem('UserId')) return;
 
@@ -45,37 +77,39 @@ export class AppComponent {
     }, this.INACTIVITY_TIME);
   }
 
-showWarningPopup() {
+  showWarningPopup() {
 
-  Swal.fire({
-    title: 'Session Timeout Warning',
-    text: 'No action done for last 20 minutes. You will be logged out in 30 seconds.',
-    icon: 'warning',
-    timer: this.WARNING_TIME,
-    timerProgressBar: true,
-    showCancelButton: true,
-    confirmButtonText: 'Logout',
-    cancelButtonText: 'Stay Logged In',
-    allowOutsideClick: false,
-    allowEscapeKey: false
-  }).then((result) => {
+    if (!this.isBrowser) return;
 
-    if (result.isConfirmed) {
-      // User clicked Logout
+    Swal.fire({
+      title: 'Session Timeout Warning',
+      text: 'No action done for last 20 minutes. You will be logged out in 30 seconds.',
+      icon: 'warning',
+      timer: this.WARNING_TIME,
+      timerProgressBar: true,
+      showCancelButton: true,
+      confirmButtonText: 'Logout',
+      cancelButtonText: 'Stay Logged In',
+      allowOutsideClick: false,
+      allowEscapeKey: false
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+        this.logout();
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        this.resetTimer();
+      }
+    });
+
+    this.warningTimer = setTimeout(() => {
       this.logout();
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      // User clicked Stay Logged In
-      this.resetTimer();
-    }
-  });
-
-  // Auto logout after 30 seconds if no button clicked
-  this.warningTimer = setTimeout(() => {
-    this.logout();
-  }, this.WARNING_TIME);
-}
+    }, this.WARNING_TIME);
+  }
 
   logout() {
+
+    if (!this.isBrowser) return;
+
     this.clearTimers();
     sessionStorage.clear();
     this.router.navigate(['/']);
