@@ -233,10 +233,13 @@ export interface AssetStatus {
 }
 export interface PolicyCategory {
   PolicyCategoryID: number;
-  CompanyID: number;
-  RegionID: number;
+ CompanyId:number;
+  RegionId: number;
+    companyName: string;   // ✅ add
+  regionName: string; 
   PolicyCategoryName: string;
     Description?: string;
+    
   IsActive: boolean;
   UserId?: number;
 } 
