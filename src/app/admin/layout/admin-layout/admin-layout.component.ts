@@ -45,7 +45,7 @@ export class AdminLayoutComponent {
       { title: 'Leave Type', route: '/admin/leave-type' },
        { title: 'Leave Status', route: '/admin/leave-status' },
       { title: 'Attendance Status', route: '/admin/attendance-status' },
-        { title: 'Priority', route: '/admin/priority' },
+        { title: 'Ticket priority', route: '/admin/priority' },
          { title: 'Holiday List', route: '/admin/holiday-list' },
       { title: 'Week-Off', route: '/admin/week-off' },
       { title: 'Shifts', route: '/admin/shifts' },
