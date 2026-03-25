@@ -439,15 +439,15 @@ export interface MenuItem {
 //   companyID: number;
 //   regionID: number;
 // }
-export interface CertificationType {
- CertificationTypeID: number;
+// export interface CertificationType {
+//  CertificationTypeID: number;
  
-  CertificationTypeName: string;
-  IsActive: boolean;
-  userId?: number;
-   companyID: number;
-  regionId: number;
-}
+//   CertificationTypeName: string;
+//   IsActive: boolean;
+//   userId?: number;
+//    companyID: number;
+//   regionId: number;
+// }
 export interface BloodGroup {
   bloodGroupID: number;
   companyID: number;
@@ -622,14 +622,22 @@ export interface TeamHierarchyDto {
   expanded?: boolean; // optional for UI toggle
 }
 
+// export interface CertificationType {
+//   certificationTypeID: number;
+//   certificationTypeName: string;
+//   isActive: boolean;
+ 
+//   CompanyID: number;           // optional
+//   RegionID: number; 
+//   userId?: number;           // optional
+// }
 export interface CertificationType {
   certificationTypeID: number;
   certificationTypeName: string;
   isActive: boolean;
- 
-  CompanyID: number;           // optional
-  RegionID: number; 
-  userId?: number;           // optional
+  companyID: number;
+  regionId: number;
+  userId?: number;
 }
 export interface ClockInOutDto {
   attendanceId?: number;   // optional for new records
