@@ -257,11 +257,13 @@ export interface Grade {
   userId?: number;
 }
 export interface AttachmentType {
-  AttachmentTypeID?: number;
-  AttachmentTypeName: string;
-  IsActive: boolean;
-  CompanyID: number;   // <-- add this
-  RegionID: number;    // <-- add this
+  attachmentTypeId: number;
+  attachmentCategory: string;
+  attachmentTypeName: string;
+  isActive: boolean;
+  companyId: number;
+  regionId: number;
+  userId: number;
 }
 export interface ProjectStatus {
   ProjectStatusID: number;
@@ -1301,20 +1303,29 @@ deletePolicyCategory(policyCategoryId: number) {
   return this.http.get(`${this.baseUrl}/MasterData/policy-category?userId=${userId}`);
 }
 getAttachmentTypes(companyId: number, regionId: number) {
-  return this.http.get<any>(`${this.baseUrl}/AttachmentType/Get?companyId=${companyId}&regionId=${regionId}`);
-}
+  return this.http.get<any>(`${this.baseUrl}/MasterData/GetByUserAttachment?userId=${sessionStorage.getItem('UserId')}`);}
 
 createAttachmentType(data: AttachmentType) {
-  return this.http.post<any>(`${this.baseUrl}/AttachmentType/Create`, data);
-}
+  return this.http.post<any>(`${this.baseUrl}/MasterData/CreateAttachmnet`, data);}
 
 updateAttachmentType(data: AttachmentType) {
-  return this.http.put<any>(`${this.baseUrl}/AttachmentType/Update`, data);
+  return this.http.put<any>(`${this.baseUrl}/MasterData/UpdateAttachmnet`, data);
 }
 
 deleteAttachmentType(id: number) {
-  return this.http.delete<any>(`${this.baseUrl}/AttachmentType/Delete/${id}`);
+
+    return this.http.delete<any>(`${this.baseUrl}/MasterData/DeleteAttachmnet/${id}`);
 }
+
+
+getAttachmentTypesByCategory(category: string) {
+  const userId = sessionStorage.getItem('UserId');
+  return this.http.get<any>(
+    `${this.baseUrl}/MasterData/GetAttachmentByCategory?category=${category}`
+  );
+}
+
+
 // GET all project statuses
  getProjectStatuses(userId: number): Observable<any> {
     return this.http.get(`${this.baseUrl}/MasterData/project-status?userId=${userId}`);
@@ -2150,6 +2161,7 @@ createHoliday(data: any) {
 }
 
 updateHoliday(data: any) {
+  debugger;
   return this.http.post(`${this.baseUrl}/MasterData/UpdateHoliday`, data);
 }
 
