@@ -111,38 +111,48 @@ searchText = '';
   }
 
 
-  onSubmit(){
+ onSubmit() {
 
-    this.interview.CompanyID = this.companyId;
+  this.interview.CompanyID = this.companyId;
+  this.interview.RegionID = this.regionId;
+  this.interview.UserId = this.userId;
 
-    this.interview.RegionID = this.regionId;
+  const obs = this.isEditMode
+    ? this.adminService.updateInterviewLevel(this.interview)
+    : this.adminService.createInterviewLevel(this.interview);
 
-    this.interview.UserId = this.userId;
+  obs.subscribe({
 
-    const obs = this.isEditMode
-      ? this.adminService.updateInterviewLevel(this.interview)
-      : this.adminService.createInterviewLevel(this.interview);
+    next: (res: any) => {
 
-    obs.subscribe({
-
-      next:()=>{
-
+      // ❌ HANDLE DUPLICATE
+      if (!res.success) {
         Swal.fire(
-          this.isEditMode ? 'Updated!' : 'Added!',
-          'Interview Level saved successfully',
-          'success'
+          'Warning',
+          res.message || 'Duplicate record exists',
+          'warning'
         );
-
-        this.loadInterviewLevels();
-
-        this.clearForm();
-
+        return;
       }
 
-    });
+      // ✅ SUCCESS
+      Swal.fire(
+        this.isEditMode ? 'Updated!' : 'Added!',
+        res.message || 'Saved successfully',
+        'success'
+      );
 
-  }
+      this.loadInterviewLevels();
+      this.clearForm();
+    },
 
+    error: () => {
+      Swal.fire('Error', 'Duplicate record exists', 'error');
+    }
+
+  });
+
+}
 
   editInterviewLevel(s:InterviewLevel){
 

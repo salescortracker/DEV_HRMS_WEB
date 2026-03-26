@@ -72,7 +72,7 @@
 
             <!-- Password -->
             <div class="col-md-6">
-              <label class="form-label fw-semibold">Password</label>
+              <label class="form-label fw-semibold">Password<span class="text-danger">*</span></label>
               <div class="input-group">
                 <input type="text" class="form-control" [(ngModel)]="user.password"
                        name="Password" placeholder="Auto-generated or enter manually" />
@@ -116,8 +116,8 @@
   <label class="form-label fw-semibold">Reporting To <span class="text-danger">*</span></label>
   <select class="form-select" name="reportingTo"  [(ngModel)]="user.reportingTo" required>
     <option value="0">Select Reporting Manager</option>
-    <option *ngFor="let u of users" [value]="u.userId">
-      {{ u.fullName }}
+    <option *ngFor="let manager  of reportingManagers" [ngValue]="manager.userId">
+      {{ manager.fullName }}
     </option>
   </select>
 </div>

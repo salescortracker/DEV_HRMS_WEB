@@ -335,6 +335,12 @@ export interface LeaveType {
    CompanyID: number;
   RegionID: number;
   userId:number;
+   gradeAllocations: GradeAllocation[];
+}
+export interface GradeAllocation {
+  gradeID: number;
+  leaveDays: number;
+  gradename: string;
 }
 export interface ExpenseStatus {
   ExpenseStatusID: number;
@@ -442,15 +448,15 @@ export interface MenuItem {
 //   companyID: number;
 //   regionID: number;
 // }
-export interface CertificationType {
- CertificationTypeID: number;
+// export interface CertificationType {
+//  CertificationTypeID: number;
  
-  CertificationTypeName: string;
-  IsActive: boolean;
-  userId?: number;
-   companyID: number;
-  regionId: number;
-}
+//   CertificationTypeName: string;
+//   IsActive: boolean;
+//   userId?: number;
+//    companyID: number;
+//   regionId: number;
+// }
 export interface BloodGroup {
   bloodGroupID: number;
   companyID: number;
@@ -625,14 +631,22 @@ export interface TeamHierarchyDto {
   expanded?: boolean; // optional for UI toggle
 }
 
+// export interface CertificationType {
+//   certificationTypeID: number;
+//   certificationTypeName: string;
+//   isActive: boolean;
+ 
+//   CompanyID: number;           // optional
+//   RegionID: number; 
+//   userId?: number;           // optional
+// }
 export interface CertificationType {
   certificationTypeID: number;
   certificationTypeName: string;
   isActive: boolean;
- 
-  CompanyID: number;           // optional
-  RegionID: number; 
-  userId?: number;           // optional
+  companyID: number;
+  regionId: number;
+  userId?: number;
 }
 export interface ClockInOutDto {
   attendanceId?: number;   // optional for new records
@@ -892,9 +906,9 @@ export class AdminService {
     return this.http.post<User>(`${this.baseUrl}/UserManagement/UpdateUser`, user);
   }
 
-  deleteUser(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/UserManagement/DeleteUser/${id}`);
-  }
+  deleteUser(id: number): Observable<any> {
+    return this.http.post(`${this.baseUrl}/UserManagement/DeleteUser`, id);
+ }
   login(username: string, password: string): Observable<any> {
     const model = {email: username,password: password };
     return this.http.post<any>(`${this.baseUrl}/UserManagement/Login`, model).pipe(
@@ -2490,17 +2504,20 @@ getAllMenus(){
 getMenusByType(type: string){
   return this.http.get<any[]>(`${this.baseUrl}/SubscriptionPlan/GetMenusByType/${type}`);
 }
+getGrades(userId:number){
+  return this.getAll(`MasterData/GetGradeAll?companyId=${userId}`);
+}
 getDesignation(companyId: number, regionId: number) {
   return this.http.get<any[]>(
     `${this.baseUrl}/GetDesignations?companyId=${companyId}&regionId=${regionId}`
   );
 }
 
-getGrades(companyId: number) {
-  return this.http.get<any>(`${this.baseUrl}/MasterData/GetGradeAll`, {
-    params: { companyId}
-  });
-}
+// getGrades(companyId: number) {
+//   return this.http.get<any>(`${this.baseUrl}/MasterData/GetGradeAll`, {
+//     params: { companyId}
+//   });
+// }
 
 createGrade(data: Grade) {
   return this.http.post(`${this.baseUrl}/MasterData/CreateGrade`, data);

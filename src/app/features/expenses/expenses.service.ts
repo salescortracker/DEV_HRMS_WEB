@@ -104,7 +104,7 @@ approveRejectExpenses(payload: ExpenseApprovalDto): Observable<any> {
     payload
   );
 }
- getAllExpenses(): Observable<{ success: boolean, data: Expense[] }> {
-    return this.http.get<{ success: boolean, data: Expense[] }>(`${this.baseUrl}/GetExpensesAll`);
+ getAllExpenses(companyId: number, regionId: number): Observable<{ success: boolean, data: Expense[], companyId: number, regionId: number }> {
+    return this.http.get<{ success: boolean, data: Expense[], companyId: number, regionId: number }>(`${this.baseUrl}/GetExpensesAll?companyId=${companyId}&regionId=${regionId}`);
   }
 }
