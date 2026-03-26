@@ -1233,7 +1233,10 @@ updatePolicyCategory(data: any) {
 // //   return this.http.post(`${this.baseUrl}/MasterData/DeletePolicyCategory?id=${id}`, {});
 // }
 deletePolicyCategory(policyCategoryId: number) {
-  return this.http.post(`${this.baseUrl}/MasterData/DeletePolicyCategory?policyCategoryId=${policyCategoryId}`, {});
+  return this.http.post(
+    `${this.baseUrl}/MasterData/DeletePolicyCategory/${policyCategoryId}`,
+    {}
+  );
 }
 // ===================== POLICIES =====================
 
