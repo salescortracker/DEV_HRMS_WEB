@@ -291,12 +291,20 @@ getAllAllocations(userId: number): Observable<ShiftAllocationDto[]> {
     return this.http.post(`${environment.apiUrl}/attendance/UpdateAllocation`, model);
   }
 
+  // deleteAllocation(id: number): Observable<any> {
+  //   return this.http.delete(`${environment.apiUrl}/attendance/DeleteAllocation/${id}`);
+  // }
   deleteAllocation(id: number): Observable<any> {
-    return this.http.delete(`${environment.apiUrl}/attendance/DeleteAllocation/${id}`);
-  }
+  return this.http.post(`${environment.apiUrl}/attendance/DeleteAllocation/${id}`, {});
+}
   getShiftallocationName(id: any): Observable<EmployeeShiftDto> {
     return this.http.get<EmployeeShiftDto>(`${environment.apiUrl}/attendance/ShiftallocationName/${id}`);
   }
+  getShiftallocationNameForClockInOut(employeeCode: string, companyId: number, regionId: number): Observable<EmployeeShiftDto> {
+  return this.http.get<EmployeeShiftDto>(
+    `${environment.apiUrl}/attendance/getShiftallocationNameForClockInOut/${employeeCode}/${companyId}/${regionId}`
+  );
+}
     // 🔹 GET ALL
   getClockInOutAll(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/attendance/GetclockinoutAll`);
