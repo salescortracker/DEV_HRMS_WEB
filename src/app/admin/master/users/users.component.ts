@@ -328,25 +328,35 @@ filteredDepartments: any[] = [];
     this.loadRoles();
     this.loadDepartments();
   }
-loadDepartments(): void {
-  debugger;
+
+  loadDepartments(): void {
   this.userService.getDepartments(this.userId).subscribe({
     next: (res: any) => {
-      console.log('departments :', res);
+      this.departments = (res?.data ?? []).filter((d: any) => d.isActive);
 
-      const allDepartments = res?.data?.data ?? [];
-
-      // 🔥 Filter only active records
-      this.departments = allDepartments.filter((d: any) => d.isActive === true);
-
-      console.log("Filtered Active Departments:", this.departments);
-    },
-    error: (err) => {
-      console.error(err);
-      this.showError('Failed to load departments.');
+      this.filterDepartments(); // 🔥 ADD THIS
     }
   });
 }
+// loadDepartments(): void {
+//   debugger;
+//   this.userService.getDepartments(this.userId).subscribe({
+//     next: (res: any) => {
+//       console.log('departments :', res);
+
+//       const allDepartments = res?.data?.data ?? [];
+
+//       // 🔥 Filter only active records
+//     this.departments = (res?.data ?? []).filter((d: any) => d.isActive === true);
+
+//       console.log("Filtered Active Departments:", this.departments);
+//     },
+//     error: (err) => {
+//       console.error(err);
+//       this.showError('Failed to load departments.');
+//     }
+//   });
+// }
   getEmptyUser(): User {
     return {
       userId: 0,
@@ -512,7 +522,10 @@ filterDepartments(): void {
   }
 
   editUser(u: User): void {
-    this.user = { ...u };
+   this.user = {
+    ...u,
+    roleId: Number(u.roleId)   // 🔥 important
+  };
     this.isEditMode = true;
     
   this.filteredRegions = this.regions.filter(r =>

@@ -38,7 +38,7 @@ userId!: number;
   ngOnInit(): void {
       this.userId = Number(localStorage.getItem('userId')); // logged in user
     this.buildForm();
-    this.loadCategories();
+    //this.loadCategories();
     this.loadAllExpenses();
   }
 
@@ -81,13 +81,13 @@ userId!: number;
   // ============================================================
   // 🔹 LOAD CATEGORIES
   // ============================================================
-  loadCategories(): void {
-    this.expenseService.getExpenseCategories().subscribe(res => {
-      if (res.success) {
-        this.categories = res.data;
-      }
-    });
-  }
+  // loadCategories(): void {
+  //   this.expenseService.getExpenseCategories().subscribe(res => {
+  //     if (res.success) {
+  //       this.categories = res.data;
+  //     }
+  //   });
+  // }
 
   // ============================================================
   // 🔹 APPLY FILTERS (SAME AS APPROVE)
