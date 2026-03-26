@@ -2510,11 +2510,11 @@ getDesignation(companyId: number, regionId: number) {
   );
 }
 
-getGrades(companyId: number) {
-  return this.http.get<any>(`${this.baseUrl}/MasterData/GetGradeAll`, {
-    params: { companyId}
-  });
-}
+// getGrades(companyId: number) {
+//   return this.http.get<any>(`${this.baseUrl}/MasterData/GetGradeAll`, {
+//     params: { companyId}
+//   });
+// }
 
 createGrade(data: Grade) {
   return this.http.post(`${this.baseUrl}/MasterData/CreateGrade`, data);

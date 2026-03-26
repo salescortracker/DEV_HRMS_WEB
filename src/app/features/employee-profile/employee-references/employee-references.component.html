@@ -1,9 +1,9 @@
 <div class="form-container">
- <div *ngIf="(!isEdit && !canCreate) || (isEdit && !canEdit)" style="color:red;">
+ <!-- <div *ngIf="(!isEdit && !canCreate) || (isEdit && !canEdit)" style="color:red;">
   {{ isEdit 
       ? "You don't have permission to update details"
       : "You don't have permission to add details" }}
-</div>
+</div> -->
 
   <!-- Form Section -->
   <form [formGroup]="referenceForm" (ngSubmit)="onSubmit()">
@@ -40,7 +40,7 @@
       <div class="form-group"></div>
     </div>
 
-  <button type="submit" class="submit-btn"   *ngIf="(isEdit && canEdit) || (!isEdit && canCreate)">
+  <button type="submit" class="submit-btn"  >
       {{ isEdit ? 'Update Reference' : 'Add Reference' }}
     </button>
 

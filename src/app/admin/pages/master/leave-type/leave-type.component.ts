@@ -12,7 +12,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
   styleUrl: './leave-type.component.css'
 })
 export class LeaveTypeComponent {
- companies: Company[] = [];
+    companies: Company[] = [];
   regions: Region[] = [];
 companyLoaded = false;
 userId = Number(sessionStorage.getItem("UserId"));
@@ -45,35 +45,11 @@ companyMap: { [key: number]: string } = {};
   ngOnInit(): void {
     this.loadRegions();
     this.loadCompanies();
-    this.loadGrades();
+    
     this.loadLeaveType();
   }
-grades: any[] = [];
 
-loadGrades() {
-  console.log('Loading grades for userId:', this.userId);
-  this.admin.getGrades(this.userId).subscribe((res:any) => {
-    this.grades = res.data;
-    console.log('Grades loaded:', this.grades);
-
-  });
-}
   // ================= MASTER DATA =================
-// getEmptyLeaveType(): any {
-//   return {
-//     leaveTypeID: 0,
-//     leaveTypeName: '',
-//     leaveDays: 1,
-//     IsActive: true,
-//     CompanyID: this.companyId,
-//     RegionID: this.regionId,
-//     companyName: this.companyMap[this.companyId] || '',
-//     regionName: this.regionMap[this.regionId] || '',
-//     gradeAllocations: [],
-//     userId: Number(sessionStorage.getItem("UserId"))
-//   };
-// }
-
 getEmptyLeaveType(): any {
   return {
     leaveTypeID: 0,
@@ -82,12 +58,13 @@ getEmptyLeaveType(): any {
     IsActive: true,
     CompanyID: this.companyId,
     RegionID: this.regionId,
-    gradeAllocations: [],
-    userId: this.userId
+    companyName: this.companyMap[this.companyId] || '',
+    regionName: this.regionMap[this.regionId] || '',
+    userId: Number(sessionStorage.getItem("UserId"))
   };
 }
 
-
+  
 
 
   // ================= DROPDOWN EVENTS =================
@@ -113,7 +90,6 @@ loadLeaveType(): void {
   this.spinner.show();
   this.admin.getLeaveType().subscribe({
   next: (res: LeaveType[]) => {
- 
    this.leaveTypeList = res;
     this.spinner.hide();
   },
@@ -125,109 +101,57 @@ loadLeaveType(): void {
 
 }
 
-//   onSubmit(): void {
+  onSubmit(): void {
  
-//     this.leave.CompanyID = this.companyId;
-//     this.leave.RegionID = this.regionId;
-//  this.leave.userId = this.userId;
-//   this.leave.companyName = this.companyMap[this.companyId] || '';
-//   this.leave.regionName = this.regionMap[this.regionId] || '';
-//     this.spinner.show();
-//     const obs = this.isEditMode
-//       ? this.admin.updateLeaveType(this.leave)
-//       : this.admin.createLeaveType(this.leave);
+    this.leave.CompanyID = this.companyId;
+    this.leave.RegionID = this.regionId;
+ this.leave.userId = this.userId;
+  this.leave.companyName = this.companyMap[this.companyId] || '';
+  this.leave.regionName = this.regionMap[this.regionId] || '';
+    this.spinner.show();
+    const obs = this.isEditMode
+      ? this.admin.updateLeaveType(this.leave)
+      : this.admin.createLeaveType(this.leave);
 
-//     obs.subscribe({
-//       next: () => {
-//         this.spinner.hide();
-//         Swal.fire(
-//           this.isEditMode ? 'Updated' : 'Created',
-//           `Leave Type ${this.isEditMode ? 'updated' : 'created'} successfully`,
-//           'success'
-//         );
+    obs.subscribe({
+      next: () => {
+        this.spinner.hide();
+        Swal.fire(
+          this.isEditMode ? 'Updated' : 'Created',
+          `Leave Type ${this.isEditMode ? 'updated' : 'created'} successfully`,
+          'success'
+        );
         
-//       this.loadLeaveType();  
-//       this.resetForm();      
-//       this.spinner.hide();    
-//       },
-//       error: () => {
-//         this.spinner.hide();
-//         Swal.fire('Error', 'Operation failed', 'error');
-//       }
-//     });
-//   }
-onSubmit(): void {
-
-  if (this.leave.gradeAllocations.length === 0) {
-    Swal.fire('Error', 'Please select at least one grade', 'error');
-    return;
+      this.loadLeaveType();  
+      this.resetForm();      
+      this.spinner.hide();    
+      },
+      error: () => {
+        this.spinner.hide();
+        Swal.fire('Error', 'Operation failed', 'error');
+      }
+    });
   }
 
-  const invalid = this.leave.gradeAllocations.some((x: any) => x.leaveDays <= 0);
-  if (invalid) {
-    Swal.fire('Error', 'Enter valid leave days for all selected grades', 'error');
-    return;
-  }
-
-  this.leave.CompanyID = this.companyId;
-  this.leave.RegionID = this.regionId;
-  this.leave.userId = this.userId;
-
-  this.spinner.show();
-
-  const obs = this.isEditMode
-    ? this.admin.updateLeaveType(this.leave)
-    : this.admin.createLeaveType(this.leave);
-
-  obs.subscribe({
-    next: () => {
-      this.spinner.hide();
-      Swal.fire('Success', 'Saved successfully', 'success');
-      this.loadLeaveType();
-      this.resetForm();
-    },
-    error: () => {
-      this.spinner.hide();
-      Swal.fire('Error', 'Operation failed', 'error');
-    }
-  });
-}
-resetForm(): void {
-  this.leave = this.getEmptyLeaveType();
-  this.isEditMode = false;
-}
-
-//  editLeaveType(item: LeaveType): void {
+ editLeaveType(item: LeaveType): void {
   
-//   this.isEditMode = true;
-
-//   this.leave = { ...item };
-
-//   this.companyId = item.CompanyID;
-//   this.admin.getRegions(this.companyId).subscribe({
-//     next: (res: Region[]) => {
-//       this.regions = res || [];
-//       this.regionId = item.RegionID;
-//       this.leave.CompanyID = this.companyId;
-//       this.leave.RegionID = this.regionId;
-//       this.loadLeaveType(); 
-//              this.spinner.hide();
-
-//     },
-//     error: () => Swal.fire('Error', 'Failed to load regions', 'error')
-//   });
-// }
-editLeaveType(item: any): void {
   this.isEditMode = true;
-  console.log('Editing item:', item); 
 
-  this.leave = {
-    ...item,
-    gradeAllocations: item.gradeAllocations || [] 
-  };
+  this.leave = { ...item };
 
-  this.companyId = Number(item.companyID);
-this.regionId = Number(item.regionID);
+  this.companyId = item.CompanyID;
+  this.admin.getRegions(this.companyId).subscribe({
+    next: (res: Region[]) => {
+      this.regions = res || [];
+      this.regionId = item.RegionID;
+      this.leave.CompanyID = this.companyId;
+      this.leave.RegionID = this.regionId;
+      this.loadLeaveType(); 
+             this.spinner.hide();
+
+    },
+    error: () => Swal.fire('Error', 'Failed to load regions', 'error')
+  });
 }
 
 
@@ -262,20 +186,20 @@ this.regionId = Number(item.regionID);
     });
   }
 
-  // resetForm(): void {
-  // this.leave = {
-  //     leaveTypeID: 0,
-  //     leaveTypeName: '',
-  //     leaveDays: 1,
-  //     IsActive: true,
-  //     CompanyID: this.companyId,
-  //     RegionID: this.regionId,
-  //     companyName: this.companyMap[this.companyId],
-  //     regionName: this.regionMap[this.regionId]
-  //   };
+  resetForm(): void {
+  this.leave = {
+      leaveTypeID: 0,
+      leaveTypeName: '',
+      leaveDays: 1,
+      IsActive: true,
+      CompanyID: this.companyId,
+      RegionID: this.regionId,
+      companyName: this.companyMap[this.companyId],
+      regionName: this.regionMap[this.regionId]
+    };
 
-  //   this.isEditMode = false;
-  // }
+    this.isEditMode = false;
+  }
 
   // ================= FILTER + SORT + PAGE =================
   filteredLeaveType(): LeaveType[] {
@@ -373,9 +297,11 @@ onBulkUploadComplete(event: any) {
   this.loadLeaveType();
 }
 loadCompanies(): void {
-  this.admin.getCompanies(null, this.userId).subscribe({
-    next: (res: any) => {
-      console.log('All Companies 👉', res);
+    this.admin.getCompanies(null,this.userId).subscribe({
+      next: (res:any) => (this.companies = res),
+      error: () => Swal.fire('Error', 'Failed to load companies.', 'error')
+    });
+  }
 
   loadRegions(): void {
     this.admin.getRegions(null,this.userId).subscribe({
@@ -383,69 +309,4 @@ loadCompanies(): void {
       error: () => Swal.fire('Error', 'Failed to load regions.', 'error')
     });
   }
-// ✅ CHECKBOX TOGGLE
-onGradeToggle(grade: any, event: any) {
-  if (event.target.checked) {
-    this.leave.gradeAllocations.push({
-      gradeID: grade.gradeID,
-      leaveDays: 0
-    });
-  } else {
-    this.leave.gradeAllocations =
-      this.leave.gradeAllocations.filter((x: any) => x.gradeID !== grade.gradeID);
-  }
-}
-
-// ✅ INPUT CHANGE
-onGradeDaysChange(grade: any, event: any) {
-  const value = +event.target.value;
-
-  const item = this.leave.gradeAllocations.find(
-    (x: any) => x.gradeID === grade.gradeID
-  );
-
-  if (item) {
-    item.leaveDays = value;
-  }
-}
-
-// ✅ HELPER (for checkbox checked state in edit)
-isGradeSelected(gradeId: number): boolean {
-  return this.leave.gradeAllocations.some((x: any) => x.gradeID === gradeId);
-}
-
-// ✅ HELPER (for input value in edit)
-getGradeDays(gradeId: number): number {
-  const item = this.leave.gradeAllocations.find(
-    (x: any) => x.gradeID === gradeId
-  );
-  return item ? item.leaveDays : 0;
-}
-
-      const data = res?.data ?? res ?? [];
-
-      // 🔥 Only active companies
-      this.companies = data.filter((c: any) => c.isActive === true);
-
-      console.log('Active Companies 👉', this.companies);
-    },
-    error: () => Swal.fire('Error', 'Failed to load companies.', 'error')
-  });
-}
-
-loadRegions(): void {
-  this.admin.getRegions(null, this.userId).subscribe({
-    next: (res: any) => {
-      console.log('All Regions 👉', res);
-
-      const data = res?.data ?? res ?? [];
-
-      // 🔥 Only active regions
-      this.regions = data.filter((r: any) => r.isActive === true);
-
-      console.log('Active Regions 👉', this.regions);
-    },
-    error: () => Swal.fire('Error', 'Failed to load regions.', 'error')
-  });
-}
 }
