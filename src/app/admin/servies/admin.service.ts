@@ -2459,6 +2459,13 @@ getMyLeavecalenderCalendar(userId:number){
   return this.http.get(`${this.baseUrl}/MasterData/employment-type?userId=${userId}`);
 }
 
+getEmploymentTypesByFilter(companyId: number, regionId: number) {
+  debugger;
+  return this.http.get(
+    `${this.baseUrl}/MasterData/employment-type/filter?companyId=${companyId}&regionId=${regionId}`
+  );
+}
+
 createEmploymentType(data: any) {
   return this.http.post(`${this.baseUrl}/MasterData/CreateEmploymentType`, data);
 }
