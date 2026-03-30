@@ -191,15 +191,33 @@ export class MenusComponent {
   // 🔹 Filter + Sort + Pagination
   // -------------------------------------------------------------
   filteredMenus(): MenuMaster[] {
-    let data = this.getSortedMenus().filter(m => {
-      const matchesSearch = m.menuName?.toLowerCase().includes(this.searchText.toLowerCase());
-      const matchesStatus = this.statusFilter === '' || (!!m.isActive === this.statusFilter);
-      return matchesSearch && matchesStatus;
-    });
+  const data = this.getFilteredData();
+  const startIndex = (this.currentPage - 1) * this.pageSize;
+  return data.slice(startIndex, startIndex + this.pageSize);
+}
 
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    return data.slice(startIndex, startIndex + this.pageSize);
-  }
+getFilteredData(): MenuMaster[] {
+  return this.getSortedMenus().filter(m => {
+    const matchesSearch = m.menuName
+      ?.toLowerCase()
+      .includes(this.searchText?.toLowerCase() || '');
+
+    const matchesStatus =
+      this.statusFilter === '' || (!!m.isActive === this.statusFilter);
+
+    return matchesSearch && matchesStatus;
+  });
+}
+  // filteredMenus(): MenuMaster[] {
+  //   let data = this.getSortedMenus().filter(m => {
+  //     const matchesSearch = m.menuName?.toLowerCase().includes(this.searchText.toLowerCase());
+  //     const matchesStatus = this.statusFilter === '' || (!!m.isActive === this.statusFilter);
+  //     return matchesSearch && matchesStatus;
+  //   });
+
+  //   const startIndex = (this.currentPage - 1) * this.pageSize;
+  //   return data.slice(startIndex, startIndex + this.pageSize);
+  // }
 
   // -------------------------------------------------------------
   // 🔹 Page Count Helper
@@ -239,4 +257,8 @@ export class MenusComponent {
   get parentMenus(): MenuMaster[] {
     return this.menus;
   }
+
+  onSearchChange() {
+  this.currentPage = 1; // reset to first page
+}
 }

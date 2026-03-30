@@ -129,7 +129,7 @@
               type="text"
               class="form-control"
               placeholder="Search by Menu Name"
-              [(ngModel)]="searchText"
+              [(ngModel)]="searchText",  (ngModelChange)="onSearchChange()"
             />
           </div>
           <div class="col-md-4">
