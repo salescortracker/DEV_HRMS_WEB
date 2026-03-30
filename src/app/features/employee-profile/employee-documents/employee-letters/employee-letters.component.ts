@@ -294,7 +294,7 @@ onEmployeeChange(code: any) {
 
   if (emp) {
     this.form.empCode = emp.employeeCode;
-    this.form.empName = emp.fullName;
+    this.form.empName = emp.employeeName;
   }
 
 }

@@ -124,6 +124,12 @@ private apiadminUrl = environment.apiUrl + '/UserManagement';
   updateempProfile(formData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/UpdateempPersonalAsync`, formData);
   }
+  getProfilePicture(userId: number): Observable<string> {
+  return this.http.get(
+    `${environment.apiUrl}/Employee/GetProfilePicture/${userId}`,
+    { responseType: 'text' }
+  );
+}
 
   getAllempProfile(): Observable<any> {
     return this.http.get(`${this.apiUrl}`);
