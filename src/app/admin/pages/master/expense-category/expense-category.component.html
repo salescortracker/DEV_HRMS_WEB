@@ -10,7 +10,7 @@
 
       <div class="d-flex gap-2">
         <!-- Export -->
-        <div class="dropdown">
+        <!-- <div class="dropdown">
           <button class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown">
             <i class="fa-solid fa-download me-2"></i> Export
           </button>
@@ -18,12 +18,12 @@
             <li><a class="dropdown-item" (click)="exportAs('pdf')">Download PDF</a></li>
             <li><a class="dropdown-item" (click)="exportAs('excel')">Download Excel</a></li>
           </ul>
-        </div>
+        </div> -->
 
         <!-- Bulk Upload -->
-        <button class="btn btn-primary" (click)="openUploadPopup()">
+        <!-- <button class="btn btn-primary" (click)="openUploadPopup()">
           <i class="fa-solid fa-upload me-2"></i> Bulk Upload
-        </button>
+        </button> -->
       </div>
     </div>
 
@@ -37,10 +37,7 @@
           <!-- Company -->
           <div class="col-md-4">
             <label class="form-label fw-semibold">Company</label>
-            <select class="form-select"
-                    [(ngModel)]="companyId" (change)="onCompanyChange()"
-                    name="companyId"
-                   >
+            <select class="form-select" [(ngModel)]="companyId" (change)="onCompanyChange()" name="companyId">
               <option value="">Select Company</option>
               <option *ngFor="let c of companies" [value]="c.companyId">
                 {{ c.companyName }}
@@ -51,13 +48,9 @@
           <!-- Region -->
           <div class="col-md-4">
             <label class="form-label fw-semibold">Region</label>
-            <select class="form-select"
-                    [(ngModel)]="regionId" (change)="onRegionChange()"
-                    name="regionId"
-                  
-                    >
+            <select class="form-select" [(ngModel)]="regionId" (change)="onRegionChange()" name="regionId">
               <option value="">Select Region</option>
-               <option *ngFor="let r of filteredRegions" [value]="r.regionID">
+              <option *ngFor="let r of filteredRegions" [value]="r.regionID">
                 {{ r.regionName }}
               </option>
             </select>
@@ -68,7 +61,11 @@
     </div>
 
     <!-- ================= FORM ================= -->
+<<<<<<< Updated upstream
     <div class="card shadow-sm mb-4" *ngIf="companyId && regionId">
+=======
+    <div class="card shadow-sm mb-4">
+>>>>>>> Stashed changes
       <div class="card-body">
         <form (ngSubmit)="onSubmit()" #categoryForm="ngForm" novalidate>
 
@@ -76,21 +73,14 @@
 
             <div class="col-md-6">
               <label class="form-label fw-semibold">Category Name</label>
-              <input type="text"
-                     class="form-control"
-                     name="ExpenseCategoryName"
-                     [(ngModel)]="expense.expenseCategoryName"
-                     placeholder="Enter Category Name"
-                     required />
+              <input type="text" class="form-control" name="ExpenseCategoryName"
+                [(ngModel)]="expense.expenseCategoryName" placeholder="Enter Category Name" required />
             </div>
 
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check form-switch mt-4">
-                <input class="form-check-input"
-                       type="checkbox"
-                       id="activeSwitch"
-                       name="IsActive"
-                       [(ngModel)]="expense.isActive">
+                <input class="form-check-input" type="checkbox" id="activeSwitch" name="IsActive"
+                  [(ngModel)]="expense.isActive">
                 <label class="form-check-label ms-2" for="activeSwitch">
                   {{ expense.isActive ? 'Active' : 'Inactive' }}
                 </label>
@@ -98,17 +88,12 @@
             </div>
 
             <div class="col-md-12 mt-3">
-              <button type="submit"
-                      class="btn btn-dark px-4"
-                      [disabled]="!categoryForm.valid">
+              <button type="submit" class="btn btn-dark px-4" [disabled]="!categoryForm.valid">
                 <i class="fa-solid fa-save me-2"></i>
                 {{ isEditMode ? 'Update Category' : 'Save Category' }}
               </button>
 
-              <button type="button"
-                      class="btn btn-outline-secondary ms-2"
-                      (click)="resetForm()"
-                      *ngIf="isEditMode">
+              <button type="button" class="btn btn-outline-secondary ms-2" (click)="resetForm()" *ngIf="isEditMode">
                 Cancel
               </button>
             </div>
@@ -122,10 +107,7 @@
     <div class="row g-3 mb-3" *ngIf="companyId && regionId">
 
       <div class="col-md-4">
-        <input type="text"
-               class="form-control"
-               placeholder="Search Category Name"
-               [(ngModel)]="searchText">
+        <input type="text" class="form-control" placeholder="Search Category Name" [(ngModel)]="searchText">
       </div>
 
       <div class="col-md-4">
@@ -139,7 +121,11 @@
     </div>
 
     <!-- ================= TABLE ================= -->
+<<<<<<< Updated upstream
     <div class="card shadow-sm" *ngIf="companyId && regionId">
+=======
+    <div class="card shadow-sm">
+>>>>>>> Stashed changes
       <div class="card-body table-responsive">
 
         <table class="table table-bordered table-hover align-middle">
@@ -161,20 +147,17 @@
               <td>{{ item.expenseCategoryName }}</td>
 
               <td>
-                <span class="badge"
-                      [ngClass]="item.isActive ? 'bg-success' : 'bg-secondary'">
+                <span class="badge" [ngClass]="item.isActive ? 'bg-success' : 'bg-secondary'">
                   {{ item.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
 
               <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-2"
-                        (click)="editExpenseCategory(item)">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editExpenseCategory(item)">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
 
-                <button class="btn btn-sm btn-outline-danger"
-                        (click)="deleteExpenseCategory(item)">
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteExpenseCategory(item)">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </td>
@@ -196,9 +179,8 @@
               <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
             </li>
 
-            <li class="page-item"
-                *ngFor="let page of [].constructor(totalPages); let idx = index"
-                [class.active]="currentPage === idx + 1">
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let idx = index"
+              [class.active]="currentPage === idx + 1">
               <a class="page-link" (click)="goToPage(idx + 1)">
                 {{ idx + 1 }}
               </a>
@@ -218,9 +200,6 @@
 </div>
 
 <!-- ================= BULK UPLOAD ================= -->
-<app-common-upload
-  [visible]="showUploadPopup"
-  [screenName]="'Expense Category Type'"
-  (close)="closeUploadPopup()"
+<app-common-upload [visible]="showUploadPopup" [screenName]="'Expense Category Type'" (close)="closeUploadPopup()"
   (uploadComplete)="onBulkUploadComplete($event)">
 </app-common-upload>

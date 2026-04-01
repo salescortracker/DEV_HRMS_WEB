@@ -9,7 +9,7 @@
 
       <div class="d-flex gap-2">
         <!-- Export Dropdown -->
-        <div class="dropdown">
+        <!-- <div class="dropdown">
           <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
             aria-expanded="false">
             <i class="fa-solid fa-download me-2"></i> Export
@@ -18,12 +18,12 @@
             <li><a class="dropdown-item" (click)="exportAs('pdf')">Download PDF</a></li>
             <li><a class="dropdown-item" (click)="exportAs('excel')">Download Excel</a></li>
           </ul>
-        </div>
+        </div> -->
 
         <!-- Bulk Upload -->
-        <button class="btn btn-danger" (click)="openUploadPopup()">
+        <!-- <button class="btn btn-danger" (click)="openUploadPopup()">
           <i class="fa-solid fa-upload me-2"></i> Bulk Upload
-        </button>
+        </button> -->
       </div>
     </div>
 
@@ -60,6 +60,10 @@
               <select class="form-select" [(ngModel)]="designation.companyId" name="companyId" required>
                 <option value="">Select Company</option>
                 <option *ngFor="let company of companies" [value]="company.companyId">
+<<<<<<< Updated upstream
+=======
+                  <!-- <option *ngFor="let company of companies" [ngValue]="company.companyID"> -->
+>>>>>>> Stashed changes
                   {{ company.companyName }}
                 </option>
               </select>
@@ -86,6 +90,22 @@
                 </label>
               </div>
             </div>
+<<<<<<< Updated upstream
+=======
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Grade</label>
+              <select class="form-select" [(ngModel)]="designation.gradeId" name="gradeId" required>
+                <!-- <option value="">Select Grade</option>
+    <option *ngFor="let g of grades" [value]="g.gradeID">
+      {{ g.gradeName }}
+    </option> -->
+                <option [ngValue]="null">Select Grade</option>
+                <option *ngFor="let g of grades" [ngValue]="g.gradeID">
+                  {{ g.gradeName }}
+                </option>
+              </select>
+            </div>
+>>>>>>> Stashed changes
 
             <!-- Submit -->
             <div class="col-md-6 d-flex align-items-end">
@@ -170,8 +190,15 @@
                 <td>{{ d.designationName }}</td>
                 <td>{{ d.departmentName }}</td>
 
+<<<<<<< Updated upstream
                 <td>{{ getCompanyName(d.companyId) }}</td>
                 <td>{{ getRegionName(d.regionId) }}</td>
+=======
+                <!-- <td>{{ getCompanyName(d.companyId) }}</td>
+                <td>{{ getRegionName(d.regionId) }}</td> -->
+                <td>{{ d.companyName }}</td>
+                <td>{{ d.regionName }}</td>
+>>>>>>> Stashed changes
                 <td class="text-center">
                   <span class="badge" [ngClass]="d.isActive ? 'bg-success' : 'bg-secondary'">
                     {{ d.isActive ? 'Active' : 'Inactive' }}

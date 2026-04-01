@@ -9,7 +9,7 @@
       </h4>
 
       <div class="d-flex gap-2">
-        <div class="dropdown">
+        <!-- <div class="dropdown">
           <button class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown">
             <i class="fa-solid fa-download me-2"></i> Export
           </button>
@@ -21,11 +21,11 @@
               <a class="dropdown-item" (click)="exportAs('excel')">Download Excel</a>
             </li>
           </ul>
-        </div>
+        </div> -->
 
-        <button class="btn btn-danger" (click)="openUploadPopup()">
+        <!-- <button class="btn btn-danger" (click)="openUploadPopup()">
           <i class="fa-solid fa-upload me-2"></i> Bulk Upload
-        </button>
+        </button> -->
       </div>
     </div>
 
@@ -41,13 +41,7 @@
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Company *</label>
-             <select
-                  class="form-select"
-                  name="CompanyId"
-                  [(ngModel)]="companyId"
-                 
-                 
-                  required>
+              <select class="form-select" name="CompanyId" [(ngModel)]="companyId" required>
 
                 <option [ngValue]="null">-- Select Company --</option>
                 <option *ngFor="let c of companies" [ngValue]="c.companyId">
@@ -55,16 +49,10 @@
                 </option>
               </select>
             </div>
- <!-- [disabled]="isEditMode"   [disabled]="!companyId"-->
-            <div class="col-md-4" >
+            <!-- [disabled]="isEditMode"   [disabled]="!companyId"-->
+            <div class="col-md-4">
               <label class="form-label fw-semibold">Region *</label>
-              <select
-                class="form-select"
-                name="RegionId"
-                [(ngModel)]="regionId"
-                
-              
-                required>
+              <select class="form-select" name="RegionId" [(ngModel)]="regionId" required>
                 <option [ngValue]="null">-- Select Region --</option>
                 <option *ngFor="let r of regions" [ngValue]="r.regionID">
                   {{ r.regionName }}
@@ -80,33 +68,18 @@
 
             <div class="col-md-6">
               <label class="form-label fw-semibold">Leave Type *</label>
-              <input
-                type="text"
-                class="form-control"
-                name="LeaveTypeName"
-                [(ngModel)]="leave.leaveTypeName"
-                placeholder="Enter Leave Type"
-                required>
+              <input type="text" class="form-control" name="LeaveTypeName" [(ngModel)]="leave.leaveTypeName"
+                placeholder="Enter Leave Type" required>
             </div>
 
             <div class="col-md-6">
               <label class="form-label fw-semibold">Leave Days *</label>
-              <input
-                type="number"
-                class="form-control"
-                name="LeaveDays"
-                [(ngModel)]="leave.leaveDays"
-                min="1"
-                required>
+              <input type="number" class="form-control" name="LeaveDays" [(ngModel)]="leave.leaveDays" min="1" required>
             </div>
 
             <div class="col-md-12">
               <div class="form-check form-switch mt-2">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  name="IsActive"
-                  [(ngModel)]="leave.IsActive">
+                <input class="form-check-input" type="checkbox" name="IsActive" [(ngModel)]="leave.IsActive">
                 <label class="form-check-label ms-2">
                   {{ leave.IsActive ? 'Active' : 'Inactive' }}
                 </label>
@@ -114,10 +87,7 @@
             </div>
 
             <div class="col-md-12 mt-3">
-              <button
-                type="submit"
-                class="btn btn-dark px-4"
-                [disabled]="!leaveTypeForm.valid">
+              <button type="submit" class="btn btn-dark px-4" [disabled]="!leaveTypeForm.valid">
                 <i class="fa-solid fa-save me-2"></i>
                 {{ isEditMode ? 'Update Leave Type' : 'Save Leave Type' }}
               </button>
@@ -135,11 +105,7 @@
         <!-- Filters -->
         <div class="row g-3 mb-3">
           <div class="col-md-4">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search Leave Type"
-              [(ngModel)]="searchText">
+            <input type="text" class="form-control" placeholder="Search Leave Type" [(ngModel)]="searchText">
           </div>
 
           <!-- <div class="col-md-4">
@@ -167,7 +133,7 @@
                   Days
                   <i class="fa" [ngClass]="getSortIcon('LeaveDays')"></i>
                 </th>
-               
+
                 <th class="text-center">Actions</th>
               </tr>
             </thead>
@@ -179,16 +145,12 @@
                 <td>{{ lt.regionName }}</td>
                 <td>{{ lt.leaveTypeName }}</td>
                 <td>{{ lt.leaveDays }}</td>
-              
+
                 <td class="text-center">
-                  <button
-                    class="btn btn-sm btn-outline-primary me-2"
-                    (click)="editLeaveType(lt)">
+                  <button class="btn btn-sm btn-outline-primary me-2" (click)="editLeaveType(lt)">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
-                  <button
-                    class="btn btn-sm btn-outline-danger"
-                    (click)="deleteLeaveType(lt)">
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteLeaveType(lt)">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </td>
@@ -210,9 +172,8 @@
               <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
             </li>
 
-            <li class="page-item"
-                *ngFor="let page of [].constructor(totalPages); let i = index"
-                [class.active]="currentPage === i + 1">
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="currentPage === i + 1">
               <a class="page-link" (click)="goToPage(i + 1)">
                 {{ i + 1 }}
               </a>
@@ -231,12 +192,9 @@
 </div>
 
 <!-- ================= BULK UPLOAD ================= -->
-<app-common-upload
-  [visible]="showUploadPopup"
-  [screenName]="'Leave Type'"
-  [model]="leaveTypeModel"
+<app-common-upload [visible]="showUploadPopup" [screenName]="'Leave Type'" [model]="leaveTypeModel"
   (uploadComplete)="onBulkUploadComplete($event)">
-  (close)="closeUploadPopup()"> 
+  (close)="closeUploadPopup()">
 </app-common-upload>
 
 <!-- Bulk Upload -->

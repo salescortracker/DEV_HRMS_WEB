@@ -10,7 +10,7 @@
 
       <div class="d-flex gap-2">
         <!-- Export Dropdown -->
-        <div class="dropdown">
+        <!-- <div class="dropdown">
           <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
             <i class="fa-solid fa-download me-2"></i> Export
           </button>
@@ -18,12 +18,12 @@
             <li><a class="dropdown-item" (click)="exportAs('pdf')">Download PDF</a></li>
             <li><a class="dropdown-item" (click)="exportAs('excel')">Download Excel</a></li>
           </ul>
-        </div>
+        </div> -->
 
         <!-- Bulk Upload -->
-        <button class="btn btn-danger" (click)="openUploadPopup()">
+        <!-- <button class="btn btn-danger" (click)="openUploadPopup()">
           <i class="fa-solid fa-upload me-2"></i> Bulk Upload
-        </button>
+        </button> -->
       </div>
     </div>
 
@@ -34,6 +34,7 @@
       <div class="card-body">
         <form (ngSubmit)="onSubmit()" #attachmentForm="ngForm" novalidate>
           <div class="row g-3">
+<<<<<<< Updated upstream
             <div class="col-md-6">
               <label class="form-label fw-semibold">Attachment Type</label>
               <input type="text" class="form-control" name="AttachmentTypeName"
@@ -41,19 +42,49 @@
                 placeholder="Enter Attachment Type"
                 required
               />
+=======
+
+            <!-- Category Dropdown -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Attachment Category</label>
+              <select class="form-select" name="AttachmentCategory" [(ngModel)]="attachment.attachmentCategory"
+                required>
+                <option value="">Select Category</option>
+                <option value="Letters">Letters</option>
+                <option value="Forms">Forms</option>
+                <option value="Documents">Documents</option>
+              </select>
+            </div>
+
+            <!-- Attachment Type Name -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Attachment Type</label>
+              <input type="text" class="form-control" name="AttachmentTypeName"
+                [(ngModel)]="attachment.attachmentTypeName" placeholder="Enter Attachment Type" required />
+>>>>>>> Stashed changes
             </div>
 
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check form-switch mt-3">
+<<<<<<< Updated upstream
                 <input class="form-check-input" type="checkbox" id="isActiveSwitch"
                   [(ngModel)]="attachment.IsActive" name="IsActive">
+=======
+                <input class="form-check-input" type="checkbox" id="isActiveSwitch" [(ngModel)]="attachment.isActive"
+                  name="IsActive">
+>>>>>>> Stashed changes
                 <label class="form-check-label ms-2" for="isActiveSwitch">
                   {{ attachment.IsActive ? 'Active' : 'Inactive' }}
                 </label>
               </div>
             </div>
 
+<<<<<<< Updated upstream
             <div class="col-md-12 d-flex justify-content-first mt-3">
+=======
+            <!-- Save Button -->
+            <div class="col-md-12 mt-3">
+>>>>>>> Stashed changes
               <button type="submit" class="btn btn-dark px-4" [disabled]="!attachmentForm.valid">
                 <i class="fa-solid fa-save me-2"></i>
                 {{ isEditMode ? 'Update Attachment' : 'Save Attachment' }}
@@ -97,14 +128,23 @@
                 <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                 <td>{{ a.AttachmentTypeName }}</td>
                 <td>
+<<<<<<< Updated upstream
                   <span class="badge" [ngClass]="a.IsActive ? 'bg-success' : 'bg-secondary'">
                     {{ a.IsActive ? 'Active' : 'Inactive' }}
+=======
+                  <span class="badge" [ngClass]="a.isActive ? 'bg-success' : 'bg-secondary'">
+                    {{ a.isActive ? 'Active' : 'Inactive' }}
+>>>>>>> Stashed changes
                   </span>
                 </td>
                 <td class="text-center">
                   <button class="btn btn-sm btn-outline-primary me-2" (click)="editAttachment(a)">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
                   <button class="btn btn-sm btn-outline-danger" (click)="deleteAttachment(a)">
                     <i class="fa-solid fa-trash"></i>
                   </button>
@@ -123,9 +163,18 @@
             <li class="page-item" [class.disabled]="currentPage === 1">
               <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
             </li>
+<<<<<<< Updated upstream
             <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
               [class.active]="currentPage === i + 1">
               <a class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
+=======
+
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="currentPage === i + 1">
+              <a class="page-link" (click)="goToPage(i + 1)">
+                {{ i + 1 }}
+              </a>
+>>>>>>> Stashed changes
             </li>
             <li class="page-item" [class.disabled]="currentPage === totalPages">
               <a class="page-link" (click)="goToPage(currentPage + 1)">Next</a>
@@ -139,6 +188,7 @@
 </div>
 
 <!-- Bulk Upload Component -->
+<<<<<<< Updated upstream
 <app-common-upload
   [visible]="showUploadPopup"
   [screenName]="'AttachmentType'"
@@ -146,3 +196,8 @@
   (close)="closeUploadPopup()"
   (uploadComplete)="onBulkUploadComplete($event)">
 </app-common-upload>
+=======
+<app-common-upload [visible]="showUploadPopup" [screenName]="'AttachmentType'" [model]="attachmentsModel"
+  (close)="closeUploadPopup()" (uploadComplete)="onBulkUploadComplete($event)">
+</app-common-upload>
+>>>>>>> Stashed changes
