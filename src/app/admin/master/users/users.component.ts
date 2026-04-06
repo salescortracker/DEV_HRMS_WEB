@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AdminService, User, Company, Region, RoleMaster } from '../../servies/admin.service';
+import { AdminService, User, Company, Region, RoleMaster, Users } from '../../servies/admin.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -304,12 +304,12 @@ export class UsersComponent {
 //       showConfirmButton: false
 //     });
 //   }
-  users: User[] = [];
+  users: Users[] = [];
   companies: Company[] = [];
   regions: Region[] = [];
   roles: RoleMaster[] = [];
   totalCount: number = 0;
-  user: User = this.getEmptyUser();
+  user: Users = this.getEmptyUser();
   isEditMode = false;
 departments: any[] = [];
 userId: number = sessionStorage.getItem('UserId') ? Number(sessionStorage.getItem('UserId')) : 0;
@@ -319,6 +319,8 @@ filteredRegions: any[] = [];
 filteredRoles: RoleMaster[] = [];
 filteredDepartments: any[] = [];
 reportingManagers: User[] = [];
+designations: any[] = [];
+filteredDesignations: any[] = [];
   constructor(private userService: AdminService) {}
 
   ngOnInit(): void {
@@ -328,8 +330,33 @@ reportingManagers: User[] = [];
     this.loadRegions();
     this.loadRoles();
     this.loadDepartments();
+     this.loadDesignations();
+  }
+loadDesignations(): void {
+  this.userService.getDesignations(this.userId).subscribe({
+    next: (res: any) => {
+      this.designations = (res?.data?.data ?? []).filter((d: any) => d.isActive);
+
+      console.log("Designations API:", this.designations); // 🔥 debug
+
+      this.filterDesignations();
+    },
+    error: () => this.showError('Failed to load designations.')
+  });
+}
+filterDesignations(): void {
+  if (!this.user.companyId || !this.user.regionId) {
+    this.filteredDesignations = [];
+    return;
   }
 
+  this.filteredDesignations = this.designations.filter(d =>
+    Number(d.companyID) === Number(this.user.companyId) &&
+    Number(d.regionID) === Number(this.user.regionId)
+  );
+
+  console.log("Filtered Designations:", this.filteredDesignations);
+}
   loadDepartments(): void {
   this.userService.getDepartments(this.userId).subscribe({
     next: (res: any) => {
@@ -358,7 +385,7 @@ reportingManagers: User[] = [];
 //     }
 //   });
 // }
-  getEmptyUser(): User {
+  getEmptyUser(): Users {
     return {
       userId: 0,
       companyId: 0,
@@ -367,6 +394,7 @@ reportingManagers: User[] = [];
       fullName: '',
       email: '',
       roleId: 0,
+      designationId: 0, 
       departmentId:0,
       reportingTo:0,
       password: '',
@@ -388,6 +416,7 @@ onStatusChange(event: Event): void {
     next: (res: any) => {
       this.users = res.map((u:any) => ({
         ...u,
+         designationId: Number(u.designationID || u.designationId || 0),
         password: u.passwordHash || '',
         roleId: u.roleId,
         reportingTo: Number(u.reportingTo) || 0 
@@ -409,11 +438,12 @@ onStatusChange(event: Event): void {
     : [];
     this.filteredRoles = [];
     this.filteredDepartments = [];
+    this.filteredDesignations = [];
   }
   onRegionChange(regionId: number): void {
   this.user.roleId = 0;
   this.user.departmentId = 0;
-
+ this.user.designationId = 0;
   if (!this.user.companyId || !regionId) {
     this.filteredRoles = [];
     this.filteredDepartments = [];
@@ -424,6 +454,7 @@ onStatusChange(event: Event): void {
     Number(r.regionId) === Number(regionId)
   );
   this.filterDepartments();
+    this.filterDesignations(); 
 }
 filterDepartments(): void {
   if (!this.user.companyId || !this.user.regionId) {
@@ -502,6 +533,7 @@ filterDepartments(): void {
 }
 
   onSubmit(): void {
+    debugger;
     if (!this.user.companyId || this.user.companyId === 0) {
     Swal.fire('Validation', 'Please select company', 'warning');
     return;
@@ -531,6 +563,12 @@ filterDepartments(): void {
     Swal.fire('Validation', 'Please select department', 'warning');
     return;
   }
+  
+
+if (!this.user.designationId) {
+  Swal.fire('Validation', 'Please select designation', 'warning');
+  return;
+}
 
   
 
@@ -565,7 +603,7 @@ filterDepartments(): void {
     }
   }
 
-  editUser(u: User): void {
+  editUser(u: Users): void {
    this.user = {
     ...u,
     roleId: Number(u.roleId)   // 🔥 important
@@ -586,7 +624,8 @@ filterDepartments(): void {
   }
 
   this.filterDepartments();
-
+this.filterDesignations();
+this.user.designationId = u.designationId;
   this.user.roleId = u.roleId;
 
   this.user.departmentId = u.departmentId;
@@ -597,7 +636,7 @@ filterDepartments(): void {
   this.user.loginType = u.loginType;
 }
 
-  deleteUser(u: User): void {
+  deleteUser(u: Users): void {
     Swal.fire({
       title: 'Are you sure?',
       text: 'This will permanently delete the user.',

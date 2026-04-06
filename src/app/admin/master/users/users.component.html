@@ -90,7 +90,31 @@
                 {{ d.departmentName }}
               </option>
             </select>
-          </div> --><div class="col-md-6">
+          </div> -->
+          <!-- Designation -->
+<div class="col-md-6">
+  <label class="form-label fw-semibold">
+    Designation <span class="text-danger">*</span>
+  </label>
+
+  <select class="form-select"
+          name="DesignationId"
+          [(ngModel)]="user.designationId"
+          
+          required>
+
+    <option [ngValue]="0">Select Designation</option>
+
+    <option *ngFor="let d of filteredDesignations" [ngValue]="d.designationID">
+      {{ d.designationName }}
+    </option>
+
+  </select>
+  <div *ngIf="userForm.submitted && !user.designationId" class="text-danger">
+  Designation is required
+</div>
+</div>
+          <div class="col-md-6">
   <label class="form-label fw-semibold">
     Department <span class="text-danger">*</span>
   </label>
@@ -100,6 +124,12 @@
         [(ngModel)]="user.departmentId"
         [disabled]="!user.regionId"
         required>
+        <!-- <select class="form-select"
+        name="DepartmentId"
+        [(ngModel)]="user.departmentId"
+        (change)="onDepartmentChange(user.departmentId)"
+        [disabled]="!user.regionId"
+        required> -->
 
   <option [ngValue]="0">Select Department</option>
 
@@ -109,6 +139,9 @@
   </option>
 
 </select>
+<div *ngIf="userForm.submitted && !user.departmentId" class="text-danger">
+  Department is required
+</div>
 </div>
 
 <!-- Reporting To -->

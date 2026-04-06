@@ -499,7 +499,14 @@ export interface LeaveType {
   RegionID: number;
   companyName?: string;
   regionName?: string;
+  gradeAllocations: GradeAllocation[];
 }
+export interface GradeAllocation {
+  gradeID: number;
+  leaveDays: number;
+  gradename: string;
+}
+
 export interface User {
   userId?: number;
   companyId: number;
@@ -515,6 +522,24 @@ export interface User {
   userCompanyId?: number; // ✅ added for tracking which company the user belongs to
   loginType?: string; // "Admin" or "User"
 }
+
+export interface Users {
+  userId?: number;
+  companyId: number;
+  regionId: number;
+  employeeCode: string;
+  fullName: string;
+  email: string;
+  roleId: number;
+  designationId: number;
+  departmentId:number;
+  reportingTo:number;
+  password?: string;
+  status: string;
+  userCompanyId?: number; // ✅ added for tracking which company the user belongs to
+  loginType?: string; // "Admin" or "User"
+}
+
 export interface CompanyNewsCategory {
   categoryId: number;
   categoryName: string;
@@ -2655,5 +2680,8 @@ getEmploymentTypesByFilter(companyId: number, regionId: number) {
   return this.http.get(
     `${this.baseUrl}/MasterData/employment-type/filter?companyId=${companyId}&regionId=${regionId}`
   );
+}
+getUserLeaveAllocation(userId: number) {
+  return this.http.get(`${this.baseUrl}/MasterData/GetUserLeaveAllocation?userId=${userId}`);  
 }
 }

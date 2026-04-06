@@ -590,6 +590,7 @@ export class ApplyLeaveComponent {
 //   });
 
 // }
+leaveBalances: any[] = [];
 startDate: string = "";
   endDate: string = "";
   totalDays: number = 0;
@@ -645,7 +646,37 @@ canCreate: boolean = false;
   canApprove: any;
   canReject: any;
 hrEmail: string = '';
+  
+animateCounts() {
+  this.leaveBalances.forEach(leave => {
+    let start = 0;
+    const end = leave.remainingLeaves;
+    const duration = 500;
+    const stepTime = Math.abs(Math.floor(duration / end));
 
+    const counter = setInterval(() => {
+      start++;
+      leave.remainingLeaves = start;
+
+      if (start >= end) {
+        clearInterval(counter);
+        leave.remainingLeaves = end;
+      }
+    }, stepTime);
+  });
+}
+loadLeaveBalances() {
+  this.adminService.getUserLeaveAllocation(this.userId).subscribe({
+    next: (res: any) => {
+      console.log("Leave Balances:", res); // 🔍 debug
+
+      this.leaveBalances = res.data || [];
+    },
+    error: (err) => {
+      console.error('Leave balance load error', err);
+    }
+  });
+}
   ngOnInit(): void {
     this.today = this.formatDate(new Date());
     //   this.leaveList = [];
@@ -662,6 +693,7 @@ hrEmail: string = '';
       return;
     }
     this.leaveList = [];
+      this.loadLeaveBalances();   
     this.calculateLeaveSummary();
     this.loadLeaveTypes();
     this.loadMyLeaves();
@@ -883,25 +915,39 @@ hrEmail: string = '';
     }
   }
 
+  // onLeaveTypeChange() {
+
+  //   // Get selected leave type object
+  //   this.selectedLeaveType = this.leaveTypes
+  //     .find(x => x.leaveTypeName === this.leaveType);
+
+  //   if (!this.selectedLeaveType) {
+  //     this.availableLeaves = 0;
+  //     return;
+  //   }
+
+  //   // Calculate used leaves for selected type
+  //   this.usedLeaves = this.leaveList
+  //     .filter(l => l.leaveType === this.leaveType)
+  //     .reduce((sum, l) => sum + l.totalDays, 0);
+  //   // Available = Total - Used
+  //   this.availableLeaves =
+  //     this.selectedLeaveType.leaveDays - this.usedLeaves;
+  // }
+
   onLeaveTypeChange() {
 
-    // Get selected leave type object
-    this.selectedLeaveType = this.leaveTypes
-      .find(x => x.leaveTypeName === this.leaveType);
+  const balance = this.leaveBalances
+    .find(x => x.leaveTypeName === this.leaveType);
 
-    if (!this.selectedLeaveType) {
-      this.availableLeaves = 0;
-      return;
-    }
-
-    // Calculate used leaves for selected type
-    this.usedLeaves = this.leaveList
-      .filter(l => l.leaveType === this.leaveType)
-      .reduce((sum, l) => sum + l.totalDays, 0);
-    // Available = Total - Used
-    this.availableLeaves =
-      this.selectedLeaveType.leaveDays - this.usedLeaves;
+  if (!balance) {
+    this.availableLeaves = 0;
+    return;
   }
+
+  this.availableLeaves = balance.remainingLeaves;
+  this.usedLeaves = balance.approvedLeaves;
+}
 
 
 
@@ -1122,7 +1168,7 @@ hrEmail: string = '';
 
         // ✅ Reload list from DB
         this.loadMyLeaves();
-
+this.loadLeaveBalances();
         // ✅ Reset form
         this.leaveType = "";
         this.startDate = "";
