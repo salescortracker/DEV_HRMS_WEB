@@ -1,13 +1,12 @@
-<div class="card p-4 shadow-sm mb-4" *ngIf="leaveType">
-  <h5 class="mb-3">Leave Summary</h5>
+<!-- <div class="card p-4 shadow-sm mb-4" *ngIf="leaveType">
+  <h5 class="mb-3">Leave Summary</h5> -->
 
-  <div class="row text-center">
+  <!-- <div class="row text-center">
     <div class="col-md-3">
       <div class="border rounded p-3">
         <div class="d-flex justify-content-between">
 
-          <div>
-            <h6>{{ selectedLeaveType?.leaveTypeName }}</h6>
+          <div            <h6>{{ selectedLeaveType?.leaveTypeName }}</h6>
             <p class="mb-1">
               Total Leaves:
               <b>{{ selectedLeaveType?.leaveDays }}</b>
@@ -24,10 +23,65 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
+<!-- </div> -->
+
+<div class="row mb-4" >
+<div *ngIf="leaveBalances.length === 0" class="text-center mt-3">
+  <p class="text-muted">No leave data available</p>
 </div>
+  <div class="col-md-3 mb-3" *ngFor="let leave of leaveBalances">
 
+    <div class="card leave-card shadow-sm h-100 text-center p-3">
 
+      <!-- ICON -->
+      <div class="icon mb-2">
+        <i class="fa-solid"
+           [ngClass]="{
+             'fa-briefcase text-primary': leave.leaveTypeName === 'Casual Leave',
+             'fa-user-injured text-danger': leave.leaveTypeName === 'Sick Leave',
+             'fa-plane text-success': leave.leaveTypeName === 'Earned Leave'
+           }"
+           style="font-size: 24px;">
+        </i>
+      </div>
+
+      <!-- TITLE -->
+      <h6 class="fw-bold mb-2">{{ leave.leaveTypeName }}</h6>
+
+      <!-- CIRCULAR PROGRESS -->
+      <div class="circle-container mb-2">
+        <svg width="90" height="90">
+          <circle cx="45" cy="45" r="40" class="bg"></circle>
+
+          <!-- <circle cx="45" cy="45" r="40"
+                  class="progress"
+                  [attr.stroke-dasharray]="251"
+                  [attr.stroke-dashoffset]="251 - (leave.remainingLeaves / leave.allocatedLeaves) * 251">
+          </circle> -->
+          <circle cx="45" cy="45" r="40"
+        class="progress"
+        [attr.stroke]="leave.remainingLeaves <= 2 ? 'red' :
+                       leave.remainingLeaves <= 5 ? 'orange' : 'green'"
+        [attr.stroke-dasharray]="251"
+        [attr.stroke-dashoffset]="251 - (leave.remainingLeaves / leave.allocatedLeaves) * 251">
+</circle>
+        </svg>
+
+        <div class="circle-text">
+          {{ leave.remainingLeaves }}
+        </div>
+      </div>
+
+      <!-- DETAILS -->
+      <div class="small text-muted">Allocated: {{ leave.allocatedLeaves }}</div>
+      <div class="small text-muted">Used: {{ leave.approvedLeaves }}</div>
+
+    </div>
+
+  </div>
+
+</div>
 <div class="card p-4 shadow-sm">
   <h5 class="mb-3">Apply for Leave</h5>
   <!-- Apply Leave Form -->
