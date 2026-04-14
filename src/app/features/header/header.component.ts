@@ -432,64 +432,6 @@ intentMap = [
 ];
 
 
-faqList = [
-{
-  keywords: ['cortracker', 'about'],
-  text: `CORtracker is an enterprise software company providing ERP, CRM, supply chain, and analytics solutions. It focuses on digital transformation using AI, automation, and modern technologies. The platform helps organizations streamline operations and improve efficiency across departments. CORtracker is headquartered in Michigan, USA, with a significant presence in India. It serves clients globally across various industries, offering both cloud and on-premise deployment options.`,
-}, 
-  {
-    keywords: ['services'],
-    text: 'CORtracker offers ERP, CRM, supply chain, analytics, and custom software development.',
-    buttons: [
-      { label: 'ERP Modules', action: 'faq', value: 'erp' },
-      { label: 'CRM Features', action: 'faq', value: 'crm' }
-    ]
-  },
-  {
-    keywords: ['erp'],
-    text: 'ERP includes finance, HR, procurement, inventory, production, maintenance, and accounting modules.'
-  },
-  {
-    keywords: ['crm'],
-    text: 'CRM includes lead management, sales automation, customer support, marketing, and analytics.'
-  },
-  {
-    keywords: ['deployment'],
-    text: 'CORtracker supports both cloud-based and on-premise deployment.'
-  },
-  {
-    keywords: ['headquarters'],
-    text: 'CORtracker is headquartered in Michigan, USA.'
-  },
-  {
-    keywords: ['india'],
-    text: 'CORtracker IT Pvt Ltd is located in Jubilee Hills, Hyderabad, India.'
-  },
-  {
-    keywords: ['technology'],
-    text: 'CORtracker uses AI, IoT, big data, and automation for advanced solutions.'
-  },
-  
-  {
-    keywords: ['culture'],
-    text: 'Work culture includes good learning opportunities, but varies across roles.'
-  }
-];
-
-showQuickOptions() {
-  this.addMessage(
-    'bot',
-    'Here are some things I can help you with 👇',
-    [
-      { label: 'About CORtracker', action: 'faq', value: 'cortracker' },
-      { label: 'Services', action: 'faq', value: 'services' },
-      // { label: 'ERP Modules', action: 'faq', value: 'erp' },
-      // { label: 'CRM Features', action: 'faq', value: 'crm' },
-      { label: 'Work Culture', action: 'faq', value: 'culture' }
-    ]
-  );
-}
-
 
 
 
@@ -497,24 +439,6 @@ formatLabel(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-
-
-// getInitialOptions() {
-//   return [
-//     // 🔥 HRMS ACTIONS (TOP PRIORITY)
-//     { label: 'Leave Balance', action: 'navigate', url: '/leave-management' },
-//     { label: 'Attendance', action: 'navigate', url: '/attendance-list' },
-//     { label: 'Job History', action: 'navigate', url: '/skills' },
-//     { label: 'Profile Info', action: 'navigate', url: '/profile' },
-
-//     // 📘 COMPANY FAQ OPTIONS
-//     { label: 'About CORtracker', action: 'faq', value: 'cortracker' },
-//     { label: 'Services', action: 'faq', value: 'services' },
-//     { label: 'ERP Modules', action: 'faq', value: 'erp' },
-//     { label: 'CRM Features', action: 'faq', value: 'crm' },
-//     { label: 'Work Culture', action: 'faq', value: 'culture' }
-//   ];
-// } 
 
 getInitialOptions() {
   return [
@@ -588,235 +512,7 @@ sendMessage() {
   }, 1200);
 }
 
-// Handle user query
 
-
-// handleUserQuery(input: string) {
-
-//   let match = this.menus.find(m =>
-//     m.menuName.toLowerCase().includes(input)
-//   );
-
-//   if (match) {
-//     this.addMessage(
-//       'bot',
-//       `I found "${match.menuName}". What would you like to do?`,
-//       [
-//         { label: 'Open Page', action: 'navigate', url: match.url },
-//         { label: 'Cancel', action: 'cancel' }
-//       ]
-//     );
-//   } else {
-
-//     const suggestions = this.menus
-//       .filter(m => m.menuName.toLowerCase().includes(input.substring(0, 3)))
-//       .slice(0, 5);
-
-//     if (suggestions.length > 0) {
-//       this.addMessage(
-//         'bot',
-//         'Did you mean one of these?',
-//         suggestions.map(s => ({
-//           label: s.menuName,
-//           action: 'navigate',
-//           url: s.url
-//         }))
-//       );
-//     } else {
-//       this.addMessage(
-//         'bot',
-//         'Try keywords like "leave", "attendance", "profile"'
-//       );
-//     }
-//   }
-// }
-
-// handleUserQuery(input: string) {
-
-//   // ✅ STEP 1: FAQ CHECK (NEW)
-//   const faq = this.getFaqResponse(input);
-
-//   if (faq) {
-//     this.addMessage(
-//       'bot',
-//       faq.text,
-//       faq.buttons || []
-//     );
-//     return;
-//   }
-
-//   // ✅ STEP 2: EXISTING MENU LOGIC (UNCHANGED)
-//   let match = this.menus.find(m =>
-//     m.menuName.toLowerCase().includes(input)
-//   );
-
-//   if (match) {
-//     this.addMessage(
-//       'bot',
-//       `I found "${match.menuName}". What would you like to do?`,
-//       [
-//         { label: 'Open Page', action: 'navigate', url: match.url },
-//         { label: 'Cancel', action: 'cancel' }
-//       ]
-//     );
-//   } else {
-
-//     const suggestions = this.menus
-//       .filter(m => m.menuName.toLowerCase().includes(input.substring(0, 3)))
-//       .slice(0, 5);
-
-//     if (suggestions.length > 0) {
-//       this.addMessage(
-//         'bot',
-//         'Did you mean one of these?',
-//         suggestions.map(s => ({
-//           label: s.menuName,
-//           action: 'navigate',
-//           url: s.url
-//         }))
-//       );
-//     } else {
-//       this.addMessage(
-//         'bot',
-//         'Try keywords like "leave", "attendance", "job history", "profile"'
-//       );
-//     }
-//   }
-// }
-
-
-
-// handleUserQuery(input: string) {
-
-//   const faq = this.getFaqResponse(input);
-
-//   if (faq) {
-//     this.addMessage(
-//       'bot',
-//       faq.text,
-//       faq.buttons || []
-//     );
-
-//     // ❌ REMOVE auto showQuickOptions here
-//     return;
-//   }
-
-//   let match = this.menus.find(m =>
-//     m.menuName.toLowerCase().includes(input)
-//   );
-
-//   if (match) {
-//     this.addMessage(
-//       'bot',
-//       `I found "${match.menuName}". What would you like to do?`,
-//       [
-//         { label: 'Open Page', action: 'navigate', url: match.url },
-//         { label: 'Cancel', action: 'cancel' }
-//       ]
-//     );
-//     return;
-//   }
-
-//   // ✅ ONLY show options when nothing matches
-//   this.addMessage(
-//     'bot',
-//     'I didn’t understand. Try one of these 👇'
-//   );
-
-//   this.showQuickOptions(); // ✅ only here
-// }
-
-// handleUserQuery(input: string) {
-
-//   input = input.toLowerCase().trim();
-
-//   // =========================
-//   // ✅ FAQ FIRST
-//   // =========================
-//   const faq = this.getFaqResponse(input);
-//   if (faq) {
-//     this.addMessage('bot', faq.text, faq.buttons || []);
-//     return;
-//   }
-
-//   // =========================
-//   // ✅ NAVIGATION INTENTS
-//   // =========================
-
-//   if (input.includes('leave')) {
-//     this.addMessage('bot', 'Opening Leave page...');
-//     setTimeout(() => this.router.navigate(['/leave-management']), 400);
-//     return;
-//   }
-
-//   if (input.includes('attendance')) {
-//     this.addMessage('bot', 'Opening Attendance...');
-//     setTimeout(() => this.router.navigate(['/attendance-list']), 400);
-//     return;
-//   }
-
-//   if (input.includes('dashboard') || input.includes('home')) {
-//     this.addMessage('bot', 'Opening Dashboard...');
-//     setTimeout(() => this.router.navigate(['/dashboard']), 400);
-//     return;
-//   }
-
-//   if (input.includes('expense')) {
-//     this.addMessage('bot', 'Opening Expenses...');
-//     setTimeout(() => this.router.navigate(['/expenses']), 400);
-//     return;
-//   }
-
-//   if (input.includes('asset')) {
-//     this.addMessage('bot', 'Opening Assets...');
-//     setTimeout(() => this.router.navigate(['/asset']), 400);
-//     return;
-//   }
-
-//   if (input.includes('job')) {
-//     this.addMessage('bot', 'Opening Job History...');
-//     setTimeout(() => this.router.navigate(['/skills']), 400);
-//     return;
-//   }
-
-//   if (input.includes('profile')) {
-//     this.addMessage('bot', 'Opening Profile...');
-//     setTimeout(() => this.router.navigate(['/profile']), 400);
-//     return;
-//   }
-
-//   // =========================
-//   // ✅ ACTION INTENTS (NEW 🔥)
-//   // =========================
-
-//   if (input.includes('punch in') || input.includes('clock in')) {
-//     this.addMessage('bot', 'Punching you in... ⏱️');
-
-//     // 👉 Future: call API here
-//     console.log('Punch In API');
-
-//     return;
-//   }
-
-//   if (input.includes('punch out') || input.includes('clock out')) {
-//     this.addMessage('bot', 'Punching you out... ⏱️');
-
-//     console.log('Punch Out API');
-
-//     return;
-//   }
-
-//   // =========================
-//   // ❌ FALLBACK
-//   // =========================
-
-//   this.addMessage(
-//     'bot',
-//     'I didn’t understand. Try commands like "leave", "attendance", "dashboard", "punch in" 👇'
-//   );
-
-//   this.showQuickOptions();
-// }
 handleUserQuery(input: string) {
 
   input = input.toLowerCase().trim();
@@ -904,184 +600,75 @@ handleUserQuery(input: string) {
   this.showQuickOptions();
 }
 }
+// faq list questions and answers
+faqList = [
+{
+  keywords: ['cortracker', 'about'],
+  text: `CORtracker is an enterprise software company providing ERP, CRM, supply chain, and analytics solutions. It focuses on digital transformation using AI, automation, and modern technologies. The platform helps organizations streamline operations and improve efficiency across departments. CORtracker is headquartered in Michigan, USA, with a significant presence in India. It serves clients globally across various industries, offering both cloud and on-premise deployment options.`,
+}, 
+  {
+    keywords: ['services'],
+    text: 'CORtracker offers ERP, CRM, supply chain, analytics, and custom software development.',
+    buttons: [
+      { label: 'ERP Modules', action: 'faq', value: 'erp' },
+      { label: 'CRM Features', action: 'faq', value: 'crm' }
+    ]
+  },
+  {
+    keywords: ['erp'],
+    text: 'ERP includes finance, HR, procurement, inventory, production, maintenance, and accounting modules.'
+  },
+  {
+    keywords: ['crm'],
+    text: 'CRM includes lead management, sales automation, customer support, marketing, and analytics.'
+  },
+  {
+    keywords: ['deployment'],
+    text: 'CORtracker supports both cloud-based and on-premise deployment.'
+  },
+  {
+    keywords: ['headquarters'],
+    text: 'CORtracker is headquartered in Michigan, USA.'
+  },
+  {
+    keywords: ['india'],
+    text: 'CORtracker IT Pvt Ltd is located in Jubilee Hills, Hyderabad, India.'
+  },
+  {
+    keywords: ['technology'],
+    text: 'CORtracker uses AI, IoT, big data, and automation for advanced solutions.'
+  },
+  
+  {
+    keywords: ['culture'],
+    text: 'Work culture includes good learning opportunities, but varies across roles.'
+  },
 
+   {
+    keywords: ['modules'],
+    text: 'CORtracker ERP includes finance, HR, procurement, inventory, production, maintenance, and accounting modules.'
+  },
+];
 
 // Handle button click
+// showingQuickOptions functions
+showQuickOptions() {
+  this.addMessage(
+    'bot',
+    'Here are some things I can help you with 👇',
+    [
+      { label: 'About CORtracker', action: 'faq', value: 'cortracker' },
+      { label: 'Services', action: 'faq', value: 'services' },
+      // { label: 'What modules are included in CORtracker ERP?', action: 'faq', value: 'modules' },
+      // { label: 'ERP Modules', action: 'faq', value: 'erp' },
+      // { label: 'CRM Features', action: 'faq', value: 'crm' },
+      { label: 'Work Culture', action: 'faq', value: 'culture' },
+      // {label: 'Leave Balance', action: 'navigate', url: '/leave-management'},
+      // {label: 'Pay Roll', action: 'navigate', url: '/payroll'},
 
-
-// handleAction(btn: any) {
-
-//   if (btn.action === 'navigate') {
-
-//     this.addMessage('user', btn.label);
-
-//     this.isTyping = true;
-
-//     setTimeout(() => {
-//       this.isTyping = false;
-
-//       this.addMessage('bot', `Opening ${btn.label}...`);
-
-//       setTimeout(() => {
-//         this.router.navigate([btn.url]);
-//       }, 500);
-
-//     }, 800);
-
-//   } else {
-//     this.addMessage('bot', 'Okay 👍');
-//   }
-// }
-
-
-
-
-// handleAction(btn: any) {
-
-//   // Show user click as message
-//   this.addMessage('user', btn.label);
-
-//   // Typing effect
-//   this.isTyping = true;
-
-//   setTimeout(() => {
-//     this.isTyping = false;
-
-//     // 👉 If it's FAQ button
-//     if (btn.action === 'faq') {
-//       this.handleUserQuery(btn.value);
-//       return;
-//     }
-
-//     // 👉 Navigation (existing)
-//     if (btn.action === 'navigate') {
-
-//       this.addMessage('bot', `Opening ${btn.label}...`);
-
-//       setTimeout(() => {
-//         this.router.navigate([btn.url]);
-//       }, 500);
-//     }
-
-//     // 👉 Cancel
-//     else {
-//       this.addMessage('bot', 'Okay 👍');
-//     }
-
-//   }, 800);
-// }
-// handleAction(btn: any) {
-
-//   // Show user click
-//   this.addMessage('user', btn.label);
-
-//   this.isTyping = true;
-
-//   setTimeout(() => {
-//     this.isTyping = false;
-
-//     // ✅ FAQ FLOW
-//     if (btn.action === 'faq') {
-//       this.handleUserQuery(btn.value);  
-//       return;
-//     }
-
-//     // ✅ NAVIGATION FLOW
-//     if (btn.action === 'navigate') {
-
-//       this.addMessage('bot', `Opening ${btn.label}...`);
-
-//       setTimeout(() => {
-//         this.router.navigate([btn.url]);
-//       }, 500);
-
-//       return;
-//     }
-
-//     // fallback
-//     this.addMessage('bot', 'Okay 👍');
-
-//   }, 800);
-// }
-
-
-
-
-// handleAction(btn: any) {
-
-//   // Show user click
-//   this.addMessage('user', btn.label);
-
-//   this.isTyping = true;
-
-//   setTimeout(() => {
-//     this.isTyping = false;
-
-//     // =========================
-//     // ✅ SECTION: HR SERVICES
-//     // =========================
-//     if (btn.action === 'section_hr') {
-//       this.addMessage(
-//         'bot',
-//         'Here are HR services you can access 👇',
-//         [
-//           { label: 'Leave Balance', action: 'navigate', url: '/leave-management' },
-//           { label: 'Attendance', action: 'navigate', url: '/attendance-list' },
-//           { label: 'Job History', action: 'navigate', url: '/skills' },
-//           { label: 'Profile Info', action: 'navigate', url: '/profile' }
-//         ]
-//       );
-//       return;
-//     }
-
-//     // =========================
-//     // ✅ SECTION: COMPANY INFO
-//     // =========================
-//     if (btn.action === 'section_company') {
-//       this.addMessage(
-//         'bot',
-//         'Here is company information 👇',
-//         [
-//           { label: 'About CORtracker', action: 'faq', value: 'cortracker' },
-//           { label: 'Services', action: 'faq', value: 'services' },
-//           // { label: 'ERP Modules', action: 'faq', value: 'erp' },
-//           // { label: 'CRM Features', action: 'faq', value: 'crm' },
-//           { label: 'Work Culture', action: 'faq', value: 'culture' }
-//         ]
-//       );
-//       return;
-//     }
-
-
-//     // =========================
-//     // ✅ FAQ FLOW
-//     // =========================
-//     if (btn.action === 'faq') {
-//       this.handleUserQuery(btn.value);
-//       return;
-//     }
-
-//     // =========================
-//     // ✅ NAVIGATION FLOW (FIXED)
-//     // =========================
-//     if (btn.action === 'navigate') {
-
-//       this.addMessage('bot', `Opening ${btn.label}...`);
-
-//       setTimeout(() => {
-//         this.router.navigateByUrl(btn.url); // ✅ FIXED
-//       }, 500);
-
-//       return;
-//     }
-
-//     // =========================
-//     // fallback
-//     // =========================
-//     this.addMessage('bot', 'Okay 👍');
-
-//   }, 600);
-// }
+    ]
+  );
+}
 
 handleAction(btn: any) {
 
@@ -1120,7 +707,10 @@ handleAction(btn: any) {
         [
           { label: 'About CORtracker', action: 'faq', value: 'cortracker' },
           { label: 'Services', action: 'faq', value: 'services' },
-          { label: 'Work Culture', action: 'faq', value: 'culture' }
+          { label: 'Work Culture', action: 'faq', value: 'culture' },
+          // { label: 'What modules are included in CORtracker ERP?', action: 'faq', value: 'modules' },
+          // {label: 'Leave Balance', action: 'navigate', url: '/leave-management'},
+          // {label: 'Pay Roll', action: 'navigate', url: '/payroll'},
         ]
       );
       return;
@@ -1212,7 +802,62 @@ resetChat() {
   );
 }
 
+// Adding voice commands
+recognition: any;
+isListening: boolean = false;
 
+initVoiceRecognition() {
+  const SpeechRecognition =
+    (window as any).SpeechRecognition ||
+    (window as any).webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert('Voice recognition not supported in this browser');
+    return;
+  }
+
+  this.recognition = new SpeechRecognition();
+  this.recognition.lang = 'en-US';
+  this.recognition.continuous = false;
+  this.recognition.interimResults = false;
+
+  this.recognition.onstart = () => {
+    this.isListening = true;
+  };
+
+  this.recognition.onend = () => {
+    this.isListening = false;
+  };
+
+  this.recognition.onresult = (event: any) => {
+    const transcript = event.results[0][0].transcript;
+
+    // Show user message
+    this.addMessage('user', transcript);
+
+    // Process command
+    this.handleUserQuery(transcript.toLowerCase());
+  };
+
+  this.recognition.onerror = () => {
+    this.isListening = false;
+    this.addMessage('bot', '🎤 Voice error. Try again');
+  };
+}
+
+startListening() {
+  if (!this.recognition) {
+    this.initVoiceRecognition();
+  }
+
+  this.recognition.start();
+}
+
+stopListening() {
+  if (this.recognition) {
+    this.recognition.stop();
+  }
 }
 
 
+}
