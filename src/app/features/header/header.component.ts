@@ -33,8 +33,6 @@ private timerRef: any;
 profilePicture: string = '';
 //profilePicture: string = 'assets/images/default-profile.png';
 userId: number = Number(sessionStorage.getItem('UserId'));
-companyLogo: string = '/assets/images/cor-logo.png';
-isMobileMenuOpen = false;
  constructor(private router: Router, private employeeResignationService: EmployeeResignationService, private adminService: AdminService, private ngZone: NgZone) {}
   ngOnInit() {
     this.loadProfilePicture();
@@ -42,12 +40,9 @@ isMobileMenuOpen = false;
     this.role = currentUser.role;
     sessionStorage.setItem('role', this.role);
     this.roleName= sessionStorage.getItem('roleName');
-    if(this.roleName === 'Super Admin') {
-    this.superadmin = true;
-    this.companyLogo = '/assets/images/cor-logo.png';
-  } else {
-    this.loadEmployeeCompanyLogo();
-  }
+    if(this.roleName==='Super Admin'){
+      this.superadmin=true;
+    }
     this.userName= sessionStorage.getItem('Name');
     const savedClockIn = sessionStorage.getItem('clockInTime');
 
@@ -60,39 +55,6 @@ isMobileMenuOpen = false;
   }
     this.loadAttendance();
   }
-  loadEmployeeCompanyLogo() {
-  const companyId = Number(sessionStorage.getItem('CompanyId'));
-  if (!companyId) return;
-
-  this.adminService.getCompanyById(companyId).subscribe({
-    next: (company: any) => {
-      console.log('Company Response:', company); // ✅ Debug check
-
-      // check exact property name from API
-      const logo = company?.companyLogo;
-
-      if (logo && logo.trim() !== '') {
-        if (logo.startsWith('data:')) {
-          this.companyLogo = logo; // base64 directly
-        } else {
-          const logoPath = logo.replace(/\\/g, '/');
-          this.companyLogo = environment.baseurl
-            ? `${environment.baseurl}/${logoPath}`
-            : `/${logoPath}`;
-        }
-      } else {
-        this.companyLogo = '/assets/images/cor-logo.png';
-      }
-    },
-    error: (err) => {
-      console.error('Failed to load company logo:', err);
-      this.companyLogo = '/assets/images/cor-logo.png';
-    }
-  });
-}
-toggleMobileMenu() {
-  this.isMobileMenuOpen = !this.isMobileMenuOpen;
-}
   loadProfilePicture() {
   this.employeeResignationService.getProfilePicture(this.userId)
     .subscribe({
@@ -110,10 +72,17 @@ toggleMobileMenu() {
     });
       this.loadMenus();
 
-    this.messages.push({
-      type: 'bot',
-      text: 'Hi 👋 Ask me anything like "leave", "attendance", "profile"'
-    });
+    // this.messages.push({
+    //   type: 'bot',
+    //   text: 'Hi 👋 Ask me anything like "leave", "attendance", "profile"'
+    // });
+
+this.addMessage(
+  'bot',
+  "Hi 👋 I'm your HRMS Assistant. Here are some things I can help you with 👇",
+  this.getInitialOptions()
+);
+
      this.scrollToBottom();
 }
  loadMenus() {
@@ -122,14 +91,14 @@ toggleMobileMenu() {
     });
   }
    logout() {
-    
     // Optional: clear localStorage/sessionStorage or token
     localStorage.clear();
-    this.router.navigate(['']); // Navigate to admin login
+    this.router.navigate(['/login']); // Navigate to admin login
   }
   isProfileOpen = false;
 
-toggleProfileMenu(): void {
+toggleProfileMenu(event: Event): void {
+  event.stopPropagation();
   this.isProfileOpen = !this.isProfileOpen;
 }
 
@@ -199,27 +168,9 @@ selectRegion(region: string) {
   // localStorage.setItem('region', region);
 }
 
-@HostListener('document:click', ['$event'])
-onGlobalClick(event: Event) {
-
-  const target = event.target as HTMLElement;
-
-  // ================= PROFILE DROPDOWN CLOSE =================
-  if (!target.closest('.profile-menu')) {
-    this.isProfileOpen = false;
-  }
-
-  // ================= LOCATION DROPDOWN CLOSE =================
-  if (!target.closest('.location-wrapper')) {
-    this.isLocationOpen = false;
-  }
-
-  // ================= MOBILE MENU CLOSE =================
-  if (!target.closest('.mobile-dropdown') &&
-      !target.closest('.mobile-menu-btn')) {
-    this.isMobileMenuOpen = false;
-  }
-
+@HostListener('document:click')
+closeOnOutsideClick() {
+  this.isLocationOpen = false;
 }
 
 getSystemTime(): Date {
@@ -464,6 +415,52 @@ syncClockStateWithAPI() {
 
 // ================= CHATBOT =================
 
+// showQuickOptions = true;
+
+intentMap = [
+  // NAVIGATION
+  { keywords: ['leave', 'leaves'], action: 'navigate', url: '/leave-management', label: 'Leave' },
+  { keywords: ['attendance'], action: 'navigate', url: '/attendance-list', label: 'Attendance' },
+  { keywords: ['dashboard', 'home'], action: 'navigate', url: '/dashboard', label: 'Dashboard' },
+  { keywords: ['expense', 'expenses'], action: 'navigate', url: '/expenses', label: 'Expenses' },
+  { keywords: ['asset', 'assets'], action: 'navigate', url: '/asset', label: 'Assets' },
+  { keywords: ['profile'], action: 'navigate', url: '/profile', label: 'Profile' },
+
+  // ACTIONS
+  { keywords: ['punch in', 'clock in'], action: 'punch_in' },
+  { keywords: ['punch out', 'clock out'], action: 'punch_out' }
+];
+
+
+
+
+
+formatLabel(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+
+getInitialOptions() {
+  return [
+    { label: '📊 HR Services', action: 'section_hr' },
+    { label: '🏢 Company Info', action: 'section_company' }
+  ];
+}
+
+getFaqResponse(input: string): any {
+
+  input = input.toLowerCase();
+
+  for (let faq of this.faqList) {
+    for (let key of faq.keywords) {
+      if (input.includes(key)) {
+        return faq;
+      }
+    }
+  }
+
+  return null;
+}
 
 userInput = '';
 messages: any[] = [];
@@ -473,7 +470,16 @@ isTyping = false;
 // Toggle Chat
 toggleChat() {
   this.isOpen = !this.isOpen;
-}
+
+  if (this.isOpen && this.messages.length === 0) {
+
+ this.addMessage(
+  'bot',
+  "Hi 👋 I'm your HRMS Assistant. You can manage HR tasks or explore company info 👇",
+  this.getInitialOptions()
+);
+  }
+} 
 
 // Add message
 addMessage(type: string, text: string, buttons: any[] = []) {
@@ -506,71 +512,272 @@ sendMessage() {
   }, 1200);
 }
 
-// Handle user query
+
 handleUserQuery(input: string) {
 
-  let match = this.menus.find(m =>
-    m.menuName.toLowerCase().includes(input)
+  input = input.toLowerCase().trim();
+
+  // =========================
+  // ✅ FAQ FIRST
+  // =========================
+  const faq = this.getFaqResponse(input);
+  if (faq) {
+    this.addMessage('bot', faq.text, faq.buttons || []);
+    return;
+  }
+
+  // =========================
+  // ✅ SMART INTENT MATCHING (NEW 🔥)
+  // =========================
+  const matchedIntent = this.intentMap.find(intent =>
+    intent.keywords.some(k => input.includes(k))
   );
 
-  if (match) {
-    this.addMessage(
-      'bot',
-      `I found "${match.menuName}". What would you like to do?`,
-      [
-        { label: 'Open Page', action: 'navigate', url: match.url },
-        { label: 'Cancel', action: 'cancel' }
-      ]
-    );
-  } else {
+  if (matchedIntent) {
 
-    const suggestions = this.menus
-      .filter(m => m.menuName.toLowerCase().includes(input.substring(0, 3)))
-      .slice(0, 5);
+    // =========================
+    // 🔴 PUNCH IN
+    // =========================
+    if (matchedIntent.action === 'punch_in') {
 
-    if (suggestions.length > 0) {
-      this.addMessage(
-        'bot',
-        'Did you mean one of these?',
-        suggestions.map(s => ({
-          label: s.menuName,
-          action: 'navigate',
-          url: s.url
-        }))
-      );
-    } else {
-      this.addMessage(
-        'bot',
-        'Try keywords like "leave", "attendance", "profile"'
-      );
+      if (this.isClockedIn) {
+        this.addMessage('bot', '⚠️ You are already clocked in ⏱️');
+        return;
+      }
+
+      this.addMessage('bot', 'Punching you in... ⏱️');
+
+      setTimeout(() => {
+        this.toggleClock(); // ✅ uses your existing API
+        this.addMessage('bot', `✅ Clocked in at ${this.clockInDisplay}`);
+      }, 500);
+
+      return;
     }
-  }
+
+    // =========================
+    // 🔴 PUNCH OUT
+    // =========================
+    if (matchedIntent.action === 'punch_out') {
+
+      if (!this.isClockedIn) {
+        this.addMessage('bot', '⚠️ You are not clocked in');
+        return;
+      }
+
+      this.addMessage('bot', 'Punching you out... ⏱️');
+
+      setTimeout(() => {
+        this.toggleClock(); // ✅ API call
+        this.addMessage('bot', `🕒 Total time worked: ${this.totalHoursDisplay}`);
+      }, 500);
+
+      return;
+    }
+
+    // =========================
+    // 📍 NAVIGATION
+    // =========================
+  if (matchedIntent.action === 'navigate' && matchedIntent.url) {
+
+  this.addMessage('bot', `Opening ${matchedIntent.label}...`);
+
+  setTimeout(() => {
+    this.router.navigateByUrl(matchedIntent.url!);
+  }, 400);
+
+  return;
 }
 
+  // =========================
+  // ❌ FALLBACK
+  // =========================
+  this.addMessage(
+    'bot',
+    'I didn’t understand. Try: leave, attendance, dashboard, punch in/out 👇'
+  );
+
+  this.showQuickOptions();
+}
+}
+// faq list questions and answers
+faqList = [
+{
+  keywords: ['cortracker', 'about'],
+  text: `CORtracker is an enterprise software company providing ERP, CRM, supply chain, and analytics solutions. It focuses on digital transformation using AI, automation, and modern technologies. The platform helps organizations streamline operations and improve efficiency across departments. CORtracker is headquartered in Michigan, USA, with a significant presence in India. It serves clients globally across various industries, offering both cloud and on-premise deployment options.`,
+}, 
+  {
+    keywords: ['services'],
+    text: 'CORtracker offers ERP, CRM, supply chain, analytics, and custom software development.',
+    buttons: [
+      { label: 'ERP Modules', action: 'faq', value: 'erp' },
+      { label: 'CRM Features', action: 'faq', value: 'crm' }
+    ]
+  },
+  {
+    keywords: ['erp'],
+    text: 'ERP includes finance, HR, procurement, inventory, production, maintenance, and accounting modules.'
+  },
+  {
+    keywords: ['crm'],
+    text: 'CRM includes lead management, sales automation, customer support, marketing, and analytics.'
+  },
+  {
+    keywords: ['deployment'],
+    text: 'CORtracker supports both cloud-based and on-premise deployment.'
+  },
+  {
+    keywords: ['headquarters'],
+    text: 'CORtracker is headquartered in Michigan, USA.'
+  },
+  {
+    keywords: ['india'],
+    text: 'CORtracker IT Pvt Ltd is located in Jubilee Hills, Hyderabad, India.'
+  },
+  {
+    keywords: ['technology'],
+    text: 'CORtracker uses AI, IoT, big data, and automation for advanced solutions.'
+  },
+  
+  {
+    keywords: ['culture'],
+    text: 'Work culture includes good learning opportunities, but varies across roles.'
+  },
+
+   {
+    keywords: ['modules'],
+    text: 'CORtracker ERP includes finance, HR, procurement, inventory, production, maintenance, and accounting modules.'
+  },
+];
+
 // Handle button click
+// showingQuickOptions functions
+showQuickOptions() {
+  this.addMessage(
+    'bot',
+    'Here are some things I can help you with 👇',
+    [
+      { label: 'About CORtracker', action: 'faq', value: 'cortracker' },
+      { label: 'Services', action: 'faq', value: 'services' },
+      // { label: 'What modules are included in CORtracker ERP?', action: 'faq', value: 'modules' },
+      // { label: 'ERP Modules', action: 'faq', value: 'erp' },
+      // { label: 'CRM Features', action: 'faq', value: 'crm' },
+      { label: 'Work Culture', action: 'faq', value: 'culture' },
+      // {label: 'Leave Balance', action: 'navigate', url: '/leave-management'},
+      // {label: 'Pay Roll', action: 'navigate', url: '/payroll'},
+
+    ]
+  );
+}
+
 handleAction(btn: any) {
 
-  if (btn.action === 'navigate') {
+  // Show user click
+  this.addMessage('user', btn.label);
 
-    this.addMessage('user', btn.label);
+  this.isTyping = true;
 
-    this.isTyping = true;
+  setTimeout(() => {
+    this.isTyping = false;
 
-    setTimeout(() => {
-      this.isTyping = false;
+    // =========================
+    // ✅ SECTION: HR SERVICES
+    // =========================
+    if (btn.action === 'section_hr') {
+      this.addMessage(
+        'bot',
+        'Here are HR services you can access 👇',
+        [
+          { label: 'Leave Balance', action: 'navigate', url: '/leave-management' },
+          { label: 'Attendance', action: 'navigate', url: '/attendance-list' },
+          { label: 'Job History', action: 'navigate', url: '/skills' },
+          { label: 'Profile Info', action: 'navigate', url: '/profile' }
+        ]
+      );
+      return;
+    }
+
+    // =========================
+    // ✅ SECTION: COMPANY INFO
+    // =========================
+    if (btn.action === 'section_company') {
+      this.addMessage(
+        'bot',
+        'Here is company information 👇',
+        [
+          { label: 'About CORtracker', action: 'faq', value: 'cortracker' },
+          { label: 'Services', action: 'faq', value: 'services' },
+          { label: 'Work Culture', action: 'faq', value: 'culture' },
+          // { label: 'What modules are included in CORtracker ERP?', action: 'faq', value: 'modules' },
+          // {label: 'Leave Balance', action: 'navigate', url: '/leave-management'},
+          // {label: 'Pay Roll', action: 'navigate', url: '/payroll'},
+        ]
+      );
+      return;
+    }
+
+    // =========================
+    // ✅ FAQ FLOW
+    // =========================
+    if (btn.action === 'faq') {
+      this.handleUserQuery(btn.value);
+
+      // 🔥 SPECIAL CASE: ABOUT CORTRACKER → OPEN WEBSITE
+      if (btn.value === 'cortracker') {
+        setTimeout(() => {
+          this.addMessage(
+            'bot',
+            'Want to explore more? ',
+            [
+              {
+                label: 'Open Official Website',
+                action: 'external',
+                url: 'https://www.cortracker360.com/index.php'
+              }
+            ]
+          );
+        }, 500);
+      }
+
+      return;
+    }
+
+    // =========================
+    // ✅ INTERNAL NAVIGATION
+    // =========================
+    if (btn.action === 'navigate') {
 
       this.addMessage('bot', `Opening ${btn.label}...`);
 
       setTimeout(() => {
-        this.router.navigate([btn.url]);
+        this.router.navigateByUrl(btn.url);
       }, 500);
 
-    }, 800);
+      return;
+    }
 
-  } else {
+    // =========================
+    // ✅ EXTERNAL NAVIGATION (NEW 🔥)
+    // =========================
+    if (btn.action === 'external') {
+
+      this.addMessage('bot', 'Opening official website... 🌐');
+
+      setTimeout(() => {
+        window.open(btn.url, '_blank');
+      }, 500);
+
+      return;
+    }
+
+    // =========================
+    // fallback
+    // =========================
     this.addMessage('bot', 'Okay 👍');
-  }
+
+  }, 600);
 }
+
 
 // Auto scroll
 scrollToBottom() {
@@ -581,4 +788,76 @@ scrollToBottom() {
     }
   }, 100);
 }
+
+resetChat() {
+  this.messages = [];
+  this.userInput = '';
+  this.isTyping = false;
+
+  // Restart conversation
+  this.addMessage(
+    'bot',
+    "Hi 👋 I'm your HRMS Assistant. How can I help you today?",
+    this.getInitialOptions()
+  );
+}
+
+// Adding voice commands
+recognition: any;
+isListening: boolean = false;
+
+initVoiceRecognition() {
+  const SpeechRecognition =
+    (window as any).SpeechRecognition ||
+    (window as any).webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert('Voice recognition not supported in this browser');
+    return;
+  }
+
+  this.recognition = new SpeechRecognition();
+  this.recognition.lang = 'en-US';
+  this.recognition.continuous = false;
+  this.recognition.interimResults = false;
+
+  this.recognition.onstart = () => {
+    this.isListening = true;
+  };
+
+  this.recognition.onend = () => {
+    this.isListening = false;
+  };
+
+  this.recognition.onresult = (event: any) => {
+    const transcript = event.results[0][0].transcript;
+
+    // Show user message
+    this.addMessage('user', transcript);
+
+    // Process command
+    this.handleUserQuery(transcript.toLowerCase());
+  };
+
+  this.recognition.onerror = () => {
+    this.isListening = false;
+    this.addMessage('bot', '🎤 Voice error. Try again');
+  };
+}
+
+startListening() {
+  if (!this.recognition) {
+    this.initVoiceRecognition();
+  }
+
+  this.recognition.start();
+}
+
+stopListening() {
+  if (this.recognition) {
+    this.recognition.stop();
+  }
+}
+
+
 }
