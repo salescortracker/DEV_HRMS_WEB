@@ -945,7 +945,8 @@ handleAction(btn: any) {
           { label: 'Leave Balance', action: 'navigate', url: '/leave-management' },
           { label: 'Attendance', action: 'navigate', url: '/attendance-list' },
           { label: 'Job History', action: 'navigate', url: '/skills' },
-          { label: 'Profile Info', action: 'navigate', url: '/profile' }
+          { label: 'Profile Info', action: 'navigate', url: '/profile' },
+          {label: 'Salary Slips', action: 'navigate', url: '/compensation/employee-payslip'}
         ]
       );
       return;
