@@ -21,7 +21,7 @@ export class HeaderComponent {
  roleName:any='';
  userName:any='';
  superadmin:any;
-
+ selectedFile: File | null = null;
 officeLat = 17.458637;
 officeLng = 78.363151;
 allowedRadius: number = 500; // meters (recommended)
