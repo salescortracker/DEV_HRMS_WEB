@@ -2155,3 +2155,92 @@ button:hover {
   color: #b02828;
   border-top: 1px solid #eee;
 }  
+
+
+
+
+
+
+
+.card-title{
+  font-weight:600;
+  color:#b02828;
+  margin-bottom:8px;
+}
+
+.steps-list{
+  padding-left:10px;
+  margin:0;
+}
+
+.steps-list li{
+  /* margin-bottom:6px; */
+  font-size:13px;
+}
+
+.download-btn{
+  display:inline-block;
+  margin-top:8px;
+  background:#b02828;
+  color:#fff;
+  padding:8px 14px;
+  border-radius:8px;
+  text-decoration:none;
+  font-size:13px;
+}
+
+
+.suggestion-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:8px;
+  border-top:1px solid #eee;
+  background:#fff;
+}
+
+.suggestion-bar button{
+  border:none;
+  background:#f5f5f5;
+  color:#b02828;
+  padding:6px 10px;
+  border-radius:20px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.suggestion-bar button:hover{
+  background:#b02828;
+  color:#fff;
+}
+
+
+
+
+.preserve-lines{
+  white-space: pre-line;
+}
+
+.attendance-text{
+  /* color:#1565c0; */
+  /* color: #b02828; */
+  color: #333;
+  /* font-weight:600; */
+}
+
+
+
+
+.step-line{
+  padding:6px 0;
+  color:#333;
+  /* color: #b02828; */
+  /* font-size:14px; */
+  /* line-height:1.6; */
+  white-space: pre-line;
+}
+
+.preserve-lines{
+  white-space: pre-line;
+}
+
