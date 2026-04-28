@@ -135,19 +135,23 @@
      *ngIf="isOpen">
 
   <!-- HEADER (DRAG HANDLE) -->
-  <div class="chatbot-header">
+ <div class="chatbot-header">
 
-    <span class="chat-title">HRMS Chatbot</span>
-
-    <div class="chat-actions">
-      <i class="fas fa-redo refresh-btn" (click)="resetChat()"></i>
-      <span class="close-btn" (click)="toggleChat()">×</span>
-    </div>
-
+  <div class="chat-header-left">
+    🤖 HRMS Assistant
+    <span class="status-dot"></span>
+    <span class="status-text">Online</span>
   </div>
 
+  <div class="chat-actions">
+    <i class="fas fa-redo" (click)="resetChat()"></i>
+    <span (click)="toggleChat()">×</span>
+  </div>
 
-  <div class="chatbot-messages" id="chatContainer">
+</div>
+
+
+ <div class="chatbot-messages" id="chatContainer">
 
   <!-- Messages -->
   <div *ngFor="let msg of messages"
@@ -158,18 +162,96 @@
     <div class="avatar" *ngIf="msg.type === 'bot'">🤖</div>
 
     <!--  Message Bubble -->
-    <div class="message-bubble">
+    <!-- <div class="message-bubble">
       <div class="text">{{ msg.text }}</div>
       <div class="time">{{ msg.time }}</div>
 
-      <!-- ✅ Buttons -->
+      <!-- ✅ Buttons 
       <div *ngIf="msg.buttons?.length" class="chat-buttons">
         <button *ngFor="let btn of msg.buttons"
                 (click)="handleAction(btn)">
           {{ btn.label }}
         </button>
       </div>
+    </div> -->
+
+    <div class="message-bubble">
+
+  <!-- ✅ NORMAL TEXT -->
+  <!-- NORMAL TEXT -->
+  <div *ngIf="msg.cardType === 'text' || !msg.cardType"
+       class="text preserve-lines"
+       [ngClass]="{
+         'attendance-text': msg.text?.includes('Attendance module')
+       }">
+
+    {{ msg.text }}
+
+  </div>
+
+  <!-- ✅ STEPS CARD -->
+  <div *ngIf="msg.cardType === 'steps'">
+
+    <div class="card-title">
+      {{ msg.text }}
     </div>
+
+<div class="steps-list">
+  <div *ngFor="let item of msg.items" class="step-line preserve-lines">
+    {{ item }}
+  </div>
+</div>
+
+  </div>
+
+  <!-- ✅ FILE DOWNLOAD CARD -->
+  <div *ngIf="msg.cardType === 'file'">
+
+    <div class="card-title">
+      📄 {{ msg.text }}
+    </div>
+
+  <a
+    [href]="'http://localhost:46020' + msg.fileUrl"
+    target="_blank"
+    class="download-btn">
+
+    ⬇ Download
+
+  </a>
+
+  </div>
+
+  <!-- ✅ WORKFLOW CARD -->
+  <div *ngIf="msg.cardType === 'workflow'">
+
+    <div class="card-title">
+      {{ msg.text }}
+    </div>
+
+    <div class="workflow-box"
+         *ngFor="let step of msg.workflow">
+      {{ step }}
+    </div>
+
+  </div>
+
+  <!-- ✅ BUTTONS -->
+  <div *ngIf="msg.buttons?.length" class="chat-buttons">
+    <button *ngFor="let btn of msg.buttons"
+            (click)="handleAction(btn)">
+      {{ btn.label }}
+    </button>
+  </div>
+
+  <!-- ✅ TIME -->
+  <div class="time">
+    {{ msg.time }}
+  </div>
+
+</div>
+
+
 
     <!-- 👤 User Avatar -->
     <div class="avatar user-avatar" *ngIf="msg.type === 'user'">👤</div>
@@ -195,9 +277,36 @@
 
   </div>
 
+</div> 
+
+
+
+
+<!-- Suggestions -->
+<div class="suggestion-bar">
+
+  <button (click)="sendSuggestion('how leave works')">
+    How Leave Works
+  </button>
+
+  <button (click)="sendSuggestion('download ppt')">
+    HRMS Demo ppt
+  </button>
+
+  <button (click)="sendSuggestion('payroll process')">
+    Payroll Process
+  </button>
+
+  <button (click)="sendSuggestion('attendance help')">
+    Attendance Help
+  </button>
+
 </div>
 
+
+
     <!-- Input -->
+<div class="chat-input-modern">
   <div class="chat-input-modern">
 
   <!-- Attach -->

@@ -5,6 +5,7 @@ import { EmployeeResignationService } from '../employee-profile/employee-service
 import { AdminService } from '../../admin/servies/admin.service';
 import { environment } from '../../../environments/environment';
 import Swal from 'sweetalert2';
+import { HttpClient } from '@angular/common/http';
 interface LocationMap {
   [key: string]: string[];
 }
@@ -16,6 +17,7 @@ interface LocationMap {
 })
 
 export class HeaderComponent {
+  selectedFile: File | null = null;
   role: string = '';
  roleName:any='';
  userName:any='';
@@ -43,7 +45,8 @@ profilePicture: string = '';
 companyLogo: string = '/assets/images/cor-logo.png';
 //profilePicture: string = 'assets/images/default-profile.png';
 userId: number = Number(sessionStorage.getItem('UserId'));
- constructor(private router: Router, private employeeResignationService: EmployeeResignationService, private adminService: AdminService, private ngZone: NgZone) {}
+ constructor(  private http: HttpClient,
+private router: Router, private employeeResignationService: EmployeeResignationService, private adminService: AdminService, private ngZone: NgZone) {}
   ngOnInit() {
     this.loadProfilePicture();
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -74,6 +77,12 @@ userId: number = Number(sessionStorage.getItem('UserId'));
   setInterval(() => {
     this.checkClockButtonVisibility();
   }, 60000);
+
+
+  //adding
+
+
+
   }
   loadEmployeeCompanyLogo() {
   const companyId = Number(sessionStorage.getItem('CompanyId'));
@@ -716,23 +725,82 @@ toggleChat() {
 } 
 
 // Add message
-addMessage(type: string, text: string, buttons: any[] = []) {
+addMessage(
+  type: string,
+  text: string,
+  buttons: any[] = [],
+  cardType: string = 'text',
+  items: any[] = [],
+  fileUrl: string = '',
+  workflow: any[] = []
+) {
+
   const time = new Date().toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit'
   });
 
-  this.messages.push({ type, text, time, buttons });
+  this.messages.push({
+    type,
+    text,
+    time,
+    buttons,
+    cardType,
+    items,
+    fileUrl,
+    workflow
+  });
+
   this.scrollToBottom();
 }
 
 // Send message
+// sendMessage() {
+
+//   // allow text OR file
+//   if (!this.userInput.trim() && !this.selectedFile) return;
+
+//   const input = this.userInput.trim();
+
+//   // show text
+//   if (input) {
+//     this.addMessage('user', input);
+//   }
+
+//   this.userInput = '';
+//   this.isTyping = true;
+
+//   setTimeout(() => {
+
+//     this.isTyping = false;
+
+//     // 📎 FILE LOGIC
+//     if (this.selectedFile) {
+//       this.addMessage(
+//         'bot',
+//         `📄 File "${this.selectedFile.name}" received successfully ✅`
+//       );
+
+//       this.selectedFile = null;
+//       return;
+//     }
+
+//     // 🤖 EXISTING CHATBOT
+//     if (input) {
+//       this.handleUserQuery(input.toLowerCase());
+//     }
+
+//   }, 1000);
+// }
+
 sendMessage() {
+
   // allow text OR file
   if (!this.userInput.trim() && !this.selectedFile) return;
 
   const input = this.userInput.trim();
 
+  // Show user message
   // show text
   if (input) {
     this.addMessage('user', input);
@@ -743,6 +811,99 @@ sendMessage() {
 
   setTimeout(() => {
 
+    // =========================
+    // FILE UPLOAD
+    // =========================
+    if (this.selectedFile) {
+
+      this.addMessage(
+        'bot',
+        'HRMS Training PPT',
+        [],
+        'file',
+        [],
+        '#'
+      );
+
+      this.selectedFile = null;
+      this.isTyping = false;
+      return;
+    }
+
+    // =========================
+    // CALL BACKEND API
+    // =========================
+  this.http.post<any>('http://localhost:46020/api/chat', {
+  message: input
+}).subscribe({
+
+
+// next: (res) => {
+
+//   this.isTyping = false;
+
+//   let items: string[] = [];
+//   let workflow: string[] = [];
+
+//   if (res.type === 'steps' && res.text) {
+//     items = res.text.split('\n');
+//   }
+
+//   if (res.type === 'workflow' && res.text) {
+//     workflow = res.text.split('\n');
+//   }
+
+//   this.addMessage(
+//     'bot',
+//     res.title || res.text,
+//     [],
+//     res.type,
+//     items,
+//     res.fileUrl || '',
+//     workflow
+//   );
+
+// },
+
+next: (res) => {
+
+  this.isTyping = false;
+
+  let items: string[] = [];
+  let workflow: string[] = [];
+  let displayText = res.text || res.title;
+
+  if (res.type === 'steps' && res.text) {
+    items = res.text.split('\n');
+    displayText = res.title;
+  }
+
+  if (res.type === 'workflow' && res.text) {
+    workflow = res.text.split('\n');
+    displayText = res.title;
+  }
+
+  if (res.type === 'text') {
+    displayText = res.text;
+  }
+
+  this.addMessage(
+    'bot',
+    displayText,
+    [],
+    res.type,
+    items,
+    res.fileUrl || '',
+    workflow
+  );
+
+},
+
+  error: (err) => {
+
+    console.log(err);
+
+    this.isTyping = false;
     this.isTyping = false;
 
     // 📎 FILE LOGIC
@@ -764,6 +925,16 @@ sendMessage() {
   }, 1000);
 }
 
+    this.addMessage(
+      'bot',
+      '⚠️ Unable to connect to chatbot server.'
+    );
+  }
+
+});
+
+  }, 800);
+}
 
 handleUserQuery(input: string) {
 
@@ -943,7 +1114,8 @@ handleAction(btn: any) {
           { label: 'Leave Balance', action: 'navigate', url: '/leave-management' },
           { label: 'Attendance', action: 'navigate', url: '/attendance-list' },
           { label: 'Job History', action: 'navigate', url: '/skills' },
-          { label: 'Profile Info', action: 'navigate', url: '/profile' }
+          { label: 'Profile Info', action: 'navigate', url: '/profile' },
+          {label: 'Salary Slips', action: 'navigate', url: '/compensation/employee-payslip'}
         ]
       );
       return;
@@ -1213,6 +1385,7 @@ formatDisplayTime(date: Date): string {
 
   return `${hours}:${minutes} ${ampm}`;
 }
+
 onFileSelected(event: any) {
   const file = event.target.files[0];
   if (file) {
@@ -1222,4 +1395,11 @@ onFileSelected(event: any) {
     this.addMessage('user', `📎 ${file.name}`);
   }
 }
+
+
+sendSuggestion(text: string) {
+  this.userInput = text;
+  this.sendMessage();
+}
+
 }
