@@ -58,6 +58,11 @@ form = {
   isAdmin = true; // simulate role
   documentTypes: any[] = [];
     // form: EmployeeLetter = this.resetFormInternal();
+    selectedEmployees: any[] = [];
+selectedFiles: File[] = [];
+showEmpDropdown = false;
+existingFiles: string[] = [];
+//removeExistingFile: string[] = [];
   constructor(private adminService: AdminService) {}
  ngOnInit() {
    
@@ -68,6 +73,25 @@ form = {
     // this.loadEmployeeForms();
       this.loadEmployees();
  }
+
+ removeExistingFile(index: number) {
+  this.existingFiles.splice(index, 1);
+}
+ onEmployeeToggle(emp: any, event: any) {
+  if (event.target.checked) {
+    this.selectedEmployees.push(emp);
+  } else {
+    this.selectedEmployees =
+      this.selectedEmployees.filter(x => x.employeeCode !== emp.employeeCode);
+  }
+}
+onFilesSelected(event: any) {
+  const files = event.target.files;
+
+  for (let i = 0; i < files.length; i++) {
+    this.selectedFiles.push(files[i]);
+  }
+}
  onEmployeeChange(code: any) {
 
   const emp = this.employees.find(x => x.employeeCode == code);
@@ -103,12 +127,14 @@ loadEmployees() {
           date: api.issueDate,
           remarks: api.remarks,
           confidential: api.isConfidential,
-          fileName: api.fileName 
-          || api.uploadFileName
-          || api.uploadFile
-          || api.filePath
-          || api.fileUrl
-          || ''
+     fileNames: Array.isArray(api.fileNames || api.FileNames) 
+  ? (api.fileNames || api.FileNames) 
+  : [],
+
+filePaths: Array.isArray(api.filePaths || api.FilePaths) 
+  ? (api.filePaths || api.FilePaths) 
+  : [],
+   employeeUploadedFiles: api.employeeUploadedFiles || []
 
 
         };
@@ -117,7 +143,73 @@ loadEmployees() {
     error: (err) => console.error(err)
   });
 }
+viewDetails(f: any) {
 
+  let employeeDetails = `
+    <b>Employee:</b> ${f.employee} <br/>
+    <b>Document:</b> ${f.name} <br/>
+    <b>Type:</b> ${f.type} <br/>
+    <b>Date:</b> ${this.formatDate(f.date)} <br/>
+    <b>Remarks:</b> ${f.remarks || '-'} <br/><br/>
+  `;
+
+  let employeeFiles = '';
+
+  if (f.employeeUploadedFiles && f.employeeUploadedFiles.length > 0) {
+    employeeFiles = f.employeeUploadedFiles.map((file: string) => {
+      return `<a href="#" onclick="window.open('${this.getFileUrl(file)}','_blank')">View File</a>`;
+    }).join('<br/>');
+  } else {
+    employeeFiles = 'No employee uploads';
+  }
+
+  Swal.fire({
+    title: 'Employee Submission',
+    html: `
+      ${employeeDetails}
+      <b>Employee Uploaded Files:</b><br/>
+      ${employeeFiles}
+    `,
+    width: 600,
+    showCancelButton: true,
+    confirmButtonText: 'Approve',
+    cancelButtonText: 'Reject',
+    confirmButtonColor: '#28a745',
+    cancelButtonColor: '#dc3545'
+  }).then((result) => {
+
+    if (result.isConfirmed) {
+      this.updateStatus(f.id, 'Approved');
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      this.updateStatus(f.id, 'Rejected');
+    }
+
+  });
+
+}
+updateStatus(id: number, status: string) {
+
+  const payload = {
+    id: id,
+    status: status
+  };
+
+  this.adminService.updateFormStatus(payload).subscribe({
+    next: () => {
+      Swal.fire('Success', `Form ${status}`, 'success');
+      this.loadEmployeeForms();
+    },
+    error: (err) => {
+      console.error(err);
+      Swal.fire('Error', 'Failed to update status', 'error');
+    }
+  });
+
+}
+getFileUrl(path: string): string {
+  const baseUrl = environment.apiUrl.replace('/api', '');
+  return `${baseUrl}/${path}`;
+}
 
 //  loadDocumentTypes() {
 //    this.adminService.getActiveDocumentTypes().subscribe({
@@ -188,9 +280,11 @@ loadEmployees() {
   //   link.click();
   // }
 
- viewDocument(path: string,download = false) {
-    this.adminService.ViewDocument(path, download);
-  }
+viewDocument(path: string) {
+  const baseUrl = environment.apiUrl.replace('/api', ''); // remove /api
+  const url = `${baseUrl}/${path}`;
+  window.open(url, '_blank');
+}
 
   // ---------------- ADD / UPDATE FORM ----------------
 onSubmit() {
@@ -198,7 +292,11 @@ onSubmit() {
   this.dateError = '';
   this.fileError = '';
 
-  if (!this.documentTypeId || !this.documentName || !this.form.empCode || !this.issuedDate || !this.selectedFile) {
+ if ( !this.documentTypeId ||
+  !this.documentName ||
+  this.selectedEmployees.length === 0 ||
+  !this.issuedDate ||
+  (this.selectedFiles.length === 0 && this.existingFiles.length === 0)){
 
 
     Swal.fire({ icon: 'warning', title: 'Required fields missing', text: 'Please fill all required fields.' });
@@ -206,26 +304,32 @@ onSubmit() {
   }
 
   const formData = new FormData();
+
    if (this.editId) {
     formData.append("Id", this.editId.toString());
   }
   formData.append("DocumentTypeId", this.documentTypeId.toString());
 
   formData.append("DocumentName", this.documentName);
-  formData.append("EmployeeCode", this.form.empCode);
-formData.append("EmployeeName", this.form.empName);
+const codes = this.selectedEmployees.map(e => e.employeeCode).join(',');
+const names = this.selectedEmployees.map(e => e.employeeName).join(',');
+
+
   formData.append("IssueDate", this.issuedDate);
   formData.append("Remarks", this.remarks ?? "");
   formData.append("IsConfidential", this.confidential ? "true" : "false");
   formData.append("UserId", this.userId.toString());
   formData.append("CompanyId", this.companyId.toString());
   formData.append("RegionId", this.regionId.toString());
+  formData.append("EmployeeCode", codes);
+formData.append("EmployeeName", names);
+
+this.selectedFiles.forEach(file => {
+  formData.append("DocumentFiles", file);
+});
   
 
-  if (this.selectedFile) {
-    formData.append("UploadFile", this.selectedFile);
 
-  }
 
   if (this.isEdit && this.editId) {
     // ---------- PUT ----------
@@ -256,7 +360,17 @@ formData.append("EmployeeName", this.form.empName);
   }
 }
 
+// ✅ Check if employee already selected
+isEmployeeSelected(emp: any): boolean {
+  return this.selectedEmployees.some(
+    x => x.employeeCode === emp.employeeCode
+  );
+}
 
+// ✅ Remove selected file
+removeFile(index: number) {
+  this.selectedFiles.splice(index, 1);
+}
   // ---------------- EDIT ----------------
   editRecord(record: EmployeeForm) {
   this.isEdit = true;
@@ -265,13 +379,24 @@ formData.append("EmployeeName", this.form.empName);
   const docType = this.documentTypes.find(d => d.typeName === record.type);
   this.documentTypeId = docType ? docType.id : '';
   this.documentName = record.name;
-  this.employeeCode = record.employee;
+ // this.employeeCode = record.employee;
   this.issuedDate = record.date;
   this.remarks = record.remarks;
   this.confidential = record.confidential;
-  this.fileName = record.fileName;
+  const empList = record.employee.split(',');
 
-  this.selectedFile = null; // user may upload new file
+  this.selectedEmployees = empList.map((e: string) => {
+    const match = e.match(/(.*)\((.*)\)/);
+    return {
+      employeeName: match ? match[1].trim() : '',
+      employeeCode: match ? match[2].trim() : ''
+    };
+  });
+
+  this.existingFiles = record.filePaths || [];
+
+  // reset new uploads
+  this.selectedFiles = [];
 
   Swal.fire({ icon: 'info', title: 'Edit Mode', text: 'Form loaded for editing.' });
 }
@@ -284,7 +409,7 @@ formData.append("EmployeeName", this.form.empName);
       return;
     }
     // in real app you'd open a URL; for demo show filename
-    Swal.fire({ title: 'File', text: `Open file: ${f.fileName}`, icon: 'info' });
+    Swal.fire({ title: 'File', text: `Open file: ${f.fileNames}`, icon: 'info' });
   }
 
   // ---------------- DELETE ----------------

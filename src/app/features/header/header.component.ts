@@ -22,7 +22,7 @@ export class HeaderComponent {
  roleName:any='';
  userName:any='';
  superadmin:any;
-
+ selectedFile: File | null = null;
 officeLat = 17.458637;
 officeLng = 78.363151;
 allowedRadius: number = 500; // meters (recommended)
@@ -795,11 +795,13 @@ addMessage(
 
 sendMessage() {
 
+  // allow text OR file
   if (!this.userInput.trim() && !this.selectedFile) return;
 
   const input = this.userInput.trim();
 
   // Show user message
+  // show text
   if (input) {
     this.addMessage('user', input);
   }
@@ -902,6 +904,26 @@ next: (res) => {
     console.log(err);
 
     this.isTyping = false;
+    this.isTyping = false;
+
+    // 📎 FILE LOGIC
+    if (this.selectedFile) {
+      this.addMessage(
+        'bot',
+        `📄 File "${this.selectedFile.name}" received successfully ✅`
+      );
+
+      this.selectedFile = null;
+      return;
+    }
+
+    // 🤖 EXISTING CHATBOT
+    if (input) {
+      this.handleUserQuery(input.toLowerCase());
+    }
+
+  }, 1000);
+}
 
     this.addMessage(
       'bot',
