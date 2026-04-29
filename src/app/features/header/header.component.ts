@@ -5,6 +5,10 @@ import { EmployeeResignationService } from '../employee-profile/employee-service
 import { AdminService } from '../../admin/servies/admin.service';
 import { environment } from '../../../environments/environment';
 import Swal from 'sweetalert2';
+import { AiService } from '../../admin/services/ai.service';
+
+
+
 interface LocationMap {
   [key: string]: string[];
 }
@@ -43,7 +47,8 @@ profilePicture: string = '';
 companyLogo: string = '/assets/images/cor-logo.png';
 //profilePicture: string = 'assets/images/default-profile.png';
 userId: number = Number(sessionStorage.getItem('UserId'));
- constructor(private router: Router, private employeeResignationService: EmployeeResignationService, private adminService: AdminService, private ngZone: NgZone) {}
+ constructor(private router: Router,  private aiService: AiService
+, private employeeResignationService: EmployeeResignationService, private adminService: AdminService, private ngZone: NgZone) {}
   ngOnInit() {
     this.loadProfilePicture();
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -742,12 +747,102 @@ sendMessage() {
 
   setTimeout(() => {
     this.isTyping = false;
+    // this.handleUserQuery(input.toLowerCase());
     this.handleUserQuery(input.toLowerCase());
   }, 1200);
 }
 
 
-handleUserQuery(input: string) {
+// handleUserQuery(input: string) {
+
+//   input = input.toLowerCase().trim();
+
+//   // =========================
+//   // ✅ FAQ FIRST
+//   // =========================
+//   const faq = this.getFaqResponse(input);
+//   if (faq) {
+//     this.addMessage('bot', faq.text, faq.buttons || []);
+//     return;
+//   }
+
+//   // =========================
+//   // ✅ SMART INTENT MATCHING (NEW 🔥)
+//   // =========================
+//   const matchedIntent = this.intentMap.find(intent =>
+//     intent.keywords.some(k => input.includes(k))
+//   );
+
+//   if (matchedIntent) {
+
+//     // =========================
+//     // 🔴 PUNCH IN
+//     // =========================
+//     if (matchedIntent.action === 'punch_in') {
+
+//       if (this.isClockedIn) {
+//         this.addMessage('bot', '⚠️ You are already clocked in ⏱️');
+//         return;
+//       }
+
+//       this.addMessage('bot', 'Punching you in... ⏱️');
+
+//       setTimeout(() => {
+//         this.toggleClock(); // ✅ uses your existing API
+//         this.addMessage('bot', `✅ Clocked in at ${this.clockInDisplay}`);
+//       }, 500);
+
+//       return;
+//     }
+
+//     // =========================
+//     // 🔴 PUNCH OUT
+//     // =========================
+//     if (matchedIntent.action === 'punch_out') {
+
+//       if (!this.isClockedIn) {
+//         this.addMessage('bot', '⚠️ You are not clocked in');
+//         return;
+//       }
+
+//       this.addMessage('bot', 'Punching you out... ⏱️');
+
+//       setTimeout(() => {
+//         this.toggleClock(); // ✅ API call
+//         this.addMessage('bot', `🕒 Total time worked: ${this.totalHoursDisplay}`);
+//       }, 500);
+
+//       return;
+//     }
+
+//     // =========================
+//     // 📍 NAVIGATION
+//     // =========================
+//   if (matchedIntent.action === 'navigate' && matchedIntent.url) {
+
+//   this.addMessage('bot', `Opening ${matchedIntent.label}...`);
+
+//   setTimeout(() => {
+//     this.router.navigateByUrl(matchedIntent.url!);
+//   }, 400);
+
+//   return;
+// }
+
+//   // =========================
+//   // ❌ FALLBACK
+//   // =========================
+//   this.addMessage(
+//     'bot',
+//     'I didn’t understand. Try: leave, attendance, dashboard, punch in/out 👇'
+//   );
+
+//   this.showQuickOptions();
+// }
+// }
+// faq list questions and answers
+
+async handleUserQuery(input: string) {
 
   input = input.toLowerCase().trim();
 
@@ -761,7 +856,7 @@ handleUserQuery(input: string) {
   }
 
   // =========================
-  // ✅ SMART INTENT MATCHING (NEW 🔥)
+  // ✅ SMART INTENT MATCHING
   // =========================
   const matchedIntent = this.intentMap.find(intent =>
     intent.keywords.some(k => input.includes(k))
@@ -769,9 +864,7 @@ handleUserQuery(input: string) {
 
   if (matchedIntent) {
 
-    // =========================
     // 🔴 PUNCH IN
-    // =========================
     if (matchedIntent.action === 'punch_in') {
 
       if (this.isClockedIn) {
@@ -782,16 +875,14 @@ handleUserQuery(input: string) {
       this.addMessage('bot', 'Punching you in... ⏱️');
 
       setTimeout(() => {
-        this.toggleClock(); // ✅ uses your existing API
+        this.toggleClock();
         this.addMessage('bot', `✅ Clocked in at ${this.clockInDisplay}`);
       }, 500);
 
       return;
     }
 
-    // =========================
     // 🔴 PUNCH OUT
-    // =========================
     if (matchedIntent.action === 'punch_out') {
 
       if (!this.isClockedIn) {
@@ -802,39 +893,66 @@ handleUserQuery(input: string) {
       this.addMessage('bot', 'Punching you out... ⏱️');
 
       setTimeout(() => {
-        this.toggleClock(); // ✅ API call
+        this.toggleClock();
         this.addMessage('bot', `🕒 Total time worked: ${this.totalHoursDisplay}`);
       }, 500);
 
       return;
     }
 
-    // =========================
     // 📍 NAVIGATION
-    // =========================
-  if (matchedIntent.action === 'navigate' && matchedIntent.url) {
+    if (matchedIntent.action === 'navigate' && matchedIntent.url) {
 
-  this.addMessage('bot', `Opening ${matchedIntent.label}...`);
+      this.addMessage('bot', `Opening ${matchedIntent.label}...`);
 
-  setTimeout(() => {
-    this.router.navigateByUrl(matchedIntent.url!);
-  }, 400);
+      setTimeout(() => {
+        this.router.navigateByUrl(matchedIntent.url!);
+      }, 400);
+
+      return;
+    }
+  }
+
+  // =========================
+//  DATE HANDLING (FIX)
+// =========================
+if (input.includes('date') || input.includes('today')) {
+
+  const now = new Date();
+
+  const formattedDate = now.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  this.addMessage('bot', `📅 Today is ${formattedDate}`);
 
   return;
 }
-
   // =========================
-  // ❌ FALLBACK
+  // 🤖 llm FALLBACK (NEW 🔥)
   // =========================
-  this.addMessage(
-    'bot',
-    'I didn’t understand. Try: leave, attendance, dashboard, punch in/out 👇'
-  );
+  this.isTyping = true;
+this.scrollToBottom();
 
-  this.showQuickOptions();
+try {
+  const reply = await this.aiService.askAI(input);
+
+  this.isTyping = false;
+
+  this.addMessage('bot', reply);
+
+} catch (error) {
+  this.isTyping = false;
+
+  this.addMessage('bot', '❌ AI not responding');
 }
 }
-// faq list questions and answers
+
+
+
 faqList = [
 {
   keywords: ['cortracker', 'about'],
