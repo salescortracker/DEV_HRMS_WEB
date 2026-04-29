@@ -16,6 +16,7 @@ interface LocationMap {
 })
 
 export class HeaderComponent {
+  selectedFile: File | null = null;
   role: string = '';
  roleName:any='';
  userName:any='';
@@ -728,6 +729,7 @@ addMessage(type: string, text: string, buttons: any[] = []) {
 
 // Send message
 sendMessage() {
+
   // allow text OR file
   if (!this.userInput.trim() && !this.selectedFile) return;
 
@@ -943,7 +945,8 @@ handleAction(btn: any) {
           { label: 'Leave Balance', action: 'navigate', url: '/leave-management' },
           { label: 'Attendance', action: 'navigate', url: '/attendance-list' },
           { label: 'Job History', action: 'navigate', url: '/skills' },
-          { label: 'Profile Info', action: 'navigate', url: '/profile' }
+          { label: 'Profile Info', action: 'navigate', url: '/profile' },
+          {label: 'Salary Slips', action: 'navigate', url: '/compensation/employee-payslip'}
         ]
       );
       return;
@@ -1213,6 +1216,7 @@ formatDisplayTime(date: Date): string {
 
   return `${hours}:${minutes} ${ampm}`;
 }
+
 onFileSelected(event: any) {
   const file = event.target.files[0];
   if (file) {
@@ -1222,4 +1226,5 @@ onFileSelected(event: any) {
     this.addMessage('user', `📎 ${file.name}`);
   }
 }
+
 }
