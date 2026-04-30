@@ -5,6 +5,8 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { environment } from '../../../../environments/environment';
+import { AdminService } from '../../../admin/servies/admin.service';
 
 @Component({
   selector: 'app-all-expenses',
@@ -32,10 +34,14 @@ regionId!: number;
   pageSize = 10;
   currentPage = 1;
   pageSizeOptions = [5, 10, 20, 50];
+  companyLogoBase64: string = '';
+companyName: string = '';
+companyAddress: string = '';
 
   constructor(
     private fb: FormBuilder,
-    private expenseService: ExpensesService
+    private expenseService: ExpensesService,
+    private adminService: AdminService
   ) {}
 
   // ============================================================
@@ -49,6 +55,7 @@ regionId!: number;
     this.buildForm();
     //this.loadCategories();
     this.loadAllExpenses();
+    this.loadCompanyDetails();
   }
 
   // ============================================================
@@ -93,6 +100,65 @@ regionId!: number;
       }
     });
   }
+  loadCompanyDetails() {
+  const companyId = Number(sessionStorage.getItem('CompanyId'));
+
+  this.adminService.getCompanyById(companyId).subscribe({
+    next: async (company: any) => {
+
+      this.companyName = company?.companyName || 'Company';
+      this.companyAddress = company?.companyAddress || 'Hyderabad';
+
+      const logo = company?.companyLogo;
+
+      if (logo && logo.trim() !== '') {
+
+        if (logo.startsWith('data:')) {
+          this.companyLogoBase64 = logo;
+        } else {
+          const logoPath = logo.replace(/\\/g, '/');
+          const fullUrl = `${environment.baseurl}/${logoPath}`;
+
+          this.companyLogoBase64 =
+            await this.getBase64ImageFromURL(fullUrl);
+        }
+
+      } else {
+        this.setDefaultLogo();
+      }
+    },
+    error: () => this.setDefaultLogo()
+  });
+}
+
+setDefaultLogo() {
+  const defaultLogo = 'assets/images/default-logo.png';
+
+  this.getBase64ImageFromURL(defaultLogo)
+    .then(base64 => this.companyLogoBase64 = base64)
+    .catch(() => this.companyLogoBase64 = '');
+}
+
+getBase64ImageFromURL(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = url;
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+
+      resolve(canvas.toDataURL('image/png'));
+    };
+
+    img.onerror = err => reject(err);
+  });
+}
 
   // ============================================================
   // 🔹 LOAD CATEGORIES
@@ -188,9 +254,31 @@ regionId!: number;
     this.currentPage = 1;
   }
 
-  downloadPDF(): void {
-  const doc = new jsPDF();
+ downloadPDF(): void {
 
+  const doc = new jsPDF('p', 'mm', 'a4');
+  const pageWidth = doc.internal.pageSize.getWidth();
+
+  // 🔴 BORDER
+  doc.setDrawColor(200, 0, 0);
+  doc.rect(5, 5, pageWidth - 10, 287 - 10);
+
+  // 🔥 HEADER LOGO
+  if (this.companyLogoBase64) {
+    doc.addImage(this.companyLogoBase64, 'PNG', pageWidth / 2 - 20, 10, 40, 15);
+  }
+
+  // 🔥 COMPANY NAME
+  doc.setFontSize(16);
+  doc.setTextColor(200, 0, 0);
+  doc.text(this.companyName || 'Company', 20, 30);
+
+  // 🔥 ADDRESS
+  doc.setFontSize(9);
+  doc.setTextColor(100);
+  doc.text(this.companyAddress || '', 20, 36);
+
+  // 🔥 TABLE DATA
   const data = this.expenses.filter(e => e.visible);
 
   const rows = data.map(e => [
@@ -203,6 +291,7 @@ regionId!: number;
   ]);
 
   autoTable(doc, {
+    startY: 50,
     head: [['Project', 'Category', 'Country', 'Amount', 'Date', 'Status']],
     body: rows
   });

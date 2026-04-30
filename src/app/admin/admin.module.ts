@@ -159,7 +159,7 @@ import { JobApplicationComponent } from './pages/job-application/job-application
     ModeofstudyComponent,
     AccounttypeComponent,
     BirthdayMasterComponent,
-    TaskStatusComponent
+    TaskStatusComponent,
     LateLoginPolicyComponent,
     BirthdayMasterComponent,
     JobApplicationComponent

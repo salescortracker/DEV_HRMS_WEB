@@ -8,6 +8,11 @@
   border-radius: 16px;
   padding: 60px;
 }
+.title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 
 .icon-box {
   width: 60px;
@@ -71,7 +76,6 @@
   position: absolute;
   left: 10px;
   top: 12px;
-  color: #d80027;
 }
 
 .form-group input,
@@ -107,3 +111,12 @@
 .btn-submit:hover {
   background: #b30020;
 }
+.company-logo {
+  text-align: center;
+}
+
+.company-logo img {
+  height: 70px;
+  max-width: 200px;
+  object-fit: contain;
+} 
