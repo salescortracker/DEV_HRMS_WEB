@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { EmployeeForm } from '../../../../admin/layout/models/employee-forms.model';
 import Swal from 'sweetalert2';
-import { AdminService } from '../../../../admin/servies/admin.service';
+import { AdminService, AttachmentTypeDto } from '../../../../admin/servies/admin.service';
 import { environment } from '../../../../../environments/environment';
 import { EmployeeLetter } from '../../../../admin/layout/models/employee-letter.model';
+
 @Component({
   selector: 'app-employee-forms',
   standalone: false,
@@ -225,17 +226,23 @@ getFileUrl(path: string): string {
 
 
  loadDocumentTypes() {
-  this.adminService.getAttachmentTypesByCategory('Forms')
+  this.adminService.getAttachments(this.companyId, this.regionId)
     .subscribe({
-      next: (res: any[]) => {
-        this.documentTypes = res.map(x => ({
+      next: (res: AttachmentTypeDto[]) => {
+
+        const formsOnly = res.filter(x =>
+          x.attachmentCategory?.toLowerCase() === 'forms'
+        );
+
+        this.documentTypes = formsOnly.map(x => ({
           id: x.attachmentTypeId,
           typeName: x.attachmentTypeName
         }));
+
         this.loadEmployeeForms();
       },
       error: (err) => {
-        console.error('Failed to load document types', err);
+        console.error('Error loading attachments', err);
       }
     });
 }
