@@ -101,6 +101,7 @@
 </div>
   </div>
 
+<<<<<<< Updated upstream
   <!-- Recruitment Pie Chart -->
 <div class="card">
   <h3>Company Events</h3>
@@ -234,6 +235,13 @@
       <div class="bubble">
         <span *ngIf="msg.text">{{ msg.text }}</span>
         <span *ngIf="msg.attachmentName">📎 {{ msg.attachmentName }}</span>
+=======
+    <div class="leave-summary">
+      <div *ngFor="let s of leaveCards" class="leave-box clickable" (click)="onLeaveCardClick(s.label)">
+        <i [class]="s.icon"></i>
+        <p>{{ s.label }}</p>
+        <h4>{{ s.value }}</h4>
+>>>>>>> Stashed changes
       </div>
     </div>
 
@@ -244,9 +252,56 @@
       </button>
     </div>
 
+<<<<<<< Updated upstream
     <!-- Modules (NO auto close) -->
     <div *ngIf="showModules" class="module-list">
       <button *ngFor="let m of modules">{{ m }}</button>
+=======
+    <!-- TIMESHEET -->
+    <div *ngIf="activeTab === 'timesheet'" class="tab-body">
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+
+        <tr *ngFor="let ts of submittedTimesheets">
+          <td>{{ ts.employeeName }}</td>
+          <td>{{ ts.timesheetDate | date }}</td>
+          <td>
+            <span class="badge" [ngClass]="ts.status?.toLowerCase()">
+              {{ ts.status }}
+            </span>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- HELPDESK -->
+    <div *ngIf="activeTab === 'helpdesk'" class="tab-body">
+      <table>
+        <tr>
+          <th>Ticket</th>
+          <th>Priority</th>
+          <th>Status</th>
+        </tr>
+
+        <tr *ngFor="let t of tickets">
+          <td>{{ t.ticketNumber }}</td>
+          <td>{{ t.priorityName }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+                'bg-warning text-dark': t.status === 'Open',
+                'bg-success': t.status === 'Approved',
+                'bg-danger': t.status === 'Rejected'
+              }">
+              {{ t.status }}
+            </span>
+          </td>
+        </tr>
+      </table>
+>>>>>>> Stashed changes
     </div>
 
   </div>

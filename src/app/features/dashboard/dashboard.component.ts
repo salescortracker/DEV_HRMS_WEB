@@ -54,9 +54,83 @@ ngOnInit(){
 this.loadAttendance();
    this.generateCalendar();
 
+<<<<<<< Updated upstream
   if (this.userId) {
     this.loadUserLeaves(this.userId);
     this.loadMyTickets();
+=======
+  todayAttendance = {
+    status: 'Absent',
+    workingHours: '0'
+  };
+
+  attendanceRecords: any[] = [];
+  attendanceChart: any;
+
+  userLeaves: any[] = [];
+  weeklyData: any[] = [];
+  weekoffDates: string[] = [];
+
+  leaveApprovalSummary = {
+    approved: 0,
+    pending: 0,
+    rejected: 0
+  };
+
+  leaveCards: any[] = [];
+
+  statCards: any[] = [];
+
+  tickets: any[] = [];
+  submittedTimesheets: any[] = [];
+  totalWorkedHours: string = '0';
+  liveTimer: any;
+  baseWorkedMinutes: number = 0;  
+  liveWorkedMinutes: number = 0; 
+  displayHours: number = 0;
+  displayMinutes: number = 0;
+
+  constructor(
+    private adminService: AdminService,
+    private empService: EmployeeResignationService,
+    private helpdeskService: HelpdeskService,
+    private timesheetService: TimesheetService,
+    private router: Router
+  ) {}
+
+  goToLeaveApprovals(status: 'approved' | 'pending' | 'rejected'): void {
+    this.router.navigate(['/leave-management'], {
+      queryParams: {
+        tab: 'approvals',
+        status
+      }
+    });
+  }
+
+  onLeaveCardClick(label: string): void {
+    const status = label.toLowerCase() as 'approved' | 'pending' | 'rejected';
+    this.goToLeaveApprovals(status);
+  }
+
+  ngOnInit(): void {
+    this.currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+
+    this.userId = Number(sessionStorage.getItem('UserId'));
+    this.EmployeeCode = sessionStorage.getItem('EmployeeCode') || '';
+    this.companyId = this.currentUser.companyId;
+
+    this.employeeName = this.currentUser.fullName || '';
+    this.profileImage = sessionStorage.getItem(`profileImage_${this.userId}`) || '';
+    this.profileInitials = this.getInitials(this.employeeName);
+
+    this.loadDashboard();
+    this.loadAttendance();
+    this.loadLeaves();
+    this.loadTickets();
+    this.loadTimesheets();
+    this.loadWeekoffs();
+    this.loadWeeklyData();
+>>>>>>> Stashed changes
   }
 }
 

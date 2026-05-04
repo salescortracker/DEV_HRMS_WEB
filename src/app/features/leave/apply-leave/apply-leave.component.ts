@@ -590,7 +590,15 @@ export class ApplyLeaveComponent {
 //   });
 
 // }
+<<<<<<< Updated upstream
 startDate: string = "";
+=======
+ canApprove: any;
+  canReject: any;
+  hrEmail: string = '';
+  hrEmailError: string = '';
+  startDate: string = "";
+>>>>>>> Stashed changes
   endDate: string = "";
   totalDays: number = 0;
   today: string = "";
@@ -1088,6 +1096,38 @@ startDate: string = "";
       return;
     }
 
+<<<<<<< Updated upstream
+=======
+    if (!this.validateHrEmails()) {
+      Swal.fire('Invalid HR Email', this.hrEmailError, 'warning');
+      return;
+    }
+
+    // If there's a rejected leave on these dates, show confirmation
+    if (hasRejectedLeave) {
+      Swal.fire({
+        title: 'Reapply for Previously Rejected Leave?',
+        text: 'A leave request on these dates was previously rejected. Do you want to submit a new request?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Submit Again',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.submitLeaveRequest();
+        }
+      });
+    } else {
+      this.submitLeaveRequest();
+    }
+  }
+
+  // Separate method to handle the actual leave submission
+  private submitLeaveRequest(): void {
+    const selected = this.leaveTypes.find(x => x.leaveTypeName === this.leaveType);
+    const leaveTypeId = selected?.leaveTypeID;
+
+>>>>>>> Stashed changes
     const formData = new FormData();
 
     formData.append("UserId", this.userId.toString());
@@ -1100,6 +1140,11 @@ startDate: string = "";
     formData.append("TotalDays", this.totalDays.toString());
     formData.append("Reason", this.reason);
     formData.append("ReportingManagerId", this.reportingManagerId.toString());
+
+    const hrEmails = this.getHrEmailList();
+    if (hrEmails.length) {
+      formData.append("HrEmail", hrEmails.join(","));
+    }
 
     if (this.selectedFile) {
       formData.append("SupportingDocument", this.selectedFile);
@@ -1128,6 +1173,7 @@ startDate: string = "";
         this.selectedFileName = "";
         this.selectedFile = null;
         this.isHalfDay = false;
+        this.hrEmail = '';
       },
       error: (err: any) => {
         console.error("Submit failed", err);
@@ -1146,6 +1192,8 @@ startDate: string = "";
     this.selectedFileName = "";
     this.selectedFile = null;
     this.isHalfDay = false;
+    this.hrEmail = '';
+    this.hrEmailError = '';
 
     Swal.fire({
       icon: 'info',
@@ -1153,6 +1201,36 @@ startDate: string = "";
       timer: 1000,
       showConfirmButton: false
     });
+  }
+
+  private getHrEmailList(): string[] {
+    return this.hrEmail
+      .split(/[;,]/)
+      .map(email => email.trim())
+      .filter(email => email.length > 0);
+  }
+
+  private isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  validateHrEmails(): boolean {
+    this.hrEmailError = '';
+
+    if (!this.hrEmail.trim()) {
+      return true;
+    }
+
+    const emails = this.getHrEmailList();
+    const invalidEmail = emails.find(email => !this.isValidEmail(email));
+
+    if (invalidEmail) {
+      this.hrEmailError = `Invalid email address: ${invalidEmail}`;
+      return false;
+    }
+
+    return true;
   }
 
   // Sorting

@@ -101,6 +101,14 @@
 
       <input type="text" class="form-control" [(ngModel)]="reportingManagerName" name="reportingManagerName" readonly>
     </div>
+<<<<<<< Updated upstream
+=======
+      <div class="mb-3">
+      <label class="form-label">HR Email (CC)</label>
+      <input type="text" class="form-control" [(ngModel)]="hrEmail" name="hrEmail" placeholder="Enter one or more emails separated by commas" (input)="hrEmailError=''">
+      <small class="text-danger">{{ hrEmailError }}</small>
+    </div>
+>>>>>>> Stashed changes
 
 
     <div class="text-start mt-3 d-flex gap-2">
