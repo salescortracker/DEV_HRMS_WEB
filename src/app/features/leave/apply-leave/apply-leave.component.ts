@@ -592,8 +592,8 @@ export class ApplyLeaveComponent {
 // }
  canApprove: any;
   canReject: any;
-hrEmail: string = '';
-startDate: string = "";
+  hrEmail: string = '';
+  startDate: string = "";
   endDate: string = "";
   totalDays: number = 0;
   today: string = "";
@@ -996,6 +996,40 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
   }
 
 
+  private getHrEmailList(): string[] {
+    if (!this.hrEmail) return [];
+
+    return this.hrEmail
+      .split(/[;,\s]+/)
+      .map(email => email.trim())
+      .filter(email => email.length > 0);
+  }
+
+  private isValidEmail(email: string): boolean {
+    const normalized = email.trim();
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(normalized);
+  }
+
+  private validateHrEmails(): boolean {
+    const emails = this.getHrEmailList();
+    if (emails.length === 0) {
+      return true;
+    }
+
+    const invalidEmails = emails.filter(email => !this.isValidEmail(email));
+    if (invalidEmails.length > 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid HR Email',
+        text: `Please enter valid HR email address(es): ${invalidEmails.join(', ')}`
+      });
+      return false;
+    }
+
+    return true;
+  }
+
   // START DATE CHANGE
   onStartDateChange() {
     this.calculateTotalDays();
@@ -1184,6 +1218,10 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
       return;
     }
 
+    if (!this.validateHrEmails()) {
+      return;
+    }
+
     // If there's a rejected leave on these dates, show confirmation
     if (hasRejectedLeave) {
       Swal.fire({
@@ -1220,6 +1258,11 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
     formData.append("TotalDays", this.totalDays.toString());
     formData.append("Reason", this.reason);
     formData.append("ReportingManagerId", this.reportingManagerId.toString());
+
+    const hrEmailList = this.getHrEmailList();
+    if (hrEmailList.length) {
+      formData.append("HrEmail", hrEmailList.join(','));
+    }
 
     if (this.selectedFile) {
       formData.append("SupportingDocument", this.selectedFile);
