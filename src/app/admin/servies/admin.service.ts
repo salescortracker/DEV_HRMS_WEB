@@ -894,9 +894,9 @@ export class AdminService {
     return this.update<Company>('UserManagement/UpdateCompany', id, model);
   }
 
-  deleteCompany(id: number): Observable<void> {
-    return this.delete('UserManagement/DeleteCompany', id);
-  }
+deleteCompany(id: number) {
+  return this.http.post('https://localhost:44370/api/UserManagement/DeleteCompany', id);
+}
 
   // -------------------------------------------------------------
   // 🔹 REGION OPERATIONS
@@ -917,9 +917,9 @@ export class AdminService {
     return this.update<Region>('UserManagement/UpdateRegion', id, model);
   }
 
-  deleteRegion(id: number): Observable<void> {
-    return this.delete('UserManagement/DeleteRegion', id);
-  }
+deleteRegion(id: number) {
+  return this.http.post('https://localhost:44370/api/UserManagement/DeleteRegion', id);
+}
 
   // -------------------------------------------------------------
   // 🔹 USER OPERATIONS
