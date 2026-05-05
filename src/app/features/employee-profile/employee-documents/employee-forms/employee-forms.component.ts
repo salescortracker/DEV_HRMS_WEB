@@ -86,11 +86,32 @@ existingFiles: string[] = [];
   }
 }
 onFilesSelected(event: any) {
-  const files = event.target.files;
+  const files: FileList = event.target.files;
 
   for (let i = 0; i < files.length; i++) {
-    this.selectedFiles.push(files[i]);
+    const file = files[i];
+
+    const allowed = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'ppt', 'pptx', 'xls', 'xlsx', 'txt'];
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+
+    if (!allowed.includes(ext)) {
+      Swal.fire('Error', `${file.name} is invalid format`, 'error');
+      continue;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      Swal.fire('Error', `${file.name} exceeds 5MB`, 'error');
+      continue;
+    }
+
+    // prevent duplicates
+    const exists = this.selectedFiles.some(f => f.name === file.name);
+    if (!exists) {
+      this.selectedFiles.push(file);
+    }
   }
+
+  event.target.value = ''; // reset input
 }
  onEmployeeChange(code: any) {
 
@@ -467,6 +488,8 @@ private resetFormInternal() {
   this.issuedDate = "";
   this.remarks = "";
   this.confidential = false;
+   this.selectedFiles = [];     // ✅ add
+  this.existingFiles = [];     // ✅ add
   this.fileName = "";
   this.selectedFile = null;
   this.isEdit = false;
@@ -475,6 +498,7 @@ private resetFormInternal() {
   this.fileError = '';
   this.dateError = '';
   this.currentPage = 1;
+   this.selectedEmployees = []; // ✅ add
   this.form = {
   empCode: '',
   empName: ''

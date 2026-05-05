@@ -517,16 +517,16 @@
         <!-- Actions -->
         <td>
           <button class="btn btn-sm btn-outline-success me-1" (click)="advanceStage(c)"
-            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding'].includes(c.stageName)">
+            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)">
             Shortlist
           </button>
           <button class="btn btn-sm btn-outline-danger"
-            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding'].includes(c.stageName)"
+            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)"
             (click)="removeCandidate(c)">
             Delete
           </button>
           <button class="btn btn-sm btn-outline-primary me-1"
-            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding'].includes(c.stageName)"
+            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)"
             (click)="editCandidate(c)">
             Edit
           </button>
