@@ -10,6 +10,7 @@ export class HelpDeskManagementComponent {
 canViewRaiseTicket = false;
 canViewMyTickets = false;
 canViewTicketApproval = false;
+canViewTicketReports = false;
 selectedTab: string = '';
 
 ngOnInit(): void {
@@ -30,15 +31,19 @@ LoadTabPermissions() {
     (m:any) => m.menuName?.trim().toLowerCase() === "ticket approval"
   );
 
- 
+ const ticketreports = menus.find(
+    (m:any) => m.menuName?.trim().toLowerCase() === "ticket reports"
+  );
 
   this.canViewRaiseTicket = raise?.canView ?? false;
   this.canViewMyTickets = mytickets?.canView ?? false;
   this.canViewTicketApproval = ticketapproval?.canView ?? false;
+  this.canViewTicketReports = ticketreports?.canView ?? false;
 
   if (this.canViewRaiseTicket) this.selectedTab = 'tab1';
   else if (this.canViewMyTickets) this.selectedTab = 'tab2';
   else if (this.canViewTicketApproval) this.selectedTab = 'tab3';
+  else if (this.canViewTicketReports) this.selectedTab = 'tab4';
 }
 
 
