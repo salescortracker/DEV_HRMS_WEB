@@ -203,7 +203,14 @@ export interface EmployeeImmigration {
   modifiedBy?: string;
   modifiedDate?: string;
 }
-
+export interface AttachmentTypeDto {
+  attachmentTypeId: number;
+  companyId: number;
+  regionId: number;
+  attachmentCategory: string;
+  attachmentTypeName: string;
+  isActive: boolean;
+}
 
 export interface Designation {
   designationID: number;
@@ -2977,6 +2984,17 @@ getGeoLocationsByCompanyRegion(companyId: number, regionId: number) {
   return this.http.get<any>(
     `${this.baseUrl}/UserManagement/GetGeoLocationsCompanyRegion`,
     { params: { companyId, regionId } }
+  );
+}
+getAttachments(companyId: number, regionId: number) {
+  return this.http.get<AttachmentTypeDto[]>(
+    `${this.baseUrl}/MasterData/GetDocuments`,
+    {
+      params: {
+        companyId: companyId,
+        regionId: regionId
+      }
+    }
   );
 }
 
