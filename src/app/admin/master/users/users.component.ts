@@ -68,18 +68,39 @@ loadDesignations(): void {
   });
 }
 
+// filterDesignations(): void {
+//   if (!this.user.companyId || !this.user.regionId) {
+//     this.filteredDesignations = [];
+//     return;
+//   }
+
+//   this.filteredDesignations = this.designations.filter(d =>
+//     Number(d.companyID) === Number(this.user.companyId) &&   // ✅ FIX
+//     Number(d.regionID) === Number(this.user.regionId)        // ✅ FIX
+//   );
+
+//   console.log("Filtered Designations:", this.filteredDesignations);
+// }
 filterDesignations(): void {
-  if (!this.user.companyId || !this.user.regionId) {
+  if (!this.user.companyId || !this.user.regionId || !this.user.departmentId) {
     this.filteredDesignations = [];
     return;
   }
 
   this.filteredDesignations = this.designations.filter(d =>
-    Number(d.companyID) === Number(this.user.companyId) &&   // ✅ FIX
-    Number(d.regionID) === Number(this.user.regionId)        // ✅ FIX
+    Number(d.companyID) === Number(this.user.companyId) &&
+    Number(d.regionID) === Number(this.user.regionId) &&
+    Number(d.departmentID) === Number(this.user.departmentId)   // ✅ FIX HERE
   );
 
   console.log("Filtered Designations:", this.filteredDesignations);
+}
+
+//========================= Designations based on selected departments ========================================
+
+onDepartmentChange(departmentId: number): void {
+  this.user.designationId = 0;   // reset designation
+  this.filterDesignations();     // reload based on department
 }
 
 getEmptyUser(): User {
@@ -177,9 +198,31 @@ onStatusChange(event: Event): void {
     this.generateNextEmployeeCode();
     this.filteredDesignations = [];
   }
-  onRegionChange(regionId: number): void {
+
+//   onRegionChange(regionId: number): void {
+//   this.user.roleId = 0;
+//   this.user.departmentId = 0;
+//    this.user.designationId = 0;
+
+//   if (!this.user.companyId || !regionId) {
+//     this.filteredRoles = [];
+//     this.filteredDepartments = [];
+//     this.filteredDesignations = [];
+//     return;
+//   }
+//   this.filteredRoles = this.roles.filter(r =>
+//     Number(r.companyId) === Number(this.user.companyId) &&
+//     Number(r.regionId) === Number(regionId)
+//   );
+//   this.filterDepartments();
+//   this.generateNextEmployeeCode();
+//   this.filterDesignations();
+// }
+
+onRegionChange(regionId: number): void {
   this.user.roleId = 0;
   this.user.departmentId = 0;
+  this.user.designationId = 0; // ✅ reset
 
   if (!this.user.companyId || !regionId) {
     this.filteredRoles = [];
@@ -187,14 +230,17 @@ onStatusChange(event: Event): void {
     this.filteredDesignations = [];
     return;
   }
+
   this.filteredRoles = this.roles.filter(r =>
     Number(r.companyId) === Number(this.user.companyId) &&
     Number(r.regionId) === Number(regionId)
   );
+
   this.filterDepartments();
-  this.generateNextEmployeeCode();
-  this.filterDesignations();
+
+  this.filteredDesignations = []; // ✅ wait until department selected
 }
+
 filterDepartments(): void {
   if (!this.user.companyId || !this.user.regionId) {
     this.filteredDepartments = [];

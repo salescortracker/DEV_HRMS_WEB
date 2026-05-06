@@ -203,12 +203,11 @@ closeUploadPopup() {
     this.spinner.show();
       this.adminservice.deleteCompany(c.companyId).subscribe({
         next: (res:any) => {
-          debugger;
           this.spinner.hide();
            Swal.fire({
           icon: 'success',
           title: 'Deleted Successfully!',
-          text: `${this.company.companyName} has been Deleted.`,
+          text: `${c.companyName} has been Deleted.`,
          
           showConfirmButton: false
           ,showCloseButton: true,
@@ -216,7 +215,6 @@ closeUploadPopup() {
           this.loadCompanies();
         },
         error: (err) =>{
-          debugger;
           this.spinner.hide();
            Swal.fire('Warning', 'Cannot delete due to referenced other module', 'warning');
         }

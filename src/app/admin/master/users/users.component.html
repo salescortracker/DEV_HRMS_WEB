@@ -98,17 +98,29 @@
                 Department <span class="text-danger">*</span>
               </label>
 
-              <select class="form-select" name="DepartmentId" [(ngModel)]="user.departmentId"
+              <!-- <select class="form-select" name="DepartmentId" [(ngModel)]="user.departmentId"
                 [disabled]="!user.regionId" required>
 
                 <option [ngValue]="0">Select Department</option>
 
-                <!-- 🔥 FIX HERE -->
+                
+                <option *ngFor="let d of filteredDepartments" [ngValue]="d.departmentId">
+                  {{ d.departmentName }}
+                </option>
+
+              </select> -->
+
+              <select class="form-select" name="DepartmentId" [(ngModel)]="user.departmentId"
+                (ngModelChange)="onDepartmentChange($event)" [disabled]="!user.regionId" required>
+
+                <option [ngValue]="0">Select Department</option>
+
                 <option *ngFor="let d of filteredDepartments" [ngValue]="d.departmentId">
                   {{ d.departmentName }}
                 </option>
 
               </select>
+
             </div>
 
             <div class="col-md-6">
