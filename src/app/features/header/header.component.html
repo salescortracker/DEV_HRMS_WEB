@@ -175,10 +175,10 @@
       </div>
     </div> -->
 
-    <div class="message-bubble">
+    <!-- <div class="message-bubble">
 
-  <!-- ✅ NORMAL TEXT -->
-  <!-- NORMAL TEXT -->
+  <!-- ✅ NORMAL TEXT 
+  <!-- NORMAL TEXT 
   <div *ngIf="msg.cardType === 'text' || !msg.cardType"
        class="text preserve-lines"
        [ngClass]="{
@@ -189,7 +189,7 @@
 
   </div>
 
-  <!-- ✅ STEPS CARD -->
+  <!-- ✅ STEPS CARD 
   <div *ngIf="msg.cardType === 'steps'">
 
     <div class="card-title">
@@ -204,7 +204,7 @@
 
   </div>
 
-  <!-- ✅ FILE DOWNLOAD CARD -->
+  <!-- ✅ FILE DOWNLOAD CARD 
   <div *ngIf="msg.cardType === 'file'">
 
     <div class="card-title">
@@ -222,6 +222,81 @@
 
   </div>
 
+  <!-- ✅ WORKFLOW CARD 
+  <div *ngIf="msg.cardType === 'workflow'">
+
+    <div class="card-title">
+      {{ msg.text }}
+    </div>
+
+    <div class="workflow-box"
+         *ngFor="let step of msg.workflow">
+      {{ step }}
+    </div>
+
+  </div>
+
+  <!-- ✅ BUTTONS 
+  <div *ngIf="msg.buttons?.length" class="chat-buttons">
+    <button *ngFor="let btn of msg.buttons"
+            (click)="handleAction(btn)">
+      {{ btn.label }}
+    </button>
+  </div>
+
+  <!-- ✅ TIME 
+  <div class="time">
+    {{ msg.time }}
+  </div>
+
+</div> -->
+
+    <div class="message-bubble">
+
+  <!-- ✅ NORMAL TEXT -->
+  <div *ngIf="msg.cardType === 'text' || !msg.cardType"
+       class="text preserve-lines"
+       [ngClass]="{
+         'attendance-text': msg.text?.includes('Attendance module')
+       }">
+
+    {{ msg.text }}
+
+  </div>
+
+  <!-- ✅ STEPS CARD -->
+  <div *ngIf="msg.cardType === 'steps'">
+
+    <div class="card-title">
+      {{ msg.text }}
+    </div>
+
+    <div class="steps-list">
+      <div *ngFor="let item of msg.items" class="step-line preserve-lines">
+        {{ item }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ✅ FILE DOWNLOAD CARD -->
+  <div *ngIf="msg.cardType === 'file'">
+
+    <div class="card-title">
+      📄 {{ msg.text }}
+    </div>
+
+    <a
+      [href]="'http://localhost:46020' + msg.fileUrl"
+      target="_blank"
+      class="download-btn">
+
+      ⬇ Download
+
+    </a>
+
+  </div>
+
   <!-- ✅ WORKFLOW CARD -->
   <div *ngIf="msg.cardType === 'workflow'">
 
@@ -235,6 +310,132 @@
     </div>
 
   </div>
+
+  <!-- ✅ LEAVE CARD (NEW 🔥) -->
+<div *ngIf="msg.cardType === 'leaveCard'" class="leave-card">
+
+  <div class="card-header">
+    📅 Leave Balance
+  </div>
+
+  <div class="card-body">
+
+    <div class="leave-row">
+      <span>🟢 Sick Leave</span>
+      <span class="leave-count">{{ msg.extraData?.sick }} Days</span>
+    </div>
+
+    <div class="leave-row">
+      <span>🟡 Casual Leave</span>
+      <span class="leave-count">{{ msg.extraData?.casual }} Days</span>
+    </div>
+
+  </div>
+
+  <button class="go-btn"
+    (click)="handleAction({
+      action: 'navigate',
+      url: '/leave-management',
+      label: 'Leave Module'
+    })">
+    ➜ Go to Leave Module
+  </button>
+
+</div>
+
+
+
+
+
+<!-- ✅ ATTENDANCE CARD -->
+<div *ngIf="msg.cardType === 'attendanceCard'" class="attendance-card">
+
+  <div class="card-header">
+    📊 Attendance Status
+  </div>
+
+  <div class="card-body">
+
+    <div class="status"
+      [ngClass]="{
+        'present': msg.extraData?.status === 'Present',
+        'absent': msg.extraData?.status !== 'Present'
+      }">
+
+      ● {{ msg.extraData?.status }}
+
+    </div>
+
+    <div class="info-row">
+      <span>⏰ Clock In</span>
+      <span>{{ msg.extraData?.checkIn }}</span>
+    </div>
+
+    <div class="info-row">
+      <span>⏳ Clock Out</span>
+      <span>{{ msg.extraData?.checkOut }}</span>
+    </div>
+
+    <div class="info-row">
+      <span>📅 Date</span>
+      <span>{{ msg.extraData?.date }}</span>
+    </div>
+
+  </div>
+
+  <button class="go-btn"
+    (click)="handleAction({
+      action: 'navigate',
+      url: '/attendance-list',
+      label: 'Attendance'
+    })">
+    ➜ Go to Attendance
+  </button>
+
+</div>
+
+
+<!-- ✅ SALARY CARD -->
+<!-- <div *ngIf="msg.cardType === 'salaryCard'" class="salary-card">
+
+  <div class="card-header">
+    💰 Salary Slip
+  </div>
+
+  <div class="card-body">
+
+    <div class="salary-month">
+      {{ msg.extraData?.month }}
+    </div>
+
+    <div class="info-row">
+      <span>📅 Generated</span>
+      <span>{{ msg.extraData?.generatedDate }}</span>
+    </div>
+
+  </div>
+
+  <a
+    [href]="'http://localhost:46020' + msg.extraData?.fileUrl"
+    target="_blank"
+    class="download-btn">
+
+    ⬇ Download Salary Slip
+
+  </a>
+
+  <button class="go-btn"
+    (click)="handleAction({
+      action: 'navigate',
+      url: '/compensation/employee-payslip',
+      label: 'Salary Slips'
+    })">
+
+    ➜ Open Salary Module
+
+  </button>
+
+</div> -->
 
   <!-- ✅ BUTTONS -->
   <div *ngIf="msg.buttons?.length" class="chat-buttons">
