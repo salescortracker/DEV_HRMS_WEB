@@ -66,7 +66,10 @@ export class AdminLayoutComponent {
      { title: 'Mode of Study', route: '/admin/modeofstudy'},
      { title: 'Account Type', route: '/admin/accounttype' },
      { title: 'Project Master', route: '/admin/project-master'},
+     { title: 'Late Login Policy', route: '/admin/late-login-policy' },
      { title: 'Birthday List', route: '/admin/birthday-list'},
+     { title: 'Geo Location', route: '/admin/Geo-Locations'},
+     { title: 'Task Status', route: '/admin/task-status' },
     ],  
     // 'Configuration': [
     //   { title: 'Approval Workflows', route: '/admin/approval-workflow' },

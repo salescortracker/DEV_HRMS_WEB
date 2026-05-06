@@ -125,28 +125,47 @@ export class ShiftAllocationComponent {
   }
 
   loadAllocations() {
-    this.loading = true;
-    this.svc.getAllAllocations(this.userId).subscribe(
-      (r:any) => {
-        this.allocations = (r || []).slice().sort((a:any, b:any) => {
-          const da = a.startDate ? new Date(a.startDate).getTime() : 0;
-          const db = b.startDate ? new Date(b.startDate).getTime() : 0;
-          return db - da;
-        });
-        this.loading = false;
-        console.log('Loaded allocations:', this.allocations);
-      }, 
-      (err:any) => {
-        console.error('Error loading allocations:', err);
-        this.loading = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Failed to load shift allocations'
-        });
-      }
-    );
+  this.loading = true;
+
+  const companyId = Number(sessionStorage.getItem('CompanyId') || 0);
+  const regionId = Number(sessionStorage.getItem('RegionId') || 0);
+
+  if (!companyId || !regionId) {
+    this.loading = false;
+    Swal.fire('Error', 'Company or Region not found', 'error');
+    return;
   }
+
+  this.svc.getAllocationsByCompanyRegion(companyId, regionId).subscribe({
+    next: (r: any) => {
+      this.allocations = (r || []).slice().sort((a: any, b: any) => {
+        const da = a.startDate ? new Date(a.startDate).getTime() : 0;
+        const db = b.startDate ? new Date(b.startDate).getTime() : 0;
+        return db - da;
+      });
+
+      this.loading = false;
+      console.log('Loaded allocations:', this.allocations);
+    },
+    error: (err: any) => {
+      console.error('Error loading allocations:', err);
+      this.loading = false;
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Failed to load shift allocations'
+      });
+    }
+  });
+}
+get availableEmployees() {
+  return this.employees.filter(emp => {
+    return !this.allocations.some(a => 
+      a.userID === emp.userId && this.getStatus(a) === 'Active'
+    );
+  });
+}
 
   onEmployeeChange(event: Event) {
   const select = event.target as HTMLSelectElement;
@@ -240,7 +259,7 @@ export class ShiftAllocationComponent {
 
     const dto: ShiftAllocationDto = {
       shiftAllocationId: this.editMode && this.editId ? this.editId : 0,
-      userID: createdByUserId,      
+      userID: selectedUserId,      
       employeeCode: selectedEmployee.employeeCode || '',
       fullName: selectedEmployee.fullName || '',
       companyID: selectedEmployee.companyID || 0,
@@ -346,19 +365,16 @@ export class ShiftAllocationComponent {
   onEdit(a: ShiftAllocationDto) {
     this.editMode = true;
     this.editId = a.shiftAllocationId || null;
+    const isActive = this.getStatus(a) === 'Active';
 
     this.shiftForm.patchValue({
-      userID: a.userID,
+      userId: isActive ? null : a.userID,
       employeeCode: a.employeeCode,
       shiftID: a.shiftID,
       startDate: a.startDate ? (a.startDate as string).split('T')[0] : '',
       endDate: a.endDate ? (a.endDate as string).split('T')[0] : '',
       isActive: a.isActive
     });
-
-    if (a.companyID) sessionStorage.setItem('CompanyId', a.companyID.toString());
-    if (a.regionID) sessionStorage.setItem('RegionId', a.regionID.toString());
-    if (a.userID) sessionStorage.setItem('UserId', a.userID.toString());
   }
 onDelete(id?: number) {
   if (!id || id === 0) return;

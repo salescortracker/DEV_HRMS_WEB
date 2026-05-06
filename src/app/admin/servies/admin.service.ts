@@ -203,7 +203,14 @@ export interface EmployeeImmigration {
   modifiedBy?: string;
   modifiedDate?: string;
 }
-
+export interface AttachmentTypeDto {
+  attachmentTypeId: number;
+  companyId: number;
+  regionId: number;
+  attachmentCategory: string;
+  attachmentTypeName: string;
+  isActive: boolean;
+}
 
 export interface Designation {
   designationID: number;
@@ -788,6 +795,41 @@ export interface ManagerDropdown {
   userId: number;
   fullName: string;
 }
+
+//----------------------- Late Login Policy Interface  --------------------//
+
+export interface LateLoginPolicy {
+  policyId: number;
+  companyId: number;
+  regionId: number;
+  userId: number;
+
+  lateLoginCount: number;
+  lopdays: number;
+  loptype: string;
+
+  isActive: boolean;
+}
+//----------------------- Geo Location Master Screen Interface  --------------------//
+
+export interface GeoLocation {
+  geoLocationId: number;
+  companyId: number;
+  regionId: number;
+  userId: number;
+
+  locationName: string;
+  address: string;
+
+  latitude: number;
+  longitude: number;
+
+  radius: number;
+
+  isActive: boolean;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -859,9 +901,9 @@ export class AdminService {
     return this.update<Company>('UserManagement/UpdateCompany', id, model);
   }
 
-  deleteCompany(id: number): Observable<void> {
-    return this.delete('UserManagement/DeleteCompany', id);
-  }
+deleteCompany(id: number) {
+  return this.http.post('https://localhost:44370/api/UserManagement/DeleteCompany', id);
+}
 
   // -------------------------------------------------------------
   // 🔹 REGION OPERATIONS
@@ -882,9 +924,9 @@ export class AdminService {
     return this.update<Region>('UserManagement/UpdateRegion', id, model);
   }
 
-  deleteRegion(id: number): Observable<void> {
-    return this.delete('UserManagement/DeleteRegion', id);
-  }
+deleteRegion(id: number) {
+  return this.http.post('https://localhost:44370/api/UserManagement/DeleteRegion', id);
+}
 
   // -------------------------------------------------------------
   // 🔹 USER OPERATIONS
@@ -948,6 +990,16 @@ export class AdminService {
 
   sendWelcomeEmail(user: User): Observable<any> {
     return this.http.post(`${this.baseUrl}/UserManagement/SendEmail`, user);
+  }
+
+  sendHrNotification(email: string, subject: string, body: string): Observable<any> {
+    const payload = {
+      Email: email,
+      Subject: subject,
+      Body: body,
+      FullName: 'HR Team'
+    };
+    return this.http.post(`${this.baseUrl}/UserManagement/SendEmail`, payload);
   }
 
   // -------------------------------------------------------------
@@ -1142,10 +1194,12 @@ deleteGender(id: number) {
   return this.http.post(`${this.baseUrl}/MasterData/DeleteGender?id=${id}`, {});
 }
  getBloodGroupsbyID(userID: number): Observable<any> {
+  debugger;
     return this.http.get(`${this.baseUrl}/MasterData/GetBloodGroupsById/${userID}`);
   }
 //   // ✅ CREATE
   createBloodGroup(data: BloodGroup): Observable<any> {
+    debugger;
     return this.http.post(`${this.baseUrl}/MasterData/AddBloodGroups`, data);
   }
 
@@ -1543,7 +1597,7 @@ CreateEmployeeImmigration(formData: FormData): Observable<any> {
   });
 }
   DeleteEmployeeImmigration(id: number, companyId: number, regionId: number): Observable <any> {
-    return this.http.delete(`${this.baseUrl}/Employee/DeleteImmigration/${id}`)
+    return this.http.post(`${this.baseUrl}/Employee/DeleteImmigration?id=${id}`, {})
   }
 // Visa Types Dropdown
 getVisaTypes(companyId: number, regionId: number): Observable<any[]> {
@@ -1695,11 +1749,12 @@ updateEmployeeLetter(id: number, formData: FormData): Observable<any> {
 deleteEmployeeLetter(id: number): Observable<any> {
   return this.http.post(`${this.baseUrl}/employee/deleteletters?id=${id}`, {});
 }
-getMyLetters(employeeCode: string) {
+getMyLetters(employeeCode: string, companyId: number, regionId: number) {
   return this.http.get<any[]>(
-    `${this.baseUrl}/employee/GetMyLetters/${employeeCode}`
+    `${this.baseUrl}/employee/GetMyLetters/${employeeCode}/${companyId}/${regionId}`
   );
 }
+
 
 // -------------------------------------------------------------
 // 🔹 EMPLOYEE  Forms  OPERATIONS
@@ -1723,6 +1778,27 @@ updateEmployeeForms(id: number, formData: FormData): Observable<any> {
 deleteEmployeeForms(id: number): Observable<any> {
   return this.http.post(`${this.baseUrl}/employee/DeleteForm?id=${id}`, {});
 }
+updateFormStatus(data: any) {
+  return this.http.post(`${environment.apiUrl}/employee/UpdateStatus`, data);
+}
+getMyForms(employeeCode: string, companyId: number, regionId: number) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/employee/GetMyForms/${employeeCode}/${companyId}/${regionId}`
+  );
+}
+
+uploadEmployeeFiles(formData: FormData) {
+  return this.http.post(
+    `${this.baseUrl}/employee/UploadEmployeeFiles`,
+    formData
+  );
+}
+
+
+getLeaveReport(data: any) {
+  return this.http.post<any>(`${this.baseUrl}/Employee/leave-report`, data);
+}
+
 // -------------------------------------------------------------
 // 🔹 EMPLOYEE  Document  OPERATIONS
 // -------------------------------------------------------------
@@ -2182,6 +2258,30 @@ updatePriority(data: any) {
 deletePriority(id: number) {
   return this.http.post(`${this.baseUrl}/MasterData/DeletePriority?id=${id}`, {});
 }
+
+
+
+getTaskStatuses(userId: number) {
+  return this.http.get(`${this.baseUrl}/MasterData/taskstatuses?userId=${userId}`);
+}
+
+createTaskStatus(data: any) {
+  return this.http.post(`${this.baseUrl}/MasterData/CreateTaskStatus`, data);
+}
+
+updateTaskStatus(data: any) {
+  return this.http.post(`${this.baseUrl}/MasterData/UpdateTaskStatus`, data);
+}
+
+deleteTaskStatus(id: number) {
+  return this.http.post(`${this.baseUrl}/MasterData/DeleteTaskStatus?id=${id}`, {});
+}
+getTaskStatusesByCompanyRegion(companyId: number, regionId: number) {
+  return this.http.get(
+    `${this.baseUrl}/MasterData/taskstatuses/by-company-region?companyId=${companyId}&regionId=${regionId}`
+  );
+}
+
 //////////asset-types CRUD operations
 getAssetTypes(userId: number) {
   return this.http.get(`${this.baseUrl}/MasterData/asset-types?userId=${userId}`);
@@ -2795,5 +2895,107 @@ deleteProject(id: number) {
 getProjectNames(companyId: number, regionId: number) {
     return this.http.get<any>(`${this.baseUrl}/MasterData/GetProjectsByCompanyRegion?companyId=${companyId}&regionId=${regionId}`);
   }
+
+
+  //----------------------------------------- Late Login Policy Master Screen Code API's ---------------------------------------//
+
+// ================= GET ALL =================
+getLateLoginPolicies(userId: number) {
+  return this.http.get<any>(
+    `${this.baseUrl}/UserManagement/GetLateLoginPolicy`,
+    {
+      params: { userId: userId }
+    }
+  );
+}
+
+// ================= GET BY ID =================
+getLateLoginPolicyById(id: number) {
+  return this.http.get<any>(
+    `${this.baseUrl}/UserManagement/GetLateLoginPolicyById`,
+    {
+      params: { id: id }
+    }
+  );
+}
+
+// ================= CREATE =================
+createLateLoginPolicy(data: any) {
+  return this.http.post<any>(
+    `${this.baseUrl}/UserManagement/SaveLateLoginPolicy`,
+    data
+  );
+}
+
+// ================= UPDATE =================
+updateLateLoginPolicy(id: number, data: any) {
+  return this.http.post<any>(
+    `${this.baseUrl}/UserManagement/UpdateLateLoginPolicy/${id}`,
+    data
+  );
+}
+
+// ================= DELETE =================
+deleteLateLoginPolicy(id: number) {
+  return this.http.post<any>(
+    `${this.baseUrl}/UserManagement/DeleteLateLoginPolicy/${id}`,
+    {}
+  );
+}
+
+
+
+
+  //----------------------------------------- Geo Locations Master Screen Code API's ---------------------------------------//
+
+// GET
+getGeoLocations(userId: number) {
+  return this.http.get<any>(
+    `${this.baseUrl}/UserManagement/GetGeoLocations`,
+    { params: { userId } }
+  );
+}
+
+// CREATE
+createGeoLocation(data: any) {
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/SaveGeoLocation`,
+    data
+  );
+}
+
+// UPDATE
+updateGeoLocation(id: number, data: any) {
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/UpdateGeoLocation/${id}`,
+    data
+  );
+}
+
+// DELETE
+deleteGeoLocation(id: number) {
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/DeleteGeoLocation/${id}`,
+    {}
+  );
+}
+
+getGeoLocationsByCompanyRegion(companyId: number, regionId: number) {
+  return this.http.get<any>(
+    `${this.baseUrl}/UserManagement/GetGeoLocationsCompanyRegion`,
+    { params: { companyId, regionId } }
+  );
+}
+getAttachments(companyId: number, regionId: number) {
+  return this.http.get<AttachmentTypeDto[]>(
+    `${this.baseUrl}/MasterData/GetDocuments`,
+    {
+      params: {
+        companyId: companyId,
+        regionId: regionId
+      }
+    }
+  );
+}
 
 }

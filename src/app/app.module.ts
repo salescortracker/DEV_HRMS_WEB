@@ -116,6 +116,8 @@ import { MainUsersComponent } from './main-users/main-users.component';
 import { SuperAdminDashboardComponent } from './superAdmin/super-admin-dashboard/super-admin-dashboard.component';
 import { SuperAdminDemousersComponent } from './superAdmin/super-admin-demousers/super-admin-demousers.component';
 import { SubscriptionPlansComponent } from './superAdmin/subscription-plans/subscription-plans.component';
+
+import { TimesheetReportComponent } from './timesheet-report/timesheet-report.component';
 import { AssetRequestComponent } from './features/asset/asset-request/asset-request.component';
 import { AssignAssetScreenComponent } from './features/asset/assign-asset-screen/assign-asset-screen.component';
 import { SpinnerInterceptor } from './admin/shared/interceptor.interceptor';
@@ -128,6 +130,12 @@ import { VisatypeComponent } from './pages/visatype/visatype.component';
 import { EmployeeMyLettersFormsComponent } from './features/employee-profile/employee-documents/employee-my-letters-forms/employee-my-letters-forms.component';
 import { ProjectMasterComponent } from './features/project-master/project-master.component';
 import { EmployeeMyformsComponent } from './features/employee-profile/employee-documents/employee-myforms/employee-myforms.component';
+import { MyTaskComponent } from './features/my-task/my-task/my-task.component';
+import { MytaskComponent } from './features/my-task/mytask/mytask.component';
+import { TeamtaskComponent } from './features/my-task/teamtask/teamtask.component';
+
+import { TaskreportComponent } from './features/my-task/taskreport/taskreport.component';
+import { LeaveReportComponent } from './features/leave/leave-report/leave-report.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -239,6 +247,7 @@ import { EmployeeMyformsComponent } from './features/employee-profile/employee-d
     
     SuperAdminDemousersComponent,
           SubscriptionPlansComponent,
+          TimesheetReportComponent,
           AssetRequestComponent,
           AssignAssetScreenComponent,
           EmployeePayslipComponent,
@@ -247,6 +256,11 @@ import { EmployeeMyformsComponent } from './features/employee-profile/employee-d
           EmployeeMyLettersFormsComponent,
           ProjectMasterComponent,
           EmployeeMyformsComponent,
+          MyTaskComponent,
+          MytaskComponent,
+          TeamtaskComponent,
+          TaskreportComponent,
+          LeaveReportComponent,
           
    
     
@@ -255,7 +269,7 @@ import { EmployeeMyformsComponent } from './features/employee-profile/employee-d
   imports: [
     BrowserModule, ReactiveFormsModule,FullCalendarModule,
     AppRoutingModule, FormsModule, HttpClientModule, NgxSpinnerModule,
-    StrongPasswordDirective,
+    StrongPasswordDirective   
 ],
 
   providers: [
