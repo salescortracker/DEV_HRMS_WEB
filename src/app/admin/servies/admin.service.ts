@@ -2345,6 +2345,11 @@ getCurrenciesbycompanyId(companyId: number, regionId: number) {
     `${this.baseUrl}/MasterData/GetcurrencyByCompanyAndRegion?companyId=${companyId}&regionId=${regionId}`
   );
 }
+getCurrenciesbycompanyIds(companyId: number, regionId: number) {
+  return this.http.get<any>(
+    `${this.baseUrl}/MasterData/currencyfilter?companyId=${companyId}&regionId=${regionId}`
+  );
+}
 getCurrencies(userId: number) {
   return this.http.get(`${this.baseUrl}/MasterData/currencies?userId=${userId}`);
 }
