@@ -359,13 +359,13 @@ updateTodayHoursCard() {
   // ================= WEEKOFF =================
   if (isWeekoff) {
     hours = 8;
-    color = '#000000'; // BLACK
+    color = '#0d0d0d'; // BLACK
   }
 
   // ================= FUTURE =================
   else if (isFuture) {
     hours = 8;
-    color = '#007bff'; // BLUE
+    color = '#f4f5f6'; // BLUE
   }
 
   // ================= TODAY =================
