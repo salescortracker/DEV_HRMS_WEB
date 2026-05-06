@@ -315,9 +315,22 @@ calculateLateLogin() {
   // Compare
   if (clockIn > graceEnd) {
     const diffMs = clockIn.getTime() - graceEnd.getTime();
-    const minutes = Math.floor(diffMs / (1000 * 60));
+    const totalMinutes = Math.floor(diffMs / (1000 * 60));
 
-    this.lateLoginText = `(Late by ${minutes} mins)`;
+    // this.lateLoginText = `(Late by ${minutes} mins)`;
+    if (totalMinutes < 60) {
+    this.lateLoginText = `(Late by ${totalMinutes} mins)`;
+  } else {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    if (minutes === 0) {
+      this.lateLoginText = `(Late by ${hours} hr${hours > 1 ? 's' : ''})`;
+    } else {
+      this.lateLoginText = `(Late by ${hours} hr${hours > 1 ? 's' : ''} ${minutes} mins)`;
+    }
+  }
+
   } else {
     this.lateLoginText = '';
   }
