@@ -1351,3 +1351,43 @@ button:hover {
 }
 
 
+.clockin-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;   /* control spacing */
+}
+
+/* COMMON BADGE */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 12px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* CLOCK */
+.badge-clock {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+/* LATE (RED) */
+.badge-late {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* EARLY (GREEN) */
+.badge-early {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* ON TIME (BLUE) */
+.badge-ontime {
+  background: #e3f2fd;
+  color: #1565c0;
+}

@@ -1144,7 +1144,7 @@ updateDepartment(id: number, model: Department): Observable<any> {
 }
 
 deleteDepartment(id: number): Observable<any> {
-  return this.http.post(`/MasterData/DeleteDepartment/${id}`, {}); // soft delete
+  return this.http.post(`${environment.apiUrl}/MasterData/deleteDepartment/${id}`, {});
 }
 
 getDesignations(userId:number): Observable<Designation[]> {

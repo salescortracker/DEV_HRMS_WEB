@@ -1248,13 +1248,17 @@ export class HeaderComponent {
   superadmin: any;
   selectedFile: File | null = null;
 
+  // User Late/Early login show 
+  earlyLateStatus: string = '';  // FINAL TEXT to show in UI
+  graceTime: string = '';        // from API
 
+loading:any
   isClockedIn = false;
   isMobileMenuOpen = false;
   shiftStartTime: string = ''; // e.g. "09:00"
   showClockButton: boolean = false;
   allowedClockTimeText: string = '';
-isWFHApproved: boolean = false;
+  isWFHApproved: boolean = false;
 
   clockStatus = 'Not Clocked In';
   clockInDisplay = '--:--:--';
@@ -1268,8 +1272,8 @@ isWFHApproved: boolean = false;
   companyLogo: string = '/assets/images/cor-logo.png';
   //profilePicture: string = 'assets/images/default-profile.png';
   userId: number = Number(sessionStorage.getItem('UserId'));
-  constructor(private router: Router, private employeeResignationService: EmployeeResignationService, 
-    private adminService: AdminService, private ngZone: NgZone, private attendanceService: AttendanceService ) { }
+  constructor(private router: Router, private employeeResignationService: EmployeeResignationService,
+    private adminService: AdminService, private ngZone: NgZone, private attendanceService: AttendanceService) { }
   ngOnInit() {
     this.loadProfilePicture();
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -1296,12 +1300,14 @@ isWFHApproved: boolean = false;
 
     this.loadUserShift();
 
-     this.checkWFHStatus();
+    this.checkWFHStatus();
 
     // ⏱️ Check every minute (important)
     setInterval(() => {
       this.checkClockButtonVisibility();
     }, 60000);
+
+  
   }
   loadEmployeeCompanyLogo() {
     const companyId = Number(sessionStorage.getItem('CompanyId'));
@@ -1513,89 +1519,89 @@ isWFHApproved: boolean = false;
 
   // ========================================== Clock In Clock Out Function  ==================================================
 
-async toggleClock() {
+  async toggleClock() {
 
-  // ✅ STEP 1: CHECK SHIFT
-  if (!this.shiftStartTime) {
-    Swal.fire(
-      'Not Allowed',
-      'You are not assigned to any shift. Please contact HR.',
-      'warning'
-    );
-    return;
+    // ✅ STEP 1: CHECK SHIFT
+    if (!this.shiftStartTime) {
+      Swal.fire(
+        'Not Allowed',
+        'You are not assigned to any shift. Please contact HR.',
+        'warning'
+      );
+      return;
+    }
+
+    // ✅ STEP 2: CHECK WFH APPROVAL
+    let geoAllowed = true;
+
+    if (!this.isWFHApproved) {
+      // ❌ Normal users → must pass geo fence
+      geoAllowed = await this.checkGeoFence();
+
+      if (!geoAllowed) return;
+    } else {
+      // ✅ WFH Approved → skip geo check
+      console.log('✅ WFH Approved → Skipping Geo Fence');
+    }
+
+    // ✅ STEP 3: PROCEED CLOCK-IN / OUT
+    const now = this.getSystemTime();
+
+    if (!this.isClockedIn) {
+
+      // 🔵 CLOCK IN
+      this.isClockedIn = true;
+      this.clockInTime = now;
+
+      sessionStorage.setItem('clockInTime', now.toISOString());
+
+      this.clockStatus = 'Clocked In';
+      this.clockInDisplay = this.formatTime(now);
+      this.totalHoursDisplay = '00:00:00';
+
+      this.startTimer();
+
+      this.employeeResignationService.addClockInOut({
+        employeeCode: this.employeeCode,
+        employeeName: sessionStorage.getItem('Name') || '',
+        department: 0,
+        attendanceDate: new Date(),
+        actionType: 'ClockIn',
+        actionTime: this.getSystemTime24(),
+        clockInTime: this.getSystemTime24(),
+        clockOutTime: '',
+        companyId: this.companyId,
+        regionId: this.regionId
+      }).subscribe(() => {
+        this.loadAttendance();
+      });
+
+    } else {
+
+      // 🔴 CLOCK OUT
+      this.isClockedIn = false;
+
+      sessionStorage.removeItem('clockInTime');
+
+      this.clockStatus = 'Clocked Out';
+      this.stopTimer();
+
+      this.employeeResignationService.addClockInOut({
+        employeeCode: this.employeeCode,
+        employeeName: sessionStorage.getItem('Name') || '',
+        department: 0,
+        attendanceDate: new Date(),
+        actionType: 'ClockOut',
+        actionTime: this.getSystemTime24(),
+        clockInTime: '',
+        clockOutTime: this.getSystemTime24(),
+        companyId: this.companyId,
+        regionId: this.regionId
+      }).subscribe(() => {
+        this.loadAttendance();
+      });
+    }
   }
-
-  // ✅ STEP 2: CHECK WFH APPROVAL
-  let geoAllowed = true;
-
-  if (!this.isWFHApproved) {
-    // ❌ Normal users → must pass geo fence
-    geoAllowed = await this.checkGeoFence();
-
-    if (!geoAllowed) return;
-  } else {
-    // ✅ WFH Approved → skip geo check
-    console.log('✅ WFH Approved → Skipping Geo Fence');
-  }
-
-  // ✅ STEP 3: PROCEED CLOCK-IN / OUT
-  const now = this.getSystemTime();
-
-  if (!this.isClockedIn) {
-
-    // 🔵 CLOCK IN
-    this.isClockedIn = true;
-    this.clockInTime = now;
-
-    sessionStorage.setItem('clockInTime', now.toISOString());
-
-    this.clockStatus = 'Clocked In';
-    this.clockInDisplay = this.formatTime(now);
-    this.totalHoursDisplay = '00:00:00';
-
-    this.startTimer();
-
-    this.employeeResignationService.addClockInOut({
-      employeeCode: this.employeeCode,
-      employeeName: sessionStorage.getItem('Name') || '',
-      department: 0,
-      attendanceDate: new Date(),
-      actionType: 'ClockIn',
-      actionTime: this.getSystemTime24(),
-      clockInTime: this.getSystemTime24(),
-      clockOutTime: '',
-      companyId: this.companyId,
-      regionId: this.regionId
-    }).subscribe(() => {
-      this.loadAttendance();
-    });
-
-  } else {
-
-    // 🔴 CLOCK OUT
-    this.isClockedIn = false;
-
-    sessionStorage.removeItem('clockInTime');
-
-    this.clockStatus = 'Clocked Out';
-    this.stopTimer();
-
-    this.employeeResignationService.addClockInOut({
-      employeeCode: this.employeeCode,
-      employeeName: sessionStorage.getItem('Name') || '',
-      department: 0,
-      attendanceDate: new Date(),
-      actionType: 'ClockOut',
-      actionTime: this.getSystemTime24(),
-      clockInTime: '',
-      clockOutTime: this.getSystemTime24(),
-      companyId: this.companyId,
-      regionId: this.regionId
-    }).subscribe(() => {
-      this.loadAttendance();
-    });
-  }
-}
 
   //================================================== Clock In Clock Out method =================================================
 
@@ -1720,25 +1726,25 @@ async toggleClock() {
 
   //===============================  check WFH Status =================================
 
-checkWFHStatus() {
-  const today = new Date().toISOString().split('T')[0];
+  checkWFHStatus() {
+    const today = new Date().toISOString().split('T')[0];
 
-  this.attendanceService
-    .getMyRequests(this.userId, this.companyId, this.regionId)
-    .subscribe((res: any[]) => {
+    this.attendanceService
+      .getMyRequests(this.userId, this.companyId, this.regionId)
+      .subscribe((res: any[]) => {
 
-      // ✅ Check if any APPROVED WFH for today
-      const approvedWFH = res.find(x =>
-        x.status === 'Approved' &&
-        x.fromDate <= today &&
-        x.toDate >= today
-      );
+        // ✅ Check if any APPROVED WFH for today
+        const approvedWFH = res.find(x =>
+          x.status === 'Approved' &&
+          x.fromDate <= today &&
+          x.toDate >= today
+        );
 
-      this.isWFHApproved = !!approvedWFH;
+        this.isWFHApproved = !!approvedWFH;
 
-      console.log('WFH Approved Today:', this.isWFHApproved);
-    });
-}
+        console.log('WFH Approved Today:', this.isWFHApproved);
+      });
+  }
 
   records: any;
   loadTodayAttendance() {
@@ -1838,6 +1844,7 @@ checkWFHStatus() {
 
       // ✅ IMPORTANT FIX
       this.syncClockStateWithAPI();
+          this.calculateEarlyLate();
     });
   }
   syncClockStateWithAPI() {
@@ -2351,6 +2358,64 @@ checkWFHStatus() {
     }
   }
 
+  // loadUserShift() {
+
+  //   const companyId = Number(sessionStorage.getItem('CompanyId'));
+  //   const regionId = Number(sessionStorage.getItem('RegionId'));
+
+  //   this.employeeResignationService.getAllAllocations(this.userId)
+  //     .subscribe((allocations: any[]) => {
+
+  //       console.log('Allocations 👉', allocations);
+
+  //       const today = new Date().toISOString().split('T')[0];
+
+  //       // ✅ STEP 1: Filter by Company + Region + Active Date
+  //       const activeAllocation = allocations.find(a => {
+
+  //         const start = a.startDate ? a.startDate.split('T')[0] : null;
+  //         const end = a.endDate ? a.endDate.split('T')[0] : null;
+
+  //         return (
+  //           a.isActive &&
+  //           a.companyID == companyId &&
+  //           a.regionID == regionId &&
+  //           start <= today &&
+  //           (!end || end >= today)
+  //         );
+  //       });
+
+  //       if (!activeAllocation) {
+  //         console.warn('No active shift found');
+  //         this.showClockButton = false;
+  //         return;
+  //       }
+
+  //       console.log('Active Allocation 👉', activeAllocation);
+
+  //       // ✅ STEP 2: Get Shift Master Details
+  //       this.adminService
+  //         .getShiftsForDropdown(companyId, regionId)
+  //         .subscribe((shifts: any[]) => {
+
+  //           console.log('Shifts 👉', shifts);
+
+  //           const shift = shifts.find(s => s.shiftID == activeAllocation.shiftID);
+
+  //           if (!shift) {
+  //             console.warn('Shift not found in master');
+  //             return;
+  //           }
+
+  //           // ✅ FINAL: Assign Start Time
+  //           this.shiftStartTime = shift.shiftStartTime;
+
+  //           console.log('Shift Start Time 👉', this.shiftStartTime);
+
+  //           this.checkClockButtonVisibility();
+  //         });
+  //     });
+  // }
   loadUserShift() {
 
     const companyId = Number(sessionStorage.getItem('CompanyId'));
@@ -2363,7 +2428,7 @@ checkWFHStatus() {
 
         const today = new Date().toISOString().split('T')[0];
 
-        // ✅ STEP 1: Filter by Company + Region + Active Date
+        // ✅ STEP 1: Filter active allocation
         const activeAllocation = allocations.find(a => {
 
           const start = a.startDate ? a.startDate.split('T')[0] : null;
@@ -2386,7 +2451,7 @@ checkWFHStatus() {
 
         console.log('Active Allocation 👉', activeAllocation);
 
-        // ✅ STEP 2: Get Shift Master Details
+        // ✅ STEP 2: Get Shift Master
         this.adminService
           .getShiftsForDropdown(companyId, regionId)
           .subscribe((shifts: any[]) => {
@@ -2400,15 +2465,100 @@ checkWFHStatus() {
               return;
             }
 
-            // ✅ FINAL: Assign Start Time
+            // ✅ SET SHIFT START
             this.shiftStartTime = shift.shiftStartTime;
 
             console.log('Shift Start Time 👉', this.shiftStartTime);
 
-            this.checkClockButtonVisibility();
+            // ✅ STEP 3: GET GRACE TIME (NEW 🔥)
+            this.employeeResignationService
+              .getShiftallocationNameForClockInOut(
+                this.employeeCode || '',   // ✅ SAFE FIX
+                companyId,
+                regionId
+              )
+              .subscribe(res => {
+
+                console.log('Shift Extra Info 👉', res);
+
+                this.graceTime = res.grassTime;
+
+                console.log('Grace Time 👉', this.graceTime);
+
+                this.checkClockButtonVisibility();
+             //   this.calculateEarlyLate();
+              });
+
           });
       });
   }
+
+
+calculateEarlyLate() {
+
+  if (!this.shiftStartTime || !this.graceTime || !this.todayClockIn || this.todayClockIn === '--:--') {
+    this.earlyLateStatus = '';
+    return;
+  }
+
+  // ✅ SHIFT START
+  const [shiftH, shiftM] = this.shiftStartTime.split(':').map(Number);
+  const shiftStart = new Date();
+  shiftStart.setHours(shiftH, shiftM, 0, 0);
+
+  // ✅ GRACE END
+  const [gH, gM] = this.graceTime.split(':').map(Number);
+  const graceEnd = new Date(shiftStart.getTime() + ((gH * 60 + gM) * 60000));
+
+  // ✅ ACTUAL CLOCK-IN (IMPORTANT 🔥)
+  const clockIn = this.parseTime(this.todayClockIn);
+
+  // =========================
+  // ✅ EARLY LOGIN
+  // =========================
+  if (clockIn < shiftStart) {
+
+    const diff = shiftStart.getTime() - clockIn.getTime();
+
+    const hrs = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    this.earlyLateStatus = `Early by ${hrs}h ${mins}m`;
+    return;
+  }
+
+  // =========================
+  // ✅ LATE LOGIN
+  // =========================
+  if (clockIn > graceEnd) {
+
+    const diff = clockIn.getTime() - graceEnd.getTime();
+
+    const hrs = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    this.earlyLateStatus = `Late by ${hrs}h ${mins}m`;
+    return;
+  }
+
+  // =========================
+  // ✅ ON TIME
+  // =========================
+  this.earlyLateStatus = 'On Time';
+}
+
+getEarlyLateClass(): string {
+
+  if (!this.earlyLateStatus) return '';
+
+  const text = this.earlyLateStatus.toLowerCase();
+
+  if (text.includes('late')) return 'badge-late';
+  if (text.includes('early')) return 'badge-early';
+  if (text.includes('on time')) return 'badge-ontime';
+
+  return 'badge-default';
+}
 
   checkClockButtonVisibility() {
     if (!this.shiftStartTime) {
