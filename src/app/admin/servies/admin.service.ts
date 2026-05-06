@@ -901,9 +901,11 @@ export class AdminService {
     return this.update<Company>('UserManagement/UpdateCompany', id, model);
   }
 
+// Company
 deleteCompany(id: number) {
-  return this.http.post('https://localhost:44370/api/UserManagement/DeleteCompany', id);
+  return this.http.post(`${this.baseUrl}/UserManagement/DeleteCompany?id=${id}`, {});
 }
+
 
   // -------------------------------------------------------------
   // 🔹 REGION OPERATIONS
@@ -924,9 +926,11 @@ deleteCompany(id: number) {
     return this.update<Region>('UserManagement/UpdateRegion', id, model);
   }
 
+// Region
 deleteRegion(id: number) {
-  return this.http.post('https://localhost:44370/api/UserManagement/DeleteRegion', id);
+  return this.http.post(`${this.baseUrl}/UserManagement/DeleteRegion?id=${id}`, {});
 }
+
 
   // -------------------------------------------------------------
   // 🔹 USER OPERATIONS
