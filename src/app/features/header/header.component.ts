@@ -1230,6 +1230,10 @@ import { EmployeeResignationService } from '../employee-profile/employee-service
 import { AdminService } from '../../admin/servies/admin.service';
 import { environment } from '../../../environments/environment';
 import Swal from 'sweetalert2';
+import { HttpClient } from '@angular/common/http';
+// import { EmployeeResignationService } from '...'; // same path as apply-leave
+import { AttendanceService } from '../attendance/service/attendance.service';
+
 import { AttendanceService } from '../attendance/service/attendance.service';
 interface LocationMap {
   [key: string]: string[];
@@ -1242,6 +1246,7 @@ interface LocationMap {
 })
 
 export class HeaderComponent {
+  selectedFile: File | null = null;
   role: string = '';
   roleName: any = '';
   userName: any = '';
@@ -1254,6 +1259,21 @@ export class HeaderComponent {
   shiftStartTime: string = ''; // e.g. "09:00"
   showClockButton: boolean = false;
   allowedClockTimeText: string = '';
+
+clockStatus = 'Not Clocked In';
+clockInDisplay = '--:--:--';
+totalHoursDisplay = '00:00:00';
+employeeCode = sessionStorage.getItem('EmployeeCode');
+companyId = sessionStorage.getItem('CompanyId') as unknown as number;
+regionId = sessionStorage.getItem('RegionId') as unknown as number;
+private clockInTime!: Date;
+private timerRef: any;
+profilePicture: string = '';
+companyLogo: string = '/assets/images/cor-logo.png';
+//profilePicture: string = 'assets/images/default-profile.png';
+userId: number = Number(sessionStorage.getItem('UserId'));
+ constructor(  private http: HttpClient,  private leaveService: EmployeeResignationService,
+private router: Router, private employeeResignationService: EmployeeResignationService, private adminService: AdminService, private ngZone: NgZone) {}
 isWFHApproved: boolean = false;
 
   clockStatus = 'Not Clocked In';
@@ -1297,6 +1317,16 @@ isWFHApproved: boolean = false;
     this.loadUserShift();
 
      this.checkWFHStatus();
+
+  // ⏱️ Check every minute (important)
+  setInterval(() => {
+    this.checkClockButtonVisibility();
+  }, 60000);
+
+
+  //adding
+
+
 
     // ⏱️ Check every minute (important)
     setInterval(() => {
@@ -1955,6 +1985,110 @@ checkWFHStatus() {
     }
   }
 
+// Add message
+// addMessage(
+//   type: string,
+//   text: string,
+//   buttons: any[] = [],
+//   cardType: string = 'text',
+//   items: any[] = [],
+//   fileUrl: string = '',
+//   workflow: any[] = []
+// ) {
+
+//   const time = new Date().toLocaleTimeString([], {
+//     hour: '2-digit',
+//     minute: '2-digit'
+//   });
+
+//   this.messages.push({
+//     type,
+//     text,
+//     time,
+//     buttons,
+//     cardType,
+//     items,
+//     fileUrl,
+//     workflow
+//   });
+
+//   this.scrollToBottom();
+// }
+
+addMessage(
+  type: string,
+  text: string,
+  buttons: any[] = [],
+  cardType: string = 'text',
+  items: any[] = [],
+  fileUrl: string = '',
+  workflow: any[] = [],
+  extraData: any = null   // ✅ NEW
+) {
+
+  const time = new Date().toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  this.messages.push({
+    type,
+    text,
+    time,
+    buttons,
+    cardType,
+    items,
+    fileUrl,
+    workflow,
+    extraData   // ✅ NEW
+  });
+
+  this.scrollToBottom();
+}
+
+
+// Send message
+// sendMessage() {
+
+//   // allow text OR file
+//   if (!this.userInput.trim() && !this.selectedFile) return;
+
+//   const input = this.userInput.trim();
+
+//   // show text
+//   if (input) {
+//     this.addMessage('user', input);
+//   }
+
+//   this.userInput = '';
+//   this.isTyping = true;
+
+//   setTimeout(() => {
+
+//     this.isTyping = false;
+
+//     // 📎 FILE LOGIC
+//     if (this.selectedFile) {
+//       this.addMessage(
+//         'bot',
+//         `📄 File "${this.selectedFile.name}" received successfully ✅`
+//       );
+
+//       this.selectedFile = null;
+//       return;
+//     }
+
+//     // 🤖 EXISTING CHATBOT
+//     if (input) {
+//       this.handleUserQuery(input.toLowerCase());
+//     }
+
+//   }, 1000);
+// }
+
+sendMessage() {
+
+  if (!this.userInput.trim() && !this.selectedFile) return;
   // Add message
   addMessage(type: string, text: string, buttons: any[] = []) {
     const time = new Date().toLocaleTimeString([], {
@@ -1973,6 +2107,120 @@ checkWFHStatus() {
 
     const input = this.userInput.trim();
 
+  // Show user message
+  if (input) {
+    this.addMessage('user', input);
+  }
+
+  this.userInput = '';
+  this.isTyping = true;
+
+  setTimeout(() => {
+
+    // =========================
+    // FILE UPLOAD
+    // =========================
+    if (this.selectedFile) {
+
+      this.addMessage(
+        'bot',
+        'HRMS Training PPT',
+        [],
+        'file',
+        [],
+        '#'
+      );
+
+      this.selectedFile = null;
+      this.isTyping = false;
+      return;
+    }
+
+    // =========================
+    // CALL BACKEND API
+    // =========================
+  this.http.post<any>('http://localhost:46020/api/chat', {
+  message: input
+}).subscribe({
+
+
+// next: (res) => {
+
+//   this.isTyping = false;
+
+//   let items: string[] = [];
+//   let workflow: string[] = [];
+
+//   if (res.type === 'steps' && res.text) {
+//     items = res.text.split('\n');
+//   }
+
+//   if (res.type === 'workflow' && res.text) {
+//     workflow = res.text.split('\n');
+//   }
+
+//   this.addMessage(
+//     'bot',
+//     res.title || res.text,
+//     [],
+//     res.type,
+//     items,
+//     res.fileUrl || '',
+//     workflow
+//   );
+
+// },
+
+next: (res) => {
+
+  this.isTyping = false;
+
+  let items: string[] = [];
+  let workflow: string[] = [];
+  let displayText = res.text || res.title;
+
+  if (res.type === 'steps' && res.text) {
+    items = res.text.split('\n');
+    displayText = res.title;
+  }
+
+  if (res.type === 'workflow' && res.text) {
+    workflow = res.text.split('\n');
+    displayText = res.title;
+  }
+
+  if (res.type === 'text') {
+    displayText = res.text;
+  }
+
+  this.addMessage(
+    'bot',
+    displayText,
+    [],
+    res.type,
+    items,
+    res.fileUrl || '',
+    workflow
+  );
+
+},
+
+  error: (err) => {
+
+    console.log(err);
+
+    this.isTyping = false;
+
+    this.addMessage(
+      'bot',
+      '⚠️ Unable to connect to chatbot server.'
+    );
+  }
+
+});
+
+  }, 800);
+}
     // show text
     if (input) {
       this.addMessage('user', input);
@@ -2067,6 +2315,117 @@ checkWFHStatus() {
         return;
       }
 
+//  handleAction(btn: any) {
+
+//   // Show user click
+//   this.addMessage('user', btn.label);
+
+//   this.isTyping = true;
+
+//   setTimeout(() => {
+//     this.isTyping = false;
+
+//     // =========================
+//     // ✅ SECTION: HR SERVICES
+//     // =========================
+//     if (btn.action === 'section_hr') {
+//       this.addMessage(
+//         'bot',
+//         'Here are HR services you can access 👇',
+//         [
+//           { label: 'Leave Balance', action: 'navigate', url: '/leave-management' },
+//           { label: 'Attendance', action: 'navigate', url: '/attendance-list' },
+//           { label: 'Job History', action: 'navigate', url: '/skills' },
+//           { label: 'Profile Info', action: 'navigate', url: '/profile' },
+//           {label: 'Salary Slips', action: 'navigate', url: '/compensation/employee-payslip'}
+//         ]
+//       );
+//       return;
+//     }
+
+//     // =========================
+//     // ✅ SECTION: COMPANY INFO
+//     // =========================
+//     if (btn.action === 'section_company') {
+//       this.addMessage(
+//         'bot',
+//         'Here is company information 👇',
+//         [
+//           { label: 'About CORtracker', action: 'faq', value: 'cortracker' },
+//           { label: 'Services', action: 'faq', value: 'services' },
+//           { label: 'Work Culture', action: 'faq', value: 'culture' },
+//           // { label: 'What modules are included in CORtracker ERP?', action: 'faq', value: 'modules' },
+//           // {label: 'Leave Balance', action: 'navigate', url: '/leave-management'},
+//           // {label: 'Pay Roll', action: 'navigate', url: '/payroll'},
+//         ]
+//       );
+//       return;
+//     }
+
+//     // =========================
+//     // ✅ FAQ FLOW
+//     // =========================
+//     if (btn.action === 'faq') {
+//       this.handleUserQuery(btn.value);
+
+//       // 🔥 SPECIAL CASE: ABOUT CORTRACKER → OPEN WEBSITE
+//       if (btn.value === 'cortracker') {
+//         setTimeout(() => {
+//           this.addMessage(
+//             'bot',
+//             'Want to explore more? ',
+//             [
+//               {
+//                 label: 'Open Official Website',
+//                 action: 'external',
+//                 url: 'https://www.cortracker360.com/index.php'
+//               }
+//             ]
+//           );
+//         }, 500);
+//       }
+
+//       return;
+//     }
+
+//     // =========================
+//     // ✅ INTERNAL NAVIGATION
+//     // =========================
+//     if (btn.action === 'navigate') {
+
+//       this.addMessage('bot', `Opening ${btn.label}...`);
+
+//       setTimeout(() => {
+//         this.router.navigateByUrl(btn.url);
+//       }, 500);
+
+//       return;
+//     }
+
+//     // =========================
+//     // ✅ EXTERNAL NAVIGATION (NEW 🔥)
+//     // =========================
+//     if (btn.action === 'external') {
+
+//       this.addMessage('bot', 'Opening official website... 🌐');
+
+//       setTimeout(() => {
+//         window.open(btn.url, '_blank');
+//       }, 500);
+
+//       return;
+//     }
+
+//     // =========================
+//     // fallback
+//     // =========================
+//     this.addMessage('bot', 'Okay 👍');
+
+//   }, 600);
+// }
+
+
+handleAction(btn: any) {
       // =========================
       // 📍 NAVIGATION
       // =========================
@@ -2078,6 +2437,48 @@ checkWFHStatus() {
           this.router.navigateByUrl(matchedIntent.url!);
         }, 400);
 
+  setTimeout(() => {
+
+    this.isTyping = false;
+
+    // =========================
+    // ✅ SECTION: HR SERVICES
+    // =========================
+    if (btn.action === 'section_hr') {
+
+      this.addMessage(
+        'bot',
+        'Here are HR services you can access 👇',
+        [
+          { label: 'Leave Balance', action: 'leave_balance' }, // 🔥 changed
+          { label: 'Attendance', action: 'attendence_status'},
+          { label: 'Job History', action: 'navigate', url: '/skills' },
+          { label: 'Profile Info', action: 'navigate', url: '/profile' },
+          // { label: 'Salary Slips', action: 'salary_slip', url: '/compensation/employee-payslip' },
+          { label: 'Salary Slips', action: 'navigate', url: '/compensation/employee-payslip' }
+
+        ]
+      );
+
+      return;
+    }
+
+      // =========================
+    // ✅ SECTION: COMPANY INFO
+    // =========================
+    if (btn.action === 'section_company') {
+
+      this.addMessage(
+        'bot',
+        'Here is company information 👇',
+        [
+          { label: 'About CORtracker', action: 'faq', value: 'cortracker' },
+          { label: 'Services', action: 'faq', value: 'services' },
+          { label: 'Work Culture', action: 'faq', value: 'culture' }
+        ]
+      );
+
+      return;
         return;
       }
 
@@ -2131,6 +2532,288 @@ checkWFHStatus() {
       text: 'CORtracker uses AI, IoT, big data, and automation for advanced solutions.'
     },
 
+    // =========================
+    // ✅ FAQ FLOW
+    // =========================
+    if (btn.action === 'faq') {
+
+      this.handleUserQuery(btn.value);
+
+      if (btn.value === 'cortracker') {
+
+        setTimeout(() => {
+          this.addMessage(
+            'bot',
+            'Want to explore more?',
+            [
+              {
+                label: 'Open Official Website',
+                action: 'external',
+                url: 'https://www.cortracker360.com/index.php'
+              }
+            ]
+          );
+        }, 500);
+      }
+
+      return;
+    }
+  
+
+    // =========================
+    // ✅ LEAVE BALANCE CARD (NEW 🔥)
+    // =========================
+    // if (btn.action === 'leave_balance') {
+
+    //   this.isTyping = true;
+
+    //   const userId = this.userId;
+
+    //   this.http.get<any>(
+    //     `http://localhost:44370/api/Employee/leave-balance?userId=${userId}`
+    //   ).subscribe({
+
+    //     next: (res) => {
+
+    //       this.isTyping = false;
+
+    //       // 👉 Send as CARD TYPE
+    //       this.addMessage(
+    //         'bot',
+    //         '',
+    //         [],
+    //         'leaveCard',
+    //         [],
+    //         '',
+    //         [],
+    //         {
+    //           balance: res.balance
+    //         }
+    //       );
+
+    //     },
+
+    //     error: () => {
+
+    //       this.isTyping = false;
+
+    //       this.addMessage('bot', '⚠️ Unable to fetch leave balance');
+
+    //     }
+
+    //   });
+
+    //   return;
+    // }
+
+
+    if (btn.action === 'leave_balance') {
+
+  this.isTyping = true;
+
+  const userId = Number(sessionStorage.getItem('UserId'));
+
+  this.leaveService.getMyLeaves(userId).subscribe({
+
+    next: (data: any) => {
+
+      this.isTyping = false;
+
+const leaves = Array.isArray(data) ? data : data?.data || [];
+
+let sickUsed = 0;
+let casualUsed = 0;
+
+leaves.forEach((l: any) => {
+  const type = (l.leaveType || l.LeaveType || '').toLowerCase();
+  const days = l.totalDays || l.TotalDays || 0;
+
+  if (type.includes('sick')) sickUsed += days;
+  if (type.includes('casual')) casualUsed += days;
+});
+
+// 👉 Define totals (can come from DB later)
+const totalSick = 10;
+const totalCasual = 10;
+
+const sickBalance = totalSick - sickUsed;
+const casualBalance = totalCasual - casualUsed;
+
+      // ✅ Send Leave Card
+this.addMessage(
+  'bot',
+  '',
+  [],
+  'leaveCard',
+  [],
+  '',
+  [],
+  {
+    sick: sickBalance,
+    casual: casualBalance
+  }
+);
+
+    },
+
+    error: (err) => {
+
+      console.error(err);
+
+      this.isTyping = false;
+
+      this.addMessage('bot', '⚠️ Unable to fetch leave balance');
+
+    }
+
+  });
+
+  return;
+}
+
+// Attendence status  card 
+
+if (btn.action === 'attendence_status') {
+
+  this.isTyping = true;
+
+  const employeeCode = sessionStorage.getItem('EmployeeCode') || '';
+  const companyId = Number(sessionStorage.getItem('CompanyId'));
+  const regionId = Number(sessionStorage.getItem('RegionId'));
+
+  this.adminService.getTodayAttendance(
+    employeeCode,
+    companyId,
+    regionId
+  ).subscribe({
+
+    next: (res: any[]) => {
+
+      this.isTyping = false;
+
+      // Today's records
+      const clockIns = res.filter(x => x.actionType === 'ClockIn');
+      const clockOuts = res.filter(x => x.actionType === 'ClockOut');
+
+      const checkIn =
+        clockIns.length > 0
+          ? clockIns[0].actionTime
+          : '--:--';
+
+      const checkOut =
+        clockOuts.length > 0
+          ? clockOuts[clockOuts.length - 1].actionTime
+          : '--:--';
+
+      const status =
+        checkIn !== '--:--'
+          ? 'Present'
+          : 'Absent';
+
+      this.addMessage(
+        'bot',
+        '',
+        [],
+        'attendanceCard',
+        [],
+        '',
+        [],
+        {
+          status,
+          checkIn,
+          checkOut,
+          date: new Date().toLocaleDateString()
+        }
+      );
+
+    },
+
+    error: (err) => {
+
+      console.error(err);
+
+      this.isTyping = false;
+
+      this.addMessage(
+        'bot',
+        '⚠️ Unable to fetch attendance'
+      );
+
+    }
+
+  });
+
+  return;
+}
+
+//  added salary slip card 
+// if (btn.action === 'salary_slip') {
+
+//   this.isTyping = true;
+
+//   const employeeId = Number(sessionStorage.getItem('UserId'));
+
+//   // 👉 Replace with your real service later
+//   this.salaryService.getLatestSalarySlip(employeeId)
+//     .subscribe({
+
+//       next: (res: any) => {
+
+//         this.isTyping = false;
+
+//         this.addMessage(
+//           'bot',
+//           '',
+//           [],
+//           'salaryCard',
+//           [],
+//           '',
+//           [],
+//           {
+//             month: res.month || 'May 2025',
+//             generatedDate: res.generatedDate || '20 May 2025',
+//             fileUrl: res.fileUrl || '/files/sample-payslip.pdf'
+//           }
+//         );
+
+//       },
+
+//       error: (err) => {
+
+//         console.error(err);
+
+//         this.isTyping = false;
+
+//         this.addMessage(
+//           'bot',
+//           '⚠️ Unable to fetch salary slip'
+//         );
+
+//       }
+
+//     });
+
+//   return;
+// }
+// if (btn.action === 'salary_slip') {
+
+//   this.addMessage(
+//     'bot',
+//     '',
+//     [],
+//     'salaryCard',
+//     [],
+//     '',
+//     [],
+//     {
+//       month: 'May 2025',
+//       generatedDate: '20 May 2025',
+//       fileUrl: '/files/hrms_training.pptx'
+//     }
+//   );
+
+//   return;
+// }
     {
       keywords: ['culture'],
       text: 'Work culture includes good learning opportunities, but varies across roles.'
@@ -2241,6 +2924,10 @@ checkWFHStatus() {
 
         this.addMessage('bot', `Opening ${btn.label}...`);
 
+    // =========================
+    // ✅ EXTERNAL NAVIGATION
+    // =========================
+    if (btn.action === 'external') {
         setTimeout(() => {
           this.router.navigateByUrl(btn.url);
         }, 500);
@@ -2267,6 +2954,18 @@ checkWFHStatus() {
       // =========================
       this.addMessage('bot', 'Okay 👍');
 
+
+
+
+
+scrollToBottom() {
+  setTimeout(() => {
+    const container = document.getElementById('chatContainer');
+    if (container) {
+      container.scrollTop = container.scrollHeight + 500;
+    }
+  }, 100);
+}
     }, 600);
   }
 
@@ -2450,6 +3149,68 @@ checkWFHStatus() {
     hours = hours ? hours : 12; // 0 => 12
 
     minutes = minutes.toString().padStart(2, '0');
+
+  return `${hours}:${minutes} ${ampm}`;
+}
+
+onFileSelected(event: any) {
+  const file = event.target.files[0];
+  if (file) {
+    this.selectedFile = file;
+
+    // show in chat
+    this.addMessage('user', `📎 ${file.name}`);
+  }
+}
+
+
+sendSuggestion(text: string) {
+  this.userInput = text;
+  this.sendMessage();
+}
+
+
+
+
+
+
+showHRServicesCards() {
+
+  this.isTyping = true;
+
+  const userId = this.userId;
+
+  // 🔥 Use your existing API base
+  setTimeout(() => {
+
+    this.isTyping = false;
+
+    // 👉 TEMP STATIC (later connect API)
+    const leave = { balance: 6 };
+    const attendance = { status: 'Present', time: '09:32 AM' };
+
+    const message =
+`📊 Your HR Summary
+
+📅 Leave Balance: ${leave.balance} Days  
+📍 Attendance: ${attendance.status} (${attendance.time})  
+💰 Salary Slip: Available`;
+
+    this.addMessage(
+      'bot',
+      message,
+      [
+        { label: 'Leave Details', action: 'leave' },
+        { label: 'Attendance Details', action: 'attendance' },
+        { label: 'Download Salary', action: 'salary' }
+      ]
+    );
+
+  }, 800);
+}
+
+
+
 
     return `${hours}:${minutes} ${ampm}`;
   }
