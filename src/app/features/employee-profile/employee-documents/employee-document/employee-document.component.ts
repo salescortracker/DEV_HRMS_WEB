@@ -93,6 +93,7 @@ loadDocumentTypes() {
           id: x.attachmentTypeId,
           typeName: x.attachmentTypeName
         }));
+          this.loadEmployeeDocument();
       },
       error: (err) => {
         console.error('Failed to load document types', err);
@@ -228,7 +229,7 @@ loadDocumentTypes() {
   if (this.form.title.length > 150 || !this.titleRegex.test(this.form.title)) return;
 
   // Document number required for some types
-  if (this.isNumberRequired() && !this.form.number) return;
+  // if (this.isNumberRequired() && !this.form.number) return;
   if (this.form.number && this.form.number.length > 50) return;
 
   // Issued date future check
@@ -244,8 +245,17 @@ loadDocumentTypes() {
     return;
   }
 
+  const documentTypeId = this.getDocumentTypeId(this.form.type);
+  if (!documentTypeId) {
+    Swal.fire('Error', 'Please select a valid document type.', 'error');
+    return;
+  }
+
   // File required for NEW upload only
-  if (!this.selectedFile && !this.editId) return;
+  if (!this.selectedFile && !this.editId) {
+    Swal.fire('Error', 'Please select a file before saving.', 'error');
+    return;
+  }
 
   // Build formData (append Id only for update)
   const formData = new FormData();
@@ -256,9 +266,14 @@ loadDocumentTypes() {
   formData.append("UserId", String(this.userId));
   formData.append("CompanyId", String(this.companyId));
   formData.append("RegionId", String(this.regionId));
-  formData.append("DocumentTypeId", this.getDocumentTypeId(this.form.type).toString());
+  formData.append("DocumentTypeId", documentTypeId.toString());
   formData.append("DocumentName", this.form.title);
-  formData.append("DocumentNumber", this.form.number ?? "");
+
+  const documentNumber = this.form.number;
+  if (documentNumber) {
+    formData.append("DocumentNumber", documentNumber);
+  }
+
   formData.append("IssuedDate", this.form.issuedDate);
   formData.append("ExpiryDate", this.form.expiryDate ?? "");
   formData.append("IsConfidential", this.form.confidential ? "true" : "false");
@@ -267,21 +282,39 @@ loadDocumentTypes() {
   if (this.selectedFile) {
     formData.append("DocumentFile", this.selectedFile);
   }
+ // CREATE (POST)
+if (!this.editId) {
+  this.adminService.addEmployeeDocument(formData).subscribe({
+    next: (res: any) => {
+      const savedNumber = res?.documentNumber || '';
+      console.log('Employee document save response', res);
 
-  // CREATE (POST)
-  if (!this.editId) {
-    this.adminService.addEmployeeDocument(formData).subscribe({
-      next: () => {
-        Swal.fire('Saved!', 'Document saved successfully.', 'success');
-        this.loadEmployeeDocument();
-        this.resetForm();
-      },
-      error: err => {
-        console.error('Add document error:', err);
-        Swal.fire('Error', 'Failed to save document', 'error');
-      }
-    });
-  }
+      this.loadEmployeeDocument();
+      this.resetForm();
+
+      console.log('form after save', this.form);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Saved!',
+        html: savedNumber
+          ? `Document saved successfully.<br><b>Document Number:</b> ${savedNumber}`
+          : 'Document saved successfully.'
+      });
+
+      this.submitted = false;
+      this.fileError = '';
+      this.issuedFutureError = false;
+      this.expiryError = false;
+    },
+    error: err => {
+      console.error('Add document error:', err);
+      const rawMessage = err?.error?.message || err?.error?.Message || err?.error || err?.message || err?.statusText || 'Failed to save document';
+      const message = typeof rawMessage === 'string' ? rawMessage : JSON.stringify(rawMessage);
+      Swal.fire('Error', message, 'error');
+    }
+  });
+}
   // UPDATE (PUT)
   else {
     this.adminService.updateEmployeeDocument(this.editId, formData).subscribe({
@@ -290,6 +323,10 @@ loadDocumentTypes() {
         this.loadEmployeeDocument();
         this.resetForm();
         this.editId = null;
+        this.submitted = false;
+        this.fileError = '';
+        this.issuedFutureError = false;
+        this.expiryError = false;
       },
       error: err => {
         console.error('Update document error:', err);
@@ -367,6 +404,10 @@ loadDocumentTypes() {
     };
     this.editId = null;
     this.selectedFile = null;
+    this.submitted = false;
+    this.fileError = '';
+    this.issuedFutureError = false;
+    this.expiryError = false;
     this.currentPage = 1;
     return this.form;
   }
