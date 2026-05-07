@@ -89,18 +89,75 @@ loadgender() {
   });
 }
    // load existing record (if any) and patch the form
-  private loadByUserId() {
+//   private loadByUserId() {
+//   this.service.GetByUserIdempProfile(this.userId).subscribe({
+//     next: (res: any) => {
+//       if (res) {
+//         this.existingRecordId = res.id ?? null;
+//         this.editId = res.id;
+
+//         // Patch the form manually to map server field to form control
+//         this.personalForm.patchValue({
+//           firstName: res.firstName,
+//           lastName: res.lastName,
+//           dateOfBirth: res.dateOfBirth,
+//           genderId: res.genderId,
+//           mobileNumber: res.mobileNumber,
+//           personalEmail: res.personalEmail,
+//           permanentAddress: res.permanentAddress,
+//           presentAddress: res.presentAddress,
+//           panNumber: res.panNumber,
+//           aadhaarNumber: res.aadhaarNumber,
+//           passportNumber: res.passportNumber,
+//           placeOfBirth: res.placeOfBirth,
+//           uan: res.uan,
+//           bloodGroup: res.bloodGroup,
+//           citizenship: res.citizenship,
+//           religion: res.religion,
+//           drivingLicence: res.drivingLicence,
+//           maritalStatusId: res.maritalStatusId,
+//           marriageDate: res.marriageDate,
+//           workPhone: res.workPhone,
+//           linkedInProfile: res.linkedInProfile,
+//           previousExperience: res.previousExperience,
+//           ProfilePictureName: res.profilePictureName,
+//           ProfilePicturePath: res.profilePicturePath,
+//           brandGrade: res.brandGrade,
+//           esicNumber: res.esicNumber,
+//           pfNumber: res.pfNumber,
+//           employmentType: res.employmentType,
+//           dateofJoining: res.dateofJoining
+//         });
+//       }
+//     },
+//     error: (err) => console.error(err)
+//   });
+// }
+private loadByUserId() {
   this.service.GetByUserIdempProfile(this.userId).subscribe({
     next: (res: any) => {
       if (res) {
+
         this.existingRecordId = res.id ?? null;
         this.editId = res.id;
 
-        // Patch the form manually to map server field to form control
+        // ✅ Format date for input type="date"
+        const joiningDate = res.dateofJoining
+          ? res.dateofJoining.split('T')[0]
+          : '';
+
+        const dob = res.dateOfBirth
+          ? res.dateOfBirth.split('T')[0]
+          : '';
+
+        const marriageDate = res.marriageDate
+          ? res.marriageDate.split('T')[0]
+          : '';
+
         this.personalForm.patchValue({
           firstName: res.firstName,
           lastName: res.lastName,
-          dateOfBirth: res.dateOfBirth,
+          dateOfBirth: dob,
           genderId: res.genderId,
           mobileNumber: res.mobileNumber,
           personalEmail: res.personalEmail,
@@ -116,7 +173,7 @@ loadgender() {
           religion: res.religion,
           drivingLicence: res.drivingLicence,
           maritalStatusId: res.maritalStatusId,
-          marriageDate: res.marriageDate,
+          marriageDate: marriageDate,
           workPhone: res.workPhone,
           linkedInProfile: res.linkedInProfile,
           previousExperience: res.previousExperience,
@@ -126,7 +183,9 @@ loadgender() {
           esicNumber: res.esicNumber,
           pfNumber: res.pfNumber,
           employmentType: res.employmentType,
-          dateofJoining: res.dateofJoining
+
+          // ✅ Fixed
+          dateofJoining: joiningDate
         });
       }
     },
