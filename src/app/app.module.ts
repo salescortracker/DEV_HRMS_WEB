@@ -136,6 +136,8 @@ import { TeamtaskComponent } from './features/my-task/teamtask/teamtask.componen
 
 import { TaskreportComponent } from './features/my-task/taskreport/taskreport.component';
 import { LeaveReportComponent } from './features/leave/leave-report/leave-report.component';
+import { AssetReportComponent } from './features/asset/asset-report/asset-report.component';
+import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticket-reports.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -261,6 +263,8 @@ import { LeaveReportComponent } from './features/leave/leave-report/leave-report
           TeamtaskComponent,
           TaskreportComponent,
           LeaveReportComponent,
+          AssetReportComponent,
+          TicketReportsComponent,
           
    
     

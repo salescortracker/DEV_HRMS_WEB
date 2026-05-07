@@ -19,7 +19,7 @@ export class LeaveManagementComponent {
   canApplyLeave :Boolean= false;
 canViewApproval :Boolean= false;
 canViewCalendar :Boolean= false;
-
+canViewReport :Boolean= false;
   employees: string[] = ['John Doe', 'Jane Smith', 'Alice Brown'];
   selectedEmployee: string = 'John Doe';
 
@@ -77,10 +77,11 @@ selectedTab: string = '';
   this.canApplyLeave = getPermission("Leave Apply");
   this.canViewApproval = getPermission("Leave Approve");
   this.canViewCalendar = getPermission("Leave Calendar");
-
+  this.canViewReport = getPermission("Leave Report");
    if (this.canApplyLeave) this.selectedTab = 'tab1';
   else if (this.canViewApproval) this.selectedTab = 'tab2';
   else if (this.canViewCalendar) this.selectedTab = 'tab3';
+  else if (this.canViewReport) this.selectedTab = 'tab4';
 }
 
 //   loadLeavePermissions() {
