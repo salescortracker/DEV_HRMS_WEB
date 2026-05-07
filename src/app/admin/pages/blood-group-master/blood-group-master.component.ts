@@ -69,21 +69,50 @@ onBloodGroupInput() {
 }
 
 
+  // loadBloodGroups(): void {
+  //   this.spinner.show();
+  //   this.adminService.getBloodGroupsbyIDs(this.userId).subscribe({
+  //     next: (res: any) => {
+  //      this.bloodGroups = res.data.map((b: any) => ({
+  //       ...b,
+  //       companyName: this.getCompanyName(b.companyID),
+  //       regionName: this.getRegionName(b.regionID)
+  //     }));
+
+  //     this.spinner.hide();
+  //   },
+  //   error: () => this.spinner.hide()
+  // });
+  // }
   loadBloodGroups(): void {
-    this.spinner.show();
-    this.adminService.getBloodGroupsbyID(this.userId).subscribe({
-      next: (res: any) => {
-       this.bloodGroups = res.data.map((b: any) => ({
+
+  this.spinner.show();
+
+  this.adminService.getBloodGroupsbyIDs(this.userId).subscribe({
+
+    next: (res: any) => {
+
+      console.log('API RESPONSE:', res);
+
+      this.bloodGroups = res.map((b: any) => ({
         ...b,
         companyName: this.getCompanyName(b.companyID),
         regionName: this.getRegionName(b.regionID)
       }));
 
+      console.log('BLOOD GROUPS:', this.bloodGroups);
+
       this.spinner.hide();
     },
-    error: () => this.spinner.hide()
+
+    error: (err) => {
+      console.log(err);
+      this.spinner.hide();
+    }
+
   });
-  }
+
+}
   loadCompanies(): void {
   this.adminService.getCompanies(null, this.userId).subscribe({
     next: (res: any) => {
