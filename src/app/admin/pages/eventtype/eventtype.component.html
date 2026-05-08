@@ -1,0 +1,400 @@
+<div class="card shadow-sm">
+
+  <div class="container-fluid p-4 event-type-management">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+      <h4 class="fw-semibold mb-0">
+
+        <i class="fa-solid fa-calendar-days me-2 text-danger"></i>
+
+        Event Type Management
+
+      </h4>
+
+    
+    </div>
+
+    <hr class="mb-4" />
+
+    <!-- Form -->
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body">
+
+        <form
+          (ngSubmit)="onSubmit()"
+          #eventTypeForm="ngForm"
+          novalidate>
+
+          <div class="row g-3">
+
+            <!-- Event Type Name -->
+
+            <div class="col-md-6">
+
+              <label class="form-label fw-semibold">
+
+                Event Type Name <span style="color: red;">*</span>
+
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                name="eventTypeName"
+                [(ngModel)]="eventType.eventTypeName"
+                placeholder="Enter Event Type Name"
+                required />
+            </div>
+
+            <!-- Company -->
+
+            <div class="col-md-6">
+
+              <label class="form-label fw-semibold">
+
+                Company
+
+              </label>
+
+              <select
+                class="form-select"
+                name="companyID"
+                [(ngModel)]="eventType.companyID"
+                (change)="onCompanyChange()"
+                required>
+
+                <option value="0">
+
+                  Select Company
+
+                </option>
+
+                <option
+                  *ngFor="let c of companies"
+                  [value]="c.companyId">
+
+                  {{ c.companyName }}
+
+                </option>
+
+              </select>
+            </div>
+
+            <!-- Region -->
+
+            <div class="col-md-6">
+
+              <label class="form-label fw-semibold">
+
+                Region
+
+              </label>
+
+              <select
+                class="form-select"
+                name="regionId"
+                [(ngModel)]="eventType.regionId"
+                required>
+
+                <option value="0">
+
+                  Select Region
+
+                </option>
+
+                <option
+                  *ngFor="let r of filteredRegions"
+                  [value]="r.regionID">
+
+                  {{ r.regionName }}
+
+                </option>
+
+              </select>
+            </div>
+
+            <!-- Description -->
+
+           
+
+            <!-- Status -->
+
+            <div class="col-md-6 d-flex align-items-center">
+
+              <div class="form-check form-switch mt-3">
+
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="isActive"
+                  [(ngModel)]="eventType.isActive" />
+
+                <label class="form-check-label ms-2">
+
+                  {{ eventType.isActive ? 'Active' : 'Inactive' }}
+
+                </label>
+
+              </div>
+            </div>
+
+            <!-- Buttons -->
+
+            <div class="col-md-4 d-flex align-items-end gap-3">
+
+              <button
+                type="button"
+                class="btn btn-danger w-100"
+                (click)="onCancel()">
+
+                <i class="fa-solid fa-xmark me-2"></i>
+
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-dark w-100"
+                [disabled]="!eventTypeForm.valid">
+
+                <i class="fa-solid fa-save me-2"></i>
+
+                {{ isEditMode
+                  ? 'Update'
+                  : 'Save' }}
+              </button>
+
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+    <!-- List Card -->
+
+    <div class="card shadow-sm">
+
+      <div class="card-body">
+
+        <!-- Filters -->
+
+        <div class="mb-3 row g-3 align-items-end">
+
+          <div class="col-md-4">
+
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search Event Type"
+              [(ngModel)]="searchText" />
+          </div>
+
+          <div class="col-md-4">
+
+            <select
+              class="form-select"
+              [(ngModel)]="statusFilter">
+
+              <option value="">
+
+                All Status
+
+              </option>
+
+              <option [ngValue]="true">
+
+                Active
+
+              </option>
+
+              <option [ngValue]="false">
+
+                Inactive
+
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <!-- Table -->
+
+        <div class="table-responsive">
+
+          <table class="table table-bordered table-hover align-middle">
+
+            <thead class="table-light">
+
+              <tr>
+
+                <th>#</th>
+
+                <th>Event Type</th>
+
+                <th>Company</th>
+
+                <th>Region</th>
+
+                <th>Status</th>
+
+                <th class="text-center">
+
+                  Actions
+
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr
+                *ngFor="let e of pagedEventTypes; let i = index">
+
+                <td>
+                  {{ (currentPage - 1) * pageSize + i + 1 }}
+                </td>
+
+                <td>
+                  {{ e.eventTypeName }}
+                </td>
+
+                <td>
+                  {{ e.companyName }}
+                </td>
+
+                <td>
+                  {{ e.regionName }}
+                </td>
+
+                <td>
+
+                  <span
+                    class="badge"
+                    [ngClass]="
+                      e.isActive
+                        ? 'bg-success'
+                        : 'bg-secondary'
+                    ">
+
+                    {{ e.isActive ? 'Active' : 'Inactive' }}
+
+                  </span>
+
+                </td>
+
+                <td class="text-center">
+
+                  <button
+                    class="btn btn-sm btn-outline-primary me-2"
+                    (click)="editEventType(e)">
+
+                    <i class="fa-solid fa-pen-to-square"></i>
+
+                  </button>
+
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="deleteEventType(e)">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                  </button>
+
+                </td>
+
+              </tr>
+
+              <tr *ngIf="pagedEventTypes.length === 0">
+
+                <td colspan="7" class="text-center text-muted">
+
+                  No records found
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <!-- Pagination -->
+
+        <nav
+          *ngIf="totalPages > 1"
+          class="d-flex justify-content-end mt-3">
+
+          <ul class="pagination pagination-sm mb-0">
+
+            <li
+              class="page-item"
+              [class.disabled]="currentPage === 1">
+
+              <a
+                class="page-link"
+                (click)="goToPage(currentPage - 1)">
+
+                Previous
+
+              </a>
+
+            </li>
+
+            <li
+              class="page-item"
+              *ngFor="
+                let page of [].constructor(totalPages);
+                let i = index
+              "
+              [class.active]="currentPage === i + 1">
+
+              <a
+                class="page-link"
+                (click)="goToPage(i + 1)">
+
+                {{ i + 1 }}
+
+              </a>
+
+            </li>
+
+            <li
+              class="page-item"
+              [class.disabled]="currentPage === totalPages">
+
+              <a
+                class="page-link"
+                (click)="goToPage(currentPage + 1)">
+
+                Next
+
+              </a>
+
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

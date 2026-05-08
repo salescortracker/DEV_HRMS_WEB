@@ -81,6 +81,7 @@ import { BirthdayMasterComponent } from './pages/birthday/birthday-master/birthd
 import { TaskStatusComponent } from './pages/master/task-status/task-status.component';
 import { JobApplicationComponent } from './pages/job-application/job-application.component';
 import { GeoLocationComponent } from './master/geo-location/geo-location.component';
+import { EventtypeComponent } from './pages/eventtype/eventtype.component';
 
 @NgModule({
   declarations: [
@@ -164,7 +165,8 @@ import { GeoLocationComponent } from './master/geo-location/geo-location.compone
     LateLoginPolicyComponent,
     BirthdayMasterComponent,
     JobApplicationComponent,
-    GeoLocationComponent
+    GeoLocationComponent,
+    EventtypeComponent
  
   
 
