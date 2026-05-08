@@ -43,7 +43,7 @@
 
     <!-- RIGHT SIDE FORM -->
     <div class="col-lg-6 col-md-12 p-4">
-      <div class="demo-card shadow">
+      <form #form="ngForm" (ngSubmit)="onSubmit()" class="demo-card shadow">
 
         <div class="demo-header">
           <i class="fa-solid fa-user-plus"></i>
@@ -59,7 +59,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <i class="fa-solid fa-user"></i>
-                <input type="text"
+                <input
                   [(ngModel)]="model.candidateName"
                   name="candidateName"
                   required
@@ -128,26 +128,22 @@
           <div class="form-group">
             
             <label>
-              Select Technologies</label>
-            <select multiple
-                    [(ngModel)]="selectedTechnologies"
-                    name="technology"
-                    size="4"
-                    class="form-control">
-
-              <option *ngFor="let tech of technologies" [value]="tech">
-                {{ tech }}
-              </option>
-
-            </select>
+              Add Technologies</label>
+            <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="techInput"
+                name="techInput"
+                placeholder="e.g. Angular, .NET, SQL"
+              />
           </div>
 
-          <button type="button" class="btn-submit" (click)="onSubmit()">
+          <button type="submit" class="btn-submit">
             <i class="fa-solid fa-paper-plane"></i>
             Apply Now
           </button>
 
-      </div>
+      </form>
     </div>
 
   </div>

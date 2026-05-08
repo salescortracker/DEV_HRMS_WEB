@@ -312,4 +312,9 @@ submitApplication(payload: FormData): Observable<any> {
     payload
   );
 }
+getJobApplications(): Observable<any[]> {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Recruitment/job-applications`
+  );
+}
 }

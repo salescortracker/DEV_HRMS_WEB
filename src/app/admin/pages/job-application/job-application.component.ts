@@ -17,30 +17,22 @@ export interface JobApplication {
   selector: 'app-job-application',
   standalone: false,
   templateUrl: './job-application.component.html',
-  styleUrl: './job-application.component.css'
+  styleUrls: ['./job-application.component.css']
 })
-export class JobApplicationComponent {
-  technologies: string[] = [
-  'Angular',
-  '.NET Core',
-  'SQL',
-  'React',
-  'Java',
-  'Python'
-];
+export class JobApplicationComponent { 
+  
+techInput: string = '';
 
   model: JobApplication = this.getEmpty();
   companyLogo: string = 'assets/images/default-logo.png';
   companyId!: number;
 
-  selectedTechnologies: string[] = [];
   selectedFile: File | null = null;
 
   constructor(private adminService: AdminService, private jobService: RecruitmentService) {}
 
   ngOnInit() {
     this.loadCompany();
-    console.log("Technologies:", this.technologies);
   }
 
   loadCompany() {
@@ -97,19 +89,19 @@ export class JobApplicationComponent {
 
 onSubmit() {
   debugger;
-  this.model.technology = this.selectedTechnologies.join(',');
+   this.model.technology = this.techInput;
 
   const formData = new FormData();
 
-  formData.append('candidateName', this.model.candidateName);
-  formData.append('email', this.model.email);
-  formData.append('phone', this.model.phone);
-  formData.append('jobTitle', this.model.jobTitle);
-  formData.append('experienceYears', String(this.model.experienceYears));
-  formData.append('technology', this.model.technology);
+  formData.append('candidateName', this.model.candidateName || '');
+  formData.append('email', this.model.email || '');
+  formData.append('phone', this.model.phone || '');
+  formData.append('jobTitle', this.model.jobTitle || '');
+  formData.append('experienceYears', String(this.model.experienceYears || 0));
+  formData.append('technology', this.model.technology || '');
 
   if (this.selectedFile) {
-    formData.append('Resume', this.selectedFile);
+    formData.append('resume', this.selectedFile);
   }
 
   this.jobService.submitApplication(formData).subscribe({
@@ -132,7 +124,7 @@ getEmpty(): JobApplication {
 
 resetForm() {
   this.model = this.getEmpty();
-  this.selectedTechnologies = [];
   this.selectedFile = null;
+  this.techInput = '';
 }
 }
