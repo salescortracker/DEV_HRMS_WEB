@@ -70,6 +70,7 @@ export class AdminLayoutComponent {
      { title: 'Birthday List', route: '/admin/birthday-list'},
      { title: 'Geo Location', route: '/admin/Geo-Locations'},
      { title: 'Task Status', route: '/admin/task-status' },
+       { title: 'Event Type', route: '/admin/Event-type' },
     ],  
     // 'Configuration': [
     //   { title: 'Approval Workflows', route: '/admin/approval-workflow' },

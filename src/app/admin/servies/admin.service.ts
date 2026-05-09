@@ -26,6 +26,26 @@ export interface BankDetails {
   micrcode?: string;
   upiid?: string;
 }
+export interface EventType {
+
+  eventTypeID: number;
+
+  eventTypeName: string;
+
+  description?: string;
+
+  isActive: boolean;
+
+  companyID: number;
+
+  regionId: number;
+
+  companyName?: string;
+
+  regionName?: string;
+
+  userId: number;
+}
 export interface CompanyPolicy {
   PolicyId: number;
   CompanyId: number;
@@ -1197,6 +1217,49 @@ updateGender(gender: Gender) {
 deleteGender(id: number) {
   return this.http.post(`${this.baseUrl}/MasterData/DeleteGender?id=${id}`, {});
 }
+
+ // ------------------------------------------------------------
+ // 🔹 Event Type APIs
+ // ------------------------------------------------------------
+
+getEventTypes(companyId: number, regionId: number, userId: number) {
+
+  return this.http.get<any>(
+    `${this.baseUrl}/MasterData/GetEventTypeAll`,
+    {
+      params: {
+        companyId: companyId,
+        regionId: regionId,
+        userId: userId
+      }
+    }
+  );
+}
+
+createEventType(eventType: EventType) {
+
+  return this.http.post(
+    `${this.baseUrl}/MasterData/CreateEventType`,
+    eventType
+  );
+}
+
+updateEventType(eventType: EventType) {
+
+  return this.http.post(
+    `${this.baseUrl}/MasterData/UpdateEventType`,
+    eventType
+  );
+}
+
+deleteEventType(id: number) {
+
+  return this.http.post(
+    `${this.baseUrl}/MasterData/DeleteEventType?id=${id}`,
+    {}
+  );
+}
+
  getBloodGroupsbyID(userID: number): Observable<any> {
   debugger;
     return this.http.get(`${this.baseUrl}/MasterData/GetBloodGroupsById/${userID}`);
