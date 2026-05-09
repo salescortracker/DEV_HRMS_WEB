@@ -2,29 +2,36 @@
   <div class="row align-items-center min-vh-100">
 
     <!-- LEFT SIDE -->
-    <div class="col-lg-7 col-md-12 p-5">
-      <div class="left-card">
+    <div class="col-lg-6 col-md-12 p-5">
+      <div class="left-card shadow">
 
-        <div class="icon-box mb-4">
-          <i class="fa-solid fa-briefcase"></i>
+        <div class="company-logo mb-3">
+          <img [src]="companyLogo"
+               alt="Company Logo"
+               (error)="companyLogo='assets/images/default-logo.png'" />
         </div>
 
-        <h1 class="title">Join <span>Our Team</span></h1>
+        <div class="title-wrapper mb-4">
+          <div class="icon-box">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
 
-        <p class="description">
-          Be part of an innovative team where your skills matter. 
-          Apply today and take the next step in your career journey.
-        </p>
+          <h1 class="title">Join <span>Our Team</span></h1>
+        </div>
+
+        <p class="description">Be part of an innovative team where your skills matter.</p>
 
         <div class="features row mt-5">
           <div class="col-md-4 feature">
             <i class="fa-solid fa-chart-line"></i>
             <p>Career Growth</p>
           </div>
+
           <div class="col-md-4 feature">
             <i class="fa-solid fa-users"></i>
             <p>Team Culture</p>
           </div>
+
           <div class="col-md-4 feature">
             <i class="fa-solid fa-lightbulb"></i>
             <p>Innovation</p>
@@ -35,8 +42,8 @@
     </div>
 
     <!-- RIGHT SIDE FORM -->
-    <div class="col-lg-5 col-md-12 p-4">
-      <div class="demo-card shadow">
+    <div class="col-lg-6 col-md-12 p-4">
+      <form #form="ngForm" (ngSubmit)="onSubmit()" class="demo-card shadow">
 
         <div class="demo-header">
           <i class="fa-solid fa-user-plus"></i>
@@ -46,101 +53,97 @@
           </div>
         </div>
 
-        <form  (ngSubmit)="onSubmit()">
+        <!-- ✅ FIXED FORM -->
+          <div class="row">
 
-          <!-- Name -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <i class="fa-solid fa-user"></i>
+                <input
+                  [(ngModel)]="model.candidateName"
+                  name="candidateName"
+                  required
+                  placeholder="Full Name" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email"
+                  [(ngModel)]="model.email"
+                  name="email"
+                  placeholder="Email" />
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row">
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <i class="fa-solid fa-phone"></i>
+                <input type="text"
+                  [(ngModel)]="model.phone"
+                  name="phone"
+                  placeholder="Phone Number" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <i class="fa-solid fa-briefcase"></i>
+                <input type="text"
+                       [(ngModel)]="model.jobTitle"
+                       name="jobTitle"
+                       placeholder="Job Title" />
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row">
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <i class="fa-solid fa-chart-bar"></i>
+                <input type="number"
+                       [(ngModel)]="model.experienceYears"
+                       name="experienceYears"
+                       placeholder="Experience" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group upload-box">
+                <i class="fa-solid fa-upload"></i>
+                <input type="file" (change)="onFileSelected($event)" />
+                <small *ngIf="selectedFile">{{ selectedFile.name }}</small>
+              </div>
+            </div>
+
+          </div>
+
           <div class="form-group">
-            <i class="fa-solid fa-user"></i>
-            <input type="text" name="name"
-                   [(ngModel)]="model.candidateName"
-                   placeholder="Full Name" required>
+            
+            <label>
+              Add Technologies</label>
+            <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="techInput"
+                name="techInput"
+                placeholder="e.g. Angular, .NET, SQL"
+              />
           </div>
 
-          <!-- Email -->
-          <div class="form-group">
-            <i class="fa-solid fa-envelope"></i>
-            <input type="email" name="email"
-                   [(ngModel)]="model.email"
-                   placeholder="Email" required>
-          </div>
-
-          <!-- Phone -->
-          <div class="form-group">
-            <i class="fa-solid fa-phone"></i>
-            <input type="text" name="phone"
-                   [(ngModel)]="model.phone"
-                   placeholder="Phone Number" required>
-          </div>
-
-          <!-- Job Title -->
-          <div class="form-group">
-            <i class="fa-solid fa-briefcase"></i>
-            <input type="text" name="jobTitle"
-                   [(ngModel)]="model.jobTitle"
-                   placeholder="Job Title">
-          </div>
-
-          <!-- Company -->
-          <div class="form-group">
-            <i class="fa-solid fa-building"></i>
-            <select name="company"
-                    [(ngModel)]="model.companyId" required>
-              <option value="">Select Company</option>
-              <option *ngFor="let c of companies" [value]="c.id">
-                {{ c.name }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Region -->
-          <div class="form-group">
-            <i class="fa-solid fa-location-dot"></i>
-            <select name="region"
-                    [(ngModel)]="model.regionId" required>
-              <option value="">Select Region</option>
-              <option *ngFor="let r of regions" [value]="r.id">
-                {{ r.name }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Experience -->
-          <div class="form-group">
-            <i class="fa-solid fa-chart-bar"></i>
-            <input type="number" name="exp"
-                   [(ngModel)]="model.experienceYears"
-                   placeholder="Experience (Years)">
-          </div>
-
-          <!-- Technologies -->
-          <div class="form-group">
-            <i class="fa-solid fa-laptop-code"></i>
-            <select multiple
-                    [(ngModel)]="selectedTechnologies"
-                    name="technology">
-              <option *ngFor="let t of technologies" [value]="t">
-                {{ t }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Resume Upload -->
-          <div class="form-group upload-box">
-            <i class="fa-solid fa-upload"></i>
-            <input type="file" (change)="onFileSelected($event)">
-            <small *ngIf="selectedFile">{{ selectedFile.name }}</small>
-          </div>
-
-          <!-- Submit -->
-          <button class="btn-submit"
-                  >
+          <button type="submit" class="btn-submit">
             <i class="fa-solid fa-paper-plane"></i>
             Apply Now
           </button>
 
-        </form>
-
-      </div>
+      </form>
     </div>
 
   </div>

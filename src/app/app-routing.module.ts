@@ -67,7 +67,7 @@ const routes: Routes = [
 { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'dashboard', component: LayoutComponent },
   {path:'Welcomedemo',component:WelcomedemoComponent},
-    {path:'jobapply',component:JobApplicationComponent},
+    {path:'job-application',component:JobApplicationComponent},
   {path : 'change-password', component : ChangePasswordComponent},
   // { path: 'hr-dashboard', component: NavbarHrLayoutComponent },
   // // { path: 'manager-dashboard', component: NavbarManagerLayoutComponent },

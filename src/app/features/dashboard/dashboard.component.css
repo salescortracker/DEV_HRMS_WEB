@@ -284,8 +284,23 @@ canvas {
 }
 
 /* COLORS MATCH YOUR TS */
-.present { background: #ffc107; }  /* yellow */
-.absent { background: #dc3545; }   /* red */
-.today { background: #28a745; }    /* green */
-.future { background: #007bff; }   /* blue */
-.weekoff { background: #000000; }  /* black */
+.present { background: #ffc107; } 
+.absent { background: #dc3545; }   
+.today { background: #28a745; }    
+.future { background: #007bff; }   
+.weekoff { background: #000000; } 
+
+.leave-box {
+  background: #f9fafc;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.leave-box:hover {
+  background: #e8f4f8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(176, 40, 40, 0.1);
+}

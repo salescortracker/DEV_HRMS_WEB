@@ -78,6 +78,7 @@ import { LateLoginPolicyComponent } from './master/late-login-policy/late-login-
 import { BirthdayMasterComponent } from './pages/birthday/birthday-master/birthday-master.component';
 import { GeoLocationComponent } from './master/geo-location/geo-location.component';
 import { TaskStatusComponent } from './pages/master/task-status/task-status.component';
+import { EventtypeComponent } from './pages/eventtype/eventtype.component';
 const routes: Routes = [
   {
     path: '',
@@ -164,6 +165,7 @@ const routes: Routes = [
       {path: 'birthday-list', component: BirthdayMasterComponent },
       {path: 'Geo-Locations', component: GeoLocationComponent },
       {path: 'task-status', component: TaskStatusComponent },
+      {path:'Event-type',component:EventtypeComponent},
     ]
   }
 ];

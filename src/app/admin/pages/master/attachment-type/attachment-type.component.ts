@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { AdminService, AttachmentType } from '../../../servies/admin.service';
+import { AdminService, AttachmentType, Company, Region } from '../../../servies/admin.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-attachment-type',
@@ -30,6 +30,12 @@ userId = sessionStorage.getItem('UserId') ? +sessionStorage.getItem('UserId')! :
   sortDirection: 'asc' | 'desc' = 'desc';
 
   showUploadPopup = false;
+  companies: Company[] = [];
+regions: Region[] = [];
+allRegions: Region[] = [];
+
+companyMap: Record<number, string> = {};
+regionMap: Record<number, string> = {};
 
   constructor(
     private adminService: AdminService,
@@ -38,6 +44,12 @@ userId = sessionStorage.getItem('UserId') ? +sessionStorage.getItem('UserId')! :
 
   ngOnInit(): void {
     this.loadAttachments();
+    this.loadCompanies();
+  this.loadRegions();
+  setTimeout(() => {
+    this.loadAttachments();
+  }, 200);
+
   }
 
   getEmptyAttachment(): AttachmentType {
@@ -51,6 +63,39 @@ userId = sessionStorage.getItem('UserId') ? +sessionStorage.getItem('UserId')! :
       userId : this.userId
     };
   }
+  loadCompanies() {
+  this.adminService.getCompanies(null, this.userId).subscribe((res: any) => {
+    const data = res.data || res;
+
+    this.companies = data.filter((x: any) => x.isActive);
+
+    this.companyMap = {};
+    this.companies.forEach((c: any) => {
+      this.companyMap[c.companyId] = c.companyName;
+    });
+  });
+}
+loadRegions() {
+  this.adminService.getRegions(null, this.userId).subscribe((res: any) => {
+    const data = res.data || res;
+
+    this.allRegions = data.filter((x: any) => x.isActive);
+
+    this.regionMap = {};
+    this.allRegions.forEach((r: any) => {
+      this.regionMap[r.regionID] = r.regionName;
+    });
+
+    this.regions = [];
+  });
+}
+onCompanyChange() {
+  this.attachment.regionId = 0;
+
+  this.regions = this.allRegions.filter(
+    r => r.companyID == this.attachment.companyId
+  );
+}
 
   loadAttachments(): void {
     this.spinner.show();
@@ -110,7 +155,12 @@ userId = sessionStorage.getItem('UserId') ? +sessionStorage.getItem('UserId')! :
   }
 
   editAttachment(a: AttachmentType): void {
-    this.attachment = { ...a };
+    this.attachment = { ...a,
+      userId: this.userId
+     };
+    this.regions = this.allRegions.filter(
+    r => r.companyID == a.companyId
+  );
     this.isEditMode = true;
   }
 

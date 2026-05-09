@@ -54,6 +54,52 @@
   <div class="row mb-3">
     <div class="col-md-4">
       <label class="form-label">
+        Upload File <span class="text-danger">*</span>
+      </label>
+
+      <input type="file" class="form-control" multiple (change)="onFilesSelected($event)">
+
+      <!-- Selected + Existing Files -->
+      <div class="mt-2" *ngIf="selectedFiles.length > 0 || existingFiles.length > 0">
+
+        <!-- Existing Files (Edit Mode) -->
+        <div *ngFor="let file of existingFiles; let i = index"
+          class="d-flex justify-content-between align-items-center border p-2 mb-1">
+
+          <span>{{ file }}</span>
+
+          <div>
+            <button type="button" class="btn btn-sm btn-primary me-2" (click)="viewDocument(file)">
+              View
+            </button>
+
+            <button type="button" class="btn btn-sm btn-danger" (click)="removeExistingFile(i)">
+              ❌
+            </button>
+          </div>
+        </div>
+
+        <!-- New Selected Files -->
+        <div *ngFor="let file of selectedFiles; let i = index"
+          class="d-flex justify-content-between align-items-center border p-2 mb-1">
+
+          <span>{{ file.name }}</span>
+
+          <button type="button" class="btn btn-sm btn-danger" (click)="removeFile(i)">
+            ❌
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Validation -->
+      <div *ngIf="showValidation && selectedFiles.length === 0 && existingFiles.length === 0" class="text-danger">
+        File is required.
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">
         Issued / Submitted Date <span class="text-danger">*</span>
       </label>
       <input type="date" class="form-control" [(ngModel)]="issuedDate" name="issuedDate" required
@@ -62,30 +108,7 @@
       <div *ngIf="dateError" class="text-danger small mt-1">{{ dateError }}</div>
     </div>
 
-    <div class="col-md-4">
-      <label class="form-label">
-        Upload File <span class="text-danger">*</span>
-      </label>
-      <input type="file" multiple (change)="onFilesSelected($event)">
 
-      <div *ngIf="existingFiles.length > 0">
-        <label>Existing Files:</label>
-        <div *ngFor="let file of existingFiles; let i = index">
-          <a (click)="viewDocument(file)" style="cursor:pointer; color:#0d6efd;">
-            View File
-          </a>
-          <button (click)="removeExistingFile(i)">❌</button>
-        </div>
-      </div>
-
-      <div *ngFor="let file of selectedFiles; let i = index">
-        {{ file.name }}
-        <button (click)="removeFile(i)">❌</button>
-      </div>
-      <small class="text-muted">Allowed: PDF, DOC, DOCX, JPG, PNG — Max 5 MB</small>
-      <div *ngIf="showValidation && !fileName" class="text-danger small mt-1">File is required.</div>
-      <div *ngIf="fileError" class="text-danger small mt-1">{{ fileError }}</div>
-    </div>
 
     <div class="col-md-4">
       <label class="form-label">Remarks / Notes</label>

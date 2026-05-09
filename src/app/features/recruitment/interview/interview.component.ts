@@ -18,7 +18,7 @@ export class InterviewComponent {
   candidates: any[] = [];
 showDropdown = false;
 
-  tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding'];
+  tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding', 'Application Resumes'];
   totalStages = this.tabs.length;
   globalFilter = '';
 
