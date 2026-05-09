@@ -12,7 +12,7 @@ export class OnboardingComponent {
   showEmployeeModal = false;
   candidates: any[] = [];
   pageSizeOptions = [5, 10, 20, 50];
-  tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding'];
+  tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding', 'Application Resumes'];
   totalStages = this.tabs.length;
   topSortColumn: string | null = null;
   topSortDirection: 'asc' | 'desc' = 'asc';
