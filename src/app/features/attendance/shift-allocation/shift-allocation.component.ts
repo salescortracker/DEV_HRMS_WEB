@@ -125,42 +125,71 @@ export class ShiftAllocationComponent {
   }
 
   loadAllocations() {
-    this.loading = true;
-    this.svc.getAllAllocations(this.currentUserId).subscribe(
-      (r:any) => {
-        this.allocations = (r || []).slice().sort((a:any, b:any) => {
-          const da = a.startDate ? new Date(a.startDate).getTime() : 0;
-          const db = b.startDate ? new Date(b.startDate).getTime() : 0;
-          return db - da;
-        });
-        this.loading = false;
-        console.log('Loaded allocations:', this.allocations);
-      }, 
-      (err:any) => {
-        console.error('Error loading allocations:', err);
-        this.loading = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Failed to load shift allocations'
-        });
-      }
-    );
-  }
+  this.loading = true;
 
-  onEmployeeChange(event: Event) {
-  const select = event.target as HTMLSelectElement;
-  const userId = Number(select.value);
-  if (!userId) {
-    this.shiftForm.patchValue({ employeeCode: '' });
+  const companyId = Number(sessionStorage.getItem('CompanyId') || 0);
+  const regionId = Number(sessionStorage.getItem('RegionId') || 0);
+
+  if (!companyId || !regionId) {
+    this.loading = false;
+    Swal.fire('Error', 'Company or Region not found', 'error');
     return;
   }
 
-  const user = this.employees.find(e => e.userId === userId);
+  this.svc.getAllocationsByCompanyRegion(companyId, regionId).subscribe({
+    next: (r: any) => {
+      this.allocations = (r || []).slice().sort((a: any, b: any) => {
+        const da = a.startDate ? new Date(a.startDate).getTime() : 0;
+        const db = b.startDate ? new Date(b.startDate).getTime() : 0;
+        return db - da;
+      });
+
+      this.loading = false;
+      console.log('Loaded allocations:', this.allocations);
+    },
+    error: (err: any) => {
+      console.error('Error loading allocations:', err);
+      this.loading = false;
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Failed to load shift allocations'
+      });
+    }
+  });
+}
+get availableEmployees() {
+  return this.employees.filter(emp => {
+    return !this.allocations.some(a => 
+      a.userID === emp.userId && this.getStatus(a) === 'Active'
+    );
+  });
+}
+
+onEmployeeChange(event: any) {
+
+  const userId = Number(event.target.value);
+
+  if (!userId) {
+
+    this.shiftForm.patchValue({
+      employeeCode: ''
+    });
+
+    return;
+  }
+
+  const user = this.employees.find(
+    e => e.userId === userId
+  );
+
   if (user) {
+
     this.shiftForm.patchValue({
       employeeCode: user.employeeCode
     });
+
   }
 }
 
@@ -343,23 +372,32 @@ export class ShiftAllocationComponent {
     });
   }
 
-  onEdit(a: ShiftAllocationDto) {
-    this.editMode = true;
-    this.editId = a.shiftAllocationId || null;
+onEdit(a: ShiftAllocationDto) {
 
-    this.shiftForm.patchValue({
-      userID: a.userID,
-      employeeCode: a.employeeCode,
-      shiftID: a.shiftID,
-      startDate: a.startDate ? (a.startDate as string).split('T')[0] : '',
-      endDate: a.endDate ? (a.endDate as string).split('T')[0] : '',
-      isActive: a.isActive
-    });
+  this.editMode = true;
+  this.editId = a.shiftAllocationId || null;
 
-    if (a.companyID) sessionStorage.setItem('CompanyId', a.companyID.toString());
-    if (a.regionID) sessionStorage.setItem('RegionId', a.regionID.toString());
-    if (a.userID) sessionStorage.setItem('UserId', a.userID.toString());
-  }
+  this.shiftForm.patchValue({
+
+    // ✅ ALWAYS BIND USER ID
+    userId: a.userID,
+
+    employeeCode: a.employeeCode,
+
+    shiftID: a.shiftID,
+
+    startDate: a.startDate
+      ? (a.startDate as string).split('T')[0]
+      : '',
+
+    endDate: a.endDate
+      ? (a.endDate as string).split('T')[0]
+      : '',
+
+    isActive: a.isActive
+  });
+
+}
 onDelete(id?: number) {
   if (!id || id === 0) return;
 

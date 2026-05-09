@@ -9,7 +9,28 @@
       <div class="card-header fw-bold">Personal Details</div>
       <div class="card-body">
         <div class="row g-3">
+ <!-- Resume -->
+          <div class="col-md-3">
+            <label class="form-label">
+              Resume <span class="text-danger"></span>
+            </label>
+            <input type="file" class="form-control" required (change)="onResumeFiles($event)">
+            <!-- <small class="text-info" *ngIf="isParsing">Parsing resume...</small> -->
 
+
+            <!-- <small class="text-danger" *ngIf="!resumeFile">
+              Resume is required
+            </small>
+
+            <div *ngIf="existingResumeName" class="mt-1">
+              <small>
+                Current:
+                <a (click)="viewDocument(existingResumeName)" style="cursor:pointer; color:#0d6efd">
+                  {{ existingResumeName }}
+                </a>
+              </small>
+            </div> -->
+          </div>
           <div class="col-md-3">
             <label class="form-label">
               Applied Date <span class="text-danger">*</span>
@@ -524,16 +545,16 @@
         <!-- Actions -->
         <td>
           <button class="btn btn-sm btn-outline-success me-1" (click)="advanceStage(c)"
-            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding'].includes(c.stageName)">
+            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)">
             Shortlist
           </button>
           <button class="btn btn-sm btn-outline-danger"
-            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding'].includes(c.stageName)"
+            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)"
             (click)="removeCandidate(c)">
             Delete
           </button>
           <button class="btn btn-sm btn-outline-primary me-1"
-            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding'].includes(c.stageName)"
+            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)"
             (click)="editCandidate(c)">
             Edit
           </button>

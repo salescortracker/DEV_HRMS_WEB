@@ -3,7 +3,7 @@ export const environment = {
   apiUrl: "https://localhost:44370/api",
  //apiUrl: "https://rdw.cortracker360.com/api",
   //apiUrl: "https://machinery.cortracker360.com/api",
- // baseurl: "https://localhost:44370",
+ //baseurl: "https://localhost:44370",
   //baseurl: "https://machinery.cortracker360.com",
   baseurl: "https://rdw.cortracker360.com",
   //baseurl: "https://localhost:44370",

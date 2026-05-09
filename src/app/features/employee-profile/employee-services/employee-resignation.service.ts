@@ -168,7 +168,7 @@ private apiadminUrl = environment.apiUrl + '/UserManagement';
   }
 
   deleteempfamily(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/deleteempFamilyAsync/${id}`);
+    return this.http.post(`${this.apiUrl}/deleteempFamilyAsync?id=${id}`,{});
   }
 
   searchempfamily(filter: any): Observable<any> {
@@ -283,13 +283,16 @@ getManagerLeaves(managerId: number) {
 getAllAllocations(userId: number): Observable<ShiftAllocationDto[]> {
     return this.http.get<ShiftAllocationDto[]>(`${environment.apiUrl}/attendance/GetAllAllocations/${userId}`);
   }
-
+getAllocationsByCompanyRegion(companyId: number, regionId: number): Observable<ShiftAllocationDto[]> {
+  return this.http.get<ShiftAllocationDto[]>(
+    `${environment.apiUrl}/attendance/GetAllocationsByCompanyRegion?companyId=${companyId}&regionId=${regionId}`
+  );
+}
   getAllocationById(id: number): Observable<ShiftAllocationDto> {
     return this.http.get<ShiftAllocationDto>(`${this.apiUrl}/UserManagement/GetAllocationById/${id}`);
   }
 
   allocateShift(model: ShiftAllocationDto): Observable<any> {
-    
     return this.http.post(`${environment.apiUrl}/attendance/AllocateShift`, model);
   }
 
@@ -345,13 +348,22 @@ getAllAllocations(userId: number): Observable<ShiftAllocationDto[]> {
     );
   }
 
-  // 🔹 ADD CLOCK IN / CLOCK OUT
-  addClockInOut(payload: any): Observable<any> {
-    return this.http.post<any>(
-      `${environment.apiUrl}/attendance/AddclockinOut`,
-      payload
-    );
-  }
+  // // 🔹 ADD CLOCK IN / CLOCK OUT
+  // addClockInOut(payload: any): Observable<any> {
+  //   return this.http.post<any>(
+  //     `${environment.apiUrl}/attendance/AddclockinOut`,
+  //     payload
+  //   );
+  // }
+  // ✅ ADD CLOCK IN / CLOCK OUT
+addClockInOut(payload: any): Observable<any> {
+
+  return this.http.post<any>(
+    `${environment.apiUrl}/attendance/AddclockinOut`,
+    payload
+  );
+}
+
 
   // 🔹 DELETE (POST as per your API)
   deleteClockInOut(id: number): Observable<any> {

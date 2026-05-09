@@ -54,7 +54,7 @@ export class AdminLayoutComponent {
        { title: 'Resignation Master', route: '/admin/resignationmaster' },
        { title: 'My Team Configuration', route: '/admin/hierarchy-config' },
          { title: 'Recruitment Notice Period', route: '/admin/recruitment-notice-period' }, 
-       { title: 'Screnning Result', route: '/admin/screening-result' },
+     //  { title: 'Screnning Result', route: '/admin/screening-result' },
        { title: 'Interview Level', route: '/admin/interview-level' },
      { title: 'company-news-category', route: '/admin/company-news-category' },
      { title: 'Employment Type', route: '/admin/employment-type'},
@@ -68,7 +68,9 @@ export class AdminLayoutComponent {
      { title: 'Project Master', route: '/admin/project-master'},
      { title: 'Late Login Policy', route: '/admin/late-login-policy' },
      { title: 'Birthday List', route: '/admin/birthday-list'},
+     { title: 'Geo Location', route: '/admin/Geo-Locations'},
      { title: 'Task Status', route: '/admin/task-status' },
+       { title: 'Event Type', route: '/admin/Event-type' },
     ],  
     // 'Configuration': [
     //   { title: 'Approval Workflows', route: '/admin/approval-workflow' },

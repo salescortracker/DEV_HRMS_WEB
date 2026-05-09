@@ -136,7 +136,7 @@
 
       </div>
 
-      <div *ngIf="selectedFiles.length === 0" class="text-danger">
+      <div *ngIf="isSubmitted && selectedFiles.length === 0" class="text-danger">
         File is required.
       </div>
     </div>

@@ -137,6 +137,8 @@ import { TaskreportComponent } from './features/my-task/taskreport/taskreport.co
 import { LeaveReportComponent } from './features/leave/leave-report/leave-report.component';
 import { JobApplicationComponent } from './admin/pages/job-application/job-application.component';
 import { ApplicationResumesComponent } from './features/recruitment/application-resumes/application-resumes.component';
+import { AssetReportComponent } from './features/asset/asset-report/asset-report.component';
+import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticket-reports.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -264,6 +266,8 @@ import { ApplicationResumesComponent } from './features/recruitment/application-
           TeamtaskComponent,
           TaskreportComponent,
           LeaveReportComponent,
+          AssetReportComponent,
+          TicketReportsComponent,
           
           
    
