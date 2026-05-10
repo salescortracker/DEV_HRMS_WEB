@@ -66,7 +66,8 @@ this.departments=res.data.data.filter((d:any)=>d.isActive);
 getDepartmentName(id:number){
 debugger;
 const d=this.departments.find(x=>x.departmentId==id);
-return d.description;
+// return d.description;
+return d ? d.departmentName : '';
 
 }
 
