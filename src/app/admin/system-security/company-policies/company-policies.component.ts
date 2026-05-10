@@ -34,14 +34,16 @@ export class CompanyPoliciesComponent {
 
   policy: any = this.resetPolicy()
 
-  categories: string[] = [
-    "HR Policy",
-    "Leave Policy",
-    "Attendance Policy",
-    "IT Security Policy",
-    "Work From Home Policy",
-    "Travel Policy"
-  ]
+  // categories: string[] = [
+  //   "HR Policy",
+  //   "Leave Policy",
+  //   "Attendance Policy",
+  //   "IT Security Policy",
+  //   "Work From Home Policy",
+  //   "Travel Policy"
+  // ]
+  categories: any[] = [];
+
 
   constructor(
     private adminService: AdminService,
@@ -57,6 +59,7 @@ export class CompanyPoliciesComponent {
     this.loadCompanies()
     this.loadRegions()
     this.loadDepartments()
+    this.loadCategories()
     this.getPolicies()
 
   }
@@ -89,7 +92,31 @@ export class CompanyPoliciesComponent {
       })
 
   }
+loadCategories() {
 
+  this.spinner.show();
+
+  this.adminService.getPolicyCategories(this.userId).subscribe({
+
+    next: (res: any) => {
+
+      this.categories = res.data.filter((x: any) => x.isActive);
+
+      this.spinner.hide();
+
+    },
+
+    error: () => {
+
+      this.spinner.hide();
+
+      Swal.fire('Error', 'Failed to load policy categories', 'error');
+
+    }
+
+  });
+
+}
   loadRegions() {
   this.adminService.getRegions(null, this.userId)
     .subscribe(res => {
