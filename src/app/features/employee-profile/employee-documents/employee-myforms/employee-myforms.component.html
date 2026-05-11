@@ -5,18 +5,40 @@
     <table class="table table-bordered">
       <thead>
         <tr>
+
           <th>S.No</th>
-          <th>Document Type</th>
-          <th>Name</th>
-          <th>Issued Date</th>
+
+          <th (click)="sortBy('documentType')" style="cursor:pointer">
+            Document Type
+            <span *ngIf="sortColumn === 'documentType'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('name')" style="cursor:pointer">
+            Name
+            <span *ngIf="sortColumn === 'name'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th (click)="sortBy('issuedDate')" style="cursor:pointer">
+            Issued Date
+            <span *ngIf="sortColumn === 'issuedDate'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
           <th>Files</th>
+
           <th>Upload</th>
+
         </tr>
       </thead>
 
       <tbody>
-        <tr *ngFor="let f of forms; let i = index">
-          <td>{{ i + 1 }}</td>
+        <tr *ngFor="let f of pagedForms(); let i = index">
+          <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
           <td>{{ getDocumentTypeName(f.documentType) }}</td>
           <td>{{ f.name }}</td>
           <td>{{ f.issuedDate }}</td>
@@ -35,9 +57,9 @@
             </span>
           </td>
           <td>
-            <input type="file" multiple (change)="onFileSelect($event, f.id)">
+            <input type="file" multiple #fileInput (change)="onFileSelect($event, f.id)">
 
-            <button class="btn btn-sm btn-primary mt-1" (click)="uploadFiles(f.id)">
+            <button class="btn btn-sm btn-primary mt-1" (click)="uploadFiles(f.id, fileInput)">
               Upload
             </button>
           </td>
@@ -45,5 +67,50 @@
         </tr>
       </tbody>
     </table>
+    <!-- Pagination -->
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+
+      <div>
+        <label>
+
+          Show
+
+          <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+              {{ size }}
+            </option>
+
+          </select>
+
+          entries
+
+        </label>
+      </div>
+
+      <div>
+
+        <button class="btn btn-outline-secondary btn-sm me-2" (click)="changePage(currentPage - 1)"
+          [disabled]="currentPage === 1">
+
+          Previous
+
+        </button>
+
+        <span>
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+
+        <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changePage(currentPage + 1)"
+          [disabled]="currentPage === totalPages">
+
+          Next
+
+        </button>
+
+      </div>
+
+    </div>
   </div>
 </div>

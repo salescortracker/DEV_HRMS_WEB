@@ -1797,7 +1797,12 @@ uploadEmployeeFiles(formData: FormData) {
     formData
   );
 }
-
+updateEmployeeFileStatus(data: any) {
+  return this.http.post(
+    `${environment.apiUrl}/employee/UpdateEmployeeFileStatus`,
+    data
+  );
+}
 
 getLeaveReport(data: any) {
   return this.http.post<any>(`${this.baseUrl}/Employee/leave-report`, data);

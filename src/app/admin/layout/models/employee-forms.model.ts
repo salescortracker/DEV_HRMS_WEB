@@ -9,4 +9,5 @@ export interface EmployeeForm {
  fileNames?: string[];   // ✅ make optional
   filePaths?: string[];   // ✅ make optional
     employeeUploadedFiles?: string[];
+    employeeUploads?: any[];
 }

@@ -261,6 +261,7 @@ onInterviewerChange(user: any, event: any) {
     this.interviewForm.location = '';
     this.interviewForm.meetingLink = '';
     this.interviewForm.feedback = '';
+     this.interviewForm.hrEmail = '';
     this.interviewForm.result = 'Pending';
   }
   isSelected(candidate: any): boolean {
