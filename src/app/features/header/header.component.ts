@@ -1593,10 +1593,10 @@ export class HeaderComponent {
 
       clockOutTime: '',
 
-      totalWorkedHours: '00:00:00',
+      totalWorkedHours: null,
 
       companyId: this.companyId,
-
+     
       regionId: this.regionId
 
     }).subscribe({
