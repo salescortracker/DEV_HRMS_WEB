@@ -21,6 +21,8 @@ export interface AssetDto {
   assetStatusID: number;
   createdBy?: number;
   modifiedBy?: number;
+    assetCategoryId?: number;
+  assetTypeId?: number;
  employeeName?: string; // ✅ NEW
  reportingTo:number;
  assetType: number;        // ✅ ADD
