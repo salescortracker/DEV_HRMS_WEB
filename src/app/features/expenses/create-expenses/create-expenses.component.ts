@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { environment } from '../../../../environments/environment.prod';
+import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 import { ExpensesService } from '../expenses.service';
 import { AdminService } from '../../../admin/servies/admin.service';
@@ -137,11 +137,24 @@ loadCurrencies(): void {
   }
 
   loadCategories(): void {
+
+  console.log('CompanyId:', this.companyId);
+  console.log('RegionId:', this.regionId);
+
   this.expenseService
     .getExpenseCategories(this.companyId, this.regionId)
-    .subscribe(res => {
-      if (res.success && res.data) {
-        this.categories = res.data;
+    .subscribe({
+      next: (res) => {
+        console.log('Categories Response:', res);
+
+        if (res.success && res.data) {
+          this.categories = res.data;
+        } else {
+          this.categories = [];
+        }
+      },
+      error: (err) => {
+        console.error('Category API Error:', err);
       }
     });
 }
@@ -285,15 +298,22 @@ loadCurrencies(): void {
     this.calculatePages();
   }
 
+viewReceipt(path: string): void {
 
-viewReceipt(filePath: string | undefined): void {
-  if (!filePath) {
-    alert('No file path available.');
+  if (!path) {
+    Swal.fire('Error', 'No receipt found', 'error');
     return;
   }
 
-  const fullPath = environment.apiUrl + filePath;
-  const encodedUrl = encodeURI(fullPath);
-  window.open(encodedUrl, '_blank');
+  const baseUrl = environment.apiUrl.replace('/api', '');
+
+  // FIX SLASH ISSUE
+  const cleanPath = path.replace(/\\/g, '/');
+
+  const url = `${baseUrl}/${cleanPath}`;
+
+  console.log(url);
+
+  window.open(url, '_blank');
 }
 }
