@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { AdminService } from '../../servies/admin.service';
+import { AdminService } from '../../../admin/servies/admin.service';
 import { environment } from '../../../../environments/environment';
-import { RecruitmentService } from '../../../features/recruitment/service/recruitment.service';
+import { RecruitmentService } from '../service/recruitment.service';
 import Swal from 'sweetalert2';
 
 export interface JobApplication {

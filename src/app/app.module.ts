@@ -135,7 +135,7 @@ import { MytaskComponent } from './features/my-task/mytask/mytask.component';
 import { TeamtaskComponent } from './features/my-task/teamtask/teamtask.component';
 import { TaskreportComponent } from './features/my-task/taskreport/taskreport.component';
 import { LeaveReportComponent } from './features/leave/leave-report/leave-report.component';
-import { JobApplicationComponent } from './admin/pages/job-application/job-application.component';
+import { JobApplicationComponent } from './features/recruitment/job-application/job-application.component';
 import { ApplicationResumesComponent } from './features/recruitment/application-resumes/application-resumes.component';
 import { AssetReportComponent } from './features/asset/asset-report/asset-report.component';
 import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticket-reports.component';
