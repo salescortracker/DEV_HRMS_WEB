@@ -26,6 +26,26 @@ export interface BankDetails {
   micrcode?: string;
   upiid?: string;
 }
+export interface EventType {
+
+  eventTypeID: number;
+
+  eventTypeName: string;
+
+  description?: string;
+
+  isActive: boolean;
+
+  companyID: number;
+
+  regionId: number;
+
+  companyName?: string;
+
+  regionName?: string;
+
+  userId: number;
+}
 export interface CompanyPolicy {
   PolicyId: number;
   CompanyId: number;
@@ -901,9 +921,11 @@ export class AdminService {
     return this.update<Company>('UserManagement/UpdateCompany', id, model);
   }
 
+// Company
 deleteCompany(id: number) {
-  return this.http.post('https://localhost:44370/api/UserManagement/DeleteCompany', id);
+  return this.http.post(`${this.baseUrl}/UserManagement/DeleteCompany?id=${id}`, {});
 }
+
 
   // -------------------------------------------------------------
   // 🔹 REGION OPERATIONS
@@ -924,9 +946,11 @@ deleteCompany(id: number) {
     return this.update<Region>('UserManagement/UpdateRegion', id, model);
   }
 
+// Region
 deleteRegion(id: number) {
-  return this.http.post('https://localhost:44370/api/UserManagement/DeleteRegion', id);
+  return this.http.post(`${this.baseUrl}/UserManagement/DeleteRegion?id=${id}`, {});
 }
+
 
   // -------------------------------------------------------------
   // 🔹 USER OPERATIONS
@@ -1144,7 +1168,7 @@ updateDepartment(id: number, model: Department): Observable<any> {
 }
 
 deleteDepartment(id: number): Observable<any> {
-  return this.http.post(`/MasterData/DeleteDepartment/${id}`, {}); // soft delete
+  return this.http.post(`${environment.apiUrl}/MasterData/deleteDepartment/${id}`, {});
 }
 
 getDesignations(userId:number): Observable<Designation[]> {
@@ -1193,6 +1217,49 @@ updateGender(gender: Gender) {
 deleteGender(id: number) {
   return this.http.post(`${this.baseUrl}/MasterData/DeleteGender?id=${id}`, {});
 }
+
+ // ------------------------------------------------------------
+ // 🔹 Event Type APIs
+ // ------------------------------------------------------------
+
+getEventTypes(companyId: number, regionId: number, userId: number) {
+
+  return this.http.get<any>(
+    `${this.baseUrl}/MasterData/GetEventTypeAll`,
+    {
+      params: {
+        companyId: companyId,
+        regionId: regionId,
+        userId: userId
+      }
+    }
+  );
+}
+
+createEventType(eventType: EventType) {
+
+  return this.http.post(
+    `${this.baseUrl}/MasterData/CreateEventType`,
+    eventType
+  );
+}
+
+updateEventType(eventType: EventType) {
+
+  return this.http.post(
+    `${this.baseUrl}/MasterData/UpdateEventType`,
+    eventType
+  );
+}
+
+deleteEventType(id: number) {
+
+  return this.http.post(
+    `${this.baseUrl}/MasterData/DeleteEventType?id=${id}`,
+    {}
+  );
+}
+
  getBloodGroupsbyID(userID: number): Observable<any> {
   debugger;
     return this.http.get(`${this.baseUrl}/MasterData/GetBloodGroupsById/${userID}`);
@@ -1793,7 +1860,12 @@ uploadEmployeeFiles(formData: FormData) {
     formData
   );
 }
-
+updateEmployeeFileStatus(data: any) {
+  return this.http.post(
+    `${environment.apiUrl}/employee/UpdateEmployeeFileStatus`,
+    data
+  );
+}
 
 getLeaveReport(data: any) {
   return this.http.post<any>(`${this.baseUrl}/Employee/leave-report`, data);
@@ -2339,6 +2411,11 @@ getAssetCategoriesByCompanyRegion(companyId: number, regionId: number) {
 getCurrenciesbycompanyId(companyId: number, regionId: number) {
   return this.http.get<any>(
     `${this.baseUrl}/MasterData/GetcurrencyByCompanyAndRegion?companyId=${companyId}&regionId=${regionId}`
+  );
+}
+getCurrenciesbycompanyIds(companyId: number, regionId: number) {
+  return this.http.get<any>(
+    `${this.baseUrl}/MasterData/currencyfilter?companyId=${companyId}&regionId=${regionId}`
   );
 }
 getCurrencies(userId: number) {

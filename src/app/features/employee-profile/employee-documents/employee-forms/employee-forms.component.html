@@ -54,6 +54,52 @@
   <div class="row mb-3">
     <div class="col-md-4">
       <label class="form-label">
+        Upload File <span class="text-danger">*</span>
+      </label>
+
+      <input type="file" class="form-control" multiple (change)="onFilesSelected($event)">
+
+      <!-- Selected + Existing Files -->
+      <div class="mt-2" *ngIf="selectedFiles.length > 0 || existingFiles.length > 0">
+
+        <!-- Existing Files (Edit Mode) -->
+        <div *ngFor="let file of existingFiles; let i = index"
+          class="d-flex justify-content-between align-items-center border p-2 mb-1">
+
+          <span>{{ file }}</span>
+
+          <div>
+            <button type="button" class="btn btn-sm btn-primary me-2" (click)="viewDocument(file)">
+              View
+            </button>
+
+            <button type="button" class="btn btn-sm btn-danger" (click)="removeExistingFile(i)">
+              ❌
+            </button>
+          </div>
+        </div>
+
+        <!-- New Selected Files -->
+        <div *ngFor="let file of selectedFiles; let i = index"
+          class="d-flex justify-content-between align-items-center border p-2 mb-1">
+
+          <span>{{ file.name }}</span>
+
+          <button type="button" class="btn btn-sm btn-danger" (click)="removeFile(i)">
+            ❌
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Validation -->
+      <div *ngIf="showValidation && selectedFiles.length === 0 && existingFiles.length === 0" class="text-danger">
+        File is required.
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">
         Issued / Submitted Date <span class="text-danger">*</span>
       </label>
       <input type="date" class="form-control" [(ngModel)]="issuedDate" name="issuedDate" required
@@ -62,30 +108,7 @@
       <div *ngIf="dateError" class="text-danger small mt-1">{{ dateError }}</div>
     </div>
 
-    <div class="col-md-4">
-      <label class="form-label">
-        Upload File <span class="text-danger">*</span>
-      </label>
-      <input type="file" multiple (change)="onFilesSelected($event)">
 
-      <div *ngIf="existingFiles.length > 0">
-        <label>Existing Files:</label>
-        <div *ngFor="let file of existingFiles; let i = index">
-          <a (click)="viewDocument(file)" style="cursor:pointer; color:#0d6efd;">
-            View File
-          </a>
-          <button (click)="removeExistingFile(i)">❌</button>
-        </div>
-      </div>
-
-      <div *ngFor="let file of selectedFiles; let i = index">
-        {{ file.name }}
-        <button (click)="removeFile(i)">❌</button>
-      </div>
-      <small class="text-muted">Allowed: PDF, DOC, DOCX, JPG, PNG — Max 5 MB</small>
-      <div *ngIf="showValidation && !fileName" class="text-danger small mt-1">File is required.</div>
-      <div *ngIf="fileError" class="text-danger small mt-1">{{ fileError }}</div>
-    </div>
 
     <div class="col-md-4">
       <label class="form-label">Remarks / Notes</label>
@@ -164,12 +187,45 @@
             </ng-template>
           </td>
           <td>
-            <ng-container *ngIf="f.employeeUploadedFiles && f.employeeUploadedFiles.length > 0; else noEmpFiles">
+            <ng-container *ngIf="(f.employeeUploads?.length ?? 0) > 0; else noEmpFiles">
 
-              <div *ngFor="let file of f.employeeUploadedFiles">
-                <a (click)="viewDocument(file)" style="cursor:pointer; color:green; font-weight:500;">
-                  View
-                </a>
+              <div *ngFor="let emp of f.employeeUploads" class="border rounded p-2 mb-2">
+
+                <div class="fw-bold text-primary mb-1">
+                  {{ emp.employeeName }} ({{ emp.employeeCode }})
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between">
+
+                  <a (click)="viewDocument(emp.filePath)"
+                    style="cursor:pointer; color:#0d6efd; font-weight:500; text-decoration:underline;">
+
+                    View
+
+                  </a>
+
+                  <div>
+
+                    <span class="badge bg-secondary me-2">
+                      {{ emp.status || 'Pending' }}
+                    </span>
+
+                    <ng-container *ngIf="!emp.status || emp.status === 'Pending'">
+
+                      <i class="fa-solid fa-check text-success me-2" style="cursor:pointer" title="Approve"
+                        (click)="updateEmployeeFileStatus(emp.fileId,'Approved')">
+                      </i>
+
+                      <i class="fa-solid fa-xmark text-danger" style="cursor:pointer" title="Reject"
+                        (click)="updateEmployeeFileStatus(emp.fileId,'Rejected')">
+                      </i>
+
+                    </ng-container>
+
+                  </div>
+
+                </div>
+
               </div>
 
             </ng-container>
@@ -179,8 +235,8 @@
             </ng-template>
           </td>
           <td class="action-icons">
-            <i class="fa-solid fa-eye me-2" style="color: green; cursor:pointer" (click)="viewDetails(f)"
-              title="View Details"></i>
+            <!-- <i class="fa-solid fa-eye me-2" style="color: green; cursor:pointer" (click)="viewDetails(f)"
+              title="View Details"></i> -->
             <i class="fa-solid fa-pen me-2" style="color: black;" (click)="editRecord(f)" title="Edit"></i>
             <i class="fa-solid fa-trash" style="color: black;" (click)="deleteRecord(f.id)" title="Delete"></i>
           </td>

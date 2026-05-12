@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
   styleUrl: './screening.component.css'
 })
 export class ScreeningComponent {
-  tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding'];
+  tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding', 'Application Resumes'];
   totalStages = this.tabs.length;
   screeningSelectedCandidates: any[] = [];
   filterStage: any = '';

@@ -2670,3 +2670,177 @@ button:hover {
   color: #c62828;
   /* margin-bottom: 10px; 
 } */
+}  
+
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+/* 🔴 Late (RED) */
+.badge-late {
+  background-color: #ffe5e5;
+  color: #d32f2f;
+  border: 1px solid #f5c2c7;
+}
+
+/* 🟢 Early (GREEN) */
+.badge-early {
+  background-color: #e6f7e6;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+/* 🔵 On Time (BLUE) */
+.badge-ontime {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+/* ⚪ Default */
+.badge-default {
+  background-color: #f5f5f5;
+  color: #555;
+}
+
+
+.fancy-badge {
+  transition: all 0.3s ease;
+}
+
+.fancy-badge:hover {
+  transform: scale(1.05);
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin-right: 8px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+/* 🔴 Late */
+.badge-late {
+  background: #ffe5e5;
+  color: #d32f2f;
+}
+
+/* 🟢 Early */
+.badge-early {
+  background: #e6f7ec;
+  color: #2e7d32;
+}
+
+/* 🔵 On Time */
+.badge-ontime {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+/* ⚫ Default */
+.badge-default {
+  background: #f1f1f1;
+  color: #555;
+}
+
+/* 🟣 Clock Status */
+.badge-status {
+  background: #ede7f6;
+  color: #5e35b1;
+}
+
+/* 🟡 Clock In */
+.badge-clockin {
+  background: #fff8e1;
+  color: #f9a825;
+}
+
+/* 🟢 Total Hours */
+.badge-hours {
+  background: #e0f7fa;
+  color: #00838f;
+}
+
+.clock-status.compact {
+  display: flex;
+  align-items: center;
+  gap: 0px; /* 🔥 control spacing here */
+  flex-wrap: wrap; /* optional for mobile */
+}
+.clock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+/* 🟢 CLOCK IN */
+.btn-in {
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: white;
+}
+
+.btn-in:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+}
+
+/* 🔴 CLOCK OUT */
+.btn-out {
+  background: linear-gradient(135deg, #ef5350, #c62828);
+  color: white;
+}
+
+.btn-out:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(239, 83, 80, 0.4);
+}
+.clock-btn {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+
+/* 🟢 Clock In */
+.btn-in {
+  background: linear-gradient(45deg, #28a745, #20c997);
+}
+
+/* 🔴 Clock Out */
+.btn-out {
+  background: linear-gradient(45deg, #dc3545, #ff6b6b);
+}
+
+/* Hover */
+.clock-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Disabled */
+.clock-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

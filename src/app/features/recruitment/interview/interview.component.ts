@@ -18,7 +18,7 @@ export class InterviewComponent {
   candidates: any[] = [];
 showDropdown = false;
 
-  tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding'];
+  tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding', 'Application Resumes'];
   totalStages = this.tabs.length;
   globalFilter = '';
 
@@ -261,6 +261,7 @@ onInterviewerChange(user: any, event: any) {
     this.interviewForm.location = '';
     this.interviewForm.meetingLink = '';
     this.interviewForm.feedback = '';
+     this.interviewForm.hrEmail = '';
     this.interviewForm.result = 'Pending';
   }
   isSelected(candidate: any): boolean {

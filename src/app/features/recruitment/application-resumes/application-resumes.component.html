@@ -1,0 +1,108 @@
+<h4>Job Applications</h4>
+
+<div class="card mb-4 p-3">
+
+  <!-- ===== SEARCH ===== -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <input type="text"
+             class="form-control"
+             placeholder="Search by name / phone / technology"
+             [(ngModel)]="searchText"
+             (keyup)="loadApplications()" />
+    </div>
+  </div>
+
+  <!-- ===== TABLE ===== -->
+  <div class="table-responsive">
+    <table class="table table-sm table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+
+          <th (click)="sort('candidateName')" style="cursor:pointer">
+            Name
+            <span *ngIf="sortColumn === 'candidateName'">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+
+          <th>Email</th>
+          <th>Phone</th>
+
+          <th (click)="sort('technology')" style="cursor:pointer">
+            Technology
+          </th>
+
+          <th>Experience</th>
+          <th>Status</th>
+          <th>Resume</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let app of pagedData(); let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ app.candidateName }}</td>
+          <td>{{ app.email }}</td>
+          <td>{{ app.phone }}</td>
+          <td>{{ app.technology }}</td>
+          <td>{{ app.experienceYears }}</td>
+          <td>{{ app.status }}</td>
+
+             <td>
+                <ng-container *ngIf="app.resumeUrl; else noResume">
+                    <button class="btn btn-sm btn-success"
+                            (click)="downloadResume(app.resumeUrl)">
+                    Download
+                    </button>
+                </ng-container>
+
+                <ng-template #noResume>
+                    <span class="text-muted">No Resume</span>
+                </ng-template>
+            </td>
+        </tr>
+
+        <tr *ngIf="pagedData().length === 0">
+          <td colspan="8" class="text-center text-muted">
+            No records found
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== PAGINATION ===== -->
+  <div class="d-flex justify-content-between mt-2">
+
+    <div>
+      Show
+      <select [(ngModel)]="pageSize"
+              (change)="changePageSize()"
+              class="form-select d-inline w-auto ms-2">
+        <option *ngFor="let s of pageSizes" [ngValue]="s">
+          {{ s }}
+        </option>
+      </select>
+      entries
+    </div>
+
+    <div>
+      <button class="btn btn-outline-secondary btn-sm me-2"
+              (click)="changePage(currentPage - 1)"
+              [disabled]="currentPage === 1">
+        Prev
+      </button>
+
+      Page {{ currentPage }} / {{ totalPages }}
+
+      <button class="btn btn-outline-secondary btn-sm ms-2"
+              (click)="changePage(currentPage + 1)"
+              [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -348,13 +348,22 @@ getAllocationsByCompanyRegion(companyId: number, regionId: number): Observable<S
     );
   }
 
-  // 🔹 ADD CLOCK IN / CLOCK OUT
-  addClockInOut(payload: any): Observable<any> {
-    return this.http.post<any>(
-      `${environment.apiUrl}/attendance/AddclockinOut`,
-      payload
-    );
-  }
+  // // 🔹 ADD CLOCK IN / CLOCK OUT
+  // addClockInOut(payload: any): Observable<any> {
+  //   return this.http.post<any>(
+  //     `${environment.apiUrl}/attendance/AddclockinOut`,
+  //     payload
+  //   );
+  // }
+  // ✅ ADD CLOCK IN / CLOCK OUT
+addClockInOut(payload: any): Observable<any> {
+
+  return this.http.post<any>(
+    `${environment.apiUrl}/attendance/AddclockinOut`,
+    payload
+  );
+}
+
 
   // 🔹 DELETE (POST as per your API)
   deleteClockInOut(id: number): Observable<any> {

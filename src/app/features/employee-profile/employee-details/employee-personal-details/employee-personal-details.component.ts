@@ -48,12 +48,13 @@ marriedStatusId: number | null = null;
     this.personalForm.get('maritalStatusId')?.valueChanges.subscribe(value => {
     const selectedValue = Number(value);
 
-    if (selectedValue === this.marriedStatusId) {
-      this.showMarriageDate = true;
-    } else {
-      this.showMarriageDate = false;
-      this.personalForm.get('marriageDate')?.setValue('');
-    }
+   if (selectedValue === this.marriedStatusId) {
+  this.showMarriageDate = true;
+} else {
+  this.showMarriageDate = false;
+  this.personalForm.get('marriageDate')?.setValue(null); // 👈 use null, not ''
+}
+
   });
     this.loadAll();
     this.loadgender();
@@ -181,8 +182,15 @@ loadgender() {
     // }
     const formData = new FormData();
     Object.keys(this.personalForm.controls).forEach(key => {
-      formData.append(key, this.personalForm.get(key)?.value);
-    });
+  let value = this.personalForm.get(key)?.value;
+
+  if (value === null || value === '' || value === undefined) {
+    formData.append(key, ''); // 👈 send empty instead of "null"
+  } else {
+    formData.append(key, value);
+  }
+});
+
     if (this.selectedFile) {
       formData.append("profilePicture", this.selectedFile);
       
@@ -198,7 +206,8 @@ loadgender() {
     this.personalForm.reset();
   },
   error: (err) => {
-    Swal.fire("Permission Denied", err.error, "error");
+   Swal.fire("Error", JSON.stringify(err.error.errors), "error");
+
   }
 });
 
@@ -213,7 +222,7 @@ loadgender() {
     this.personalForm.reset();
   },
   error: (err) => {
-    Swal.fire("Permission Denied", err.error, "error");
+    Swal.fire("Error", JSON.stringify(err.error.errors), "error");
   }
 });
     }

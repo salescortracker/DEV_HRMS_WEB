@@ -134,30 +134,34 @@ userId: number = sessionStorage.getItem('UserId') ? Number(sessionStorage.getIte
   );
   }
 
-  deleteDepartment(d: any): void {
-    Swal.fire({
-      title: `Delete "${d.description}"?`,
-      text: 'This will deactivate the department.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, delete it'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        d.isActive = false;
-        d.departmentName=d.description;
-        this.departmentService.updateDepartment(d.departmentId, d).subscribe({
-          next: () => {
-            Swal.fire('Deleted!', 'Department deactivated successfully.', 'success');
-            this.loadDepartments();
-          },
-          error: () => Swal.fire('Error', 'Delete failed.', 'error')
-        });
-      }
-    });
-  }
+ deleteDepartment(d: any): void {
+  Swal.fire({
+    title: `Delete "${d.departmentName}"?`,
+    text: 'This will permanently delete the department.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it'
+  }).then((result) => {
+    if (result.isConfirmed) {
 
+      this.departmentService.deleteDepartment(d.departmentId).subscribe({
+        next: (res) => {
+          Swal.fire('Deleted!', res.message, 'success');
+          this.loadDepartments();
+        },
+        error: (err) => {
+          Swal.fire(
+            'Cannot Delete',
+            err?.error?.message || 'Department is mapped with Designations',
+            'error'
+          );
+        }
+      });
+
+    }
+  });
+}
   toggleStatus(d: any): void {
     const updated = { ...d, isActive: !d.isActive };
     this.departmentService.updateDepartment(d.departmentId, updated).subscribe({

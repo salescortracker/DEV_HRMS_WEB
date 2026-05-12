@@ -1,0 +1,150 @@
+<div class="welcome-wrapper container-fluid">
+  <div class="row align-items-center min-vh-100">
+
+    <!-- LEFT SIDE -->
+    <div class="col-lg-6 col-md-12 p-5">
+      <div class="left-card shadow">
+
+        <div class="company-logo mb-3">
+          <img [src]="companyLogo"
+               alt="Company Logo"
+               (error)="companyLogo='assets/images/default-logo.png'" />
+        </div>
+
+        <div class="title-wrapper mb-4">
+          <div class="icon-box">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+
+          <h1 class="title">Join <span>Our Team</span></h1>
+        </div>
+
+        <p class="description">Be part of an innovative team where your skills matter.</p>
+
+        <div class="features row mt-5">
+          <div class="col-md-4 feature">
+            <i class="fa-solid fa-chart-line"></i>
+            <p>Career Growth</p>
+          </div>
+
+          <div class="col-md-4 feature">
+            <i class="fa-solid fa-users"></i>
+            <p>Team Culture</p>
+          </div>
+
+          <div class="col-md-4 feature">
+            <i class="fa-solid fa-lightbulb"></i>
+            <p>Innovation</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE FORM -->
+    <div class="col-lg-6 col-md-12 p-4">
+      <form #form="ngForm" (ngSubmit)="onSubmit()" class="demo-card shadow">
+
+        <div class="demo-header">
+          <i class="fa-solid fa-user-plus"></i>
+          <div>
+            <h5>Job Application</h5>
+            <small>Fill details & upload resume</small>
+          </div>
+        </div>
+
+        <!-- ✅ FIXED FORM -->
+          <div class="row">
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <i class="fa-solid fa-user"></i>
+                <input
+                  [(ngModel)]="model.candidateName"
+                  name="candidateName"
+                  required
+                  placeholder="Full Name" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email"
+                  [(ngModel)]="model.email"
+                  name="email"
+                  placeholder="Email" />
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row">
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <i class="fa-solid fa-phone"></i>
+                <input type="text"
+                  [(ngModel)]="model.phone"
+                  name="phone"
+                  placeholder="Phone Number" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <i class="fa-solid fa-briefcase"></i>
+                <input type="text"
+                       [(ngModel)]="model.jobTitle"
+                       name="jobTitle"
+                       placeholder="Job Title" />
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row">
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <i class="fa-solid fa-chart-bar"></i>
+                <input type="number"
+                       [(ngModel)]="model.experienceYears"
+                       name="experienceYears"
+                       placeholder="Experience" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group upload-box">
+                <i class="fa-solid fa-upload"></i>
+                <input type="file" (change)="onFileSelected($event)" />
+                <small *ngIf="selectedFile">{{ selectedFile.name }}</small>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-group">
+            
+            <label>
+              Add Technologies</label>
+            <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="techInput"
+                name="techInput"
+                placeholder="e.g. Angular, .NET, SQL"
+              />
+          </div>
+
+          <button type="submit" class="btn-submit">
+            <i class="fa-solid fa-paper-plane"></i>
+            Apply Now
+          </button>
+
+      </form>
+    </div>
+
+  </div>
+</div>
