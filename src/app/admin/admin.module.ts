@@ -164,9 +164,9 @@ import { EventtypeComponent } from './pages/eventtype/eventtype.component';
     TaskStatusComponent,
     LateLoginPolicyComponent,
     BirthdayMasterComponent,
-    JobApplicationComponent,
+    
     GeoLocationComponent,
-    CountryComponent   
+    CountryComponent   ,
     EventtypeComponent
  
   

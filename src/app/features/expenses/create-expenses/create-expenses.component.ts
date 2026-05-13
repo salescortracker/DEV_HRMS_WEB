@@ -306,7 +306,6 @@ countries: any[] = [];
     this.calculatePages();
   }
 
-viewReceipt(path: string): void {
 
   viewReceipt(filePath: string | undefined): void {
     if (!filePath) {
@@ -317,21 +316,22 @@ viewReceipt(path: string): void {
     const fullPath = environment.apiUrl + filePath;
     const encodedUrl = encodeURI(fullPath);
     window.open(encodedUrl, '_blank');
+  
+  // if (!path) {
+  //   Swal.fire('Error', 'No receipt found', 'error');
+  //   return;
+  // }
+
+  // const baseUrl = environment.apiUrl.replace('/api', '');
+
+  // // FIX SLASH ISSUE
+  // const cleanPath = path.replace(/\\/g, '/');
+
+  // const url = `${baseUrl}/${cleanPath}`;
+
+  // console.log(url);
+
+  // window.open(url, '_blank');
   }
-  if (!path) {
-    Swal.fire('Error', 'No receipt found', 'error');
-    return;
-  }
-
-  const baseUrl = environment.apiUrl.replace('/api', '');
-
-  // FIX SLASH ISSUE
-  const cleanPath = path.replace(/\\/g, '/');
-
-  const url = `${baseUrl}/${cleanPath}`;
-
-  console.log(url);
-
-  window.open(url, '_blank');
 }
-}
+
