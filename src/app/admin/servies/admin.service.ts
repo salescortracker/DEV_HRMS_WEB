@@ -3074,5 +3074,25 @@ getAttachments(companyId: number, regionId: number) {
     }
   );
 }
+getCountries(userId: number) {
+  return this.http.get(`${this.baseUrl}/MasterData/countries?userId=${userId}`);
+}
+
+createCountry(data: any) {
+  return this.http.post(`${this.baseUrl}/MasterData/CreateCountry`, data);
+}
+
+updateCountry(data: any) {
+  return this.http.post(`${this.baseUrl}/MasterData/UpdateCountry`, data);
+}
+
+deleteCountry(id: number) {
+  return this.http.post(`${this.baseUrl}/MasterData/DeleteCountry?id=${id}`, {});
+}
+getCountriesByCompanyRegion(companyId: number, regionId: number) {
+  return this.http.get(
+    `${this.baseUrl}/MasterData/countries/by-company-region?companyId=${companyId}&regionId=${regionId}`
+  );
+}
 
 }

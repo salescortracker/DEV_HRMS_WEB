@@ -80,6 +80,7 @@ import { LateLoginPolicyComponent } from './master/late-login-policy/late-login-
 import { BirthdayMasterComponent } from './pages/birthday/birthday-master/birthday-master.component';
 import { TaskStatusComponent } from './pages/master/task-status/task-status.component';
 import { GeoLocationComponent } from './master/geo-location/geo-location.component';
+import { CountryComponent } from './pages/master/country/country.component';
 import { EventtypeComponent } from './pages/eventtype/eventtype.component';
 
 @NgModule({
@@ -163,7 +164,9 @@ import { EventtypeComponent } from './pages/eventtype/eventtype.component';
     TaskStatusComponent,
     LateLoginPolicyComponent,
     BirthdayMasterComponent,
+    JobApplicationComponent,
     GeoLocationComponent,
+    CountryComponent   
     EventtypeComponent
  
   
