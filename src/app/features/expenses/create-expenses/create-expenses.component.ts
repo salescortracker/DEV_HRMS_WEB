@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { environment } from '../../../../environments/environment.prod';
+import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 import { ExpensesService } from '../expenses.service';
 import { AdminService } from '../../../admin/servies/admin.service';
@@ -306,6 +306,7 @@ countries: any[] = [];
     this.calculatePages();
   }
 
+viewReceipt(path: string): void {
 
   viewReceipt(filePath: string | undefined): void {
     if (!filePath) {
@@ -317,4 +318,20 @@ countries: any[] = [];
     const encodedUrl = encodeURI(fullPath);
     window.open(encodedUrl, '_blank');
   }
+  if (!path) {
+    Swal.fire('Error', 'No receipt found', 'error');
+    return;
+  }
+
+  const baseUrl = environment.apiUrl.replace('/api', '');
+
+  // FIX SLASH ISSUE
+  const cleanPath = path.replace(/\\/g, '/');
+
+  const url = `${baseUrl}/${cleanPath}`;
+
+  console.log(url);
+
+  window.open(url, '_blank');
+}
 }

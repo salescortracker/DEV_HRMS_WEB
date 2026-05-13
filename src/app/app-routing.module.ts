@@ -59,7 +59,7 @@ import { HrPayslipComponent } from './features/compensation/payroll/hr-payslip/h
 import { MyTaskComponent } from './features/my-task/my-task/my-task.component';
 import { EmployeePersonalDetailsComponent } from './features/employee-profile/employee-details/employee-personal-details/employee-personal-details.component';
 import { BirthdayMasterComponent } from './admin/pages/birthday/birthday-master/birthday-master.component';
-import { JobApplicationComponent } from './admin/pages/job-application/job-application.component';
+import { JobApplicationComponent } from './features/recruitment/job-application/job-application.component';
 const routes: Routes = [
   { path: '', component: LoginComponent },
    { path: 'forgot-password', component: ForgotPasswordComponent },
@@ -67,7 +67,7 @@ const routes: Routes = [
 { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'dashboard', component: LayoutComponent },
   {path:'Welcomedemo',component:WelcomedemoComponent},
-    {path:'jobapply',component:JobApplicationComponent},
+    {path:'job-application',component:JobApplicationComponent},
   {path : 'change-password', component : ChangePasswordComponent},
   // { path: 'hr-dashboard', component: NavbarHrLayoutComponent },
   // // { path: 'manager-dashboard', component: NavbarManagerLayoutComponent },

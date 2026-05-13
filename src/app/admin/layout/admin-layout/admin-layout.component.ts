@@ -71,6 +71,7 @@ export class AdminLayoutComponent {
      { title: 'Geo Location', route: '/admin/Geo-Locations'},
      { title: 'Task Status', route: '/admin/task-status' },
      {title: 'Country', route: '/admin/country'},
+       { title: 'Event Type', route: '/admin/Event-type' },
     ],  
     // 'Configuration': [
     //   { title: 'Approval Workflows', route: '/admin/approval-workflow' },

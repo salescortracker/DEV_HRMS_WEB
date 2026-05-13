@@ -238,7 +238,8 @@ onRegionChange(regionId: number): void {
 
   this.filterDepartments();
 
-  this.filteredDesignations = []; // ✅ wait until department selected
+  this.filteredDesignations = [];
+  this.generateNextEmployeeCode();
 }
 
 filterDepartments(): void {
@@ -295,25 +296,28 @@ filterDepartments(): void {
  // 🔹 Auto-generate Employee Code (Frontend only)
  generateNextEmployeeCode(): void {
 
-  // If company or region not selected
+  // ✅ Only for Create Mode
+  if (this.isEditMode) return;
+
+  // ✅ Company + Region mandatory
   if (!this.user.companyId || !this.user.regionId) {
     this.user.employeeCode = '';
     return;
   }
 
-  // Filter users by selected company + region
+  // ✅ Filter users by Company + Region
   const filteredUsers = this.users.filter(u =>
     Number(u.companyId) === Number(this.user.companyId) &&
     Number(u.regionId) === Number(this.user.regionId)
   );
 
-  // If no users → start from 1
+  // ✅ No Employees
   if (filteredUsers.length === 0) {
     this.user.employeeCode = 'EMP0001';
     return;
   }
 
-  // Extract numeric part
+  // ✅ Extract numeric values
   const numericCodes = filteredUsers
     .map(u => {
       const match = u.employeeCode?.match(/\d+$/);
@@ -321,10 +325,15 @@ filterDepartments(): void {
     })
     .filter(num => num > 0);
 
-  const maxCode = Math.max(...numericCodes);
+  // ✅ Safety check
+  const maxCode = numericCodes.length > 0
+    ? Math.max(...numericCodes)
+    : 0;
+
   const nextCode = maxCode + 1;
 
-  this.user.employeeCode = `EMP${nextCode.toString().padStart(4, '0')}`;
+  this.user.employeeCode =
+    `EMP${nextCode.toString().padStart(4, '0')}`;
 }
 
   onSubmit(): void {

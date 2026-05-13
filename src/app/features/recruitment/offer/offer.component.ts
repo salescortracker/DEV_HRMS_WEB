@@ -50,7 +50,7 @@ designations: any[] = [];
     file: null
   };
 
-  tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding'];
+  tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding','Application Resumes'];
   totalStages = this.tabs.length;
   globalFilter = '';
   filterStage: any = '';
