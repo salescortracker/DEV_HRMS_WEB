@@ -114,8 +114,8 @@
                 <td>{{ item.assetType }}</td>
                 <td>{{ item.assetName }}</td>
                 <td>{{ item.assetCode }}</td>
-                <td>{{ item.assignDate }}</td>
-                <td>{{ item.returnDate }}</td>
+                <td>{{ item.assignDate | date:'yyyy-MM-dd'}}</td>
+                <td>{{ item.returnDate | date:'yyyy-MM-dd'}}</td>
                 <td>{{ item.remarks }}</td>
             </tr>
 
