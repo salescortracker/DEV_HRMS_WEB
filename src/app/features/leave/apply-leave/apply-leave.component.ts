@@ -1220,11 +1220,25 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
     formData.append("TotalDays", this.totalDays.toString());
     formData.append("Reason", this.reason);
     formData.append("ReportingManagerId", this.reportingManagerId.toString());
+    formData.append("hrEmail", this.hrEmail);
 
     if (this.selectedFile) {
       formData.append("SupportingDocument", this.selectedFile);
     }
-
+console.log("Submitting leave with data:", {
+  UserId: this.userId,
+  CompanyId: this.companyId,
+  RegionId: this.regionId,
+  LeaveTypeId: leaveTypeId,
+  IsHalfDay: this.isHalfDay,
+  StartDate: this.startDate,
+  EndDate: this.endDate,
+  TotalDays: this.totalDays,
+  Reason: this.reason,
+  ReportingManagerId: this.reportingManagerId,
+  hrEmail: this.hrEmail
+});
+console.log("FormData:", formData);
     this.leaveService.submitLeave(formData).subscribe({
       next: (res) => {
         Swal.fire({
