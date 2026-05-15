@@ -11,26 +11,34 @@
         <div class="row g-3">
  <!-- Resume -->
           <div class="col-md-3">
-            <label class="form-label">
-              Resume <span class="text-danger"></span>
-            </label>
-            <input type="file" class="form-control" required (change)="onResumeFiles($event)">
-            <!-- <small class="text-info" *ngIf="isParsing">Parsing resume...</small> -->
+              <label class="form-label">
+                Resume
+                <span class="text-danger" *ngIf="!isEditMode">*</span>
+              </label>
 
+              <input
+                type="file"
+                class="form-control"
+                [required]="!isEditMode"
+                (change)="onResumeFiles($event)"
+              />
 
-            <!-- <small class="text-danger" *ngIf="!resumeFile">
-              Resume is required
-            </small>
-
-            <div *ngIf="existingResumeName" class="mt-1">
-              <small>
-                Current:
-                <a (click)="viewDocument(existingResumeName)" style="cursor:pointer; color:#0d6efd">
-                  {{ existingResumeName }}
-                </a>
+              <small class="text-info" *ngIf="isParsing">
+                Parsing resume...
               </small>
-            </div> -->
-          </div>
+
+              <div *ngIf="existingResumeName" class="mt-1">
+                <small>
+                  Current Resume:
+                  <a
+                    (click)="viewDocument(existingResumeName)"
+                    style="cursor:pointer; color:#0d6efd;"
+                  >
+                    View Resume
+                  </a>
+                </small>
+              </div>
+            </div>
           <div class="col-md-3">
             <label class="form-label">
               Applied Date <span class="text-danger">*</span>
@@ -149,7 +157,7 @@
           </div>
 
           <!-- Resume -->
-          <div class="col-md-3">
+          <!-- <div class="col-md-3">
               <label class="form-label">
                 Resume
                 <span class="text-danger" *ngIf="!isEditMode">*</span>
@@ -162,12 +170,10 @@
                 (change)="onResumeFiles($event)"
               />
 
-              <!-- Parsing -->
               <small class="text-info" *ngIf="isParsing">
                 Parsing resume...
               </small>
 
-              <!-- Existing Resume -->
               <div *ngIf="existingResumeName" class="mt-1">
                 <small>
                   Current Resume:
@@ -179,7 +185,7 @@
                   </a>
                 </small>
               </div>
-            </div>
+            </div> -->
 
           <div class="col-md-3">
             <label>
