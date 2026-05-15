@@ -127,6 +127,8 @@ loadgender() {
           pfNumber: res.pfNumber,
           employmentType: res.employmentType,
           dateofJoining: res.dateofJoining
+  ? res.dateofJoining.split('T')[0]
+  : ''
         });
       }
     },
