@@ -166,69 +166,187 @@ changePageSize(size: number): void {
   }
 
 
- approveSelected() {
-  debugger;
-  const ids = this.leaveList.filter(l => l.selected).map(l => l.id);
-  if (ids.length === 0) {
-      Swal.fire("No selection", "Please select at least one record", "warning");
-      return;
-    }
-    Swal.fire({
-      title: "Approve selected leaves?",
-      text: `${ids.length} leave(s) will be approved.`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Approve",
-      cancelButtonText: "Cancel"
-    }).then(result => {
-      if (result.isConfirmed) {
+//  approveSelected() {
+//   debugger;
+//   const ids = this.leaveList.filter(l => l.selected).map(l => l.id);
+//   if (ids.length === 0) {
+//       Swal.fire("No selection", "Please select at least one record", "warning");
+//       return;
+//     }
+//     Swal.fire({
+//       title: "Approve selected leaves?",
+//       text: `${ids.length} leave(s) will be approved.`,
+//       icon: "question",
+//       showCancelButton: true,
+//       confirmButtonText: "Yes, Approve",
+//       cancelButtonText: "Cancel"
+//     }).then(result => {
+//       if (result.isConfirmed) {
 
-  this.leaveService.bulkApprove(ids).subscribe({
-    next: () => {
-       Swal.fire("Approved!", "Selected leaves approved.", "success");
-      const approvedLeaves = this.leaveList.filter(l => l.selected);
-      this.leaveList = this.leaveList.map(l => 
-        l.selected ? { ...l, status: 'Approved', selected: false } : l
-      );
-      this.selectAll = false;
-      approvedLeaves.forEach(l => this.notifyHrForLeave(l, 'Approved'));
+//   this.leaveService.bulkApprove(ids).subscribe({
+//     next: () => {
+//        Swal.fire("Approved!", "Selected leaves approved.", "success");
+//       const approvedLeaves = this.leaveList.filter(l => l.selected);
+//       this.leaveList = this.leaveList.map(l => 
+//         l.selected ? { ...l, status: 'Approved', selected: false } : l
+//       );
+//       this.selectAll = false;
+//       approvedLeaves.forEach(l => this.notifyHrForLeave(l, 'Approved'));
+//     }
+//   });
+// }
+// });
+//   }
+approveSelected() {
+  const ids = this.leaveList.filter(l => l.selected).map(l => l.id);
+
+  if (ids.length === 0) {
+    Swal.fire("No selection", "Please select at least one record", "warning");
+    return;
+  }
+
+  Swal.fire({
+    title: "Approve selected leaves?",
+    text: `${ids.length} leave(s) will be approved.`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Yes, Approve",
+    cancelButtonText: "Cancel"
+  }).then(result => {
+
+    if (result.isConfirmed) {
+
+      this.leaveService.bulkApprove(ids).subscribe({
+
+        next: () => {
+
+          const approvedLeaves = this.leaveList.filter(l => l.selected);
+
+          this.leaveList = this.leaveList.map(l =>
+            l.selected
+              ? { ...l, status: 'Approved', selected: false }
+              : l
+          );
+
+          this.selectAll = false;
+
+          approvedLeaves.forEach(l =>
+            this.notifyHrForLeave(l, 'Approved')
+          );
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Selected leaves approved successfully!',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+
+        error: () => {
+          Swal.fire(
+            "Error",
+            "Failed to approve leaves.",
+            "error"
+          );
+        }
+
+      });
     }
   });
 }
-});
-  }
 
 rejectSelected() {
-    const ids = this.leaveList.filter(l => l.selected).map(l => l.id);
-    if (ids.length === 0) {
-      Swal.fire("No selection", "Please select at least one record", "warning");
-      return;
-    }
 
-    Swal.fire({
-      title: "Reject selected leaves?",
-      text: `${ids.length} leave(s) will be rejected.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Reject",
-      cancelButtonText: "Cancel"
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.leaveService.bulkReject(ids).subscribe({
-          next: () => {
-            const rejectedLeaves = this.leaveList.filter(l => l.selected);
-            this.leaveList = this.leaveList.map(l =>
-              l.selected ? { ...l, status: 'Rejected', selected: false } : l
-            );
-            this.selectAll = false;
-            rejectedLeaves.forEach(l => this.notifyHrForLeave(l, 'Rejected'));
+  const ids = this.leaveList.filter(l => l.selected).map(l => l.id);
 
-            Swal.fire("Rejected!", "Selected leaves rejected.", "success");
-          }
-        });
-      }
-    });
+  if (ids.length === 0) {
+    Swal.fire("No selection", "Please select at least one record", "warning");
+    return;
   }
+
+  Swal.fire({
+    title: "Reject selected leaves?",
+    text: `${ids.length} leave(s) will be rejected.`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, Reject",
+    cancelButtonText: "Cancel"
+  }).then(result => {
+
+    if (result.isConfirmed) {
+
+      this.leaveService.bulkReject(ids).subscribe({
+
+        next: () => {
+
+          const rejectedLeaves = this.leaveList.filter(l => l.selected);
+
+          this.leaveList = this.leaveList.map(l =>
+            l.selected
+              ? { ...l, status: 'Rejected', selected: false }
+              : l
+          );
+
+          this.selectAll = false;
+
+          rejectedLeaves.forEach(l =>
+            this.notifyHrForLeave(l, 'Rejected')
+          );
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Selected leaves rejected successfully!',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+
+        error: () => {
+          Swal.fire(
+            "Error",
+            "Failed to reject leaves.",
+            "error"
+          );
+        }
+
+      });
+    }
+  });
+}
+
+// rejectSelected() {
+//     const ids = this.leaveList.filter(l => l.selected).map(l => l.id);
+//     if (ids.length === 0) {
+//       Swal.fire("No selection", "Please select at least one record", "warning");
+//       return;
+//     }
+
+//     Swal.fire({
+//       title: "Reject selected leaves?",
+//       text: `${ids.length} leave(s) will be rejected.`,
+//       icon: "warning",
+//       showCancelButton: true,
+//       confirmButtonText: "Yes, Reject",
+//       cancelButtonText: "Cancel"
+//     }).then(result => {
+//       if (result.isConfirmed) {
+//         this.leaveService.bulkReject(ids).subscribe({
+//           next: () => {
+//             const rejectedLeaves = this.leaveList.filter(l => l.selected);
+//             this.leaveList = this.leaveList.map(l =>
+//               l.selected ? { ...l, status: 'Rejected', selected: false } : l
+//             );
+//             this.selectAll = false;
+//             rejectedLeaves.forEach(l => this.notifyHrForLeave(l, 'Rejected'));
+
+//             Swal.fire("Rejected!", "Selected leaves rejected.", "success");
+//           }
+//         });
+//       }
+//     });
+//   }
 
 
   openViewModal(leave: any) {

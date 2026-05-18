@@ -228,12 +228,27 @@ rejectLeave(leaveId: number) {
   return this.http.post(`${this.apiUrl}/RejectByManager/${leaveId}`, {});
 }
 
+// bulkApprove(ids: number[]) {
+//   return this.http.post(`${this.apiUrl}/BulkApprove`, ids);
+// }
+
+// bulkReject(ids: number[]) {
+//   return this.http.post(`${this.apiUrl}/BulkReject`, ids);
+// }
 bulkApprove(ids: number[]) {
-  return this.http.post(`${this.apiUrl}/BulkApprove`, ids);
+  return this.http.post(
+    `${this.apiUrl}/BulkApprove`,
+    ids,
+    { responseType: 'text' }
+  );
 }
 
 bulkReject(ids: number[]) {
-  return this.http.post(`${this.apiUrl}/BulkReject`, ids);
+  return this.http.post(
+    `${this.apiUrl}/BulkReject`,
+    ids,
+    { responseType: 'text' }
+  );
 }
 
 // get user leaves (employee view)
