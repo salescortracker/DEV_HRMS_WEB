@@ -304,3 +304,21 @@ canvas {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(176, 40, 40, 0.1);
 }
+
+.scroll-table {
+  max-height: 260px;   /* around 5 records */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+}
+
+.scroll-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.scroll-table thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+}

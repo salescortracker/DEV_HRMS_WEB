@@ -87,7 +87,7 @@
     </div>
 
     <!-- TIMESHEET -->
-    <div *ngIf="activeTab === 'timesheet'" class="tab-body">
+    <div *ngIf="activeTab === 'timesheet'" class="tab-body scroll-table">
       <table>
         <tr>
           <th>Name</th>
@@ -99,7 +99,11 @@
           <td>{{ ts.employeeName }}</td>
           <td>{{ ts.timesheetDate | date }}</td>
           <td>
-            <span class="badge" [ngClass]="ts.status?.toLowerCase()">
+            <span class="badge" [ngClass]="{
+                'bg-warning text-dark': ts.status === 'Pending',
+                'bg-success': ts.status === 'Approved',
+                'bg-danger': ts.status === 'Rejected'
+              }">
               {{ ts.status }}
             </span>
           </td>
@@ -108,7 +112,7 @@
     </div>
 
     <!-- HELPDESK -->
-    <div *ngIf="activeTab === 'helpdesk'" class="tab-body">
+    <div *ngIf="activeTab === 'helpdesk'" class="tab-body scroll-table">
       <table>
         <tr>
           <th>Ticket</th>
