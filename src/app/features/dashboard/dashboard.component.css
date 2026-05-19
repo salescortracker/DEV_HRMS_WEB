@@ -284,6 +284,11 @@ canvas {
 }
 
 /* COLORS MATCH YOUR TS */
+.present { background: #ffc107; }  /* yellow */
+.absent { background: #dc3545; }   /* red */
+.today { background: #28a745; }    /* green */
+.future { background: #f4f5f6; }   /* blue */
+.weekoff { background: #0d0d0d; }  /* black */
 .present { background: #ffc107; } 
 .absent { background: #dc3545; }   
 .today { background: #28a745; }    
