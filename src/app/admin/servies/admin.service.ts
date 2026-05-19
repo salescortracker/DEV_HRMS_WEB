@@ -1470,9 +1470,10 @@ deleteAttachmentType(id: number) {
 
 
 getAttachmentTypesByCategory(category: string) {
-  const userId = sessionStorage.getItem('UserId');
+  const companyId = sessionStorage.getItem('CompanyId') ?? '';
+  const regionId = sessionStorage.getItem('RegionId') ?? '';
   return this.http.get<any>(
-    `${this.baseUrl}/MasterData/GetAttachmentByCategory?category=${category}`
+    `${this.baseUrl}/MasterData/GetAttachmentByCategory?category=${category}&companyId=${companyId}&regionId=${regionId}`
   );
 }
 
