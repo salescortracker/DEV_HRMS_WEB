@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 import { AssetService } from '../asset.service';
 import { AdminService } from '../../../admin/servies/admin.service';
-
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-assign-asset-screen',
   standalone: false,
@@ -16,7 +20,9 @@ export class AssignAssetScreenComponent {
   assetTypes: any[] = [];
 
  availableAssets: any[] = [];
-
+companyLogoBase64: string = '';
+companyAddress: string = '';
+companyName: string = '';
 
   form: any = {
     requestId: '',
@@ -37,6 +43,10 @@ export class AssignAssetScreenComponent {
   ) {}
 userId!: number;
   ngOnInit(): void {
+    this.companyName =
+    sessionStorage.getItem("CompanyName") || 'Company';
+
+  this.loadCompanyDetails();
     this.companyId = Number(sessionStorage.getItem('CompanyId'));
     this.regionId = Number(sessionStorage.getItem('RegionId'));
     const user = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
@@ -58,7 +68,98 @@ this.form.get('assetCategory')?.valueChanges.subscribe(() => {
       this.assignedList = res;
     });
 }
+loadCompanyDetails() {
 
+  const companyId =
+    Number(sessionStorage.getItem('CompanyId'));
+
+  this.adminService.getCompanyById(companyId)
+    .subscribe({
+
+      next: async (company: any) => {
+
+        this.companyName =
+          company?.companyName || 'Company';
+
+        this.companyAddress =
+          company?.companyAddress || 'Hyderabad';
+
+        const logo = company?.companyLogo;
+
+        if (logo && logo.trim() !== '') {
+
+          if (logo.startsWith('data:')) {
+
+            this.companyLogoBase64 = logo;
+
+          } else {
+
+            const logoPath =
+              logo.replace(/\\/g, '/');
+
+            const fullUrl =
+              `${environment.baseurl}/${logoPath}`;
+
+            this.companyLogoBase64 =
+              await this.getBase64ImageFromURL(fullUrl);
+          }
+
+        } else {
+
+          this.setDefaultLogo();
+        }
+      },
+
+      error: () => {
+
+        this.setDefaultLogo();
+      }
+    });
+}
+setDefaultLogo() {
+
+  const defaultLogo =
+    '/assets/images/cor-logo.png';
+
+  this.getBase64ImageFromURL(defaultLogo)
+    .then(base64 =>
+      this.companyLogoBase64 = base64
+    )
+    .catch(() =>
+      this.companyLogoBase64 = ''
+    );
+}
+getBase64ImageFromURL(url: string): Promise<string> {
+
+  return new Promise((resolve, reject) => {
+
+    const img = new Image();
+
+    img.crossOrigin = 'anonymous';
+
+    img.src = url;
+
+    img.onload = () => {
+
+      const canvas =
+        document.createElement('canvas');
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx =
+        canvas.getContext('2d');
+
+      ctx?.drawImage(img, 0, 0);
+
+      resolve(
+        canvas.toDataURL('image/png')
+      );
+    };
+
+    img.onerror = err => reject(err);
+  });
+}
   loadAvailableAssets() {
   this.assetService
     .getAvailableAssets$(this.companyId, this.regionId,this.userId) // ✅ pass userId
@@ -66,7 +167,237 @@ this.form.get('assetCategory')?.valueChanges.subscribe(() => {
       this.availableAssets = res;
     });
 }
+downloadPDF() {
 
+  if (!this.assignedList.length) {
+
+    alert('No records found');
+    return;
+  }
+
+  const doc =
+    new jsPDF('l', 'mm', 'a4');
+
+  const pageWidth =
+    doc.internal.pageSize.getWidth();
+
+  const pageHeight =
+    doc.internal.pageSize.getHeight();
+
+  // ================= HEADER =================
+
+  doc.setFontSize(14);
+
+  doc.setFont(
+    'helvetica',
+    'bold'
+  );
+
+  doc.text(
+    this.companyName,
+    14,
+    12
+  );
+
+  doc.setFontSize(10);
+
+  doc.setFont(
+    'helvetica',
+    'normal'
+  );
+
+  doc.text(
+    `Generated: ${new Date().toLocaleDateString()}`,
+    pageWidth - 14,
+    12,
+    { align: 'right' }
+  );
+
+  // ================= LOGO =================
+
+  if (this.companyLogoBase64) {
+
+    doc.addImage(
+      this.companyLogoBase64,
+      'PNG',
+      (pageWidth / 2) - 20,
+      5,
+      40,
+      20
+    );
+  }
+
+  // ================= LINE =================
+
+  doc.setDrawColor(200);
+
+  doc.line(
+    14,
+    30,
+    pageWidth - 14,
+    30
+  );
+
+  // ================= TITLE =================
+
+  doc.setFontSize(18);
+
+  doc.setFont(
+    'helvetica',
+    'bold'
+  );
+
+  doc.text(
+    'ASSIGNED ASSETS REPORT',
+    pageWidth / 2,
+    42,
+    { align: 'center' }
+  );
+
+  // ================= WATERMARK =================
+
+  if (this.companyLogoBase64) {
+
+    doc.saveGraphicsState();
+
+    (doc as any).setGState(
+      new (doc as any).GState({
+        opacity: 0.08
+      })
+    );
+
+    doc.addImage(
+      this.companyLogoBase64,
+      'PNG',
+      pageWidth / 2 - 60,
+      pageHeight / 2 - 40,
+      120,
+      80
+    );
+
+    doc.restoreGraphicsState();
+  }
+
+  // ================= TABLE DATA =================
+
+  const tableData =
+    this.assignedList.map((item: any) => [
+
+      item.requestId || '-',
+      item.employeeName || '-',
+      item.assetType || '-',
+      item.assetName || '-',
+      item.assetCode || '-',
+
+      item.assignDate
+        ? new Date(item.assignDate)
+            .toLocaleDateString()
+        : '-',
+
+      item.returnDate
+        ? new Date(item.returnDate)
+            .toLocaleDateString()
+        : '-',
+
+      item.remarks || '-'
+    ]);
+
+  autoTable(doc, {
+
+    startY: 55,
+
+    head: [[
+      'Request ID',
+      'Employee',
+      'Asset Type',
+      'Asset',
+      'Asset Code',
+      'Assign Date',
+      'Return Date',
+      'Remarks'
+    ]],
+
+    body: tableData,
+
+    theme: 'grid',
+
+    styles: {
+      fontSize: 8,
+      cellPadding: 2,
+      halign: 'center',
+      valign: 'middle'
+    },
+
+    headStyles: {
+      fillColor: [200, 0, 0],
+      textColor: 255,
+      fontStyle: 'bold'
+    },
+
+    alternateRowStyles: {
+      fillColor: [245, 245, 245]
+    },
+
+    didDrawPage: () => {
+
+      doc.setFontSize(9);
+
+      doc.text(
+        `Page ${doc.getCurrentPageInfo().pageNumber}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: 'center' }
+      );
+    }
+  });
+
+  doc.save(
+    'Assigned_Assets_Report.pdf'
+  );
+}
+downloadExcel(): void {
+
+  const exportData = this.assignedList.map((item: any) => ({
+    'Request ID': item.requestId,
+    'Employee': item.employeeName,
+    'Asset Type': item.assetType,
+    'Asset': item.assetName,
+    'Code': item.assetCode,
+    'Assign Date': item.assignDate,
+    'Return Date': item.returnDate,
+    'Remarks': item.remarks
+  }));
+
+  const worksheet: XLSX.WorkSheet =
+    XLSX.utils.json_to_sheet(exportData);
+
+  const workbook: XLSX.WorkBook = {
+    Sheets: { 'Assigned Assets': worksheet },
+    SheetNames: ['Assigned Assets']
+  };
+
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  this.saveExcelFile(excelBuffer, 'Assigned_Assets_Report');
+}
+saveExcelFile(buffer: any, fileName: string): void {
+
+  const data: Blob = new Blob(
+    [buffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  FileSaver.saveAs(
+    data,
+    `${fileName}.xlsx`
+  );
+}
 
   // ============================================================
   // 🔹 LOAD APPROVED REQUESTS

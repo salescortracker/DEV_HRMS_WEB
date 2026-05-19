@@ -9,6 +9,7 @@ import { Component } from '@angular/core';
 export class TimesheetManagementComponent {
 canViewSubmitTimesheet = false;
 canViewApproveTimesheet = false;
+canViewTimesheetReport = false;
 selectedTab: string = '';
 
 ngOnInit() {
@@ -27,14 +28,18 @@ loadTabPermissions() {
     (m:any) => m.menuName?.trim().toLowerCase() === "approve timesheet"
   );
 
-  
+  const report = menus.find(
+    (m:any) => m.menuName?.trim().toLowerCase() === "timesheet report"
+  );
 
   this.canViewSubmitTimesheet = submit?.canView ?? false;
   this.canViewApproveTimesheet = approve?.canView ?? false;
+  this.canViewTimesheetReport = report?.canView ?? false;
   
 
   if (this.canViewSubmitTimesheet) this.selectedTab = 'tab1';
   else if (this.canViewApproveTimesheet) this.selectedTab = 'tab2';
+  else if (this.canViewTimesheetReport) this.selectedTab = 'tab3';
   
 
 }

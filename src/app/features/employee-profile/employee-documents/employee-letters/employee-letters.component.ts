@@ -36,6 +36,7 @@ export class EmployeeLettersComponent {
 
   selectedEmployees: any[] = [];   // multiple employees
   selectedFiles: File[] = [];      // multiple files
+  isSubmitted = false;
 
   constructor(private adminService: AdminService) { }
   ngOnInit() {
@@ -238,7 +239,7 @@ export class EmployeeLettersComponent {
   }
   // ------------------- SAVE LETTER (VALIDATION + SAVE) ------------------------
   saveLetter(form: any) {
-    
+     this.isSubmitted = true;
 
     if (form.invalid || this.selectedEmployees.length === 0 || this.selectedFiles.length === 0) {
       Swal.fire('Error', 'Select employees and files', 'error');
@@ -287,6 +288,7 @@ export class EmployeeLettersComponent {
       Swal.fire('Updated!', 'Letter updated successfully!', 'success');
       this.loadEmployeeLetters();
       this.resetFormFields();
+       form.resetForm(); 
     },
     error: (err) => console.error(err)
   });
@@ -298,6 +300,7 @@ export class EmployeeLettersComponent {
       Swal.fire('Saved!', 'Letter saved successfully!', 'success');
       this.loadEmployeeLetters();
       this.resetFormFields();
+      form.resetForm(); 
     },
     error: (err) => console.error(err)
   });
@@ -369,6 +372,7 @@ if (item.fileName) {
     this.selectedFiles = [];
     this.selectedEmployees = [];
     this.isEdit = false;
+    this.isSubmitted = false;
   }
 
 

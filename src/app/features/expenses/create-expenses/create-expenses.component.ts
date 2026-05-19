@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { environment } from '../../../../environments/environment.prod';
+import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 import { ExpensesService } from '../expenses.service';
 import { AdminService } from '../../../admin/servies/admin.service';
@@ -13,8 +13,8 @@ import { AdminService } from '../../../admin/servies/admin.service';
   styleUrl: './create-expenses.component.css'
 })
 export class CreateExpensesComponent {
-expenseForm!: FormGroup;
-
+  expenseForm!: FormGroup;
+countries: any[] = [];
   userId!: number;
   companyId!: number;
   regionId!: number;
@@ -34,13 +34,13 @@ expenseForm!: FormGroup;
   sortDirection: 'asc' | 'desc' = 'asc';
   projects: any[] = [];
   currencies: any[] = [];
-  
+
 
   constructor(
     private fb: FormBuilder,
     private expenseService: ExpensesService,
     private service: AdminService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.userId = Number(sessionStorage.getItem('UserId'));
@@ -53,23 +53,44 @@ expenseForm!: FormGroup;
     this.loadMyExpenses();
     this.loadProjects();
     this.loadCurrencies();
+    this.loadCountries();
   }
+  loadCountries(): void {
+
+  this.service
+    .getCountriesByCompanyRegion(this.companyId, this.regionId)
+    .subscribe({
+
+      next: (res: any) => {
+
+        if (res.success && res.data) {
+          this.countries = res.data;
+        }
+
+      },
+
+      error: (err) => {
+        console.error(err);
+      }
+
+    });
+}
   loadProjects(): void {
-  this.service.getProjectNames(this.companyId, this.regionId)
-    .subscribe(res => {
-      if (res.success && res.data) {
-        this.projects = res.data;
-      }
-    });
-}
-loadCurrencies(): void {
-  this.service.getCurrenciesbycompanyId(this.companyId, this.regionId)
-    .subscribe((res: any) => {
-      if (res.success && res.data) {
-        this.currencies = res.data;
-      }
-    });
-}
+    this.service.getProjectNames(this.companyId, this.regionId)
+      .subscribe(res => {
+        if (res.success && res.data) {
+          this.projects = res.data;
+        }
+      });
+  }
+  loadCurrencies(): void {
+    this.service.getCurrenciesbycompanyIds(this.companyId, this.regionId)
+      .subscribe((res: any) => {
+        if (res.success && res.data) {
+          this.currencies = res.data;
+        }
+      });
+  }
 
   buildForm(): void {
     this.expenseForm = this.fb.group({
@@ -122,11 +143,11 @@ loadCurrencies(): void {
     });
   }
   onCompanyOrRegionChange(): void {
-  this.loadCategories();
-  this.loadProjects();
-  this.expenseForm.patchValue({ expenseCategoryId: '' }); 
-  this.loadCurrencies();
-}
+    this.loadCategories();
+    this.loadProjects();
+    this.expenseForm.patchValue({ expenseCategoryId: '' });
+    this.loadCurrencies();
+  }
 
   noFutureDate(control: AbstractControl) {
     if (!control.value) return null;
@@ -137,27 +158,27 @@ loadCurrencies(): void {
   }
 
   loadCategories(): void {
-  this.expenseService
-    .getExpenseCategories(this.companyId, this.regionId)
-    .subscribe(res => {
-      if (res.success && res.data) {
-        this.categories = res.data;
-      }
-    });
-}
+    this.expenseService
+      .getExpenseCategories(this.companyId, this.regionId)
+      .subscribe(res => {
+        if (res.success && res.data) {
+          this.categories = res.data;
+        }
+      });
+  }
 
-//   loadCategories(): void {
-//     debugger;
-//   this.expenseService.getExpenseCategories().subscribe(res => {
-//     if (res.success && res.data) {
-//       this.categories = res.data.filter(
-//         (cat: any) =>
-//           Number(cat.companyId) === this.companyId &&
-//           Number(cat.regionId) === this.regionId
-//       );
-//     }
-//   });
-// }
+  //   loadCategories(): void {
+  //     debugger;
+  //   this.expenseService.getExpenseCategories().subscribe(res => {
+  //     if (res.success && res.data) {
+  //       this.categories = res.data.filter(
+  //         (cat: any) =>
+  //           Number(cat.companyId) === this.companyId &&
+  //           Number(cat.regionId) === this.regionId
+  //       );
+  //     }
+  //   });
+  // }
 
   onCategoryChange(event: any): void {
     const categoryId = +event.target.value;
@@ -223,7 +244,7 @@ loadCurrencies(): void {
     formData.append('Receipt', this.selectedFile!);
 
     this.expenseService.createExpense(formData).subscribe(res => {
-      Swal.fire("Created",res.message,'success');
+      Swal.fire("Created", res.message, 'success');
       this.expenseForm.reset({
         departmentName: this.departmentName,
         currencyCode: 'INR'
@@ -286,14 +307,31 @@ loadCurrencies(): void {
   }
 
 
-viewReceipt(filePath: string | undefined): void {
-  if (!filePath) {
-    alert('No file path available.');
-    return;
-  }
+  viewReceipt(filePath: string | undefined): void {
+    if (!filePath) {
+      alert('No file path available.');
+      return;
+    }
 
-  const fullPath = environment.apiUrl + filePath;
-  const encodedUrl = encodeURI(fullPath);
-  window.open(encodedUrl, '_blank');
+    const fullPath = environment.apiUrl + filePath;
+    const encodedUrl = encodeURI(fullPath);
+    window.open(encodedUrl, '_blank');
+  
+  // if (!path) {
+  //   Swal.fire('Error', 'No receipt found', 'error');
+  //   return;
+  // }
+
+  // const baseUrl = environment.apiUrl.replace('/api', '');
+
+  // // FIX SLASH ISSUE
+  // const cleanPath = path.replace(/\\/g, '/');
+
+  // const url = `${baseUrl}/${cleanPath}`;
+
+  // console.log(url);
+
+  // window.open(url, '_blank');
+  }
 }
-}
+

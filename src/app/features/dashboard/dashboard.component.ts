@@ -19,7 +19,7 @@ interface ChatMessage {
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
-  today: Date = new Date();
+   today: Date = new Date();
   activeTab: string = 'timesheet';
 
   currentUser: any;
@@ -463,6 +463,10 @@ updateChartTodayHours(totalHours: number) {
       .subscribe(res => this.tickets = res || []);
   }
 
+  navigateToLeaveApprovals(label: string) {
+    this.router.navigate(['/leave-management'], { queryParams: { tab: 'approvals' } });
+  }
+
   // ================= TIMESHEETS =================
   loadTimesheets() {
     this.timesheetService.gettimesheetlisting(this.userId)
@@ -489,5 +493,5 @@ updateChartTodayHours(totalHours: number) {
     clearInterval(this.liveTimer);
   }
 }
-  
+ 
 }

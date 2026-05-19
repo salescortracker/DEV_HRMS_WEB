@@ -84,7 +84,15 @@
 <div class="card mt-3 p-3">
 
     <h4>Assigned Assets List</h4>
+<div class="d-flex gap-2 mb-3">
+    <button class="btn btn-danger" (click)="downloadPDF()">
+        Download PDF
+    </button>
 
+    <button class="btn btn-success" (click)="downloadExcel()">
+        Download Excel
+    </button>
+</div>
     <table class="table table-bordered mt-2">
         <thead>
             <tr>
@@ -106,8 +114,8 @@
                 <td>{{ item.assetType }}</td>
                 <td>{{ item.assetName }}</td>
                 <td>{{ item.assetCode }}</td>
-                <td>{{ item.assignDate }}</td>
-                <td>{{ item.returnDate }}</td>
+                <td>{{ item.assignDate | date:'yyyy-MM-dd'}}</td>
+                <td>{{ item.returnDate | date:'yyyy-MM-dd'}}</td>
                 <td>{{ item.remarks }}</td>
             </tr>
 

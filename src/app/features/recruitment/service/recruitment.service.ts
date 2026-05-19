@@ -305,4 +305,16 @@ parseResume(formData: FormData): Observable<any> {
   );
 }
 
+submitApplication(payload: FormData): Observable<any> {
+  debugger;
+  return this.http.post(
+    `${this.baseUrl}/Recruitment/SubmitApplication`,
+    payload
+  );
+}
+getJobApplications(): Observable<any[]> {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Recruitment/job-applications`
+  );
+}
 }

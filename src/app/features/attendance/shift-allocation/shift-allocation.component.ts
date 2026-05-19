@@ -167,19 +167,27 @@ get availableEmployees() {
   });
 }
 
-  onEmployeeChange(event: Event) {
-  const select = event.target as HTMLSelectElement;
-  const userId = Number(select.value);
+onEmployeeChange(userId: number) {
+
   if (!userId) {
-    this.shiftForm.patchValue({ employeeCode: '' });
+
+    this.shiftForm.patchValue({
+      employeeCode: ''
+    });
+
     return;
   }
 
-  const user = this.employees.find(e => e.userId === userId);
+  const user = this.employees.find(
+    e => e.userId == userId
+  );
+
   if (user) {
+
     this.shiftForm.patchValue({
       employeeCode: user.employeeCode
     });
+
   }
 }
 
@@ -362,20 +370,32 @@ get availableEmployees() {
     });
   }
 
-  onEdit(a: ShiftAllocationDto) {
-    this.editMode = true;
-    this.editId = a.shiftAllocationId || null;
-    const isActive = this.getStatus(a) === 'Active';
+onEdit(a: ShiftAllocationDto) {
 
-    this.shiftForm.patchValue({
-      userId: isActive ? null : a.userID,
-      employeeCode: a.employeeCode,
-      shiftID: a.shiftID,
-      startDate: a.startDate ? (a.startDate as string).split('T')[0] : '',
-      endDate: a.endDate ? (a.endDate as string).split('T')[0] : '',
-      isActive: a.isActive
-    });
-  }
+  this.editMode = true;
+  this.editId = a.shiftAllocationId || null;
+
+  this.shiftForm.patchValue({
+
+    // ✅ ALWAYS BIND USER ID
+    userId: a.userID,
+
+    employeeCode: a.employeeCode,
+
+    shiftID: a.shiftID,
+
+    startDate: a.startDate
+      ? (a.startDate as string).split('T')[0]
+      : '',
+
+    endDate: a.endDate
+      ? (a.endDate as string).split('T')[0]
+      : '',
+
+    isActive: a.isActive
+  });
+
+}
 onDelete(id?: number) {
   if (!id || id === 0) return;
 

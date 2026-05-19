@@ -110,7 +110,13 @@
         <!-- <p>{{ todayClockIn }}</p> -->
         <p>
           {{ todayClockIn }}
-          <span class="text-danger" *ngIf="lateLoginText">
+          <!-- 🚦 Status Badge -->
+          <span *ngIf="lateLoginText" [ngClass]="getStatusClass()" class="badge badge-status">
+
+            <i *ngIf="lateLoginText.includes('Late')" class="fa fa-clock"></i>
+            <i *ngIf="lateLoginText.includes('Early')" class="fa fa-arrow-up"></i>
+            <i *ngIf="lateLoginText.includes('On Time')" class="fa fa-check"></i>
+
             {{ lateLoginText }}
           </span>
         </p>
