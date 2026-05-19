@@ -14,11 +14,13 @@
   <input type="radio" id="tab1" name="tab" [checked]="selectedTab === 'tab1'">
   <input type="radio" id="tab2" name="tab" [checked]="selectedTab === 'tab2'">
   <input type="radio" id="tab3" name="tab" [checked]="selectedTab === 'tab3'">
+  <input type="radio" id="tab4" name="tab" [checked]="selectedTab === 'tab4'">
 
   <div class="tab-header">
     <label class="tab-label" for="tab1" *ngIf="canViewRaiseTicket">Raise Ticket</label>
     <label class="tab-label" for="tab2" *ngIf="canViewMyTickets">My Tickets</label>
     <label class="tab-label" for="tab3" *ngIf="canViewTicketApproval">Ticket Approval</label>
+    <label class="tab-label" for="tab4" *ngIf="canViewTicketReports">Ticket Reports</label>
   </div>
 
   <!-- TAB 1: Raise Ticket -->
@@ -36,6 +38,9 @@
   <!-- APPROVE TICKETS TAB -->
   <div id="content3" class="tab-content" *ngIf="canViewTicketApproval">
       <app-approve-tickets></app-approve-tickets>
+  </div>
+  <div id="content4" class="tab-content" *ngIf="canViewTicketReports">
+    <app-ticket-reports></app-ticket-reports>
   </div>
 </div>
 

@@ -38,16 +38,17 @@ relationshipModel: any = {
     private spinner: NgxSpinnerService
   ) {}
 
-  ngOnInit(): void {
-     this.userId = Number(sessionStorage.getItem("UserId"));
-    this.companyId = Number(sessionStorage.getItem("CompanyId"));
-    this.regionId = Number(sessionStorage.getItem("RegionId"));
 
-    this.loadRelationships();
-    this.loadCompanies();
-    this.loadRegions();
-  }
+ngOnInit(): void {
 
+  this.userId = Number(sessionStorage.getItem("UserId"));
+  this.companyId = Number(sessionStorage.getItem("CompanyId"));
+  this.regionId = Number(sessionStorage.getItem("RegionId"));
+
+  // ✅ FIRST LOAD COMPANIES
+  this.loadCompanies();
+
+}
   // Empty model
   getEmptyRelationship(): Relationship {
     return {
@@ -63,42 +64,70 @@ relationshipModel: any = {
   }
   companies: any[] = [];
   regions: any[] = [];
+
+
+
 loadCompanies(): void {
-  this.adminService.getCompanies(null, this.userId).subscribe((res: any) => {
-    console.log('All Companies 👉', res);
 
-    const data = res?.data ?? res ?? [];
+  this.adminService.getCompanies(null, this.userId)
+    .subscribe((res: any) => {
 
-    // 🔥 Filter only active companies
-    this.companies = data.filter((c: any) => c.isActive === true);
+      console.log('All Companies 👉', res);
 
-    // ✅ Build company map correctly
-    this.companyMap = this.companies.reduce((map: any, c: any) => {
-      map[c.companyId] = c.companyName;
-      return map;
-    }, {});
+      const data = res?.data ?? res ?? [];
 
-    console.log('Active Companies 👉', this.companies);
-    console.log('Company Map 👉', this.companyMap);
-  });
+      // ✅ ONLY ACTIVE
+      this.companies = data.filter((c: any) => c.isActive === true);
+
+      // ✅ BUILD MAP
+      this.companyMap = this.companies.reduce((map: any, c: any) => {
+
+        map[c.companyId] = c.companyName;
+
+        return map;
+
+      }, {});
+
+      console.log('Company Map 👉', this.companyMap);
+
+      // ✅ AFTER COMPANIES LOAD REGIONS
+      this.loadRegions();
+
+    });
+
 }
 
 loadRegions(): void {
-  this.adminService.getRegions(null, this.userId).subscribe((res: any) => {
-    const data = res?.data ?? res ?? [];
-    // Only active regions
-    this.regions = data.filter((r: any) => r.isActive === true);
 
-    // Region map for display
-    this.regionMap = this.regions.reduce((map: any, r: any) => {
-      map[r.regionID] = r.regionName;
-      return map;
-    }, {});
+  this.adminService.getRegions(null, this.userId)
+    .subscribe((res: any) => {
 
-    // Don't populate filteredRegions yet
-    this.filteredRegions = [];
-  });
+      const data = res?.data ?? res ?? [];
+
+      // ✅ ONLY ACTIVE
+      this.regions = data.filter((r: any) => r.isActive === true);
+
+      // ✅ BUILD REGION MAP
+      this.regionMap = this.regions.reduce((map: any, r: any) => {
+
+        map[r.regionID] = r.regionName;
+
+        return map;
+
+      }, {});
+
+      console.log('Region Map 👉', this.regionMap);
+
+      this.filteredRegions = [];
+
+      // ✅ NOW LOAD RELATIONSHIPS
+      this.loadRelationships();
+
+    });
+
 }
+
+
 onCompanyChange(): void {
   const companyId = Number(this.relationship.companyId);
   if (companyId) {
@@ -126,7 +155,7 @@ onCompanyChange(): void {
           companyName: this.companyMap[r.companyId] ?? '',
           regionName: this.regionMap[r.regionId] ?? ''
         }))
-        .sort((a: any, b: any) => b.RelationshipID - a.RelationshipID);
+        .sort((a: any, b: any) => b.relationshipId - a.relationshipId);
 
       this.spinner.hide();
     },

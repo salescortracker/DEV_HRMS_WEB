@@ -59,6 +59,36 @@
                      placeholder="Enter Attachment Type"
                      required />
             </div>
+            <!-- Company -->
+<div class="col-md-6">
+  <label class="form-label fw-semibold">Company *</label>
+  <select class="form-select"
+          name="company"
+          [(ngModel)]="attachment.companyId"
+          (change)="onCompanyChange()"
+          required>
+
+    <option [ngValue]="0">-- Select Company --</option>
+    <option *ngFor="let c of companies" [ngValue]="c.companyId">
+      {{ c.companyName }}
+    </option>
+  </select>
+</div>
+
+<!-- Region -->
+<div class="col-md-6">
+  <label class="form-label fw-semibold">Region *</label>
+  <select class="form-select"
+          name="region"
+          [(ngModel)]="attachment.regionId"
+          required>
+
+    <option [ngValue]="0">-- Select Region --</option>
+    <option *ngFor="let r of regions" [ngValue]="r.regionID">
+      {{ r.regionName }}
+    </option>
+  </select>
+</div>
 
             <!-- Status Switch -->
             <div class="col-md-6 d-flex align-items-center">
@@ -127,6 +157,8 @@
                   Attachment Type
                   <i class="fa" [ngClass]="getSortIcon('AttachmentTypeName')"></i>
                 </th>
+                <th>Company</th>
+                <th>Region</th>
 
                 <th>Status</th>
                 <th class="text-center">Actions</th>
@@ -140,6 +172,8 @@
                 <td>{{ a.attachmentCategory }}</td>
 
                 <td>{{ a.attachmentTypeName }}</td>
+                <td>{{ companyMap[a.companyId] || '—' }}</td>
+                <td>{{ regionMap[a.regionId] || '—' }}</td>
 
                 <td>
                   <span class="badge"

@@ -42,7 +42,7 @@
     <h3>Leave Summary</h3>
 
     <div class="leave-summary">
-      <div *ngFor="let s of leaveCards" class="leave-box">
+      <div *ngFor="let s of leaveCards" class="leave-box clickable" [routerLink]="['/leave-management']" [queryParams]="{ tab: 'approvals' }">
         <i [class]="s.icon"></i>
         <p>{{ s.label }}</p>
         <h4>{{ s.value }}</h4>
@@ -118,9 +118,13 @@
 
         <tr *ngFor="let t of tickets">
           <td>{{ t.ticketNumber }}</td>
-          <td>{{ t.priority }}</td>
+          <td>{{ t.priorityName }}</td>
           <td>
-            <span class="badge" [ngClass]="t.status?.toLowerCase()">
+            <span class="badge" [ngClass]="{
+                'bg-warning text-dark': t.status === 'Open',
+                'bg-success': t.status === 'Approved',
+                'bg-danger': t.status === 'Rejected'
+              }">
               {{ t.status }}
             </span>
           </td>
@@ -131,4 +135,3 @@
   </div>
 
 </div>
- 

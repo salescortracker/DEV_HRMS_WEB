@@ -1,5 +1,5 @@
-  import { Component, OnInit } from '@angular/core';
-import { AdminService, ManagerDropdown, EmployeeMaster, MyTeamUsers, RoleMaster       } from '../../servies/admin.service';
+import { Component, OnInit } from '@angular/core';
+import { AdminService, ManagerDropdown, EmployeeMaster, MyTeamUsers, RoleMaster } from '../../servies/admin.service';
 import Swal from 'sweetalert2';
 interface Employee {
   id: number;
@@ -15,7 +15,7 @@ interface Employee {
   styleUrl: './hierarchy-configuration.component.css'
 })
 export class HierarchyConfigurationComponent {
-   employees: EmployeeMaster[] = [];
+  employees: EmployeeMaster[] = [];
   managers: ManagerDropdown[] = [];
 
   // Pagination
@@ -24,10 +24,10 @@ export class HierarchyConfigurationComponent {
   totalPages: number = 1;
   paginatedEmployees: EmployeeMaster[] = [];
 
-  newEmployee: EmployeeMaster = { 
+  newEmployee: EmployeeMaster = {
     employeeMasterId: 0,
     fullName: '',
-    role: '',      
+    role: '',
     department: '',
     managerId: undefined,
     createdBy: undefined,
@@ -35,122 +35,123 @@ export class HierarchyConfigurationComponent {
   };
 
   isEditMode = false;
- users: MyTeamUsers[] = [];
+  users: MyTeamUsers[] = [];
 
   userId: number = Number(sessionStorage.getItem('UserId')) || 0;
   companyId: number = Number(sessionStorage.getItem('CompanyId')) || 0;
   regionId: number = Number(sessionStorage.getItem('RegionId')) || 0;
 
-  constructor(private service: AdminService) {}
+  constructor(private service: AdminService) { }
 
   ngOnInit(): void {
- 
+
     this.loadDepartments();
     this.loadRoles();
-  this.loadUsers(); 
+    this.loadUsers();
     this.loadEmployees();
     this.loadManagers();
   }
-  departments:any;
-// loadDepartments(): void {
-//   debugger;
-//   this.service.getDepartments(this.userId).subscribe({
-//     next: (res: any) => {
-//       console.log(res);
-//       debugger;
-//       this.departments = res?.data?.data ?? [];
-//       console.log("Departments Loaded:", this.departments);
-//     },
-//     error: (err) => {
-//       console.error(err);
-     
-//     }
-//   });
-// }
+  departments: any;
+  // loadDepartments(): void {
+  //   debugger;
+  //   this.service.getDepartments(this.userId).subscribe({
+  //     next: (res: any) => {
+  //       console.log(res);
+  //       debugger;
+  //       this.departments = res?.data?.data ?? [];
+  //       console.log("Departments Loaded:", this.departments);
+  //     },
+  //     error: (err) => {
+  //       console.error(err);
 
-loadDepartments(): void {
-  this.service.getDepartments(this.userId).subscribe({
-    next: (res: any) => {
-      console.log('Departments API 👉', res);
+  //     }
+  //   });
+  // }
 
-      // 🔥 FIX HERE
-      this.departments = res?.data ?? [];
+  loadDepartments(): void {
+    this.service.getDepartments(this.userId).subscribe({
+      next: (res: any) => {
 
-      console.log("Departments Loaded 👉", this.departments);
-    },
-    error: (err) => console.error(err)
-  });
-}
-roles:any;
-loadRoles(): void {
-  if (!this.userId) {
-    Swal.fire('Error', 'Invalid User Id', 'error');
-    return;
+        // ✅ MUST FIX
+        this.departments = res?.data?.data ?? [];
+
+        console.log("Departments Loaded 👉", this.departments);
+      }
+    });
   }
-
-  this.service.getroles(this.userId).subscribe({
-    next: (roles: RoleMaster[]) => {
-      
-      this.roles = roles;
-    
-    },
-    error: (err) => {
-      console.error(err);
-      Swal.fire('Error', 'Failed to load roles.', 'error');
+  roles: any;
+  loadRoles(): void {
+    if (!this.userId) {
+      Swal.fire('Error', 'Invalid User Id', 'error');
+      return;
     }
-  });
-}
+
+    this.service.getroles(this.userId).subscribe({
+      next: (roles: RoleMaster[]) => {
+
+        this.roles = roles;
+
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire('Error', 'Failed to load roles.', 'error');
+      }
+    });
+  }
   loadUsers(): void {
-  this.service.getAllUsersForMyTeamConfigurations(this.userId).subscribe({
-    next: (data) => {
-      this.users = data;
-    },
-    error: () => {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: 'Failed to load users.'
-      });
-    }
-  });
-}
-
-onUserSelect(userId: number): void {
-  const selectedUser = this.users.find(u => u.userId === userId);
-
-   console.log('Selected User 👉', selectedUser);
-  console.log('Departments 👉', this.departments);
-  console.log('selectedUser.departmentId 👉', selectedUser?.departmentId);
-  // 🔥 FIX: extract departmentName
-  const departmentName = this.departments.find(
-    (d: any) => Number(d.departmentId) === Number(selectedUser?.departmentId)
-  )?.departmentName;
-
-  //const departmentName=this.departments.find((d:any)=>d.departmentId==selectedUser?.departmentId)?.departmentName;
-  const roleName=this.roles.find((r:any)=>r.roleId==selectedUser?.roleId)?.roleName;
-  if (selectedUser) {
-
-    // Set employee id
-    this.newEmployee.employeeMasterId = selectedUser.userId;
-
-    // Auto fill values
-    this.newEmployee.fullName = selectedUser.fullName;
-
-    // designation → role
-    this.newEmployee.role = roleName ?? '';
-
-    // departmentId → department (convert to string if needed)
-    this.newEmployee.department = departmentName   ?? '';
-
-    // reportingTo → managerId
-    this.newEmployee.managerId = selectedUser.reportingTo;
-
+    this.service.getAllUsersForMyTeamConfigurations(this.userId).subscribe({
+      next: (data) => {
+        this.users = data;
+      },
+      error: () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to load users.'
+        });
+      }
+    });
   }
-}
+
+  onUserSelect(userId: number): void {
+    // console.log('selectedUser 👉', selectedUser);
+    console.log('roles 👉', this.roles);
+    console.log('departments 👉', this.departments);
+    const selectedUser = this.users.find(u => u.userId === userId);
+
+    console.log('Selected User 👉', selectedUser);
+    console.log('Departments 👉', this.departments);
+    console.log('selectedUser.departmentId 👉', selectedUser?.departmentId);
+    // 🔥 FIX: extract departmentName
+    const departmentName = this.departments.find(
+      (d: any) => Number(d.departmentId) === Number(selectedUser?.departmentId)
+    )?.departmentName;
+
+    //const departmentName=this.departments.find((d:any)=>d.departmentId==selectedUser?.departmentId)?.departmentName;
+    const roleName = this.roles.find((r: any) => r.roleId == selectedUser?.roleId)?.roleName;
+    if (selectedUser) {
+
+      // Set employee id
+      this.newEmployee.employeeMasterId = selectedUser.userId;
+
+      // Auto fill values
+      this.newEmployee.fullName = selectedUser.fullName;
+
+      // designation → role
+      this.newEmployee.role = roleName ?? '';
+
+      // departmentId → department (convert to string if needed)
+      this.newEmployee.department = departmentName ?? '';
+
+      // reportingTo → managerId
+      this.newEmployee.managerId = selectedUser.reportingTo;
+
+    }
+  }
 
   // ================= LOAD DATA =================
   loadEmployees(): void {
-this.service.getAllEmployees(this.userId).subscribe({
+    this.service.getAllEmployees(this.userId).subscribe({
       next: data => {
         this.employees = data;
         this.totalPages = Math.ceil(this.employees.length / this.pageSize);
@@ -199,11 +200,11 @@ this.service.getAllEmployees(this.userId).subscribe({
         updatedBy: this.userId
       };
 
-     this.service.updateEmployee(
-  this.newEmployee.employeeMasterId,
-  this.userId,
-  payload
-).subscribe({
+      this.service.updateEmployee(
+        this.newEmployee.employeeMasterId,
+        this.userId,
+        payload
+      ).subscribe({
         next: () => {
           Swal.fire({
             icon: 'success',
@@ -250,10 +251,29 @@ this.service.getAllEmployees(this.userId).subscribe({
     }
   }
 
+  // editEmployee(emp: EmployeeMaster): void {
+  //   this.newEmployee = { ...emp };
+  //   this.isEditMode = true;
+  // }
   editEmployee(emp: EmployeeMaster): void {
-    this.newEmployee = { ...emp };
-    this.isEditMode = true;
+
+  // 🔥 find matching user using some logic
+  const matchedUser = this.users.find(u =>
+    u.fullName === emp.fullName   // or better: use userId if available
+  );
+
+  this.newEmployee = {
+    ...emp,
+    employeeMasterId: matchedUser?.userId ?? 0   // ✅ FIX
+  };
+
+  this.isEditMode = true;
+
+  // 🔥 auto-fill role, department again
+  if (matchedUser) {
+    this.onUserSelect(matchedUser.userId);
   }
+}
 
   deleteEmployee(emp: EmployeeMaster): void {
     Swal.fire({
@@ -265,10 +285,10 @@ this.service.getAllEmployees(this.userId).subscribe({
       cancelButtonText: 'Cancel'
     }).then(result => {
       if (result.isConfirmed) {
-this.service.deleteEmployee(
-  emp.employeeMasterId,
-  this.userId
-).subscribe({
+        this.service.deleteEmployee(
+          emp.employeeMasterId,
+          this.userId
+        ).subscribe({
           next: () => {
             Swal.fire({
               icon: 'success',
@@ -290,7 +310,7 @@ this.service.deleteEmployee(
   }
 
   resetForm(): void {
-    this.newEmployee = { 
+    this.newEmployee = {
       employeeMasterId: 0,
       fullName: '',
       role: '',
@@ -302,13 +322,13 @@ this.service.deleteEmployee(
     this.isEditMode = false;
   }
 
-getManagerName(managerId?: number | null): string {
+  getManagerName(managerId?: number | null): string {
 
-  if (!managerId) return '-';
+    if (!managerId) return '-';
 
-  const manager = this.users.find(u => u.userId === managerId);
-  return manager ? manager.fullName : '-';
-}
+    const manager = this.users.find(u => u.userId === managerId);
+    return manager ? manager.fullName : '-';
+  }
 
   // ================= PAGINATION =================
   nextPage(): void {

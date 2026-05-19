@@ -133,9 +133,12 @@ import { EmployeeMyformsComponent } from './features/employee-profile/employee-d
 import { MyTaskComponent } from './features/my-task/my-task/my-task.component';
 import { MytaskComponent } from './features/my-task/mytask/mytask.component';
 import { TeamtaskComponent } from './features/my-task/teamtask/teamtask.component';
-
 import { TaskreportComponent } from './features/my-task/taskreport/taskreport.component';
 import { LeaveReportComponent } from './features/leave/leave-report/leave-report.component';
+import { JobApplicationComponent } from './features/recruitment/job-application/job-application.component';
+import { ApplicationResumesComponent } from './features/recruitment/application-resumes/application-resumes.component';
+import { AssetReportComponent } from './features/asset/asset-report/asset-report.component';
+import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticket-reports.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -243,6 +246,8 @@ import { LeaveReportComponent } from './features/leave/leave-report/leave-report
     SuperAdminFooterComponent,
     AttendanceListComponent,
     MainUsersComponent,
+    JobApplicationComponent,
+    ApplicationResumesComponent,
     SuperAdminDashboardComponent,
     
     SuperAdminDemousersComponent,
@@ -261,6 +266,9 @@ import { LeaveReportComponent } from './features/leave/leave-report/leave-report
           TeamtaskComponent,
           TaskreportComponent,
           LeaveReportComponent,
+          AssetReportComponent,
+          TicketReportsComponent,
+          
           
    
     
@@ -269,7 +277,7 @@ import { LeaveReportComponent } from './features/leave/leave-report/leave-report
   imports: [
     BrowserModule, ReactiveFormsModule,FullCalendarModule,
     AppRoutingModule, FormsModule, HttpClientModule, NgxSpinnerModule,
-    StrongPasswordDirective   
+    StrongPasswordDirective,  
 ],
 
   providers: [

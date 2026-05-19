@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { EmployeeForm } from '../../../../admin/layout/models/employee-forms.model';
 import Swal from 'sweetalert2';
-import { AdminService } from '../../../../admin/servies/admin.service';
+import { AdminService, AttachmentTypeDto } from '../../../../admin/servies/admin.service';
 import { environment } from '../../../../../environments/environment';
-import { EmployeeLetter } from '../../../../admin/layout/models/employee-letter.model';
+
+
 @Component({
   selector: 'app-employee-forms',
   standalone: false,
@@ -86,11 +87,32 @@ existingFiles: string[] = [];
   }
 }
 onFilesSelected(event: any) {
-  const files = event.target.files;
+  const files: FileList = event.target.files;
 
   for (let i = 0; i < files.length; i++) {
-    this.selectedFiles.push(files[i]);
+    const file = files[i];
+
+    const allowed = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'ppt', 'pptx', 'xls', 'xlsx', 'txt'];
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+
+    if (!allowed.includes(ext)) {
+      Swal.fire('Error', `${file.name} is invalid format`, 'error');
+      continue;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      Swal.fire('Error', `${file.name} exceeds 5MB`, 'error');
+      continue;
+    }
+
+    // prevent duplicates
+    const exists = this.selectedFiles.some(f => f.name === file.name);
+    if (!exists) {
+      this.selectedFiles.push(file);
+    }
   }
+
+  event.target.value = ''; // reset input
 }
  onEmployeeChange(code: any) {
 
@@ -134,7 +156,7 @@ loadEmployees() {
 filePaths: Array.isArray(api.filePaths || api.FilePaths) 
   ? (api.filePaths || api.FilePaths) 
   : [],
-   employeeUploadedFiles: api.employeeUploadedFiles || []
+   employeeUploads: api.employeeUploads || []
 
 
         };
@@ -143,50 +165,81 @@ filePaths: Array.isArray(api.filePaths || api.FilePaths)
     error: (err) => console.error(err)
   });
 }
-viewDetails(f: any) {
+updateEmployeeFileStatus(fileId: number, status: string) {
 
-  let employeeDetails = `
-    <b>Employee:</b> ${f.employee} <br/>
-    <b>Document:</b> ${f.name} <br/>
-    <b>Type:</b> ${f.type} <br/>
-    <b>Date:</b> ${this.formatDate(f.date)} <br/>
-    <b>Remarks:</b> ${f.remarks || '-'} <br/><br/>
-  `;
+  const payload = {
+    fileId: fileId,
+    status: status
+  };
 
-  let employeeFiles = '';
+  this.adminService.updateEmployeeFileStatus(payload)
+    .subscribe({
+      next: () => {
 
-  if (f.employeeUploadedFiles && f.employeeUploadedFiles.length > 0) {
-    employeeFiles = f.employeeUploadedFiles.map((file: string) => {
-      return `<a href="#" onclick="window.open('${this.getFileUrl(file)}','_blank')">View File</a>`;
-    }).join('<br/>');
-  } else {
-    employeeFiles = 'No employee uploads';
-  }
+        Swal.fire(
+          'Success',
+          `File ${status}`,
+          'success'
+        );
 
-  Swal.fire({
-    title: 'Employee Submission',
-    html: `
-      ${employeeDetails}
-      <b>Employee Uploaded Files:</b><br/>
-      ${employeeFiles}
-    `,
-    width: 600,
-    showCancelButton: true,
-    confirmButtonText: 'Approve',
-    cancelButtonText: 'Reject',
-    confirmButtonColor: '#28a745',
-    cancelButtonColor: '#dc3545'
-  }).then((result) => {
+        this.loadEmployeeForms();
+      },
+      error: (err) => {
+        console.error(err);
 
-    if (result.isConfirmed) {
-      this.updateStatus(f.id, 'Approved');
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      this.updateStatus(f.id, 'Rejected');
-    }
-
-  });
+        Swal.fire(
+          'Error',
+          'Failed to update status',
+          'error'
+        );
+      }
+    });
 
 }
+// viewDetails(f: any) {
+
+//   let employeeDetails = `
+//     <b>Employee:</b> ${f.employee} <br/>
+//     <b>Document:</b> ${f.name} <br/>
+//     <b>Type:</b> ${f.type} <br/>
+//     <b>Date:</b> ${this.formatDate(f.date)} <br/>
+//     <b>Remarks:</b> ${f.remarks || '-'} <br/><br/>
+//   `;
+
+//   let employeeFiles = '';
+
+//   if (f.employeeUploadedFiles && f.employeeUploadedFiles.length > 0) {
+//     employeeFiles = f.employeeUploadedFiles.map((file: string) => {
+//       return `<a href="#" onclick="window.open('${this.getFileUrl(file)}','_blank')">View File</a>`;
+//     }).join('<br/>');
+//   } else {
+//     employeeFiles = 'No employee uploads';
+//   }
+
+//   Swal.fire({
+//     title: 'Employee Submission',
+//     html: `
+//       ${employeeDetails}
+//       <b>Employee Uploaded Files:</b><br/>
+//       ${employeeFiles}
+//     `,
+//     width: 600,
+//     showCancelButton: true,
+//     confirmButtonText: 'Approve',
+//     cancelButtonText: 'Reject',
+//     confirmButtonColor: '#28a745',
+//     cancelButtonColor: '#dc3545'
+//   }).then((result) => {
+
+//     if (result.isConfirmed) {
+//       this.updateStatus(f.id, 'Approved');
+//     } else if (result.dismiss === Swal.DismissReason.cancel) {
+//       this.updateStatus(f.id, 'Rejected');
+//     }
+
+//   });
+
+// }
 updateStatus(id: number, status: string) {
 
   const payload = {
@@ -225,17 +278,23 @@ getFileUrl(path: string): string {
 
 
  loadDocumentTypes() {
-  this.adminService.getAttachmentTypesByCategory('Forms')
+  this.adminService.getAttachments(this.companyId, this.regionId)
     .subscribe({
-      next: (res: any[]) => {
-        this.documentTypes = res.map(x => ({
+      next: (res: AttachmentTypeDto[]) => {
+
+        const formsOnly = res.filter(x =>
+          x.attachmentCategory?.toLowerCase() === 'forms'
+        );
+
+        this.documentTypes = formsOnly.map(x => ({
           id: x.attachmentTypeId,
           typeName: x.attachmentTypeName
         }));
+
         this.loadEmployeeForms();
       },
       error: (err) => {
-        console.error('Failed to load document types', err);
+        console.error('Error loading attachments', err);
       }
     });
 }
@@ -467,6 +526,8 @@ private resetFormInternal() {
   this.issuedDate = "";
   this.remarks = "";
   this.confidential = false;
+   this.selectedFiles = [];     // ✅ add
+  this.existingFiles = [];     // ✅ add
   this.fileName = "";
   this.selectedFile = null;
   this.isEdit = false;
@@ -475,6 +536,7 @@ private resetFormInternal() {
   this.fileError = '';
   this.dateError = '';
   this.currentPage = 1;
+   this.selectedEmployees = []; // ✅ add
   this.form = {
   empCode: '',
   empName: ''
