@@ -32,6 +32,7 @@ export class MytaskComponent {
   fromDate: string = '';
   toDate: string = '';
   searchText: string = '';
+  
 
   constructor(
     private taskService: TaskService,
@@ -91,38 +92,45 @@ export class MytaskComponent {
   }
 
   // ✅ INLINE STATUS UPDATE
-  updateStatus(task: any) {
+ updateStatus(task: any) {
 
-    const payload = {
-      taskId: task.taskId,
-      taskName: task.taskName,
-      projectId: task.projectId,
-      assignedTo: task.assignedTo,
-      priorityId: task.priorityId,
-      statusId: task.statusId,
-      startDate: task.startDate,
-      dueDate: task.dueDate,
-      comment: task.comment,
-      userId: this.userId,
-      companyId: this.companyId,
-      regionId: this.regionId
-    };
+  const formData = new FormData();
 
-    this.taskService.updateTask(payload).subscribe({
-      next: () => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Updated!',
-          text: 'Status updated successfully',
-          timer: 1500,
-          showConfirmButton: false
-        });
-      },
-      error: () => {
-        Swal.fire('Error', 'Update failed', 'error');
-      }
-    });
-  }
+  formData.append('TaskId', task.taskId);
+  formData.append('TaskName', task.taskName || '');
+  formData.append('ProjectId', task.projectId || '');
+  formData.append('AssignedTo', task.assignedTo || '');
+  formData.append('PriorityId', task.priorityId || '');
+  formData.append('StatusId', task.statusId || '');
+  formData.append('StartDate', task.startDate || '');
+  formData.append('DueDate', task.dueDate || '');
+  formData.append('Comment', task.comment || '');
+
+  // ✅ ADD THIS (important for consistency)
+  formData.append('UserId', this.userId.toString());
+  formData.append('CompanyId', this.companyId.toString());
+  formData.append('RegionId', this.regionId.toString());
+
+  this.taskService.updateTask(formData).subscribe({
+    next: () => {
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Updated!',
+        text: 'Status updated successfully',
+        timer: 1500,
+        showConfirmButton: false
+      });
+
+      // ✅ IMPORTANT: refresh list so UI + manager both sync properly
+      this.loadTasks();
+    },
+
+    error: () => {
+      Swal.fire('Error', 'Update failed', 'error');
+    }
+  });
+}
 
   // ✅ MODAL OPEN
   openModal(task: any) {
@@ -224,4 +232,8 @@ export class MytaskComponent {
 
     this.tasks = [...this.allTasks];
   }
+getFileUrl(path: string): string {
+  return `${this.taskService.getFileBaseUrl()}/${path}`;
+}
+
 }

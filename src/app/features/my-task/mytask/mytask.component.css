@@ -59,7 +59,7 @@
 }
 
 .status.in\ progress {
-  color: blue;
+  color: red;
 }
 
 .status.completed {
@@ -264,4 +264,17 @@
 
 .card h5 {
   font-size: 22px;
+}
+.file-link {
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #212529;
+  background: #f8f9fa;
+  transition: 0.2s;
+}
+
+.file-link:hover {
+  background: #e9ecef;
 }
