@@ -4,11 +4,11 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="dashboard-title mb-0">Timesheet Report</h2>
     <div col-md-12 text-end>
-      <button class="btn btn-danger btn-sm me-2" type="button" (click)="downloadPDF()">
+      <button class="btn  btn-sm me-2" style="color: white; background-color: #b02828;" type="button" (click)="downloadPDF()">
         Download PDF
       </button>
 
-      <button class="btn btn-danger btn-sm" type="button" (click)="exportToExcel()">
+      <button class="btn  btn-sm"  style="color: white; background-color: #b02828;"type="button" (click)="exportToExcel()">
         Download Excel
       </button>
     </div>
@@ -57,7 +57,7 @@
     </div>
 
     <div class="col-md-4 d-flex align-items-end">
-      <button type="button" class="btn btn-danger btn-sm w-100" (click)="clearFilters()">
+      <button type="button" class="btn  btn-sm w-100" style="color: white; background-color: #b02828;" (click)="clearFilters()">
         Clear Filters
       </button>
     </div>
@@ -140,7 +140,7 @@
           <td>{{ ts.totalHoursText }}</td>
           <td>{{ ts.otHoursText }}</td>
 
-          <td>a
+          <td>
             <span class="badge"
               [ngClass]="{
                 'bg-warning': ts.status==='Pending',

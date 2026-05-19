@@ -1,1 +1,205 @@
-<p>ticket-reports works!</p>
+<div class="card shadow-sm p-4">
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="dashboard-title mb-0">Ticket Reports</h2>
+    <div class="text-end">
+      <button class="btn btn-danger btn-sm me-2" type="button" (click)="downloadPDF()">
+        <i class="fas fa-file-pdf"></i> Download PDF
+      </button>
+      <button class="btn btn-success btn-sm" type="button" (click)="exportToExcel()">
+        <i class="fas fa-file-excel"></i> Download Excel
+      </button>
+    </div>
+  </div>
+
+
+
+  <!-- ================= FILTERS ================= -->
+
+
+  
+  <div class="card shadow-sm p-3 mb-3">
+    <h5 class="mb-3">Filters</h5>
+
+    <form [formGroup]="filtersForm" class="row g-3">
+
+      <div class="col-md-3">
+        <label class="form-label">Ticket Number</label>
+        <input class="form-control" type="text" formControlName="ticketNumber" placeholder="Search ticket number">
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select class="form-control" formControlName="status">
+          <option value="">All Statuses</option>
+          <option *ngFor="let status of statuses" [value]="status">
+            {{ status }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Priority</label>
+        <select class="form-control" formControlName="priority">
+          <option value="">All Priorities</option>
+          <option *ngFor="let p of priorities" [value]="p">
+            {{ p }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Assigned To</label>
+        <input class="form-control" type="text" formControlName="assignedTo" placeholder="Assigned person name">
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">From Date</label>
+        <input type="date" class="form-control" formControlName="fromDate">
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">To Date</label>
+        <input type="date" class="form-control" formControlName="toDate">
+      </div>
+
+     <div class="col-md-6 d-flex align-items-end">
+  <button
+    type="button"
+    class="btn btn-danger btn-sm w-100"
+    (click)="clearFilters()">
+    Clear Filters
+  </button>
+</div>
+
+    </form>
+  </div>
+
+  <!-- ================= RESULTS INFO ================= -->
+  <!-- <div class="d-flex justify-content-between align-items-center mb-2">
+    <div>
+      Showing {{ paginatedTickets.length }} of {{ filteredTickets.length }} records
+    </div>
+
+    <div>
+      <label>
+        Show
+        <select class="form-select d-inline w-auto ms-2"
+                [(ngModel)]="pageSize"
+                (change)="onPageSizeChange()">
+          <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+            {{ size }}
+          </option>
+        </select>
+        entries
+      </label>
+    </div>
+  </div> -->
+
+  <!-- ================= TABLE ================= -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle" *ngIf="!noRecordsFound">
+
+      <thead class="table-dark">
+        <tr>
+          <th (click)="sort('ticketNumber')" style="cursor:pointer">
+            Ticket 
+          </th>
+          <th (click)="sort('description')" style="cursor:pointer">
+            Description 
+          </th>
+          <th (click)="sort('status')" style="cursor:pointer">
+            Status
+          </th>
+          <th (click)="sort('priority')" style="cursor:pointer">
+            Priority 
+          </th>
+          <th (click)="sort('assignedTo')" style="cursor:pointer">
+            Assigned To
+          </th>
+          <th (click)="sort('createdDate')" style="cursor:pointer">
+            Created Date 
+          </th>
+          <th>Category</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let ticket of paginatedTickets">
+          <td class="fw-bold">{{ ticket.ticketNumber }}</td>
+          <td>{{ ticket.description?.substring(0, 40) }}...</td>
+          <td>
+            <span
+  class="custom-badge"
+  [ngClass]="ticket.status.toLowerCase().replace(' ', '-') + '-badge'">
+
+  {{ ticket.status }}
+
+</span>
+          </td>
+          <td>
+              <span class="custom-priority-badge high-badge">
+              {{ ticket.priority }}
+            </span>
+          </td>
+          <td>{{ ticket.assignedTo }}</td>
+          <td>{{ ticket.createdDate | date:'short' }}</td>
+          <td>{{ ticket.category }}</td>
+        </tr>
+      </tbody>
+
+    </table>
+
+    <div *ngIf="noRecordsFound" class="alert alert-warning text-center" role="alert">
+      No records found
+    </div>
+  </div>
+
+  <!-- ================= PAGINATION ================= -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+
+  <!-- Page Size -->
+  <div>
+    <label>
+      Show
+      <select
+        class="form-select d-inline w-auto ms-2"
+        [(ngModel)]="pageSize"
+        (change)="changePageSize(pageSize)">
+        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+          {{ size }}
+        </option>
+      </select>
+      entries
+    </label>
+  </div>
+
+  <!-- Pagination Buttons -->
+  <div class="d-flex align-items-center gap-2">
+
+    <button
+      class="btn btn-outline-secondary btn-sm"
+      (click)="changePage(currentPage - 1)"
+      [disabled]="currentPage === 1">
+
+      Previous
+
+    </button>
+
+    <span class="fw-semibold">
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+
+    <button
+      class="btn btn-outline-secondary btn-sm"
+      (click)="changePage(currentPage + 1)"
+      [disabled]="currentPage === totalPages">
+
+      Next
+
+    </button>
+
+  </div>
+</div>
+</div>
