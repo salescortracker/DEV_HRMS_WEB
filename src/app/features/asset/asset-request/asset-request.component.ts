@@ -22,7 +22,7 @@ export class AssetRequestComponent {
   // ✅ Static Dropdown Data
   assetTypes: any[] = [];
 
-
+departmentName: any;
   assetCategories: any[] = [];
   priorities: any[] = [];
   companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
@@ -31,13 +31,16 @@ export class AssetRequestComponent {
 
 
   constructor(private fb: FormBuilder, private service: AdminService, private helpdeskService: HelpdeskService
-    , private profileService: EmployeeResignationService, private assetService: AssetService) { }
+    , private profileService: EmployeeResignationService, private assetService: AssetService) { 
+        this.departmentName = sessionStorage.getItem('DepartmentName');
+
+    }
 
   ngOnInit() {
     this.assetRequestForm = this.fb.group({
       employeeName: [''],
       employeeId: [''],
-      department: [''],
+      departmentName: this.departmentName || '', 
 
       assetType: ['', Validators.required],
       assetCategory: [''],
@@ -74,7 +77,7 @@ this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
           this.assetRequestForm.patchValue({
             employeeName: data.fullName,
             employeeId: data.employeeCode,
-            department: data.rolename   // department = rolename
+            departmentName: this.departmentName || '',   // department = rolename
           });
 
         }
@@ -147,7 +150,7 @@ this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
 
       employeeName: v.employeeName,
       employeeCode: v.employeeId,
-      department: v.department,
+      departmentName: v.departmentName,
 
       assetType: v.assetType,
       assetCategory: v.assetCategory,
