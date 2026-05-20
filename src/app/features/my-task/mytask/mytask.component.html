@@ -224,6 +224,26 @@
             <div class="mb-2">
               <label>Comment</label>
               <textarea class="form-control" [(ngModel)]="selectedTask.comment"></textarea>
+              <div class="mb-3" *ngIf="selectedTask?.taskFilesList?.length > 0">
+
+                <label class="fw-semibold mb-2">
+                  Attached Files
+                </label>
+
+                <div class="d-flex flex-column gap-2">
+
+                  <a *ngFor="let file of selectedTask.taskFilesList" [href]="getFileUrl(file.filePath)" target="_blank"
+                    download class="file-link">
+
+                    <i class="fa fa-paperclip me-2 text-primary"></i>
+
+                    {{ file.fileName }}
+
+                  </a>
+
+                </div>
+
+              </div>
             </div>
 
           </div>
