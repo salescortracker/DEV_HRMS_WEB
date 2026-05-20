@@ -233,70 +233,104 @@ export class PayslipTemplateComponent {
     );
   }
 
-downloadPayrollPDF() {
+  // ======================================================
+  // FINAL PRESENT DAYS AFTER DEDUCTIONS
+  // ======================================================
 
-  if (!this.payrollList || this.payrollList.length === 0) {
-    Swal.fire('Warning', 'No payroll data available', 'warning');
-    return;
+  getAdjustedPresentDays(payroll: any): number {
+
+    if (!payroll) {
+      return 0;
+    }
+
+    // Half Day Deduction
+    const halfDayDeduction =
+      (payroll.halfDays || 0) * 0.5;
+
+    // Late Login Deduction
+    const lateHalfDayDeduction =
+      this.getLateHalfDays(payroll.lateCount || 0) * 0.5;
+
+    // Final Adjusted Days
+    const adjustedDays =
+      (payroll.presentDays || 0)
+      - halfDayDeduction
+      - lateHalfDayDeduction;
+
+    return adjustedDays > 0
+      ? Number(adjustedDays.toFixed(1))
+      : 0;
   }
 
-  const doc = new jsPDF('l', 'mm', 'a4');
+  // ✅ Calculate half days from late count
+  getLateHalfDays(lateCount: number): number {
+    return Math.floor((lateCount || 0) / 3);
+  }
 
-  // ===== HEADER =====
-  doc.setFontSize(16);
-  doc.setTextColor(200, 0, 0);
-  doc.text('CORTRACKER IT SOLUTIONS PVT LTD', 14, 15);
+  downloadPayrollPDF() {
 
-  doc.setFontSize(11);
-  doc.setTextColor(0, 0, 0);
-  doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 14, 25);
-  doc.text(`Month: ${this.getMonthName(this.month!)} ${this.year}`, 14, 32);
-
-  // ===== SINGLE TABLE (SUMMARY) =====
-  const tableData = this.payrollList.map(p => {
-
-    const emp = this.getEmployee(p.employeeId);
-
-    return [
-      emp?.employeeCode,
-      emp?.fullName,
-      p.grossSalary,
-      p.totalDeductions,
-      p.attendanceDeduction,
-      p.lateCount || 0,
-      p.expenses,
-      p.netSalary
-    ];
-  });
-
-  autoTable(doc, {
-    startY: 40,
-    head: [[
-      'Emp ID',
-      'Employee Name',
-      'Earnings',
-      'Deductions',
-      'Attendance',
-      'Late Count', 
-      'Expenses',
-      'Net Salary'
-    ]],
-    body: tableData,
-    theme: 'grid',
-
-    styles: {
-      fontSize: 10
-    },
-
-    headStyles: {
-      fillColor: [41, 128, 185],
-      textColor: 255,
-      halign: 'center'
+    if (!this.payrollList || this.payrollList.length === 0) {
+      Swal.fire('Warning', 'No payroll data available', 'warning');
+      return;
     }
-  });
 
-  doc.save(`Payroll_${this.month}_${this.year}.pdf`);
-}
+    const doc = new jsPDF('l', 'mm', 'a4');
+
+    // ===== HEADER =====
+    doc.setFontSize(16);
+    doc.setTextColor(200, 0, 0);
+    doc.text('CORTRACKER IT SOLUTIONS PVT LTD', 14, 15);
+
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 14, 25);
+    doc.text(`Month: ${this.getMonthName(this.month!)} ${this.year}`, 14, 32);
+
+    // ===== SINGLE TABLE (SUMMARY) =====
+    const tableData = this.payrollList.map(p => {
+
+      const emp = this.getEmployee(p.employeeId);
+
+      return [
+        emp?.employeeCode,
+        emp?.fullName,
+        p.grossSalary,
+        p.totalDeductions,
+        p.attendanceDeduction,
+        p.lateCount || 0,
+        p.expenses,
+        p.netSalary
+      ];
+    });
+
+    autoTable(doc, {
+      startY: 40,
+      head: [[
+        'Emp ID',
+        'Employee Name',
+        'Earnings',
+        'Deductions',
+        'Attendance',
+        'Late Count',
+        'Expenses',
+        'Net Salary'
+      ]],
+      body: tableData,
+      theme: 'grid',
+
+      styles: {
+        fontSize: 10
+      },
+
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        halign: 'center'
+      }
+    });
+
+    doc.save(`Payroll_${this.month}_${this.year}.pdf`);
+  }
 
   downloadPayrollExcel() {
 
@@ -404,10 +438,5 @@ downloadPayrollPDF() {
 
     XLSX.writeFile(workbook, `Payroll_${this.month}_${this.year}.xlsx`);
   }
-  
 
-  // ✅ Calculate half days from late count
-getLateHalfDays(lateCount: number): number {
-  return Math.floor((lateCount || 0) / 3);
-}
 }
