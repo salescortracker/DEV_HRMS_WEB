@@ -304,3 +304,25 @@ canvas {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(176, 40, 40, 0.1);
 }
+
+/* pagination */
+
+.pagination-box{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+}
+
+.pagination-box button{
+  border:none;
+  padding:5px 12px;
+  border-radius:5px;
+  background:#0d6efd;
+  color:#fff;
+}
+
+.pagination-box button:disabled{
+  background:#ccc;
+}

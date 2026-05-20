@@ -64,6 +64,12 @@ export class DashboardComponent {
   displayHours: number = 0;
   displayMinutes: number = 0;
 
+  timesheetPage = 1;
+timesheetPageSize = 5;
+
+helpdeskPage = 1;
+helpdeskPageSize = 5;
+
   constructor(
     private adminService: AdminService,
     private empService: EmployeeResignationService,
@@ -494,4 +500,34 @@ updateChartTodayHours(totalHours: number) {
   }
 }
  
+
+get paginatedTimesheets() {
+  const start = (this.timesheetPage - 1) * this.timesheetPageSize;
+
+  return this.submittedTimesheets.slice(
+    start,
+    start + this.timesheetPageSize
+  );
+}
+
+get totalTimesheetPages() {
+  return Math.ceil(
+    this.submittedTimesheets.length / this.timesheetPageSize
+  );
+}
+
+get paginatedTickets() {
+  const start = (this.helpdeskPage - 1) * this.helpdeskPageSize;
+
+  return this.tickets.slice(
+    start,
+    start + this.helpdeskPageSize
+  );
+}
+
+get totalTicketPages() {
+  return Math.ceil(
+    this.tickets.length / this.helpdeskPageSize
+  );
+}
 }
