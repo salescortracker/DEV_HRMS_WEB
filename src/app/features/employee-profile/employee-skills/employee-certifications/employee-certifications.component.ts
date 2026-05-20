@@ -61,7 +61,7 @@ certificateFileInput!: ElementRef<HTMLInputElement>;
   initializeForm() {
     this.certificationForm = this.fb.group({
       certificationName: ['', [Validators.required, Validators.maxLength(100), Validators.pattern(this.namePattern)]],
-      certificationTypeId: ['', Validators.required],
+      certificationTypeId: [null, Validators.required],
       description: ['', [Validators.maxLength(200), Validators.pattern(this.descriptionPattern)]],
       documentFile: [''] // optional but required when adding
     });
@@ -148,9 +148,9 @@ loadCertifications() {
       }
 
       this.certificationList = data.map((item: EmployeeCertificationDto) => {
-        const type = this.certificationTypeList.find(
-          (t: any) => t.certificationTypeId === item.certificationTypeId
-        );
+       const type = this.certificationTypeList.find(
+  (t: any) => t.certificationTypeID === item.certificationTypeId
+);
 
         return {
           ...item,
@@ -176,16 +176,20 @@ loadCertifications() {
       this.fileError = 'Certificate document is required';
       fileControl?.setErrors({ required: true });
     }
+   if (!this.certificationForm.value.certificationTypeId) {
+  Swal.fire("Error", "Please select certification type", "error");
+  return;
+}
 
     if (this.certificationForm.invalid) {
       this.certificationForm.markAllAsTouched();
       return;
     }
-
+console.log(this.certificationForm.value);
     const payload: any = {
       CertificationId: this.editId ?? 0,
       CertificationName: this.certificationForm.value.certificationName,
-      CertificationTypeId: this.certificationForm.value.certificationTypeId,
+   CertificationTypeId: Number(this.certificationForm.value.certificationTypeId),
       Description: this.certificationForm.value.description,
       CompanyId: this.companyId,
       RegionId: this.regionId,
