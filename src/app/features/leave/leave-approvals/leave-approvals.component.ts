@@ -167,7 +167,6 @@ changePageSize(size: number): void {
 
 
  approveSelected() {
-  debugger;
   const ids = this.leaveList.filter(l => l.selected).map(l => l.id);
   if (ids.length === 0) {
       Swal.fire("No selection", "Please select at least one record", "warning");
@@ -182,20 +181,21 @@ changePageSize(size: number): void {
       cancelButtonText: "Cancel"
     }).then(result => {
       if (result.isConfirmed) {
-
-  this.leaveService.bulkApprove(ids).subscribe({
-    next: () => {
-       Swal.fire("Approved!", "Selected leaves approved.", "success");
-      const approvedLeaves = this.leaveList.filter(l => l.selected);
-      this.leaveList = this.leaveList.map(l => 
-        l.selected ? { ...l, status: 'Approved', selected: false } : l
-      );
-      this.selectAll = false;
-      approvedLeaves.forEach(l => this.notifyHrForLeave(l, 'Approved'));
-    }
-  });
-}
-});
+        this.leaveService.bulkApprove(ids).subscribe({
+          next: () => {
+            this.leaveList = this.leaveList.map(l => 
+              l.selected ? { ...l, status: 'Approved', selected: false } : l
+            );
+            this.selectAll = false;
+            Swal.fire("Approved!", "Selected leaves approved. HR has been notified.", "success");
+          },
+          error: (err) => {
+            console.error('Bulk approve failed', err);
+            Swal.fire("Error", "Failed to approve selected leaves.", "error");
+          }
+        });
+      }
+    });
   }
 
 rejectSelected() {
@@ -216,14 +216,15 @@ rejectSelected() {
       if (result.isConfirmed) {
         this.leaveService.bulkReject(ids).subscribe({
           next: () => {
-            const rejectedLeaves = this.leaveList.filter(l => l.selected);
             this.leaveList = this.leaveList.map(l =>
               l.selected ? { ...l, status: 'Rejected', selected: false } : l
             );
             this.selectAll = false;
-            rejectedLeaves.forEach(l => this.notifyHrForLeave(l, 'Rejected'));
-
-            Swal.fire("Rejected!", "Selected leaves rejected.", "success");
+            Swal.fire("Rejected!", "Selected leaves rejected. HR has been notified.", "success");
+          },
+          error: (err) => {
+            console.error('Bulk reject failed', err);
+            Swal.fire("Error", "Failed to reject selected leaves.", "error");
           }
         });
       }
@@ -255,9 +256,11 @@ rejectSelected() {
             l.id === this.selectedLeave.id ? { ...l, status: 'Approved' } : l
           );
           this.selectedLeave.status = "Approved";
-          this.notifyHrForLeave(this.selectedLeave, 'Approved');
-
-          Swal.fire("Approved!", "Leave approved successfully.", "success");
+          Swal.fire("Approved!", "Leave approved successfully. Employee & HR notified.", "success");
+        },
+        error: (err) => {
+          console.error('Approve failed', err);
+          Swal.fire("Error", "Failed to approve leave.", "error");
         }
       });
     });
@@ -281,9 +284,11 @@ rejectSelected() {
             l.id === this.selectedLeave.id ? { ...l, status: 'Rejected' } : l
           );
           this.selectedLeave.status = "Rejected";
-          this.notifyHrForLeave(this.selectedLeave, 'Rejected');
-
-          Swal.fire("Rejected!", "Leave rejected successfully.", "success");
+          Swal.fire("Rejected!", "Leave rejected successfully. Employee & HR notified.", "success");
+        },
+        error: (err) => {
+          console.error('Reject failed', err);
+          Swal.fire("Error", "Failed to reject leave.", "error");
         }
       });
     });
