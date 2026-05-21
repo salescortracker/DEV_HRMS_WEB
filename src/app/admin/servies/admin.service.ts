@@ -2262,6 +2262,11 @@ request(reviewId: number) {
     {}
   );
 }
+getEmployeeSubmissions(userId: number) {
+  return this.http.get(
+    `${this.baseUrl}/EmployeeKpi/GetEmployeeSubmissions/${userId}`
+  );
+}
  // Company News
 // Company News Service
 getallDepartments(): Observable<Department[]> {
