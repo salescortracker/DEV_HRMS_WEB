@@ -7,7 +7,7 @@
       <!-- <button class="btn btn-danger" (click)="resetForm()">
         <i class="fa-solid fa-plus me-2"></i> Bulk Upload
       </button> -->
-    </div>
+    </div>(change)="onFileSelected($event)"
     <hr />
 
     <!-- Form -->
@@ -102,11 +102,22 @@
 
     <!-- File Upload -->
     <div class="col-md-6">
-      <label class="form-label">Attachment</label>
       <input type="file"
-             class="form-control"
-             (change)="onFileSelected($event)"
-             accept=".pdf,.jpg,.png">
+       class="form-control"
+       (change)="onFileSelected($event)"
+       accept=".pdf,.jpg,.png">
+
+<!-- ✅ Existing Attachment -->
+<div *ngIf="news.AttachmentName" class="mt-2">
+
+  <a [href]="news.AttachmentUrl"
+     target="_blank">
+
+    {{ news.AttachmentName }}
+
+  </a>
+
+</div>
     </div>
 
     <!-- Submit Button -->

@@ -72,12 +72,19 @@ name="EventLocation">
 <div class="col-md-6">
 <label>Event Type</label>
 <select class="form-select"
-[(ngModel)]="event.EventType"
-name="EventType">
+        [(ngModel)]="event.EventType"
+        name="EventType">
 
-<option value="Meeting">Meeting</option>
-<option value="Training">Training</option>
-<option value="Celebration">Celebration</option>
+  <option value="">
+    Select Event Type
+  </option>
+
+  <option *ngFor="let e of eventTypes"
+          [value]="e.eventTypeName">
+
+    {{ e.eventTypeName }}
+
+  </option>
 
 </select>
 </div>
