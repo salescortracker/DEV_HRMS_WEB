@@ -42,7 +42,7 @@
   <option [ngValue]="null">Select Region</option>
 
   <option *ngFor="let r of filteredRegions"
-          [ngValue]="r.regionId">
+          [ngValue]="r.regionID">
     {{r.regionName}}
   </option>
 
@@ -97,10 +97,34 @@
             </div>
 
             <!-- File -->
-            <div class="col-md-6">
+              <div class="col-md-6">
+
+                <label class="form-label">Attachment</label>
+
+                <input type="file"
+                      class="form-control"
+                       #fileInput
+                      (change)="onFileSelected($event)">
+
+                <!-- ✅ SHOW EXISTING FILE IN EDIT -->
+                <div *ngIf="policy.FileName" class="mt-2">
+
+                  <strong>Existing File:</strong>
+
+                  <a [href]="policy.FileUrl"
+                    target="_blank">
+
+                    {{ policy.FileName }}
+
+                  </a>
+
+                </div>
+
+              </div>
+            <!-- <div class="col-md-6">
               <label class="form-label">Attachment</label>
               <input type="file" class="form-control" (change)="onFileSelected($event)">
-            </div>
+            </div> -->
 
             <!-- Button -->
             <div class="col-md-6 d-flex align-items-end">

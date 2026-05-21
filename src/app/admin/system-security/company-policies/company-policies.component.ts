@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AdminService, Department } from '../../servies/admin.service';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ViewChild, ElementRef } from '@angular/core';
 
 
 interface Policy {
@@ -19,6 +20,7 @@ interface Policy {
   styleUrl: './company-policies.component.css'
 })
 export class CompanyPoliciesComponent {
+  @ViewChild('fileInput') fileInput!: ElementRef;
  companies: any[] = []
   regions: any[] = []
   departments: Department[] = []
@@ -45,7 +47,7 @@ export class CompanyPoliciesComponent {
 
   constructor(
     private adminService: AdminService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
   ) { }
 
   ngOnInit() {
@@ -108,7 +110,6 @@ onCompanyChange() {
 
     this.adminService.getDepartments(this.userId)
       .subscribe((res: any) => {
-        debugger;
         this.departments = res.data.data.filter((x: any) => x.isActive)
       })
 
@@ -141,7 +142,10 @@ this.policies = res.map((x: any) => ({
 
   EffectiveDate: x.effectiveDate,
 
-  Description: x.policyDescription
+  Description: x.policyDescription,
+    // ✅ ADD THESE
+  FileName: x.attachmentName,
+  FileUrl: x.attachmentPath
 
 }))
 
@@ -150,18 +154,33 @@ this.policies = res.map((x: any) => ({
       })
 
   }
+onFileSelected(e: any) {
 
-  onFileSelected(e: any) {
+  const file = e.target.files[0];
 
-    const file = e.target.files[0]
+  if (file) {
 
-    if (file) {
+    this.policy.Attachment = file;
 
-      this.policy.Attachment = file
+    // ✅ ADD THESE
+    this.policy.FileName = file.name;
 
-    }
+    this.policy.FileUrl = 'Uploads/' + file.name;
 
   }
+
+}
+  // onFileSelected(e: any) {
+
+  //   const file = e.target.files[0]
+
+  //   if (file) {
+
+  //     this.policy.Attachment = file
+
+  //   }
+
+  // }
 
 onSubmit() {
 
@@ -190,6 +209,15 @@ onSubmit() {
     effectiveDate: this.policy.EffectiveDate,
     expiryDate: null,
 
+      // ✅ ADD THESE
+      attachmentName: this.policy.Attachment?.name || this.policy.FileName || null,
+
+attachmentPath: this.policy.Attachment
+  ? ('Uploads/' + this.policy.Attachment.name)
+  : (this.policy.FileUrl || null),
+    // attachmentName: this.policy.Attachment?.name || null,
+    // attachmentPath: this.policy.FileUrl || null,
+
     postedDate: new Date().toISOString().split('T')[0],
 
     isActive: true,
@@ -211,6 +239,12 @@ onSubmit() {
 
     this.getPolicies()
 
+
+  // ✅ CLEAR FILE INPUT
+  if (this.fileInput) {
+    this.fileInput.nativeElement.value = '';
+  }
+
   })
 
 }
@@ -227,6 +261,7 @@ onSubmit() {
       this.filteredRegions = this.regions.filter(r =>
     Number(r.companyID) === Number(this.policy.CompanyId)
   );
+  console.log(this.policies);
 
   }
 
@@ -261,6 +296,9 @@ onSubmit() {
   resetForm() {
 
     this.policy = this.resetPolicy()
+      this.policy.Attachment = null;
+  this.policy.FileName = null;
+  this.policy.FileUrl = null;
 
     this.isEditMode = false
 
