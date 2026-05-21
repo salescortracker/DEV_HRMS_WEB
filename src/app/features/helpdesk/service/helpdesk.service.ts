@@ -53,4 +53,17 @@ getEmployeesByManager(managerId: number) {
     `${this.baseUrl}/Helpdesk/GetEmployeesByManager/${managerId}`
   );
 }
+
+//  TICKET REPORTS
+getManagerTicketReports(managerId: number) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Helpdesk/GetManagerTicketReports/${managerId}`
+  );
+}
+
+getAllTicketReports(CompanyId: number, RegionId: number) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Helpdesk/GetAllTicketReports/${CompanyId}/${RegionId}`
+  );
+}
 }

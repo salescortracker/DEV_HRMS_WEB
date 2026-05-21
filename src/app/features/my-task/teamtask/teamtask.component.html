@@ -303,43 +303,80 @@
 
                 <div class="comment-box">
 
-                  <textarea class="form-control" [(ngModel)]="newTask.comment" name="comment" rows="2"
-                    placeholder="Type comment..."></textarea>
+                  <!-- FILE PREVIEW -->
+                  <!-- EXISTING FILES -->
+                  <div *ngIf="existingFiles.length > 0" class="attached-files">
 
-                  <div *ngIf="selectedFiles.length > 0" class="mt-2">
+                    <div *ngFor="let file of existingFiles; let i = index" class="file-chip">
 
-                    <div *ngFor="let file of selectedFiles; let i = index"
-                      class="d-flex justify-content-between align-items-center border p-2 mb-1">
+                      <i class="fa fa-file me-2 text-success"></i>
 
-                      <span>{{ file.name }}</span>
+                      <!-- DOWNLOAD -->
+                      <a [href]="getFileUrl(file.filePath)" target="_blank" class="file-name text-decoration-none">
 
-                      <button type="button" class="btn btn-sm btn-danger" (click)="removeFile(i)">
-                        ❌
+                        {{ file.fileName }}
+
+                      </a>
+
+                      <!-- REMOVE -->
+                      <button type="button" class="remove-file-btn" (click)="removeExistingFile(i)">
+
+                        <i class="fa fa-times"></i>
+
                       </button>
 
                     </div>
 
                   </div>
 
-                  <!-- ICONS -->
-                  <div class="comment-icons">
-                    <i class="fa fa-at" title="Mention" (click)="toggleMention()"></i>
+                  <!-- NEWLY SELECTED FILES -->
+                  <div *ngIf="selectedFiles.length > 0" class="attached-files">
 
-                    <!-- <i class="fa fa-paperclip" title="Attach" (click)="fileInput.click()"></i> -->
+                    <div *ngFor="let file of selectedFiles; let i = index" class="file-chip">
+
+                      <i class="fa fa-file me-2 text-primary"></i>
+
+                      <span class="file-name">
+                        {{ file.name }}
+                      </span>
+
+                      <button type="button" class="remove-file-btn" (click)="removeFile(i)">
+
+                        <i class="fa fa-times"></i>
+
+                      </button>
+
+                    </div>
+
                   </div>
 
-                  <!-- 🔽 MENTION DROPDOWN -->
+                  <!-- TEXTAREA -->
+                  <textarea class="form-control" [(ngModel)]="newTask.comment" name="comment" rows="3"
+                    placeholder="Type comment..."></textarea>
+
+                  <!-- ICONS -->
+                  <div class="comment-icons">
+
+                    <i class="fa fa-at" title="Mention" (click)="toggleMention()"></i>
+
+                    <i class="fa fa-paperclip" title="Attach" (click)="fileInput.click()"></i>
+
+                  </div>
+
+                  <!-- MENTION DROPDOWN -->
                   <div *ngIf="showMentionDropdown" class="mention-dropdown">
 
                     <div *ngFor="let emp of employees" (click)="selectMention(emp)" class="mention-item">
 
-                      {{ emp.employeeName }} ({{ emp.employeeCode }})
+                      {{ emp.employeeName }}
+                      ({{ emp.employeeCode }})
 
                     </div>
+
                   </div>
 
-
-                  <input type="file" #fileInput multiple (change)="onFilesSelected($event)" style="display: none;"
+                  <!-- FILE INPUT -->
+                  <input type="file" #fileInput multiple (change)="onFilesSelected($event)" style="display:none;"
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt,.zip" />
 
                 </div>

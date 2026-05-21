@@ -46,10 +46,19 @@ companyMap: { [key: number]: string } = {};
   ngOnInit(): void {
     this.loadRegions();
     this.loadCompanies();
-    
+        this.loadGrades();
     this.loadLeaveType();
   }
+grades: any[] = [];
 
+loadGrades() {
+  console.log('Loading grades for userId:', this.userId);
+  this.admin.getGrades(this.userId).subscribe((res:any) => {
+    this.grades = res.data;
+    console.log('Grades loaded:', this.grades);
+
+  });
+}
   // ================= MASTER DATA =================
 getEmptyLeaveType(): any {
   return {
@@ -59,9 +68,11 @@ getEmptyLeaveType(): any {
     IsActive: true,
     CompanyID: this.companyId,
     RegionID: this.regionId,
-    companyName: this.companyMap[this.companyId] || '',
-    regionName: this.regionMap[this.regionId] || '',
-    userId: Number(sessionStorage.getItem("UserId"))
+    // companyName: this.companyMap[this.companyId] || '',
+    // regionName: this.regionMap[this.regionId] || '',
+    // userId: Number(sessionStorage.getItem("UserId"))
+     gradeAllocations: [],
+    userId: this.userId,
   };
 }
 
@@ -103,60 +114,138 @@ loadLeaveType(): void {
 
 }
 
-  onSubmit(): void {
- 
-    this.leave.CompanyID = this.companyId;
-    this.leave.RegionID = this.regionId;
- this.leave.userId = this.userId;
-  this.leave.companyName = this.companyMap[this.companyId] || '';
-  this.leave.regionName = this.regionMap[this.regionId] || '';
-    this.spinner.show();
-    const obs = this.isEditMode
-      ? this.admin.updateLeaveType(this.leave)
-      : this.admin.createLeaveType(this.leave);
+ onSubmit(): void {
 
-    obs.subscribe({
-      next: () => {
-        this.spinner.hide();
-        Swal.fire(
-          this.isEditMode ? 'Updated' : 'Created',
-          `Leave Type ${this.isEditMode ? 'updated' : 'created'} successfully`,
-          'success'
-        );
-        
-      this.loadLeaveType();  
-      this.resetForm();      
-      this.spinner.hide();    
-      },
-      error: () => {
-        this.spinner.hide();
-        Swal.fire('Error', 'Operation failed', 'error');
-      }
-    });
+  if (this.leave.gradeAllocations.length === 0) {
+    Swal.fire('Error', 'Please select at least one grade', 'error');
+    return;
   }
 
- editLeaveType(item: LeaveType): void {
-  
-  this.isEditMode = true;
+  // ✅ Assign Required Fields
+  this.leave.CompanyID = this.companyId;
+  this.leave.RegionID = this.regionId;
+  this.leave.userId = this.userId;
 
-  this.leave = { ...item };
+  this.leave.companyName =
+    this.companyMap[this.companyId] || '';
 
-  this.companyId = item.CompanyID;
-  this.filteredRegions = this.regions.filter((r: Region) => r.companyID === this.companyId);
-  this.admin.getRegions(this.companyId).subscribe({
-    next: (res: Region[]) => {
-      this.regions = res || [];
-      this.regionId = item.RegionID;
-      this.leave.CompanyID = this.companyId;
-      this.leave.RegionID = this.regionId;
-      this.loadLeaveType(); 
-             this.spinner.hide();
+  this.leave.regionName =
+    this.regionMap[this.regionId] || '';
 
+  this.spinner.show();
+
+  const obs = this.isEditMode
+    ? this.admin.updateLeaveType(this.leave)
+    : this.admin.createLeaveType(this.leave);
+
+  obs.subscribe({
+
+    next: (res: any) => {
+
+      this.spinner.hide();
+
+      Swal.fire(
+        'Success',
+        res?.message || 'Saved successfully',
+        'success'
+      );
+
+      this.loadLeaveType();
+      this.resetForm();
     },
-    error: () => Swal.fire('Error', 'Failed to load regions', 'error')
+
+    error: (err) => {
+
+      this.spinner.hide();
+
+      Swal.fire(
+        'Error',
+        err?.error?.message || 'Operation failed',
+        'error'
+      );
+    }
   });
 }
 
+//  editLeaveType(item: LeaveType): void {
+  
+//   this.isEditMode = true;
+
+//   this.leave = { ...item };
+
+//   this.companyId = item.CompanyID;
+//   this.filteredRegions = this.regions.filter((r: Region) => r.companyID === this.companyId);
+//   this.admin.getRegions(this.companyId).subscribe({
+//     next: (res: Region[]) => {
+//       this.regions = res || [];
+//       this.regionId = item.RegionID;
+//       this.leave.CompanyID = this.companyId;
+//       this.leave.RegionID = this.regionId;
+//       this.loadLeaveType(); 
+//              this.spinner.hide();
+
+//     },
+//     error: () => Swal.fire('Error', 'Failed to load regions', 'error')
+//   });
+// }
+editLeaveType(item: any): void {
+  this.isEditMode = true;
+  console.log('Editing item:', item); 
+
+  this.leave = {
+    ...item,
+    gradeAllocations: item.gradeAllocations || [] 
+  };
+
+  this.companyId = Number(item.companyID);
+this.regionId = Number(item.regionID);
+}
+
+// ✅ CHECKBOX TOGGLE
+onGradeToggle(grade: any, event: any) {
+
+  if (event.target.checked) {
+
+    this.leave.gradeAllocations.push({
+      gradeID: grade.gradeID,
+      gradename: grade.gradeName,
+      leaveDays: 0
+    });
+
+  } else {
+
+    this.leave.gradeAllocations =
+      this.leave.gradeAllocations.filter(
+        (x: any) => x.gradeID !== grade.gradeID
+      );
+  }
+}
+
+// ✅ INPUT CHANGE
+onGradeDaysChange(grade: any, event: any) {
+  const value = +event.target.value;
+
+  const item = this.leave.gradeAllocations.find(
+    (x: any) => x.gradeID === grade.gradeID
+  );
+
+  if (item) {
+    item.leaveDays = value;
+  }
+}
+
+// ✅ HELPER (for checkbox checked state in edit)
+isGradeSelected(gradeId: number): boolean {
+  return this.leave.gradeAllocations.some((x: any) => x.gradeID === gradeId);
+}
+
+// ✅ HELPER (for input value in edit)
+getGradeDays(gradeId: number): number {
+  const item = this.leave.gradeAllocations.find(
+    (x: any) => x.gradeID === gradeId
+  );
+  return item ? item.leaveDays : 0;
+}
 
   deleteLeaveType(item: LeaveType): void {
       console.log('Deleting ID:', item.leaveTypeID); 
@@ -189,20 +278,24 @@ loadLeaveType(): void {
     });
   }
 
-  resetForm(): void {
-  this.leave = {
-      leaveTypeID: 0,
-      leaveTypeName: '',
-      leaveDays: 1,
-      IsActive: true,
-      CompanyID: this.companyId,
-      RegionID: this.regionId,
-      companyName: this.companyMap[this.companyId],
-      regionName: this.regionMap[this.regionId]
-    };
+  // resetForm(): void {
+  // this.leave = {
+  //     leaveTypeID: 0,
+  //     leaveTypeName: '',
+  //     leaveDays: 1,
+  //     IsActive: true,
+  //     CompanyID: this.companyId,
+  //     RegionID: this.regionId,
+  //     companyName: this.companyMap[this.companyId],
+  //     regionName: this.regionMap[this.regionId]
+  //   };
 
-    this.isEditMode = false;
-  }
+  //   this.isEditMode = false;
+  // }
+  resetForm(): void {
+  this.leave = this.getEmptyLeaveType();
+  this.isEditMode = false;
+}
 
   // ================= FILTER + SORT + PAGE =================
   filteredLeaveType(): LeaveType[] {
