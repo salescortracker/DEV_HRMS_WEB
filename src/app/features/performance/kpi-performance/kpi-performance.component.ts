@@ -21,6 +21,7 @@ export class KpiPerformanceComponent {
   canViewEmployeeSubmission = false;
   canViewManagerReviewApproval = false;
   selectedTab: string = '';
+  employeeSubmissions: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -49,7 +50,30 @@ export class KpiPerformanceComponent {
     this.initializeForm();
     this.patchUserValues();
     this.loadManagerReviews();
+    this.loadEmployeeSubmissions();
   }
+  loadEmployeeSubmissions() {
+
+  const userId = Number(sessionStorage.getItem('UserId'));
+
+  this.service.getEmployeeSubmissions(userId)
+    .subscribe({
+
+      next: (res: any) => {
+
+        console.log("Employee Submission List", res);
+
+        this.employeeSubmissions = res?.data || res || [];
+      },
+
+      error: (err:any) => {
+
+        console.log(err);
+        this.employeeSubmissions = [];
+      }
+
+    });
+}
   LoadTabPermissions() {
     const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
 
