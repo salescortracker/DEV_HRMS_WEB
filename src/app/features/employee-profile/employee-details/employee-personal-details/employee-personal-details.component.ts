@@ -120,7 +120,7 @@ loadgender() {
           workPhone: res.workPhone,
           linkedInProfile: res.linkedInProfile,
           previousExperience: res.previousExperience,
-          ProfilePictureName: res.profilePictureName,
+          ProfilePictureName: res.firstName + '_' + res.lastName,
           ProfilePicturePath: res.profilePicturePath,
           brandGrade: res.brandGrade,
           esicNumber: res.esicNumber,

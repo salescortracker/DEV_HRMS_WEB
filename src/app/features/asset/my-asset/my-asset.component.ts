@@ -29,6 +29,7 @@ filteredRequests: any[] = [];
   assetType: '',
   assetStatusId: ''
 };
+  departmentName: any;
 
 
   constructor(private assetService: AssetService,private adminService: AdminService,
@@ -37,12 +38,14 @@ filteredRequests: any[] = [];
   ngOnInit(): void {
      const userId = sessionStorage.getItem("UserId");
 
+
   if (!userId) {
     console.error("UserId not found in session");
     return;
   }
 this.companyId = Number(sessionStorage.getItem('CompanyId'));
   this.regionId = Number(sessionStorage.getItem('RegionId'));
+  this.departmentName = sessionStorage.getItem('DepartmentName');
   this.userId = Number(userId);
     this.loadRequests();
     this.loadUserFromSession();

@@ -25,22 +25,27 @@ export class AssetRequestComponent {
 departmentName: any;
   assetCategories: any[] = [];
   priorities: any[] = [];
-  companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
-  regionId = Number(sessionStorage.getItem('RegionId')) || 0;
-  userId = Number(sessionStorage.getItem('UserId')) || 0;
+  companyId :any;
+   regionId :any
+   userId :any;
 
 
   constructor(private fb: FormBuilder, private service: AdminService, private helpdeskService: HelpdeskService
     , private profileService: EmployeeResignationService, private assetService: AssetService) { 
-        this.departmentName = sessionStorage.getItem('DepartmentName');
+       
 
     }
 
   ngOnInit() {
+     this.departmentName = sessionStorage.getItem('DepartmentName');
+        console.log('Department Name from session:', this.departmentName);
+    this.companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
+  this. regionId = Number(sessionStorage.getItem('RegionId')) || 0;
+  this.userId = Number(sessionStorage.getItem('UserId')) || 0;
     this.assetRequestForm = this.fb.group({
       employeeName: [''],
       employeeId: [''],
-      departmentName: this.departmentName || '', 
+      departmentName: this.departmentName , 
 
       assetType: ['', Validators.required],
       assetCategory: [''],
@@ -86,6 +91,8 @@ this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
         console.error('Error loading profile', err);
       }
     });
+    console.log('UserId for profile load:', this.userId);
+
   }
 
   loadAssetTypes() {
@@ -108,9 +115,11 @@ this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
   });
 }
   loadAssetCategories() {
+    console.log('Loading asset categories for CompanyId:', this.companyId, 'RegionId:', this.regionId);
     this.service.getAssetCategoriesByCompanyRegion(
       this.companyId,
-      this.regionId
+      this.regionId,
+
     ).subscribe((res: any) => {
       this.assetCategories = res.data || res;
     });
@@ -179,7 +188,6 @@ this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
 
     this.assetService.createAssetRequest(payload).subscribe({
       next: (res: any) => {
-
         Swal.close();
 
         // ✅ SUCCESS ALERT
