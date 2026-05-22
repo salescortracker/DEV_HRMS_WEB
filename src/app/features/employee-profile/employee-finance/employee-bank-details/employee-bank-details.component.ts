@@ -79,64 +79,117 @@ loadAccountTypes() {
       }
     });
 }
+
+
+
   /** Load Bank Details */
+  // loadBankDetails() {
+  //   if (!this.userId) {
+  //   console.error("UserId missing");
+  //   return;
+  // }
+
+  // this.adminService.getBankDetails(this.userId).subscribe({
+  //   next: (res) => {
+  //     console.log("My Bank Data:", res);
+  //     this.bankList = res;
+  //   },
+  //   error: () => {
+  //     Swal.fire('Error', 'Failed to load bank details', 'error');
+  //   }
+  // });
+
+  // }
   loadBankDetails() {
-    if (!this.userId) {
-    console.error("UserId missing");
-    return;
-  }
 
   this.adminService.getBankDetails(this.userId).subscribe({
     next: (res) => {
-      console.log("My Bank Data:", res);
+
       this.bankList = res;
+
+      // ✅ AUTO FILL FORM
+      if (res && res.length > 0) {
+        this.bankForm.patchValue(res[0]);
+      }
     },
     error: () => {
       Swal.fire('Error', 'Failed to load bank details', 'error');
     }
   });
-
-  }
+}
 
   /** Save / Update Bank Details */
+  // saveBankDetails() {
+  //   // if (this.bankForm.invalid) {
+  //   //   this.bankForm.markAllAsTouched();
+  //   //   Swal.fire('Invalid', 'Please fill all required fields correctly', 'warning');
+  //   //   return;
+  //   // }
+
+  //   const payload = {
+  //     ...this.bankForm.value,
+  //     companyId: this.companyId,
+  //     regionId: this.regionId,
+  //     userId: this.userId
+  //   };
+
+  //   const id = Number(this.bankForm.get("bankDetailsId")?.value);
+
+  //   if (id > 0) {
+  //     // UPDATE
+  //     this.adminService.updateBankDetail(payload).subscribe({
+  //       next: () => {
+  //         this.loadBankDetails();
+  //         this.resetForm();
+  //         Swal.fire('Updated', 'Bank details updated successfully', 'success');
+  //       },
+  //       error: (err) => Swal.fire('Error', 'Failed to update bank details', 'error')
+  //     });
+  //   } else {
+  //     // CREATE
+  //     this.adminService.createBankDetail(payload).subscribe({
+  //       next: () => {
+  //         this.loadBankDetails();
+  //         this.resetForm();
+  //         Swal.fire('Saved', 'Bank details saved successfully', 'success');
+  //       },
+  //       error: (err) => Swal.fire('Error', 'Failed to save bank details', 'error')
+  //     });
+  //   }
+  // }
   saveBankDetails() {
-    // if (this.bankForm.invalid) {
-    //   this.bankForm.markAllAsTouched();
-    //   Swal.fire('Invalid', 'Please fill all required fields correctly', 'warning');
-    //   return;
-    // }
 
-    const payload = {
-      ...this.bankForm.value,
-      companyId: this.companyId,
-      regionId: this.regionId,
-      userId: this.userId
-    };
+ 
 
-    const id = Number(this.bankForm.get("bankDetailsId")?.value);
+  const payload = {
+    ...this.bankForm.value,
+    companyId: this.companyId,
+    regionId: this.regionId,
+    userId: this.userId
+  };
 
-    if (id > 0) {
-      // UPDATE
-      this.adminService.updateBankDetail(payload).subscribe({
-        next: () => {
-          this.loadBankDetails();
-          this.resetForm();
-          Swal.fire('Updated', 'Bank details updated successfully', 'success');
-        },
-        error: (err) => Swal.fire('Error', 'Failed to update bank details', 'error')
-      });
-    } else {
-      // CREATE
-      this.adminService.createBankDetail(payload).subscribe({
-        next: () => {
-          this.loadBankDetails();
-          this.resetForm();
-          Swal.fire('Saved', 'Bank details saved successfully', 'success');
-        },
-        error: (err) => Swal.fire('Error', 'Failed to save bank details', 'error')
-      });
+  // ✅ ONE API ONLY
+  this.adminService.createBankDetail(payload).subscribe({
+    next: () => {
+
+      this.loadBankDetails();
+      this.resetForm();
+
+      Swal.fire(
+        'Success',
+        'Bank details saved successfully',
+        'success'
+      );
+    },
+    error: () => {
+      Swal.fire(
+        'Error',
+        'Failed to save bank details',
+        'error'
+      );
     }
-  }
+  });
+}
 
   /** Reset Form */
   resetForm() {
