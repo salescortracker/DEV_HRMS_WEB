@@ -95,20 +95,47 @@
           <th>Status</th>
         </tr>
 
-        <tr *ngFor="let ts of submittedTimesheets">
+        <tr *ngFor="let ts of paginatedTimesheets">
           <td>{{ ts.employeeName }}</td>
           <td>{{ ts.timesheetDate | date }}</td>
           <td>
-            <span class="badge" [ngClass]="{
-                'bg-warning text-dark': ts.status === 'Pending',
-                'bg-success': ts.status === 'Approved',
-                'bg-danger': ts.status === 'Rejected'
-              }">
-              {{ ts.status }}
-            </span>
+             <span class="badge"
+                [ngClass]="{
+                  'bg-warning text-dark': ts.status === 'Pending',
+                  'bg-success': ts.status === 'Approved',
+                  'bg-danger': ts.status === 'Rejected',
+                  'bg-primary': ts.status === 'Submitted'
+                }">
+
+            {{ ts.status }}
+
+          </span>
           </td>
         </tr>
       </table>
+      <div class="pagination-box">
+
+        <button
+          (click)="timesheetPage = timesheetPage - 1"
+          [disabled]="timesheetPage === 1">
+
+          Previous
+
+        </button>
+
+        <span>
+          Page {{ timesheetPage }} of {{ totalTimesheetPages }}
+        </span>
+
+        <button
+          (click)="timesheetPage = timesheetPage + 1"
+          [disabled]="timesheetPage === totalTimesheetPages">
+
+          Next
+
+        </button>
+
+      </div>
     </div>
 
     <!-- HELPDESK -->
@@ -120,7 +147,7 @@
           <th>Status</th>
         </tr>
 
-        <tr *ngFor="let t of tickets">
+        <tr *ngFor="let t of paginatedTickets">
           <td>{{ t.ticketNumber }}</td>
           <td>{{ t.priorityName }}</td>
           <td>
@@ -134,6 +161,29 @@
           </td>
         </tr>
       </table>
+       <div class="pagination-box">
+
+        <button
+          (click)="helpdeskPage = helpdeskPage - 1"
+          [disabled]="helpdeskPage === 1">
+
+          Previous
+
+        </button>
+
+        <span>
+          Page {{ helpdeskPage }} of {{ totalTicketPages }}
+        </span>
+
+        <button
+          (click)="helpdeskPage = helpdeskPage + 1"
+          [disabled]="helpdeskPage === totalTicketPages">
+
+          Next
+
+        </button>
+
+      </div>
     </div>
 
   </div>

@@ -228,17 +228,49 @@ loadRegions() {
       });
     }
   }
-  editStructure(s: any) {
-    this.payrollService
-      .getSalaryStructureById(s.structureId, this.userId)
-      .subscribe((res: any) => {
-        res.companyId = res.companyId ? Number(res.companyId) : null;
-        res.regionId = res.regionId ? Number(res.regionId) : null;
+ editStructure(s: any) {
 
-        this.structure = res;
-        this.isEditMode = true;
-      });
-  }
+  this.payrollService
+    .getSalaryStructureById(s.structureId, this.userId)
+    .subscribe((res: any) => {
+
+      console.log("Edit Response:", res);
+
+      // ✅ Normalize types
+      res.companyId = res.companyId ? Number(res.companyId) : null;
+      res.regionId = res.regionId ? Number(res.regionId) : null;
+      res.departmentId = res.departmentId ? Number(res.departmentId) : null;
+      res.designationId = res.designationId ? Number(res.designationId) : null;
+      res.gradeId = res.gradeId ? Number(res.gradeId) : null;
+
+      // ✅ Assign structure
+      this.structure = res;
+
+      // ✅ IMPORTANT → Populate regions dropdown
+      this.filteredRegions = this.regions.filter(r =>
+        Number(r.companyID) === Number(this.structure.companyId)
+      );
+
+      // ✅ IMPORTANT → Bind grade name
+      const selectedDesignation = this.designations.find(
+        d => Number(d.designationId) === Number(this.structure.designationId)
+      );
+
+      if (selectedDesignation) {
+
+        this.structure.gradeId = selectedDesignation.gradeId;
+
+        this.structure.gradeName =
+          selectedDesignation.gradeName;
+
+      }
+
+      console.log("Filtered Regions:", this.filteredRegions);
+      console.log("Final Structure:", this.structure);
+
+      this.isEditMode = true;
+    });
+}
   deleteStructure(s: any) {
 
     Swal.fire({

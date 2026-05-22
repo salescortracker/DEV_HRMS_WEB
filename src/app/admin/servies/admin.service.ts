@@ -433,21 +433,34 @@ export interface HelpdeskCategory {
 //   Attachment?: File | null;
 // }
 export interface News {
+
   NewsId?: number;
+
   userId: number;
 
   CompanyId: number | null;
+
   RegionId: number | null;
+
   departmentId?: number | null;
 
   Title: string;
+
   Category: string;
+
   Description: string;
 
   Date: Date;
+
   PublishedDate?: string;
 
+  // ✅ New Upload
   Attachment?: File | null;
+
+  // ✅ Existing File
+  AttachmentName?: string;
+
+  AttachmentUrl?: string;
 }
 export interface KpiCategory {
   KpiCategoryID?: number;
@@ -2260,6 +2273,11 @@ request(reviewId: number) {
   return this.http.post(
     `${this.baseUrl}/EmployeeKpi/Request?reviewId=${reviewId}`,
     {}
+  );
+}
+getEmployeeSubmissions(userId: number) {
+  return this.http.get(
+    `${this.baseUrl}/EmployeeKpi/GetEmployeeSubmissions/${userId}`
   );
 }
  // Company News

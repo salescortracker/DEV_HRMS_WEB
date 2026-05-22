@@ -26,6 +26,7 @@ export class KpiPerformanceComponent {
   canViewManagerReviewHrReview =false;
   performanceReports: any[] = [];
   
+  employeeSubmissions: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -56,7 +57,30 @@ export class KpiPerformanceComponent {
     this.patchUserValues();
     this.loadManagerReviews();
     this.loadPerformanceReports();
+    this.loadEmployeeSubmissions();
   }
+  loadEmployeeSubmissions() {
+
+  const userId = Number(sessionStorage.getItem('UserId'));
+
+  this.service.getEmployeeSubmissions(userId)
+    .subscribe({
+
+      next: (res: any) => {
+
+        console.log("Employee Submission List", res);
+
+        this.employeeSubmissions = res?.data || res || [];
+      },
+
+      error: (err:any) => {
+
+        console.log(err);
+        this.employeeSubmissions = [];
+      }
+
+    });
+}
   LoadTabPermissions() {
     const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
 

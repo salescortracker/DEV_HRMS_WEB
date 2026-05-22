@@ -662,6 +662,7 @@ export class ApplyLeaveComponent {
       console.error("UserId missing in sessionStorage");
       return;
     }
+    this.loadLeaveBalances();
     this.leaveList = [];
     this.calculateLeaveSummary();
     this.loadLeaveTypes();
@@ -916,7 +917,21 @@ export class ApplyLeaveComponent {
       }
     });
   }
+leaveBalances: any[] = [];
+loadLeaveBalances() {
 
+  this.leaveService.getLeaveBalance(this.userId).subscribe({
+    next: (res: any[]) => {
+
+      console.log("Leave balances:", res);
+
+      this.leaveBalances = res;
+    },
+    error: (err) => {
+      console.error(err);
+    }
+  });
+}
 shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
   // Rejected leaves don't count
   if (leave.status === 'Rejected') {
@@ -1253,6 +1268,7 @@ onEndDateChange() {
       }).then((result) => {
         if (result.isConfirmed) {
           this.submitLeaveRequest();
+          this.loadLeaveBalances();
         }
       });
     } else {
@@ -1277,6 +1293,7 @@ onEndDateChange() {
     formData.append("TotalDays", this.totalDays.toString());
     formData.append("Reason", this.reason);
     formData.append("ReportingManagerId", this.reportingManagerId.toString());
+    formData.append("HrEmail", this.hrEmail);
 
     if (this.selectedFile) {
       formData.append("SupportingDocument", this.selectedFile);
@@ -1295,7 +1312,7 @@ onEndDateChange() {
 
         // ✅ Reload list from DB
         this.loadMyLeaves();
-
+this.loadLeaveBalances();
         // ✅ Reset form
         this.leaveType = "";
         this.startDate = "";

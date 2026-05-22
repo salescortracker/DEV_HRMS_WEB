@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
   styleUrl: './company-news.component.css'
 })
 export class CompanyNewsComponent {
-     companies: any[] = [];
+  companies: any[] = [];
   regions: any[] = [];
   userId!: number;
   companyId!: number;
@@ -57,30 +57,46 @@ export class CompanyNewsComponent {
   }
 
 loadRegions(): void {
-  this.adminService.getRegions(null, this.userId).subscribe({
-    next: (res: any) => {
-      this.regions = res || [];
-    },
-    error: () => Swal.fire('Error', 'Failed to load regions', 'error')
-  });
-}
-onCompanyChange(): void {
-  this.news.RegionId = null;
 
-  this.filteredRegions = this.news.CompanyId
-    ? this.regions.filter(r => Number(r.companyID) === Number(this.news.CompanyId))
-    : [];
-}
-loadCategories(): void {
-  this.adminService.getCompanyNewsCategoryList(this.userId).subscribe({
+  this.adminService.getRegions(null, this.userId).subscribe({
+
     next: (res: any) => {
-      console.log("Categories:", res);
-      this.categories = res;
+
+      this.regions = (res || []).map((r: any) => ({
+
+        regionId: Number(r.regionID || r.regionId),
+
+        regionName: r.regionName,
+
+        companyID: Number(r.companyID || r.companyId)
+
+      }));
+
+      console.log("Regions:", this.regions);
     },
-    error: () => Swal.fire('Error', 'Failed to load categories', 'error')
+
+    error: () =>
+      Swal.fire('Error', 'Failed to load regions', 'error')
+
   });
 }
- getDepartmentName(departmentId?: number | null): string {
+  onCompanyChange(): void {
+    this.news.RegionId = null;
+
+    this.filteredRegions = this.news.CompanyId
+      ? this.regions.filter(r => Number(r.companyID) === Number(this.news.CompanyId))
+      : [];
+  }
+  loadCategories(): void {
+    this.adminService.getCompanyNewsCategoryList(this.userId).subscribe({
+      next: (res: any) => {
+        console.log("Categories:", res);
+        this.categories = res;
+      },
+      error: () => Swal.fire('Error', 'Failed to load categories', 'error')
+    });
+  }
+  getDepartmentName(departmentId?: number | null): string {
     if (!departmentId) return '-';
 
     const dept = this.departments.find(d => d.departmentId === departmentId);
@@ -114,20 +130,51 @@ loadCategories(): void {
     this.adminService.getAllNews(this.userId).subscribe({
       next: (res) => {
         console.log("API Response:", res);
-        this.newsList = res.map(item => ({
-          NewsId: item.newsId,
-          CompanyId: item.companyId,
-          RegionId: item.regionId,
-          departmentId: item.departmentId,
+        this.newsList = res.map((item: any) => ({
+
+          NewsId: Number(item.newsId),
+
+          CompanyId: item.companyId
+            ? Number(item.companyId)
+            : null,
+
+          RegionId: item.regionId
+            ? Number(item.regionId)
+            : null,
+
+          departmentId: item.departmentId
+            ? Number(item.departmentId)
+            : null,
+
           Title: item.title,
+
           userId: item.userId,
-          Category: item.category ?? item.Category ?? '',
+
+          Category: item.category ?? '',
+
           Description: item.description,
-          Date: item.postedDate ? new Date(item.postedDate) : new Date(),
+
+          Date: item.postedDate
+            ? new Date(item.postedDate)
+            : new Date(),
+
           PublishedDate: item.postedDate
             ? new Date(item.postedDate).toISOString().split('T')[0]
             : '',
-          Attachment: null
+
+          Attachment: null,
+
+          // ✅ IMPORTANT
+          AttachmentName:
+            item.attachmentName ||
+            item.AttachmentName ||
+            '',
+
+          AttachmentUrl:
+            item.attachmentUrl ||
+            item.AttachmentUrl ||
+            ''
+
         }));
         this.spinner.hide();
       },
@@ -142,26 +189,28 @@ loadCategories(): void {
   // -----------------------------
   // Reset form
   // -----------------------------
-resetNews(): News {
-  return {
-    NewsId: undefined,
-    userId: this.userId,
+  resetNews(): News {
+    return {
+      NewsId: undefined,
+      userId: this.userId,
 
-    CompanyId: this.companyId,
-    RegionId: this.regionId,
+      CompanyId: this.companyId,
+      RegionId: null,
 
-    departmentId: null,
+      departmentId: null,
 
-    Title: '',
-    Category: '',
-    Description: '',
+      Title: '',
+      Category: '',
+      Description: '',
 
-    Date: new Date(),
-    PublishedDate: new Date().toISOString().split('T')[0],
+      Date: new Date(),
+      PublishedDate: new Date().toISOString().split('T')[0],
 
-    Attachment: null
-  };
-}
+      Attachment: null,
+      AttachmentName: '',
+      AttachmentUrl: ''
+    };
+  }
 
   resetForm() {
     this.news = this.resetNews();
@@ -181,61 +230,87 @@ resetNews(): News {
   // Add / Update News
   // -----------------------------
 onSubmit() {
-debugger;
-  const postedDate = this.news.PublishedDate
-    ? this.news.PublishedDate
-    : new Date().toISOString().split('T')[0];
 
-  const payload = {
-    newsId: this.news.NewsId ?? 0,
+  const formData = new FormData();
 
-    userId: this.userId,
+  formData.append('NewsId', String(this.news.NewsId ?? 0));
 
-    companyId: Number(this.news.CompanyId ?? this.companyId),
-    regionId: Number(this.news.RegionId ?? this.regionId),
+  formData.append('UserId', String(this.userId));
 
-    title: this.news.Title,
-    description: this.news.Description,
-    category: this.news.Category,
+  formData.append(
+    'CompanyId',
+    String(this.news.CompanyId ?? '')
+  );
 
-    departmentId: this.news.departmentId
-      ? Number(this.news.departmentId)
-      : null,
+  formData.append(
+    'RegionId',
+    String(this.news.RegionId ?? '')
+  );
 
-    postedDate: postedDate,
+  formData.append('Title', this.news.Title);
 
-    fromDate: postedDate,
-    toDate: postedDate,
+  formData.append('Description', this.news.Description);
 
-    expiryDate: null,
-    isActive: true,
+  formData.append('Category', this.news.Category);
 
-    createdBy: this.userId,
-    updatedBy: this.isEditMode ? this.userId : null
-  };
+  formData.append(
+    'departmentId',
+    String(this.news.departmentId ?? '')
+  );
 
-  console.log("FINAL PAYLOAD:", payload);
+  formData.append(
+    'PostedDate',
+    this.news.PublishedDate ?? ''
+  );
+
+  formData.append(
+    'CreatedBy',
+    String(this.userId)
+  );
+
+  if (this.news.Attachment) {
+
+    formData.append(
+      'Attachment',
+      this.news.Attachment
+    );
+  }
 
   this.spinner.show();
 
   const request$ = this.isEditMode
-    ? this.adminService.updateNews(this.news.NewsId!, payload)
-    : this.adminService.saveNews(payload);
+    ? this.adminService.updateNews(this.news.NewsId!, formData)
+    : this.adminService.saveNews(formData);
 
   request$.subscribe({
     next: () => {
-      Swal.fire('Success', 'News saved successfully', 'success');
+
+      Swal.fire(
+        'Success',
+        'News saved successfully',
+        'success'
+      );
+
       this.getNewsList();
+
       this.resetForm();
+
       this.spinner.hide();
     },
+
     error: (err) => {
-      console.error('Error saving news', err);
-      Swal.fire('Error', 'Failed to save news', 'error');
+
+      console.error(err);
+
+      Swal.fire(
+        'Error',
+        'Failed to save news',
+        'error'
+      );
+
       this.spinner.hide();
     }
   });
-
 }
 
 
@@ -250,17 +325,49 @@ debugger;
   // -----------------------------
   // Edit News
   // -----------------------------
-  editNews(n: News) {
-    this.isEditMode = true;
-    this.editIndex = this.newsList.indexOf(n);
+editNews(n: News) {
 
-    // ❗ Make sure NewsId exists and PublishedDate is string
-    this.news = { ...n };
-    this.news.PublishedDate = n.Date ? new Date(n.Date).toISOString().split('T')[0] : '';
-    this.filteredRegions = this.regions.filter(r =>
+  this.isEditMode = true;
+
+  this.editIndex = this.newsList.indexOf(n);
+
+  this.news = {
+    ...n,
+
+    CompanyId: n.CompanyId
+      ? Number(n.CompanyId)
+      : null,
+
+    RegionId: n.RegionId
+      ? Number(n.RegionId)
+      : null,
+
+    departmentId: n.departmentId
+      ? Number(n.departmentId)
+      : null,
+
+    AttachmentName: n.AttachmentName || '',
+
+    AttachmentUrl: n.AttachmentUrl || ''
+  };
+
+  this.news.PublishedDate = n.Date
+    ? new Date(n.Date).toISOString().split('T')[0]
+    : '';
+
+  this.filteredRegions = this.regions.filter(r =>
     Number(r.companyID) === Number(this.news.CompanyId)
   );
-  }
+
+  // ✅ IMPORTANT FIX
+  setTimeout(() => {
+    this.news.RegionId = Number(n.RegionId);
+  });
+
+  console.log("EDIT NEWS:", this.news);
+
+  console.log("FILTERED REGIONS:", this.filteredRegions);
+}
 
   // -----------------------------
   // Delete News
