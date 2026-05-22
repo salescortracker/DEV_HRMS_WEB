@@ -123,7 +123,17 @@ loadAccountTypes() {
           this.resetForm();
           Swal.fire('Updated', 'Bank details updated successfully', 'success');
         },
-        error: (err) => Swal.fire('Error', 'Failed to update bank details', 'error')
+        // error: (err) => Swal.fire('Error', 'Failed to update bank details', 'error')
+        error: (err) => {
+
+  Swal.fire(
+    'Error',
+    err?.error?.message ||
+    err?.error ||
+    'Something went wrong',
+    'error'
+  );
+}
       });
     } else {
       // CREATE
