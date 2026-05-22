@@ -51,6 +51,34 @@ export class ApplicationResumesComponent implements OnInit {
         this.applyFilters();
       });
   }
+  moveToResumeUpload(app: any) {
+
+  const payload = {
+    email: app.email,
+    mobile: app.phone,
+
+    companyId: Number(sessionStorage.getItem('CompanyId')),
+    regionId: Number(sessionStorage.getItem('RegionId')),
+    userId: Number(sessionStorage.getItem('UserId')),
+  };
+
+  console.log(payload);
+
+  this.service.assignCompanyRegion(payload)
+    .subscribe({
+      next: () => {
+
+        alert('Candidate Updated Successfully');
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+      }
+    });
+}
 
   // ===== FILTER + SORT =====
   applyFilters() {
@@ -97,6 +125,9 @@ export class ApplicationResumesComponent implements OnInit {
       Math.ceil(this.filteredData.length / this.pageSize);
 
     this.currentPage = 1;
+    if (this.currentPage > this.totalPages) {
+        this.currentPage = 1;
+      }
   }
   sort(column: string) {
 
@@ -145,22 +176,21 @@ export class ApplicationResumesComponent implements OnInit {
   }
 
  downloadResume(path: string) {
-
   if (!path) return;
 
   const baseUrl = environment.apiUrl.replace('/api', '');
 
-  const cleanBase = baseUrl.endsWith('/')
-    ? baseUrl.slice(0, -1)
-    : baseUrl;
+  let cleanPath = path.trim();
 
-  const cleanPath = path.startsWith('/')
-    ? path.substring(1)
-    : path;
+  // ensure single slash
+  if (!cleanPath.startsWith('http')) {
+    cleanPath = cleanPath.replace(/^\/+/, '');
+    cleanPath = `${baseUrl}/${cleanPath}`;
+  }
 
-  const url = `${cleanBase}/${cleanPath}`;
+  console.log("Final Resume URL:", cleanPath);
 
-  window.open(url, '_blank');
+  window.open(cleanPath, '_blank');
 }
 
 }

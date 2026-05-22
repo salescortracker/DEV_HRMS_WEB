@@ -30,13 +30,14 @@
           <th>Email</th>
           <th>Phone</th>
 
-          <th (click)="sort('technology')" style="cursor:pointer">
-            Technology
+          <th (click)="sort('jobTitle')" style="cursor:pointer">
+            Job Title
           </th>
 
           <th>Experience</th>
-          <th>Status</th>
           <th>Resume</th>
+          <th>Applied Date</th>
+          <th>Action</th>
         </tr>
       </thead>
 
@@ -46,9 +47,8 @@
           <td>{{ app.candidateName }}</td>
           <td>{{ app.email }}</td>
           <td>{{ app.phone }}</td>
-          <td>{{ app.technology }}</td>
+          <td>{{ app.jobTitle }}</td>
           <td>{{ app.experienceYears }}</td>
-          <td>{{ app.status }}</td>
 
              <td>
                 <ng-container *ngIf="app.resumeUrl; else noResume">
@@ -59,8 +59,15 @@
                 </ng-container>
 
                 <ng-template #noResume>
-                    <span class="text-muted">No Resume</span>
+                    <span class="text-muted small">Not uploaded</span>
                 </ng-template>
+            </td>
+            <td>{{ app.appliedDate | date }}</td>
+            <td>
+              <button class="btn btn-sm btn-primary"
+                      (click)="moveToResumeUpload(app)">
+                MtoRU
+              </button>
             </td>
         </tr>
 

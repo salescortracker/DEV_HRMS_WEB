@@ -67,12 +67,24 @@ getCandidateById(candidateId: number) {
   );
 }
 updateCandidate(formData: FormData) {
+  debugger;
   return this.http.post(
     `${this.baseUrl}/Recruitment/UpdateCandidate`,
     formData
   );
 }
-
+getResumeById(candidateId: number) {
+  return this.http.get<any>(
+    `${this.baseUrl}/Recruitment/GetResumeById/${candidateId}`
+  );
+}
+assignCompanyRegion(data: any) {
+  debugger;
+  return this.http.put(
+    `${this.baseUrl}/Recruitment/assign-company-region`,
+    data
+  );
+}
 
 downloadResume(fileName: string) {
   return this.http.get(

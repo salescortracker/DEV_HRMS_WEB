@@ -3,7 +3,8 @@ import Swal from 'sweetalert2';
 import { RecruitmentService } from '../service/recruitment.service';
 import { EmployeeResignationService } from '../../employee-profile/employee-services/employee-resignation.service';
 import { environment } from '../../../../environments/environment';
-import * as mammoth from 'mammoth';
+import { AdminService } from '../../../admin/servies/admin.service';
+import { ResumeParserService } from '../../../services/resume-parser.service';
 
 
 interface ReferenceUser {
@@ -19,7 +20,6 @@ interface ReferenceUser {
 export class ResumeUploadComponent {
   today: string = '';
   sequenceCounter = 1;
-  isParsing = false;
 
   tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding','Application Resumes'];
   years: number[] = [];
@@ -93,239 +93,9 @@ maritalStatuses: any[] = [];
   eduToYears: number[] = [];
   applications: any[] = [];
 
-  constructor(private recruitmentService: RecruitmentService, private empResignationService: EmployeeResignationService) { }
-  // ================= EXTRACT RESUME TEXT =================
+  constructor(private recruitmentService: RecruitmentService, private empResignationService: EmployeeResignationService, private adminService: AdminService) { }
+ 
 
-async extractResumeText(file: File): Promise<string> {
-
-  const extension = file.name.split('.').pop()?.toLowerCase();
-
-  // ===== PDF =====
-  if (extension === 'pdf') {
-
-    const pdfjsLib = await import('pdfjs-dist');
-
-    const arrayBuffer = await file.arrayBuffer();
-
-    const pdf = await pdfjsLib.getDocument({
-      data: arrayBuffer
-    }).promise;
-
-    let fullText = '';
-
-    for (let i = 1; i <= pdf.numPages; i++) {
-
-      const page = await pdf.getPage(i);
-
-      const content = await page.getTextContent();
-
-      const strings = content.items.map((item: any) => item.str);
-
-      fullText += strings.join(' ') + '\n';
-    }
-
-    return fullText;
-  }
-
-  // ===== DOCX =====
-  if (extension === 'docx') {
-    const mammoth = await import('mammoth');
-
-    const arrayBuffer = await file.arrayBuffer();
-
-    const result = await mammoth.extractRawText({
-      arrayBuffer
-    });
-
-    return result.value;
-  }
-
-  if (extension === 'doc') {
-    Swal.fire('Warning', '.doc not supported', 'warning');
-    return '';
-  }
-
-  return '';
-}
-// ================= PARSE RESUME =================
-
-parseResumeText(text: string) {
-
-  // ===== EMAIL =====
-  const emailMatch = text.match(
-    /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i
-  );
-
-  // ===== PHONE =====
-  const phoneMatch = text.match(
-    /(\+91[\-\s]?)?[6-9]\d{9}/
-  );
-
-  // ===== NAME =====
-  const lines = text.split('\n')
-    .map(x => x.trim())
-    .filter(x => x);
-
-  const fullName = lines[0] || '';
-
-  const nameParts = fullName.split(' ');
-
-  // ===== SKILLS =====
-  const skills = [];
-
-  const skillKeywords = [
-    'Angular',
-    'React',
-    'Java',
-    'SQL',
-    'Python',
-    'HTML',
-    'CSS',
-    'JavaScript',
-    'TypeScript',
-    'Node',
-    'ASP.NET',
-    'C#'
-  ];
-
-  for (const skill of skillKeywords) {
-
-    if (text.toLowerCase().includes(skill.toLowerCase())) {
-      skills.push(skill);
-    }
-  }
-
-  // ===== EXPERIENCE =====
-
-  // ===== EXPERIENCE =====
-
-const experienceList: any[] = [];
-
-const linesArr = text
-  .split('\n')
-  .map(x => x.trim())
-  .filter(x => x);
-
-const dateRegex =
-  /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s\d{4}\s*[-–]\s*((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s\d{4}|Present)/i;
-
-for (let i = 0; i < linesArr.length; i++) {
-
-  const currentLine = linesArr[i];
-
-  if (dateRegex.test(currentLine)) {
-
-    const match = currentLine.match(
-      /([A-Za-z]{3,9}\s\d{4})\s*[-–]\s*([A-Za-z]{3,9}\s\d{4}|Present)/i
-    );
-
-    if (match) {
-
-      const role =
-        linesArr[i + 1] || '';
-
-      const company =
-        linesArr[i + 2] || '';
-
-      experienceList.push({
-
-        from: this.convertMonthYearToDate(match[1]),
-
-        to:
-          match[2].toLowerCase() === 'present'
-            ? this.today
-            : this.convertMonthYearToDate(match[2]),
-
-        // ✅ ROLE
-        designation: role,
-
-        // ✅ COMPANY
-        organization: company
-      });
-    }
-  }
-}
-
-  // ===== EDUCATION =====
-
-  const qualificationList: any[] = [];
-
-  const eduRegex =
-    /(\d{4})\s*[-–]\s*(\d{4}).*?(BTech|MTech|MBA|BSc|MSc|BCom|MCA|Degree|Intermediate|SSC).*?\n?(.*?)(?=\n|$)/gi;
-
-  let eduMatch;
-
-  while ((eduMatch = eduRegex.exec(text)) !== null) {
-
-    qualificationList.push({
-
-      from: eduMatch[1],
-
-      to: eduMatch[2],
-
-      qualification: eduMatch[3],
-
-      board: eduMatch[4]
-    });
-  }
-
-  let designation = '';
-
-if (experienceList.length > 0) {
-
-  designation =
-    experienceList[0].designation || '';
-}
-
-
-  // ===== FINAL BIND =====
-
-  this.candidate.firstName = nameParts[0] || '';
-
-  this.candidate.lastName =
-    nameParts.slice(1).join(' ') || '';
-
-  this.candidate.email = emailMatch?.[0] || '';
-
-  this.candidate.mobile =
-    phoneMatch?.[0]?.replace(/\D/g, '') || '';
-
-  this.candidate.skills = skills.join(', ');
-
-  this.candidate.designation = designation;
-
-  this.experienceList = experienceList;
-
-  this.qualificationList = qualificationList;
-}
-convertMonthYearToDate(value: string): string {
-
-  const months: any = {
-    jan: '01',
-    feb: '02',
-    mar: '03',
-    apr: '04',
-    may: '05',
-    jun: '06',
-    jul: '07',
-    aug: '08',
-    sep: '09',
-    oct: '10',
-    nov: '11',
-    dec: '12'
-  };
-
-  const parts = value.split(' ');
-
-  if (parts.length < 2) return '';
-
-  const month =
-    months[parts[0].substring(0, 3).toLowerCase()] || '01';
-
-  const year = parts[1];
-
-  return `${year}-${month}-01`;
-}
 
   generateYears() {
     const currentYear = new Date().getFullYear();
@@ -356,19 +126,21 @@ convertMonthYearToDate(value: string): string {
     this.today = d.toISOString().split('T')[0];
     this.candidate.appliedDate = this.today;
 
-    this.userId = Number(sessionStorage.getItem("UserId"));
-    this.companyId = Number(sessionStorage.getItem("CompanyId"));
-    this.regionId = Number(sessionStorage.getItem("RegionId"));
+    this.userId = Number(sessionStorage.getItem("UserId") || 0);
+    this.companyId = Number(sessionStorage.getItem("CompanyId") || 0);
+    this.regionId = Number(sessionStorage.getItem("RegionId") || 0);
 
-    if (!this.userId) {
-      console.error("UserId missing in sessionStorage");
+    if (!this.userId || !this.companyId || !this.regionId) {
+      console.error("Session values missing");
       return;
     }
     this.loadAllData();
     this.loadReferenceUsers();
     this.loadGenders();
     this.loadNoticePeriods();
-   this.loadMaritalStatuses();
+    this.loadMaritalStatuses();
+    this.loadDepartments();
+    this.loadDesignations();
 
 
   }
@@ -510,63 +282,51 @@ getOrganizationCount(): number {
 
   loadAllData() {
 
-  // 1. Manual candidates
-  this.recruitmentService.getCandidates(this.userId, this.companyId, this.regionId)
-    .subscribe((res: any) => {
+  this.recruitmentService
+    .getCandidates(this.userId, this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any) => {
 
-      const manual = res.map((c: any) => ({
-        candidateId: c.candidateId,
-        seqNo: c.seqNo,
-        candidateName: `${c.firstName || ''} ${c.lastName || ''}`.trim(),
-        email: c.email,
-        technology: c.designation,
-        mobile: c.mobile,
-        appliedDate: c.appliedDate,
-        fileName: c.fileName,
-        stageName: c.stageName,
-        progressPercent: c.progress,
-        experiences:
-        c.experiences ||
-        c.candidateExperiences ||
-        c.experienceDetails ||
-        [],
+        const candidates = (res || []).map((c: any) => ({
+          candidateId: c.candidateId,
+          seqNo: c.seqNo,
+          candidateName: `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim(),
+          email: c.email,
+          mobile: c.mobile,
+          technology: c.designation,
+          appliedDate: c.appliedDate,
+          fileName: c.fileName,
+          stageName: c.stageName,
+          progressPercent: c.progress ?? 0,
 
-        qualifications:
-          c.qualifications ||
-          c.candidateQualifications ||
-          c.qualificationDetails ||
-          [],
-      }));
+          experiences:
+            c.experiences ||
+            c.candidateExperiences ||
+            c.experienceDetails ||
+            [],
 
-      // 2. Applied resumes (from job applications API)
-      this.recruitmentService.getJobApplications()
-        .subscribe((apps: any[]) => {
+          qualifications:
+            c.qualifications ||
+            c.candidateQualifications ||
+            c.qualificationDetails ||
+            []
+        }));
 
-          const applied = apps.map(a => ({
-            candidateId: a.applicationId,
-            seqNo: 'APP_' + a.applicationId,
-            candidateName: a.candidateName,
-            email: a.email,
-            technology: a.jobTitle,
-            mobile: a.phone,
-            appliedDate: a.appliedDate,
-            fileName: a.resumeUrl,
-            stageName: 'Applied',
-            progressPercent: 5
-          }));
-
-          // 🔥 MERGE BOTH
-          this.candidates = [...manual, ...applied]
-            .sort((a, b) =>
+        // ONLY THIS LIST
+        this.candidates = candidates.sort((a: any, b: any) => {
+            return (
               new Date(b.appliedDate).getTime() -
               new Date(a.appliedDate).getTime()
             );
-        });
+          });
+      },
+
+      error: () => {
+        console.warn('Failed to load candidates');
+        this.candidates = [];
+      }
     });
 }
-
-
-
   addExperience() {
     if (new Date(this.expForm.to) < new Date(this.expForm.from)) {
       Swal.fire('Invalid', '"To Date" must be after "From Date"', 'error');
@@ -596,107 +356,139 @@ getOrganizationCount(): number {
       organization: ''
     };
   }
+loadDepartments() {
 
+  this.adminService
+    .getDepartmentsForDropdown(this.companyId, this.regionId)
+    .subscribe({
 
-
-
-  saveCandidate() {
-
-    if (!this.candidate.firstName || !this.candidate.email) {
-      Swal.fire('Required', 'Candidate Name & Email are mandatory', 'warning');
-      return;
-    }
-
-    const formData = new FormData();
-
-
-    // 🔹 CandidateId (ONLY for edit)
-    if (this.isEditMode && this.editingCandidateId) {
-      formData.append('CandidateId', this.editingCandidateId.toString());
-    }
-
-    // 🔹 Resume (optional in edit)
-    if (this.resumeFile) {
-      formData.append('ResumeFile', this.resumeFile);
-    }
-    if (!this.isEditMode) {
-      formData.append('SeqNo', `SEQ_${Date.now()}`);
-    }
-    if (!this.isEditMode) {
-      formData.append('StageId', '1');
-    }
-
-    // 🔹 Context
-    formData.append('UserId', this.userId.toString());
-    formData.append('CompanyId', this.companyId.toString());
-    formData.append('RegionId', this.regionId.toString());
-
-    // 🔹 Candidate fields
-    formData.append('AppliedDate', this.candidate.appliedDate);
-    formData.append('FirstName', this.candidate.firstName);
-    formData.append('LastName', this.candidate.lastName);
-    formData.append('Email', this.candidate.email);
-    formData.append('Mobile', this.candidate.mobile);
-    formData.append('Gender', this.candidate.gender);
-    formData.append('DateOfBirth', this.candidate.dob);
-    formData.append('MaritalStatus', this.candidate.maritalStatus);
-    formData.append('CurrentSalary', this.candidate.currentSalary);
-    formData.append('ExpectedSalary', this.candidate.expectedSalary);
-    formData.append('ReferenceSource', this.candidate.reference);
-    formData.append('Department', this.candidate.department);
-    formData.append('Designation', this.candidate.designation);
-    formData.append('Skills', this.candidate.skills);
-    formData.append('NoticePeriod', this.candidate.noticePeriod);
-    formData.append('AnyOffers', this.candidate.anyOffers);
-    formData.append('Location', this.candidate.location);
-    formData.append('Reason', this.candidate.reason);
-    formData.append('StageId', '1');
-    formData.append('SeqNo', `SEQ_${Date.now()}`);
-
-    // 🔹 Experience JSON
-    formData.append(
-      'ExperiencesJson',
-      JSON.stringify(this.experienceList.map(e => ({
-        FromDate: e.from,
-        ToDate: e.to,
-        Designation: e.designation,
-        Organization: e.organization
-      })))
-    );
-
-    // 🔹 Qualification JSON
-    formData.append(
-      'QualificationsJson',
-      JSON.stringify(this.qualificationList.map(q => ({
-        FromYear: +q.from,
-        ToYear: +q.to,
-        Qualification: q.qualification,
-        BoardUniversity: q.board
-      })))
-    );
-
-    // 🔹 CALL API
-    const apiCall = this.isEditMode
-      ? this.recruitmentService.updateCandidate(formData)
-      : this.recruitmentService.saveCandidate(formData);
-
-    apiCall.subscribe({
-      next: () => {
-        Swal.fire(
-          'Success',
-          this.isEditMode ? 'Candidate updated successfully' : 'Candidate saved successfully',
-          'success'
-        );
-        this.resetForm();
-        this.isEditMode = false;
-        this.editingCandidateId = null;
-        this.resumeFile = null;
-        this.existingResumeName = null;
-        this.loadAllData();
+      next: (res: any) => {
+        this.departments = res;
       },
-      error: () => Swal.fire('Error', 'Operation failed', 'error')
+
+      error: () => {
+        Swal.fire(
+          'Error',
+          'Failed to load departments',
+          'error'
+        );
+      }
     });
+}
+saveCandidate() {
+
+  if (!this.candidate.firstName || !this.candidate.email) {
+    Swal.fire('Required', 'Candidate Name & Email are mandatory', 'warning');
+    return;
   }
+
+  const formData = new FormData();
+
+  // ✅ EDIT MODE ID (IMPORTANT FIX)
+  if (this.isEditMode && this.editingCandidateId) {
+    formData.append('CandidateId', String(this.editingCandidateId));
+  }
+
+  // Resume
+  if (this.resumeFile) {
+    formData.append('ResumeFile', this.resumeFile);
+  }
+
+  // NEW ENTRY ONLY
+  formData.append(
+  'SeqNo',
+  this.isEditMode
+    ? (this.candidate.seqNo || '')
+    : `AppRes_${Date.now()}`
+);
+
+// ✅ Stage only for new save
+if (!this.isEditMode) {
+  formData.append('StageId', '1');
+}
+
+  // Context
+  formData.append('UserId', String(this.userId));
+  formData.append('CompanyId', String(this.companyId));
+  formData.append('RegionId', String(this.regionId));
+
+  // ✅ SAFE STRING HELPERS
+  const safe = (v: any) => v ?? '';
+
+  formData.append('AppliedDate', safe(this.candidate.appliedDate));
+  formData.append('FirstName', safe(this.candidate.firstName));
+  formData.append('LastName', safe(this.candidate.lastName));
+  formData.append('Email', safe(this.candidate.email));
+  formData.append('Mobile', safe(this.candidate.mobile));
+  formData.append('Gender', safe(this.candidate.gender));
+  formData.append('DateOfBirth', safe(this.candidate.dob));
+  formData.append('MaritalStatus', safe(this.candidate.maritalStatus));
+  formData.append('CurrentSalary', safe(this.candidate.currentSalary));
+  formData.append('ExpectedSalary', safe(this.candidate.expectedSalary));
+  formData.append('ReferenceSource', safe(this.candidate.reference));
+  formData.append('Department', safe(this.candidate.department));
+  formData.append('Designation', safe(this.candidate.designation));
+  formData.append('Skills', safe(this.candidate.skills));
+  formData.append('NoticePeriod', safe(this.candidate.noticePeriod));
+  formData.append('AnyOffers', safe(this.candidate.anyOffers));
+  formData.append('Location', safe(this.candidate.location));
+  formData.append('Reason', safe(this.candidate.reason));
+
+  // 🔥 IMPORTANT FIX: ALWAYS VALID JSON
+  const experiences = (this.experienceList || []).map(e => ({
+    FromDate: e.from || '',
+    ToDate: e.to || '',
+    Designation: e.designation || '',
+    Organization: e.organization || ''
+  }));
+
+  const qualifications = (this.qualificationList || []).map(q => ({
+    FromYear: q.from || 0,
+    ToYear: q.to || 0,
+    Qualification: q.qualification || '',
+    BoardUniversity: q.board || ''
+  }));
+
+  formData.append('ExperiencesJson', JSON.stringify(experiences));
+  formData.append('QualificationsJson', JSON.stringify(qualifications));
+
+  // API
+  const apiCall = this.isEditMode
+    ? this.recruitmentService.updateCandidate(formData)
+    : this.recruitmentService.saveCandidate(formData);
+
+  apiCall.subscribe({
+    next: () => {
+      Swal.fire(
+        'Success',
+        this.isEditMode ? 'Updated successfully' : 'Saved successfully',
+        'success'
+      );
+
+      this.onReset();
+      this.loadAllData();
+    },
+    error: (err) => {
+      console.error('API ERROR:', err);
+      Swal.fire('Error', 'Update failed (check console)', 'error');
+    }
+  });
+}
+  onDesignationChange() {
+
+  const selectedDesignation = this.designations.find(
+    (x: any) =>
+      x.designationName?.toLowerCase() ===
+      this.candidate.designation?.toLowerCase()
+  );
+
+  if (selectedDesignation) {
+
+    // auto-fill department (user can still change later)
+    this.candidate.department = selectedDesignation.departmentName || '';
+    this.candidate.designationId = selectedDesignation.designationId || '';
+  }
+}
 
   editExperience(exp: any, index: number) {
     this.expForm = { ...exp };
@@ -708,173 +500,80 @@ getOrganizationCount(): number {
   }
   editCandidate(c: any) {
 
-  // ================= APPLICATION RESUME =================
-
-  if (c.isApplication) {
-
-    this.isEditMode = false;
-
-    this.candidate = {
-
-      appliedDate:
-        c.appliedDate?.split('T')[0] || '',
-
-      firstName:
-        c.candidateName?.split(' ')[0] || '',
-
-      lastName:
-        c.candidateName?.split(' ').slice(1).join(' ') || '',
-
-      email: c.email || '',
-
-      mobile: c.mobile || '',
-
-      designation:
-        c.technology || '',
-
-      gender: '',
-      dob: '',
-      currentSalary: '',
-      expectedSalary: '',
-      reference: '',
-      maritalStatus: '',
-      department: '',
-      skills: '',
-      noticePeriod: '',
-      anyOffers: '',
-      location: '',
-      reason: ''
-    };
-
-    this.existingResumeName =
-      c.fileName || '';
-
-    // ✅ Auto parse resume again
-    if (c.fileName) {
-
-      fetch(this.getResumeUrl(c.fileName))
-        .then(r => r.blob())
-        .then(async blob => {
-
-          const file = new File(
-            [blob],
-            c.fileName.split('/').pop() || 'resume.pdf'
-          );
-
-          const text =
-            await this.extractResumeText(file);
-
-          this.parseResumeText(text);
-        });
-    }
-
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-
-    return;
-  }
-
-  // ================= NORMAL CANDIDATE =================
-
-  this.isEditMode = true;
-
-  this.editingCandidateId = c.candidateId;
-
   this.recruitmentService
     .getCandidateById(c.candidateId)
     .subscribe({
 
-      next: (res: any) => {
+      next: (res) => {
 
-        this.bindCandidateForm(res);
+        this.isEditMode = true;
+        this.editingCandidateId = res.candidateId;
 
-        this.existingResumeName =
-          res.fileName ||
-          res.resumeUrl ||
-          null;
+        // ✅ Bind full candidate safely
+        this.candidate = {
+          ...this.candidate,
+          ...res
+        };
+        this.candidate.seqNo = res.seqNo;
 
-        this.experienceList =
-          (res.experiences || []).map((e: any) => ({
+        // 🔥 Experience bind
+        this.experienceList = (res.experiences || []).map((e: any) => ({
+          from: e.fromDate ? e.fromDate.split('T')[0] : '',
+          to: e.toDate ? e.toDate.split('T')[0] : '',
+          designation: e.designation,
+          organization: e.organization
+        }));
 
-            from:
-              e.fromDate || '',
+        // 🔥 Qualification bind
+        this.qualificationList = (res.qualifications || []).map((q: any) => ({
+          from: q.fromYear,
+          to: q.toYear,
+          qualification: q.qualification,
+          board: q.boardUniversity
+        }));
 
-            to:
-              e.toDate || '',
+        // Resume
+        this.existingResumeName = res.fileName || null;
 
-            designation:
-              e.designation || '',
+        // Dates fix
+        if (res.appliedDate) {
+          this.candidate.appliedDate = res.appliedDate.split('T')[0];
+        }
 
-            organization:
-              e.organization || ''
-          }));
+        if (res.dateOfBirth) {
+          this.candidate.dob = res.dateOfBirth.split('T')[0];
+        }
 
-        this.qualificationList =
-          (res.qualifications || []).map((q: any) => ({
-
-            from:
-              q.fromYear || '',
-
-            to:
-              q.toYear || '',
-
-            qualification:
-              q.qualification || '',
-
-            board:
-              q.boardUniversity || ''
-          }));
-
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
 
       error: () => {
-
-        Swal.fire(
-          'Error',
-          'Failed to load candidate details',
-          'error'
-        );
+        Swal.fire('Error', 'Failed to load candidate details', 'error');
       }
     });
 }
 private bindCandidateForm(res: any) {
 
   this.candidate = {
-    appliedDate: res.appliedDate?.split('T')[0] || '',
-    firstName: res.firstName || '',
-    lastName: res.lastName || '',
-    email: res.email || '',
-    mobile: res.mobile || '',
-
-    // 🔥 IMPORTANT (JOB TITLE → DESIGNATION)
-    designation: res.designation || res.jobTitle || '',
-
-    designationId: this.designations.find(
-      d => d.designationName === (res.designation || res.jobTitle)
-    )?.designationId || '',
-
-    skills: res.skills || '',
-    location: res.location || res.currentLocation || '',
-
-    currentSalary: res.currentSalary || '',
-    expectedSalary: res.expectedSalary || '',
-
-    reference: res.referenceSource || '',
-    maritalStatus: res.maritalStatus || '',
-    department: res.department || '',
-
-    noticePeriod: res.noticePeriod || '',
-    anyOffers: res.anyOffers || '',
-    reason: res.reason || '',
-
-    dob: res.dateOfBirth?.split('T')[0] || ''
-  };
+  appliedDate: res.appliedDate?.split('T')[0] || '',
+  firstName: res.firstName || '',
+  lastName: res.lastName || '',
+  email: res.email || '',
+  mobile: res.mobile || '',
+  gender: res.gender || '',
+  dob: res.dateOfBirth?.split('T')[0] || '',
+  currentSalary: res.currentSalary || '',
+  expectedSalary: res.expectedSalary || '',
+  reference: res.referenceSource || '',
+  maritalStatus: res.maritalStatus || '',
+  department: res.department || '',
+  designation: res.designation || '',
+  skills: res.skills || '',
+  noticePeriod: res.noticePeriod || '',
+  anyOffers: res.anyOffers || '',
+  location: res.location || '',
+  reason: res.reason || ''
+};
 
   // Resume file
   this.existingResumeName = res.fileName || res.resumeUrl || null;
@@ -882,26 +581,48 @@ private bindCandidateForm(res: any) {
   // Experience
   this.experienceList = (res.experiences || []).map((e: any) => ({
 
-  from:
-    e.fromDate ||
-    e.FromDate ||
-    (e.fromYear ? `${e.fromYear}-01-01` : ''),
+   from:
+      e.fromDate ||
+      e.FromDate ||
+      '',
 
-  to:
-    e.toDate ||
-    e.ToDate ||
-    (e.toYear ? `${e.toYear}-12-31` : ''),
+    to:
+      e.toDate ||
+      e.ToDate ||
+      '',
 
-  designation: e.designation || '',
-  organization: e.organization || ''
-}));
+    designation:
+      e.designation ||
+      e.Designation ||
+      '',
+
+    organization:
+      e.organization ||
+      e.Organization ||
+      ''
+  }));
 
   // Qualification
   this.qualificationList = (res.qualifications || []).map((q: any) => ({
-    from: q.fromYear,
-    to: q.toYear,
-    qualification: q.qualification,
-    board: q.boardUniversity
+    from:
+      q.fromYear ||
+      q.FromYear ||
+      '',
+
+    to:
+      q.toYear ||
+      q.ToYear ||
+      '',
+
+    qualification:
+      q.qualification ||
+      q.Qualification ||
+      '',
+
+    board:
+      q.boardUniversity ||
+      q.BoardUniversity ||
+      ''
   }));
 }
 
@@ -949,6 +670,7 @@ private bindCandidateForm(res: any) {
     this.experienceList = [];
     this.qualificationList = [];
   }
+
   onReset() {
     this.resetForm();
 
@@ -1011,43 +733,18 @@ private bindCandidateForm(res: any) {
   }
 
 
-  async onResumeFiles(event: any) {
-
+ onResumeFiles(event: any) {
   if (!event.target.files?.length) return;
 
   const file = event.target.files[0];
-
   this.resumeFile = file;
 
-  this.isParsing = true;
-
-  try {
-
-    const text = await this.extractResumeText(file);
-
-    this.parseResumeText(text);
-
-    Swal.fire(
-      'Success',
-      'Resume parsed successfully',
-      'success'
-    );
-
-  } catch (error) {
-
-    console.error(error);
-
-    Swal.fire(
-      'Error',
-      'Resume parsing failed',
-      'error'
-    );
-
-  } finally {
-
-    this.isParsing = false;
+  // Only store file (NO parsing)
+  if (this.isEditMode) {
+    this.existingResumeName = file.name;
   }
 }
+
   sortBy(column: string): void {
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
