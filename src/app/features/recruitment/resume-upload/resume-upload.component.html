@@ -12,24 +12,18 @@
  <!-- Resume -->
           <div class="col-md-3">
             <label class="form-label">
-              Resume <span class="text-danger"></span>
+              Resume <span class="text-danger" *ngIf="!isEditMode"></span>
             </label>
-            <input type="file" class="form-control" required (change)="onResumeFiles($event)">
-            <!-- <small class="text-info" *ngIf="isParsing">Parsing resume...</small> -->
-
-
-            <!-- <small class="text-danger" *ngIf="!resumeFile">
-              Resume is required
-            </small>
-
-            <div *ngIf="existingResumeName" class="mt-1">
-              <small>
-                Current:
-                <a (click)="viewDocument(existingResumeName)" style="cursor:pointer; color:#0d6efd">
-                  {{ existingResumeName }}
-                </a>
-              </small>
-            </div> -->
+            <input type="file" class="form-control" [required]="!isEditMode" (change)="onResumeFiles($event)">
+             <div *ngIf="existingResumeName" class="mt-1">
+                <small class="text-muted">
+                  Current Resume:
+                  <a (click)="viewDocument(existingResumeName)"
+                    style="cursor:pointer; color:#0d6efd; font-weight:500;">
+                    View Resume
+                  </a>
+                </small>
+              </div>
           </div>
           <div class="col-md-3">
             <label class="form-label">
@@ -148,58 +142,31 @@
             </select>
           </div>
 
-          <!-- Resume -->
           <div class="col-md-3">
-              <label class="form-label">
-                Resume
-                <span class="text-danger" *ngIf="!isEditMode">*</span>
-              </label>
+            <label class="form-label">Designation</label>
 
-              <input
-                type="file"
-                class="form-control"
-                [required]="!isEditMode"
-                (change)="onResumeFiles($event)"
-              />
+            <input class="form-control"
+                  list="designationList"
+                  [(ngModel)]="candidate.designation"
+                  name="designation"
+                  placeholder="Select or Type Designation"
+                  (change)="onDesignationChange()" />
 
-              <!-- Parsing -->
-              <small class="text-info" *ngIf="isParsing">
-                Parsing resume...
-              </small>
-
-              <!-- Existing Resume -->
-              <div *ngIf="existingResumeName" class="mt-1">
-                <small>
-                  Current Resume:
-                  <a
-                    (click)="viewDocument(existingResumeName)"
-                    style="cursor:pointer; color:#0d6efd;"
-                  >
-                    View Resume
-                  </a>
-                </small>
-              </div>
-            </div>
-
-          <div class="col-md-3">
-            <label>
-              Designation <span class="text-danger">*</span>
-            </label>
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="candidate.designation"
-              name="designation"
-              required
-              placeholder="Enter Designation"
-            />
+            <datalist id="designationList">
+              <option *ngFor="let d of designations"
+                      [value]="d.designationName">
+              </option>
+            </datalist>
           </div>
 
 
-          <!-- Department -->
-          <div class="col-md-3">
-            <label>Department</label>
-            <input class="form-control" [(ngModel)]="candidate.department" name="department" readonly>
+         <div class="col-md-3">
+            <label class="form-label">Department</label>
+
+            <input class="form-control"
+                  [(ngModel)]="candidate.department"
+                  name="department"
+                  placeholder="Enter Department" />
           </div>
 
 
@@ -419,7 +386,7 @@
   <!-- ================= SAVE SECTION ================= -->
   <!-- <div class="card mb-4"> -->
   <div class="card-body text-end">
-    <button class="btn btn-success px-4" [disabled]="uploadForm.invalid" (click)="saveCandidate()">
+    <button class="btn btn-success px-4" [disabled]="!candidate.firstName || !candidate.email" (click)="saveCandidate()">
       {{ isEditMode ? 'Update Candidate' : 'Save Candidate' }}
     </button>
     <button class="btn btn-success px-4" type="button" (click)="onReset()">
