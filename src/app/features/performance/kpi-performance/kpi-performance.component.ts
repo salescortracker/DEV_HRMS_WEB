@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { AdminService } from '../../../admin/servies/admin.service';
 import Swal from 'sweetalert2';
+import { KpiPerformanceService } from '../kpi-performance.service';
 @Component({
   selector: 'app-kpi-performance',
   standalone: false,
@@ -20,11 +21,16 @@ export class KpiPerformanceComponent {
   roleName!: string;
   canViewEmployeeSubmission = false;
   canViewManagerReviewApproval = false;
+  canViewManagerkpiapproval = false;
   selectedTab: string = '';
+  canViewManagerReviewHrReview =false;
+  performanceReports: any[] = [];
+  
 
   constructor(
     private fb: FormBuilder,
-    private service: AdminService
+    private service: AdminService,
+    private services: KpiPerformanceService
   ) { }
 
   // =========================
@@ -49,6 +55,7 @@ export class KpiPerformanceComponent {
     this.initializeForm();
     this.patchUserValues();
     this.loadManagerReviews();
+    this.loadPerformanceReports();
   }
   LoadTabPermissions() {
     const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
@@ -61,15 +68,19 @@ export class KpiPerformanceComponent {
     (m:any) => m.menuName?.trim().toLowerCase() === "manager review & approval"
   );
 
- 
+ const performancereports = menus.find(
+  (m:any) => m.menuName?.trim().toLowerCase() === "performance-reports"
+);
 
  
 
+  this.canViewManagerkpiapproval = performancereports?.canView ?? false;
   this.canViewEmployeeSubmission = employeesubmission?.canView ?? false;
   this.canViewManagerReviewApproval = managerreview?.canView ?? false;
 
   if (this.canViewEmployeeSubmission) this.selectedTab = 'tab1';
   else if (this.canViewManagerReviewApproval) this.selectedTab = 'tab2';
+  else if (this.canViewManagerkpiapproval) this.selectedTab ='tab3';
   
   }
 
@@ -399,5 +410,53 @@ bulkReject() {
     }
 
   });
+}
+loadPerformanceReports() {
+
+  const userId = Number(sessionStorage.getItem('UserId') || 0);
+  const roleName = sessionStorage.getItem('roleName') || '';
+
+  this.services.getPerformanceReports(userId, roleName)
+    .subscribe({
+      next: (res: any) => {
+
+        console.log("Performance Reports:", res);
+
+        this.performanceReports = res?.data || res || [];
+      },
+      error: (err: any) => {
+        console.log("Performance Reports Error:", err);
+      }
+    });
+}
+selectedReport: any = null;
+viewReport(item: any) {
+
+  this.selectedReport = item;
+
+  Swal.fire({
+    title: 'KPI Details',
+
+    html: `
+      <div style="text-align:left">
+
+        <p><b>Employee:</b> ${item.employeeName}</p>
+
+        <p><b>Project:</b> ${item.departmentProject}</p>
+
+        <p><b>Cycle:</b> ${item.performanceCycle}</p>
+
+        <p><b>Year:</b> ${item.appraisalYear}</p>
+
+        <p><b>Status:</b> ${item.status}</p>
+
+        <p><b>Summary:</b> ${item.selfReviewSummary || '-'}</p>
+
+      </div>
+    `,
+
+    width: 700
+  });
+
 }
 }
