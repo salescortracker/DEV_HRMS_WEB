@@ -15,11 +15,11 @@ import { EmployeeResignationService } from '../employee-services/employee-resign
 export class DigitalBusinessCardComponent {
   profile: employeeprofile | null = null;
   profileImage: string | ArrayBuffer | null = null;
-@ViewChild('cameraInput') cameraInput!: ElementRef;
-@ViewChild('galleryInput') galleryInput!: ElementRef;
+  @ViewChild('cameraInput') cameraInput!: ElementRef;
+  @ViewChild('galleryInput') galleryInput!: ElementRef;
 
 
-  constructor(private adminService: EmployeeResignationService) {}
+  constructor(private adminService: EmployeeResignationService) { }
 
   ngOnInit(): void {
     const userId = Number(sessionStorage.getItem('UserId'));
@@ -39,42 +39,65 @@ export class DigitalBusinessCardComponent {
   }
 
   // ------------------ DOWNLOAD PDF --------------------
+  // ------------------ DOWNLOAD PDF --------------------
   downloadPDF() {
-    console.log("PDF button clicked");
 
-    const cardElement = document.getElementById('card-section');
+    const cardElement = document.querySelector('.business-card') as HTMLElement;
+
     if (!cardElement) {
-      console.error("Card section not found!");
+      console.error("Business card not found!");
       return;
     }
 
-    html2canvas(cardElement, { scale: 3 }).then(canvas => {
+    html2canvas(cardElement, {
+      scale: 2,
+      backgroundColor: null,
+      useCORS: true
+    }).then(canvas => {
+
       const imgData = canvas.toDataURL('image/png');
+
+      // Card dimensions
+      const imgWidth = 190;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Create PDF
       const pdf = new jsPDF('p', 'mm', 'a4');
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      // Center card in PDF
+      const x = 10;
+      const y = 20;
 
-      pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight);
-      pdf.save(`${this.profile?.fullName}-DigitalCard.pdf`);
+      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+
+      pdf.save(`${this.profile?.fullName}-DigitalBusinessCard.pdf`);
     });
   }
-
   // ------------------ DOWNLOAD IMAGE --------------------
-downloadImage() {
-  if (!this.profile?.profilePictureBase64) {
-    console.error("No profile image to download!");
-    return;
+  // ------------------ DOWNLOAD COMPLETE CARD AS IMAGE --------------------
+  downloadImage() {
+    const cardElement = document.querySelector('.business-card') as HTMLElement;
+
+    if (!cardElement) {
+      console.error('Business card not found!');
+      return;
+    }
+
+    html2canvas(cardElement, {
+      scale: 2,
+      backgroundColor: null,
+      useCORS: true
+    }).then(canvas => {
+
+      const imageData = canvas.toDataURL('image/png');
+
+      const link = document.createElement('a');
+      link.href = imageData;
+      link.download = `${this.profile?.fullName}-DigitalBusinessCard.png`;
+
+      link.click();
+    });
   }
-
-  const imageData = "data:image/png;base64," + this.profile.profilePictureBase64;
-
-  const link = document.createElement("a");
-  link.href = imageData;
-  link.download = `${this.profile?.fullName}-ProfileImage.png`;
-  link.click();
-}
-
 
   // ------------------ IMAGE UPLOAD --------------------
   onPhotoSelected(event: any) {
@@ -97,17 +120,17 @@ downloadImage() {
     reader.readAsDataURL(file);
   }
   openImageOptions() {
-  Swal.fire({
-    title: 'Select Option',
-    showCancelButton: true,
-    confirmButtonText: 'Open Camera',
-    cancelButtonText: 'Choose File',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.cameraInput.nativeElement.click(); // Open camera
-    } else {
-      this.galleryInput.nativeElement.click(); // Open gallery/file picker
-    }
-  });
-}
+    Swal.fire({
+      title: 'Select Option',
+      showCancelButton: true,
+      confirmButtonText: 'Open Camera',
+      cancelButtonText: 'Choose File',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cameraInput.nativeElement.click(); // Open camera
+      } else {
+        this.galleryInput.nativeElement.click(); // Open gallery/file picker
+      }
+    });
+  }
 }

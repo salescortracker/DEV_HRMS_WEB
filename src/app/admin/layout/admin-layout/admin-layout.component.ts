@@ -58,9 +58,9 @@ export class AdminLayoutComponent {
        { title: 'Interview Level', route: '/admin/interview-level' },
      { title: 'company-news-category', route: '/admin/company-news-category' },
      { title: 'Employment Type', route: '/admin/employment-type'},
-    
-     { title: 'Asset Type', route: '/admin/asset-type'},
      { title: 'Asset Category', route: '/admin/asset-category'},
+     { title: 'Asset Type', route: '/admin/asset-type'},
+    
      { title: 'Currency', route: '/admin/currency'},
      { title: 'Visa Type', route: '/admin/visatype'},
      { title: 'Mode of Study', route: '/admin/modeofstudy'},
@@ -70,6 +70,7 @@ export class AdminLayoutComponent {
      { title: 'Birthday List', route: '/admin/birthday-list'},
      { title: 'Geo Location', route: '/admin/Geo-Locations'},
      { title: 'Task Status', route: '/admin/task-status' },
+     {title: 'Country', route: '/admin/country'},
        { title: 'Event Type', route: '/admin/Event-type' },
     ],  
     // 'Configuration': [

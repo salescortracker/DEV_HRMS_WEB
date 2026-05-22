@@ -27,6 +27,11 @@ export class DashboardComponent {
   EmployeeCode!: string;
   companyId!: number;
 
+   timesheetPage = 1;
+timesheetPageSize = 5;
+
+helpdeskPage = 1;
+helpdeskPageSize = 5;
   dashboardData: any = {};
 
   employeeName = '';
@@ -359,13 +364,13 @@ updateTodayHoursCard() {
   // ================= WEEKOFF =================
   if (isWeekoff) {
     hours = 8;
-    color = '#000000'; // BLACK
+    color = '#0d0d0d'; // BLACK
   }
 
   // ================= FUTURE =================
   else if (isFuture) {
     hours = 8;
-    color = '#007bff'; // BLUE
+    color = '#f4f5f6'; // BLUE
   }
 
   // ================= TODAY =================
@@ -493,5 +498,33 @@ updateChartTodayHours(totalHours: number) {
     clearInterval(this.liveTimer);
   }
 }
- 
+ get paginatedTimesheets() {
+  const start = (this.timesheetPage - 1) * this.timesheetPageSize;
+
+  return this.submittedTimesheets.slice(
+    start,
+    start + this.timesheetPageSize
+  );
+}
+
+get totalTimesheetPages() {
+  return Math.ceil(
+    this.submittedTimesheets.length / this.timesheetPageSize
+  );
+}
+
+get paginatedTickets() {
+  const start = (this.helpdeskPage - 1) * this.helpdeskPageSize;
+
+  return this.tickets.slice(
+    start,
+    start + this.helpdeskPageSize
+  );
+}
+
+get totalTicketPages() {
+  return Math.ceil(
+    this.tickets.length / this.helpdeskPageSize
+  );
+}
 }

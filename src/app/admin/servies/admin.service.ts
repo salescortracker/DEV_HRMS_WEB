@@ -433,21 +433,34 @@ export interface HelpdeskCategory {
 //   Attachment?: File | null;
 // }
 export interface News {
+
   NewsId?: number;
+
   userId: number;
 
   CompanyId: number | null;
+
   RegionId: number | null;
+
   departmentId?: number | null;
 
   Title: string;
+
   Category: string;
+
   Description: string;
 
   Date: Date;
+
   PublishedDate?: string;
 
+  // ✅ New Upload
   Attachment?: File | null;
+
+  // ✅ Existing File
+  AttachmentName?: string;
+
+  AttachmentUrl?: string;
 }
 export interface KpiCategory {
   KpiCategoryID?: number;
@@ -1470,9 +1483,10 @@ deleteAttachmentType(id: number) {
 
 
 getAttachmentTypesByCategory(category: string) {
-  const userId = sessionStorage.getItem('UserId');
+  const companyId = sessionStorage.getItem('CompanyId') ?? '';
+  const regionId = sessionStorage.getItem('RegionId') ?? '';
   return this.http.get<any>(
-    `${this.baseUrl}/MasterData/GetAttachmentByCategory?category=${category}`
+    `${this.baseUrl}/MasterData/GetAttachmentByCategory?category=${category}&companyId=${companyId}&regionId=${regionId}`
   );
 }
 
@@ -2259,6 +2273,11 @@ request(reviewId: number) {
   return this.http.post(
     `${this.baseUrl}/EmployeeKpi/Request?reviewId=${reviewId}`,
     {}
+  );
+}
+getEmployeeSubmissions(userId: number) {
+  return this.http.get(
+    `${this.baseUrl}/EmployeeKpi/GetEmployeeSubmissions/${userId}`
   );
 }
  // Company News
@@ -3072,6 +3091,26 @@ getAttachments(companyId: number, regionId: number) {
         regionId: regionId
       }
     }
+  );
+}
+getCountries(userId: number) {
+  return this.http.get(`${this.baseUrl}/MasterData/countries?userId=${userId}`);
+}
+
+createCountry(data: any) {
+  return this.http.post(`${this.baseUrl}/MasterData/CreateCountry`, data);
+}
+
+updateCountry(data: any) {
+  return this.http.post(`${this.baseUrl}/MasterData/UpdateCountry`, data);
+}
+
+deleteCountry(id: number) {
+  return this.http.post(`${this.baseUrl}/MasterData/DeleteCountry?id=${id}`, {});
+}
+getCountriesByCompanyRegion(companyId: number, regionId: number) {
+  return this.http.get(
+    `${this.baseUrl}/MasterData/countries/by-company-region?companyId=${companyId}&regionId=${regionId}`
   );
 }
 

@@ -213,7 +213,29 @@
 <div class="dashboard-tables full-row mt-4">
   <div class="table-card">
     <h3>Asset List</h3>
+<div class=" text-end  mb-3">
 
+
+
+ 
+
+    
+      <button class="btn btn-secondary "
+         (click)="downloadPDF()">
+         Download PDF
+      </button>
+  
+
+    
+      <button class="btn btn-secondary ms-2"
+         (click)="downloadExcel()">
+         Download Excel
+      </button>
+    
+
+  
+
+</div>
     <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle">
         <thead class="table-light">
@@ -263,8 +285,8 @@
 
             <td>{{ asset.assetName }}</td>
             <td>{{ asset.assetCode }}</td>
-             <td>{{ getAssetCategoryName(asset.assetCategory) }}</td>
-            <td>{{ getAssetTypeName(asset.assetType) }}</td>
+          <td>{{ getAssetCategoryName(asset.assetCategory) }}</td>
+<td>{{ getAssetTypeName(asset.assetType) }}</td>
            
 
             <td>{{ asset.assetLocation }}</td>

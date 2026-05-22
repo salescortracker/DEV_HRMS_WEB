@@ -7,11 +7,11 @@
       <label class="form-label">
         Project / Engagement <span class="text-danger">*</span>
       </label>
-            <select class="form-select" formControlName="projectName">
+      <select class="form-select" formControlName="projectName">
         <option value="">Select project</option>
         <option *ngFor="let proj of projects" [value]="proj.projectName">
-  {{ proj.projectName }}
-</option>
+          {{ proj.projectName }}
+        </option>
       </select>
     </div>
 
@@ -26,7 +26,20 @@
       <label class="form-label">
         Country <span class="text-danger">*</span>
       </label>
-      <input type="text" class="form-control" formControlName="country" placeholder="Enter country">
+
+      <select class="form-select" formControlName="country">
+
+        <option value="">
+          Select Country
+        </option>
+
+        <option *ngFor="let c of countries" [value]="c.countryName">
+
+          {{ c.countryName }}
+
+        </option>
+
+      </select>
     </div>
   </div>
 
@@ -36,7 +49,7 @@
       <label class="form-label">
         Category <span class="text-danger">*</span>
       </label>
-      <select class="form-select" formControlName="expenseCategoryId" >
+      <select class="form-select" formControlName="expenseCategoryId">
         <option value="">Select category</option>
         <option *ngFor="let cat of categories" [value]="cat.expenseCategoryID">
           {{ cat.expenseCategoryName }}
@@ -49,7 +62,7 @@
         {{ categoryLimit.currencyCode }}
       </small>
     </div>
-<!-- (change)="onCategoryChange($event)" -->
+    <!-- (change)="onCategoryChange($event)" -->
     <div class="col-md-4">
       <label class="form-label">Department</label>
       <input type="text" class="form-control" formControlName="departmentName">
@@ -61,11 +74,11 @@
       </label>
       <div class="d-flex">
         <select class="form-select me-2" formControlName="currencyCode" style="max-width:120px">
-        <option value="">Select Currency</option>
-        <option *ngFor="let c of currencies" [value]="c.currencyCode">
-          {{ c.currencyCode }} - {{ c.currencyName }}
-        </option>
-      </select>
+          <option value="">Select Currency</option>
+          <option *ngFor="let c of currencies" [value]="c.currencyCode">
+            {{ c.currencyCode }} - {{ c.currencyName }}
+          </option>
+        </select>
 
         <input type="number" class="form-control" formControlName="amount" placeholder="Enter amount">
       </div>

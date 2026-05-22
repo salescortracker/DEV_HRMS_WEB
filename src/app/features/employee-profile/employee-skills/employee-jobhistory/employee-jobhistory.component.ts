@@ -128,7 +128,7 @@ onFileChange(event: any) {
 
     const formValues = this.jobHistoryForm.value;
     formValues.employeeCode = this.employeeCode;
-    formValues.employer = this.employeeName;
+    // formValues.employer = this.employeeName;
     const payload: any = {
       Id: this.editId ?? 0,
       Employer: formValues.employer,

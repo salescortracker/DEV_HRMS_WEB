@@ -95,37 +95,92 @@ this.loadgender();
     formData.append('familyId', this.editId.toString());
 
     this.empFamilyService.updateempfamily(formData).subscribe({
-      next: () => {
-        this.resetForm();
-        this.loadFamily();
-        Swal.fire("Updated successfully!", "", "success");
-      },
-      error: (err) => {
-        Swal.fire("Permission Denied", err.error, "error");
-      }
-    });
+      next: (res: any) => {
+
+          this.resetForm();
+
+          this.loadFamily();
+
+          Swal.fire(
+            'Success',
+            res.message || 'Updated successfully',
+            'success'
+          );
+        },
+
+        error: (err) => {
+
+          Swal.fire(
+            'Error',
+            err?.error?.message || 'Update failed',
+            'error'
+          );
+        }
+      });
 
   } else {
 
     this.empFamilyService.createempfamily(formData).subscribe({
-      next: () => {
-        this.resetForm();
-        this.loadFamily();
-        Swal.fire("Created successfully!", "", "success");
-      },
-      error: (err) => {
-        Swal.fire("Permission Denied", err.error, "error");
-      }
-    });
+      next: (res: any) => {
+
+          this.resetForm();
+
+          this.loadFamily();
+
+          Swal.fire(
+            'Success',
+            res.message || 'Created successfully',
+            'success'
+          );
+        },
+
+        error: (err) => {
+
+          Swal.fire(
+            'Error',
+            err?.error?.message || 'Creation failed',
+            'error'
+          );
+        }
+      });
 
   }
 }
 
+  // edit(row: any) {
+  //   this.isEdit = true;
+  //   this.editId = row.familyId;
+  //   this.familyForm.patchValue(row);
+  // }
   edit(row: any) {
-    this.isEdit = true;
-    this.editId = row.familyId;
-    this.familyForm.patchValue(row);
-  }
+
+  this.isEdit = true;
+
+  this.editId = row.familyId;
+
+  this.familyForm.patchValue({
+
+    name: row.name || '',
+    
+    relationship: row.relationship || '',
+
+    dateofbirth: row.dateOfBirth
+      ? row.dateOfBirth.split('T')[0]
+      : '',
+
+    gender: row.gender || '',
+
+    occupation: row.occupation || '',
+
+    phone: row.phone || '',
+
+    address: row.address || '',
+
+    isDependent: row.isDependent || false
+  });
+
+  console.log("Patched Form:", this.familyForm.value);
+}
 
   delete(id: number) {
     if (!this.canDelete) {

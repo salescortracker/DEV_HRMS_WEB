@@ -7,7 +7,6 @@ import { HttpClient } from '@angular/common/http';
 })
 export class TaskService {
   private baseUrl = environment.apiUrl; // 🔹 Change this to your actual API URL
-
   constructor(private http: HttpClient) { }
   getTasks(userId: number) {
     return this.http.get(`${this.baseUrl}/Task/tasks?userId=${userId}`);
@@ -17,8 +16,11 @@ export class TaskService {
     return this.http.post(`${this.baseUrl}/Task/CreateTask`, formData);
   }
 
-  updateTask(data: any) {
-    return this.http.post(`${this.baseUrl}/Task/UpdateTask`, data);
+  updateTask(formData: FormData) {
+    return this.http.post(
+      `${this.baseUrl}/Task/UpdateTask`,
+      formData
+    );
   }
 
   deleteTask(id: number) {
@@ -27,5 +29,27 @@ export class TaskService {
   getMyTasks(userId: number) {
     return this.http.get(`${this.baseUrl}/Task/mytasks?userId=${userId}`);
   }
+  getFileBaseUrl(): string {
+    return this.baseUrl.replace('/api', '');
+  }
+  getTaskReport(filters: any, companyId: number, regionId: number) {
+    let params = `companyId=${companyId}&regionId=${regionId}`;
 
+    if (filters.employeeId)
+      params += `&employeeId=${filters.employeeId}`;
+
+    if (filters.statusId)
+      params += `&statusId=${filters.statusId}`;
+
+    if (filters.priorityId)
+      params += `&priorityId=${filters.priorityId}`;
+
+    if (filters.fromDate)
+      params += `&fromDate=${filters.fromDate}`;
+
+    if (filters.toDate)
+      params += `&toDate=${filters.toDate}`;
+
+    return this.http.get(`${this.baseUrl}/Task/report?${params}`);
+  }
 }

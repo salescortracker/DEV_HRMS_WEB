@@ -167,9 +167,7 @@ get availableEmployees() {
   });
 }
 
-onEmployeeChange(event: any) {
-
-  const userId = Number(event.target.value);
+onEmployeeChange(userId: number) {
 
   if (!userId) {
 
@@ -181,7 +179,7 @@ onEmployeeChange(event: any) {
   }
 
   const user = this.employees.find(
-    e => e.userId === userId
+    e => e.userId == userId
   );
 
   if (user) {

@@ -210,7 +210,11 @@ getReportingManager(userId: number): Observable<any> {
 submitLeave(formData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/SubmitLeave`, formData);
   }
-
+getLeaveBalance(userId: number) {
+  return this.http.get<any[]>(
+    `${this.apiUrl}/GetLeaveBalance/${userId}`
+  );
+}
   // ✅ Get My Leave List
   getMyLeaves(userId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/GetMyLeaves/${userId}`);

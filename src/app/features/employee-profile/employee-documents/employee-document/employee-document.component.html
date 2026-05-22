@@ -50,11 +50,10 @@
              class="form-control"
              [(ngModel)]="form.number"
              name="number"
-             placeholder="Enter document number"
-             maxlength="50">
-      <div class="text-danger" *ngIf="submitted && isNumberRequired() && !form.number">
-        Document Number is required for this document type.
-      </div>
+             placeholder="Auto Generated"
+             maxlength="50"
+             readonly>
+      
 
       <div class="text-danger" *ngIf="submitted && form.number?.length > 50">
         Document Number cannot exceed 50 characters.

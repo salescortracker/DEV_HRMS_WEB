@@ -284,6 +284,11 @@ canvas {
 }
 
 /* COLORS MATCH YOUR TS */
+.present { background: #ffc107; }  /* yellow */
+.absent { background: #dc3545; }   /* red */
+.today { background: #28a745; }    /* green */
+.future { background: #f4f5f6; }   /* blue */
+.weekoff { background: #0d0d0d; }  /* black */
 .present { background: #ffc107; } 
 .absent { background: #dc3545; }   
 .today { background: #28a745; }    
@@ -303,4 +308,41 @@ canvas {
   background: #e8f4f8;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(176, 40, 40, 0.1);
+}
+
+.scroll-table {
+  max-height: 260px;   /* around 5 records */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+}
+
+.scroll-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.scroll-table thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+}
+.pagination-box{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+}
+
+.pagination-box button{
+  border:none;
+  padding:5px 12px;
+  border-radius:5px;
+  background:#0d6efd;
+  color:#fff;
+}
+
+.pagination-box button:disabled{
+  background:#ccc;
 }

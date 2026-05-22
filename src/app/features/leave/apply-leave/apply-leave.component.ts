@@ -592,8 +592,8 @@ export class ApplyLeaveComponent {
 // }
  canApprove: any;
   canReject: any;
-hrEmail: string = '';
-startDate: string = "";
+  hrEmail: string = '';
+  startDate: string = "";
   endDate: string = "";
   totalDays: number = 0;
   today: string = "";
@@ -662,6 +662,7 @@ startDate: string = "";
       console.error("UserId missing in sessionStorage");
       return;
     }
+    this.loadLeaveBalances();
     this.leaveList = [];
     this.calculateLeaveSummary();
     this.loadLeaveTypes();
@@ -822,12 +823,17 @@ startDate: string = "";
     return this.isWeekoffName(weekdayLong) || this.isWeekoffName(weekdayShort);
   }
 
-  isWeekend(dateString: string): boolean {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return false;
+ isWeekend(dateString: string): boolean {
+  if (!dateString) return false;
 
-    return this.isWeekoffDate(date);
+  const date = new Date(dateString);
+
+  if (isNaN(date.getTime())) {
+    return false;
   }
+
+  return this.isWeekoffDate(date);
+}
 
 
   loadLeaveTypes() {
@@ -911,7 +917,21 @@ startDate: string = "";
       }
     });
   }
+leaveBalances: any[] = [];
+loadLeaveBalances() {
 
+  this.leaveService.getLeaveBalance(this.userId).subscribe({
+    next: (res: any[]) => {
+
+      console.log("Leave balances:", res);
+
+      this.leaveBalances = res;
+    },
+    error: (err) => {
+      console.error(err);
+    }
+  });
+}
 shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
   // Rejected leaves don't count
   if (leave.status === 'Rejected') {
@@ -996,148 +1016,196 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
   }
 
 
-  // START DATE CHANGE
-  onStartDateChange() {
-    this.calculateTotalDays();
-    this.validateLeaveLimit();
+  private getHrEmailList(): string[] {
+    if (!this.hrEmail) return [];
 
-    this.startDateError = "";
-
-    if (!this.startDate) return;
-    if (this.isWeekend(this.startDate)) {
-      this.startDateError = "Start date cannot be a weekoff day.";
-      this.startDate = "";
-      this.totalDays = 0;
-      return;
-    }
-
-
-    if (this.isHalfDay) {
-      this.endDate = this.startDate;
-      this.totalDays = 0.5;
-      return;
-    }
-
-
-    if (this.startDate < this.today) {
-      this.startDateError = "Start date cannot be a past date.";
-      this.totalDays = 0;
-      return;
-    }
-
-    if (this.endDate && this.startDate > this.endDate) {
-      this.startDateError = "Start date cannot be later than end date.";
-      this.totalDays = 0;
-      return;
-    }
-
-    this.calculateTotalDays();
+    return this.hrEmail
+      .split(/[;,\s]+/)
+      .map(email => email.trim())
+      .filter(email => email.length > 0);
   }
+
+  private isValidEmail(email: string): boolean {
+    const normalized = email.trim();
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(normalized);
+  }
+
+  private validateHrEmails(): boolean {
+    const emails = this.getHrEmailList();
+    if (emails.length === 0) {
+      return true;
+    }
+
+    const invalidEmails = emails.filter(email => !this.isValidEmail(email));
+    if (invalidEmails.length > 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid HR Email',
+        text: `Please enter valid HR email address(es): ${invalidEmails.join(', ')}`
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  // START DATE CHANGE
+onStartDateChange() {
+
+  this.startDateError = "";
+
+  if (!this.startDate) {
+    this.totalDays = 0;
+    return;
+  }
+
+  // Dynamic weekoff validation
+  if (this.isWeekend(this.startDate)) {
+    this.startDateError = "Start date cannot be a weekoff day.";
+    this.startDate = "";
+    this.totalDays = 0;
+    return;
+  }
+
+  // Past date validation
+  if (this.startDate < this.today) {
+    this.startDateError = "Start date cannot be a past date.";
+    this.startDate = "";
+    this.totalDays = 0;
+    return;
+  }
+
+  // Half day
+  if (this.isHalfDay) {
+    this.endDate = this.startDate;
+    this.totalDays = 0.5;
+    return;
+  }
+
+  // End date validation
+  if (this.endDate && this.startDate > this.endDate) {
+    this.startDateError = "Start date cannot be later than end date.";
+    this.totalDays = 0;
+    return;
+  }
+
+  this.calculateTotalDays();
+  this.validateLeaveLimit();
+}
 
   // END DATE CHANGE
-  onEndDateChange() {
-    this.calculateTotalDays();
-    this.validateLeaveLimit();
+onEndDateChange() {
 
-    this.endDateError = "";
+  this.endDateError = "";
 
-    if (this.isWeekend(this.endDate)) {
-      this.endDateError = "End date cannot be a weekoff day.";
-      this.endDate = "";
-      this.totalDays = 0;
-      return;
-    }
-
-    if (this.isHalfDay) {
-      this.endDate = this.startDate;
-      this.totalDays = 0.5;
-      return;
-    }
-
-
-    if (!this.endDate) return;
-
-    if (this.startDate && this.endDate < this.startDate) {
-      this.endDateError = "End date cannot be earlier than start date.";
-      this.totalDays = 0;
-      return;
-    }
-
-    this.calculateTotalDays();
+  if (!this.endDate) {
+    this.totalDays = 0;
+    return;
   }
 
-   IsWeekoffName(dayName: string): boolean {
-    const name = (dayName || '').toString().trim().toLowerCase();
-
-    // Default to Saturday/Sunday when weekoffs aren't configured yet
-    if (!this.weekoffDays || this.weekoffDays.size === 0) {
-      return name === 'saturday' || name === 'sunday' || name === 'sat' || name === 'sun';
-    }
-
-    return this.weekoffDays.has(name);
+  // Dynamic weekoff validation
+  if (this.isWeekend(this.endDate)) {
+    this.endDateError = "End date cannot be a weekoff day.";
+    this.endDate = "";
+    this.totalDays = 0;
+    return;
   }
 
-   LoadWeekoffs() {
-    if (!this.userId) return;
-
-    this.leaveService.getWeekoffLists(this.companyId, this.regionId).subscribe({
-      next: (res: any) => {
-        const data = res?.data || [];
-        const days: string[] = [];
-
-        data.forEach((w: any) => {
-          const value = (w.weekoffDate ?? w.WeekoffDate ?? '').toString().trim();
-          if (!value) return;
-
-          days.push(value);
-          if (value.length >= 3) days.push(value.substring(0, 3));
-        });
-
-        this.weekoffDays = new Set(days.map(d => d.toLowerCase()));
-      },
-      error: (err) => {
-        console.error('Weekoffs load error', err);
-      }
-    });
+  // Half day
+  if (this.isHalfDay) {
+    this.endDate = this.startDate;
+    this.totalDays = 0.5;
+    return;
   }
 
-  IsWeekend(dateString: string): boolean {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return false;
-
-    const weekdayLong = date.toLocaleString('en-US', { weekday: 'long' });
-    const weekdayShort = date.toLocaleString('en-US', { weekday: 'short' });
-
-    return this.isWeekoffName(weekdayLong) || this.isWeekoffName(weekdayShort);
+  // End date < start date
+  if (this.startDate && this.endDate < this.startDate) {
+    this.endDateError = "End date cannot be earlier than start date.";
+    this.totalDays = 0;
+    return;
   }
+
+  this.calculateTotalDays();
+  this.validateLeaveLimit();
+}
+
+  //  IsWeekoffName(dayName: string): boolean {
+  //   const name = (dayName || '').toString().trim().toLowerCase();
+
+  //   // Default to Saturday/Sunday when weekoffs aren't configured yet
+  //   if (!this.weekoffDays || this.weekoffDays.size === 0) {
+  //     return name === 'saturday' || name === 'sunday' || name === 'sat' || name === 'sun';
+  //   }
+
+  //   return this.weekoffDays.has(name);
+  // }
+
+  //  LoadWeekoffs() {
+  //   if (!this.userId) return;
+
+  //   this.leaveService.getWeekoffLists(this.companyId, this.regionId).subscribe({
+  //     next: (res: any) => {
+  //       const data = res?.data || [];
+  //       const days: string[] = [];
+
+  //       data.forEach((w: any) => {
+  //         const value = (w.weekoffDate ?? w.WeekoffDate ?? '').toString().trim();
+  //         if (!value) return;
+
+  //         days.push(value);
+  //         if (value.length >= 3) days.push(value.substring(0, 3));
+  //       });
+
+  //       this.weekoffDays = new Set(days.map(d => d.toLowerCase()));
+  //     },
+  //     error: (err) => {
+  //       console.error('Weekoffs load error', err);
+  //     }
+  //   });
+  // }
+
+  // IsWeekend(dateString: string): boolean {
+  //   const date = new Date(dateString);
+  //   if (isNaN(date.getTime())) return false;
+
+  //   const weekdayLong = date.toLocaleString('en-US', { weekday: 'long' });
+  //   const weekdayShort = date.toLocaleString('en-US', { weekday: 'short' });
+
+  //   return this.isWeekoffName(weekdayLong) || this.isWeekoffName(weekdayShort);
+  // }
 
 
   // TOTAL DAYS CALCULATION
-  calculateTotalDays() {
+ calculateTotalDays() {
 
-    if (this.isHalfDay) {
-      this.totalDays = 0.5;
-      return;
-    }
-
-    if (!this.startDate || !this.endDate) {
-      this.totalDays = 0;
-      return;
-    }
-
-    const start = new Date(this.startDate);
-    const end = new Date(this.endDate);
-    let total = 0;
-
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dayStr = this.formatDate(d);
-      if (!this.isWeekend(dayStr)) {
-        total++;
-      }
-    }
-
-    this.totalDays = total;
+  if (this.isHalfDay) {
+    this.totalDays = 0.5;
+    return;
   }
+
+  if (!this.startDate || !this.endDate) {
+    this.totalDays = 0;
+    return;
+  }
+
+  const start = new Date(this.startDate);
+  const end = new Date(this.endDate);
+
+  let total = 0;
+
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+
+    const current = new Date(d);
+
+    // Skip dynamic weekoffs
+    if (!this.isWeekoffDate(current)) {
+      total++;
+    }
+  }
+
+  this.totalDays = total;
+}
 
   // Check if there's a rejected leave on the same dates
   private hasRejectedLeaveOnDates(startDate: string, endDate: string): boolean {
@@ -1184,6 +1252,10 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
       return;
     }
 
+    if (!this.validateHrEmails()) {
+      return;
+    }
+
     // If there's a rejected leave on these dates, show confirmation
     if (hasRejectedLeave) {
       Swal.fire({
@@ -1196,6 +1268,7 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
       }).then((result) => {
         if (result.isConfirmed) {
           this.submitLeaveRequest();
+          this.loadLeaveBalances();
         }
       });
     } else {
@@ -1220,6 +1293,7 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
     formData.append("TotalDays", this.totalDays.toString());
     formData.append("Reason", this.reason);
     formData.append("ReportingManagerId", this.reportingManagerId.toString());
+    formData.append("HrEmail", this.hrEmail);
 
     if (this.selectedFile) {
       formData.append("SupportingDocument", this.selectedFile);
@@ -1238,7 +1312,7 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
 
         // ✅ Reload list from DB
         this.loadMyLeaves();
-
+this.loadLeaveBalances();
         // ✅ Reset form
         this.leaveType = "";
         this.startDate = "";

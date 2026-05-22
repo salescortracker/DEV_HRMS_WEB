@@ -13,12 +13,12 @@ import Swal from 'sweetalert2';
 export class TeamtaskComponent {
   allTasks: any[] = [];
 
-selectedEmployee: string = '';
-selectedStatus: string = '';
-selectedPriority: string = '';
-fromDate: string = '';
-toDate: string = '';
-searchText: string = '';
+  selectedEmployee: string = '';
+  selectedStatus: string = '';
+  selectedPriority: string = '';
+  fromDate: string = '';
+  toDate: string = '';
+  searchText: string = '';
   showModal = false;
   isEditMode = false;
   editIndex: number | null = null;
@@ -31,7 +31,19 @@ searchText: string = '';
   taskStatuses: any[] = [];
   showEmojiPicker = false;
   selectedFiles: File[] = [];
+  existingFiles: any[] = [];
   projects: any[] = [];
+  deletedFileIds: number[] = [];
+  removeExistingFile(index: number) {
+
+    const file = this.existingFiles[index];
+
+    // save deleted file id
+    this.deletedFileIds.push(file.taskFileId);
+
+    // remove from UI
+    this.existingFiles.splice(index, 1);
+  }
   // toggle dropdown
   toggleMention() {
     this.showMentionDropdown = !this.showMentionDropdown;
@@ -41,26 +53,26 @@ searchText: string = '';
   }
   // ADD THESE METHODS INSIDE TeamtaskComponent
 
-getTotalTasks(): number {
-  return this.tasks.length;
-}
+  getTotalTasks(): number {
+    return this.tasks.length;
+  }
 
-getTaskCountByStatus(statusName: string): number {
-  return this.tasks.filter(task =>
-    this.getStatusName(task.statusId).toLowerCase() === statusName.toLowerCase()
-  ).length;
-}
+  getTaskCountByStatus(statusName: string): number {
+    return this.tasks.filter(task =>
+      this.getStatusName(task.statusId).toLowerCase() === statusName.toLowerCase()
+    ).length;
+  }
 
-getOverdueTasks(): number {
-  const today = new Date();
+  getOverdueTasks(): number {
+    const today = new Date();
 
-  return this.tasks.filter(task => {
-    const dueDate = new Date(task.dueDate);
-    const status = this.getStatusName(task.statusId).toLowerCase();
+    return this.tasks.filter(task => {
+      const dueDate = new Date(task.dueDate);
+      const status = this.getStatusName(task.statusId).toLowerCase();
 
-    return dueDate < today && status !== 'completed';
-  }).length;
-}
+      return dueDate < today && status !== 'completed';
+    }).length;
+  }
 
   onFilesSelected(event: any) {
     const files: FileList = event.target.files;
@@ -205,6 +217,8 @@ getOverdueTasks(): number {
     this.newTask = this.getEmptyTask();
     this.isEditMode = false;
     this.editIndex = null;
+    this.selectedFiles = [];
+    this.existingFiles = [];
   }
   getProjectName(projectId: number) {
     const project = this.projects.find(x => x.projectMasterId == projectId);
@@ -234,23 +248,30 @@ getOverdueTasks(): number {
 
     if (this.isEditMode) {
 
-      const updateData = {
-        taskId: this.newTask.taskId,
-        taskName: this.newTask.name,
-        projectId: this.newTask.projectId,
-        assignedTo: this.newTask.assigned,
-        priorityId: this.newTask.priorityId,
-        statusId: this.newTask.statusId,
-        startDate: this.newTask.startDate,
-        dueDate: this.newTask.dueDate,
-        comment: this.newTask.comment,
-        userId: this.userId,
-        companyId: this.companyId,
-        regionId: this.regionId
-      };
+      formData.append("TaskId", this.newTask.taskId);
+      formData.append("TaskName", this.newTask.name);
+      formData.append("ProjectId", this.newTask.projectId || '');
+      formData.append("AssignedTo", this.newTask.assigned);
+      formData.append("PriorityId", this.newTask.priorityId);
+      formData.append("StatusId", this.newTask.statusId);
+      formData.append("StartDate", this.newTask.startDate || '');
+      formData.append("DueDate", this.newTask.dueDate || '');
+      formData.append("Comment", this.newTask.comment || '');
+      formData.append("UserId", this.userId.toString());
+      formData.append("CompanyId", this.companyId.toString());
+      formData.append("RegionId", this.regionId.toString());
+     
 
-      this.taskService.updateTask(updateData).subscribe({
+      // deleted files
+      formData.append(
+        "DeletedFileIds",
+        JSON.stringify(this.deletedFileIds)
+      );
+
+      this.taskService.updateTask(formData).subscribe({
+
         next: () => {
+
           Swal.fire({
             icon: 'success',
             title: 'Updated!',
@@ -262,13 +283,17 @@ getOverdueTasks(): number {
           this.loadTasks();
           this.closeModal();
         },
+
         error: () => {
+
           Swal.fire({
             icon: 'error',
             title: 'Failed!',
             text: 'Task update failed.'
           });
+
         }
+
       });
 
     } else {
@@ -299,70 +324,70 @@ getOverdueTasks(): number {
 
   loadTasks() {
     this.taskService.getTasks(this.userId).subscribe((res: any) => {
-       this.allTasks = res.data || res;   // backup full list
-    this.tasks = [...this.allTasks]; 
+      this.allTasks = res.data || res;   // backup full list
+      this.tasks = [...this.allTasks];
     });
   }
   applyFilters() {
-  this.tasks = this.allTasks.filter(task => {
+    this.tasks = this.allTasks.filter(task => {
 
-    // Employee Filter
-    const matchEmployee =
-      !this.selectedEmployee ||
-      task.assignedTo === this.selectedEmployee;
+      // Employee Filter
+      const matchEmployee =
+        !this.selectedEmployee ||
+        task.assignedTo === this.selectedEmployee;
 
-    // Status Filter
-    const matchStatus =
-      !this.selectedStatus ||
-      task.statusId == this.selectedStatus;
+      // Status Filter
+      const matchStatus =
+        !this.selectedStatus ||
+        task.statusId == this.selectedStatus;
 
-    // Priority Filter
-    const matchPriority =
-      !this.selectedPriority ||
-      task.priorityId == this.selectedPriority;
+      // Priority Filter
+      const matchPriority =
+        !this.selectedPriority ||
+        task.priorityId == this.selectedPriority;
 
-    // Search Filter
-    const search = this.searchText.toLowerCase();
-    const matchSearch =
-      !search ||
-      task.taskName?.toLowerCase().includes(search) ||
-      task.assignedTo?.toLowerCase().includes(search) ||
-      this.getProjectName(task.projectId)?.toLowerCase().includes(search);
+      // Search Filter
+      const search = this.searchText.toLowerCase();
+      const matchSearch =
+        !search ||
+        task.taskName?.toLowerCase().includes(search) ||
+        task.assignedTo?.toLowerCase().includes(search) ||
+        this.getProjectName(task.projectId)?.toLowerCase().includes(search);
 
-    // Date Filter
-    let matchDate = true;
+      // Date Filter
+      let matchDate = true;
 
-    if (this.fromDate) {
-      matchDate =
-        matchDate &&
-        new Date(task.startDate) >= new Date(this.fromDate);
-    }
+      if (this.fromDate) {
+        matchDate =
+          matchDate &&
+          new Date(task.startDate) >= new Date(this.fromDate);
+      }
 
-    if (this.toDate) {
-      matchDate =
-        matchDate &&
-        new Date(task.dueDate) <= new Date(this.toDate);
-    }
+      if (this.toDate) {
+        matchDate =
+          matchDate &&
+          new Date(task.dueDate) <= new Date(this.toDate);
+      }
 
-    return (
-      matchEmployee &&
-      matchStatus &&
-      matchPriority &&
-      matchSearch &&
-      matchDate
-    );
-  });
-}
-resetFilters() {
-  this.selectedEmployee = '';
-  this.selectedStatus = '';
-  this.selectedPriority = '';
-  this.fromDate = '';
-  this.toDate = '';
-  this.searchText = '';
+      return (
+        matchEmployee &&
+        matchStatus &&
+        matchPriority &&
+        matchSearch &&
+        matchDate
+      );
+    });
+  }
+  resetFilters() {
+    this.selectedEmployee = '';
+    this.selectedStatus = '';
+    this.selectedPriority = '';
+    this.fromDate = '';
+    this.toDate = '';
+    this.searchText = '';
 
-  this.tasks = [...this.allTasks];
-}
+    this.tasks = [...this.allTasks];
+  }
 
 
   deleteTask(task: any) {
@@ -411,6 +436,13 @@ resetFilters() {
       name: task.taskName,
       assigned: task.assignedTo
     };
+
+    // ✅ existing uploaded files
+    this.existingFiles = task.taskFilesList || [];
+
+    // ✅ newly selected files
+    this.selectedFiles = [];
+
     this.isEditMode = true;
     this.showModal = true;
   }
@@ -429,9 +461,17 @@ resetFilters() {
       assigned: '',
       priorityId: '',
 
-      statusId: '',   // ✅ change this
+      statusId: '',
       dueDate: '',
       comment: ''
     };
   }
+  getFileUrl(path: string): string {
+
+    if (!path) return '';
+
+    return `${this.taskService.getFileBaseUrl()}/${path}`;
+
+  }
+
 }

@@ -181,6 +181,83 @@
       </div>
 
     </form>
+    <hr class="mt-4 mb-4">
+
+<h4 class="mb-3">My Submitted Requests</h4>
+
+<div class="table-responsive">
+
+  <table class="table table-bordered table-striped">
+
+    <thead class="table-dark">
+
+      <tr>
+        <th>S.No</th>
+        <th>Project</th>
+        <th>Performance Cycle</th>
+        <th>Appraisal Year</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Status</th>
+        <th>Summary</th>
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let item of employeeSubmissions; let i = index">
+
+        <td>{{ i + 1 }}</td>
+
+        <td>{{ item.departmentProject }}</td>
+
+        <td>{{ item.performanceCycle }}</td>
+
+        <td>{{ item.appraisalYear }}</td>
+
+        <td>
+          {{ item.applicableStartDate | date:'dd-MM-yyyy' }}
+        </td>
+
+        <td>
+          {{ item.applicableEndDate | date:'dd-MM-yyyy' }}
+        </td>
+
+        <td>
+
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-warning': item.status == 'Draft',
+              'bg-success': item.status == 'Approved',
+              'bg-danger': item.status == 'Rejected',
+              'bg-primary': item.status == 'Submitted'
+            }">
+
+            {{ item.status }}
+
+          </span>
+
+        </td>
+
+        <td>{{ item.selfReviewSummary }}</td>
+
+      </tr>
+
+      <tr *ngIf="employeeSubmissions.length == 0">
+
+        <td colspan="8" class="text-center">
+          No Records Found
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
 
   </div>
 

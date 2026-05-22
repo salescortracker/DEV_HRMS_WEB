@@ -11,227 +11,272 @@ import { CompanyEventsService } from '../../../features/company-events/company-e
 })
 export class CompanyEventsComponent {
 
-companies:any[]=[];
-regions:any[]=[];
-departments:any[]=[];
+  companies: any[] = [];
+  regions: any[] = [];
+  departments: any[] = [];
 
-eventsList:any[]=[];
-event:any=this.resetEvent();
+  eventsList: any[] = [];
+  event: any = this.resetEvent();
 
-isEditMode=false;
+  isEditMode = false;
 
-searchText='';
-startDate='';
-endDate='';
+  searchText = '';
+  startDate = '';
+  endDate = '';
 
-userId!:number;
-companyId!:number;
-regionId!:number;
+  userId!: number;
+  companyId!: number;
+  regionId!: number;
 
-constructor(private cmpservice: AdminService, private adminService:CompanyEventsService,private spinner:NgxSpinnerService){}
+  constructor(private cmpservice: AdminService, private adminService: CompanyEventsService, private spinner: NgxSpinnerService) { }
 
-ngOnInit(){
+  ngOnInit() {
 
-this.userId=Number(sessionStorage.getItem("UserId"));
-this.companyId=Number(sessionStorage.getItem("CompanyId"));
-this.regionId=Number(sessionStorage.getItem("RegionId"));
+    this.userId = Number(sessionStorage.getItem("UserId"));
+    this.companyId = Number(sessionStorage.getItem("CompanyId"));
+    this.regionId = Number(sessionStorage.getItem("RegionId"));
 
-this.loadCompanies();
-this.loadRegions();
-this.loadDepartments();
-this.getEvents();
+    this.loadCompanies();
+    this.loadRegions();
+    this.loadDepartments();
+    this.getEvents();
+    this.loadEventTypes();
 
-}
+  }
 
-loadCompanies(){
-this.cmpservice.getCompanies(null,this.userId).subscribe((res:any)=>{
-this.companies=res;
-});
-}
+  loadCompanies() {
+    this.cmpservice.getCompanies(null, this.userId).subscribe((res: any) => {
+      this.companies = res;
+    });
+  }
 
-loadRegions(){
-this.cmpservice.getRegions(null,this.userId).subscribe(res=>{
-this.regions=res;
-});
-}
+  loadRegions() {
+    this.cmpservice.getRegions(null, this.userId).subscribe(res => {
+      this.regions = res;
+    });
+  }
 
-loadDepartments(){
+  loadDepartments() {
 
-this.cmpservice.getDepartments(this.userId).subscribe((res:any)=>{
-this.departments=res.data.data.filter((d:any)=>d.isActive);
-});
+    this.cmpservice.getDepartments(this.userId).subscribe((res: any) => {
+      this.departments = res.data.data.filter((d: any) => d.isActive);
+    });
 
-}
+  }
+eventTypes:any[]=[];
 
-getDepartmentName(id:number){
-debugger;
-const d=this.departments.find(x=>x.departmentId==id);
-return d.description;
+ loadEventTypes(): void {
 
-}
+    this.spinner.show();
 
-resetEvent(){
+    this.cmpservice
+      .getEventTypes(this.companyId, this.regionId, this.userId)
+      .subscribe({
 
-return{
+        next: (res: any) => {
 
-Id:0,
-CompanyId:this.companyId,
-RegionId:this.regionId,
-DepartmentId:null,
+          this.eventTypes = res.data.map((e: any) => ({
 
-EventTitle:'',
-EventDescription:'',
+            ...e,
 
-EventDate:new Date(),
-EventDateString:new Date().toISOString().split('T')[0],
+            companyID: Number(e.companyID),
 
-StartTime:'',
-EndTime:'',
+            regionId: Number(e.regionId)
 
-MeetingLink:'',
-EventLocation:'',
-EventType:'',
+          }));
 
-IsMeeting:false
-,userId:this.userId
-}
+          this.eventTypes.sort(
+            (a: any, b: any) =>
+              b.eventTypeID - a.eventTypeID
+          );
 
-}
+          this.spinner.hide();
+        },
 
-resetForm(){
+        error: () => {
 
-this.event=this.resetEvent();
-this.isEditMode=false;
+          this.spinner.hide();
 
-}
+          Swal.fire(
+            'Error',
+            'Failed to load Event Types.',
+            'error'
+          );
+        }
+      });
+  }
 
-getEvents(){
+  getDepartmentName(id: number): string {
 
-this.spinner.show();
+    const d = this.departments.find(
+      x => Number(x.departmentId) === Number(id)
+    );
 
-this.adminService.getAllEvents(this.userId).subscribe(res=>{
+    return d ? d.departmentName : '-';
+  }
 
-this.eventsList=res.map((e:any)=>({
+  resetEvent() {
 
-Id:e.id,
-CompanyId:e.companyId,
-RegionId:e.regionId,
-DepartmentId:e.departmentId,
+    return {
 
-EventTitle:e.eventTitle,
-EventDescription:e.eventDescription,
+      Id: 0,
+      CompanyId: this.companyId,
+      RegionId: this.regionId,
+      DepartmentId: null,
 
-EventDate:new Date(e.eventDate),
-EventDateString:e.eventDate,
+      EventTitle: '',
+      EventDescription: '',
 
-StartTime:e.startTime,
-EndTime:e.endTime,
+      EventDate: new Date(),
+      EventDateString: new Date().toISOString().split('T')[0],
 
-MeetingLink:e.meetingLink,
-EventLocation:e.eventLocation,
-EventType:e.eventType,
+      StartTime: '',
+      EndTime: '',
 
-IsMeeting:e.isMeeting
+      MeetingLink: '',
+      EventLocation: '',
+      EventType: '',
 
-}));
+      IsMeeting: false
+      , userId: this.userId
+    }
 
-this.spinner.hide();
+  }
 
-});
+  resetForm() {
 
-}
+    this.event = this.resetEvent();
+    this.isEditMode = false;
 
-onSubmit(){
+  }
 
-const payload={
+  getEvents() {
 
-id:this.event.Id??0,
+    this.spinner.show();
 
-companyId:Number(this.event.CompanyId),
-regionId:Number(this.event.RegionId),
-departmentId:Number(this.event.DepartmentId),
-userId:this.userId,
-eventTitle:this.event.EventTitle,
-eventDescription:this.event.EventDescription,
+    this.adminService.getAllEvents(this.userId).subscribe(res => {
 
-eventDate:this.event.EventDateString,
+      this.eventsList = res.map((e: any) => ({
 
-startTime:this.event.StartTime,
-endTime:this.event.EndTime,
+        Id: e.id,
+        CompanyId: e.companyId,
+        RegionId: e.regionId,
+        DepartmentId: e.departmentId,
 
-meetingLink:this.event.MeetingLink,
+        EventTitle: e.eventTitle,
+        EventDescription: e.eventDescription,
 
-eventLocation:this.event.EventLocation,
-eventType:this.event.EventType,
+        EventDate: new Date(e.eventDate),
+        EventDateString: e.eventDate,
 
-isMeeting:this.event.IsMeeting,
+        StartTime: e.startTime,
+        EndTime: e.endTime,
 
-createdBy:this.userId
+        MeetingLink: e.meetingLink,
+        EventLocation: e.eventLocation,
+        EventType: e.eventType,
 
-};
+        IsMeeting: e.isMeeting
 
-this.spinner.show();
+      }));
 
-const request$=this.isEditMode
-?this.adminService.updateEvent(payload)
-:this.adminService.createEvent(payload);
+      this.spinner.hide();
 
-request$.subscribe(()=>{
+    });
 
-Swal.fire('Success','Event saved successfully','success');
-this.getEvents();
-this.resetForm();
-this.spinner.hide();
+  }
 
-});
+  onSubmit() {
 
-}
+    const payload = {
 
-editEvent(e:any){
+      id: this.event.Id ?? 0,
 
-this.isEditMode=true;
+      companyId: Number(this.event.CompanyId),
+      regionId: Number(this.event.RegionId),
+      departmentId: Number(this.event.DepartmentId),
+      userId: this.userId,
+      eventTitle: this.event.EventTitle,
+      eventDescription: this.event.EventDescription,
 
-this.event={...e};
+      eventDate: this.event.EventDateString,
 
-this.event.EventDateString=new Date(e.EventDate).toISOString().split('T')[0];
+      startTime: this.event.StartTime,
+      endTime: this.event.EndTime,
 
-}
+      meetingLink: this.event.MeetingLink,
 
-confirmDelete(e:any){
+      eventLocation: this.event.EventLocation,
+      eventType: this.event.EventType,
 
-Swal.fire({
-title:'Delete Event?',
-icon:'warning',
-showCancelButton:true
-}).then(res=>{
+      isMeeting: this.event.IsMeeting,
 
-if(res.isConfirmed){
+      createdBy: this.userId
 
-this.adminService.deleteEvent(e.Id).subscribe(()=>{
+    };
 
-Swal.fire('Deleted','Event removed','success');
-this.getEvents();
+    this.spinner.show();
 
-});
+    const request$ = this.isEditMode
+      ? this.adminService.updateEvent(payload)
+      : this.adminService.createEvent(payload);
 
-}
+    request$.subscribe(() => {
 
-});
+      Swal.fire('Success', 'Event saved successfully', 'success');
+      this.getEvents();
+      this.resetForm();
+      this.spinner.hide();
 
-}
+    });
 
-filteredEvents(){
+  }
 
-return this.eventsList.filter(e=>{
+  editEvent(e: any) {
 
-const matchText=e.EventTitle.toLowerCase().includes(this.searchText.toLowerCase());
+    this.isEditMode = true;
 
-const matchStart=this.startDate?new Date(e.EventDate)>=new Date(this.startDate):true;
-const matchEnd=this.endDate?new Date(e.EventDate)<=new Date(this.endDate):true;
+    this.event = { ...e };
 
-return matchText && matchStart && matchEnd;
+    this.event.EventDateString = new Date(e.EventDate).toISOString().split('T')[0];
 
-});
+  }
 
-}
+  confirmDelete(e: any) {
+
+    Swal.fire({
+      title: 'Delete Event?',
+      icon: 'warning',
+      showCancelButton: true
+    }).then(res => {
+
+      if (res.isConfirmed) {
+
+        this.adminService.deleteEvent(e.Id).subscribe(() => {
+
+          Swal.fire('Deleted', 'Event removed', 'success');
+          this.getEvents();
+
+        });
+
+      }
+
+    });
+
+  }
+
+  filteredEvents() {
+
+    return this.eventsList.filter(e => {
+
+      const matchText = e.EventTitle.toLowerCase().includes(this.searchText.toLowerCase());
+
+      const matchStart = this.startDate ? new Date(e.EventDate) >= new Date(this.startDate) : true;
+      const matchEnd = this.endDate ? new Date(e.EventDate) <= new Date(this.endDate) : true;
+
+      return matchText && matchStart && matchEnd;
+
+    });
+
+  }
 }

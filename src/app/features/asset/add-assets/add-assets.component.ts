@@ -4,6 +4,11 @@ import { Observable, shareReplay } from 'rxjs';
 import { AssetDto, AssetStatus, AssetService, EmployeeDto } from '../asset.service';
 import Swal from 'sweetalert2';
 import { AdminService } from '../../../admin/servies/admin.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-add-assets',
   standalone: false,
@@ -18,9 +23,12 @@ export class AddAssetsComponent {
   assetTypes: any[] = [];
 
   currencies: any[] = [];
+  allAssetTypes: any[] = []; 
   assetCategories: any[] = [];
   isEditMode = false;
-
+companyLogoBase64: string = '';
+companyAddress: string = '';
+companyName: string = '';
   companyId!: number;
   regionId!: number;
   private userId!: number;
@@ -40,28 +48,144 @@ export class AddAssetsComponent {
     private service: AdminService
   ) { }
 
-  ngOnInit(): void {
-    this.loadSessionData();
-    this.loadAllAssetTypesForDisplay();
-    this.initForm();
-    //this.loadAssetTypes();
-    this.loadCurrency();
-    this.loadAssetCategories();
-    this.assetForm.patchValue({
-      userID: this.userId
+//   ngOnInit(): void {
+//     this.companyName = sessionStorage.getItem("CompanyName") || 'My Company';
+// this.loadCompanyDetails();
+//     this.loadSessionData();
+//     this.loadAllAssetTypesForDisplay();
+//     this.initForm();
+//     //this.loadAssetTypes();
+//     this.loadCurrency();
+//     this.loadAssetCategories();
+//     this.assetForm.patchValue({
+//       userID: this.userId
+//     });
+// this.assetForm.get('assetCategory')?.valueChanges.subscribe(() => {
+//   this.loadAssetTypes();   // ✅ reuse same method
+// });
+//     this.loadEmployeesAndStatuses(); // load employees & statuses first
+//   }
+ngOnInit(): void {
+
+  this.loadSessionData();
+
+  this.companyName =
+    sessionStorage.getItem("CompanyName") || 'My Company';
+
+  this.loadCompanyDetails();
+
+  this.initForm();
+
+  this.loadCurrency();
+
+  this.loadAssetCategories();
+
+  // Load ALL asset types for table display
+  this.loadAllAssetTypesForDisplay();
+
+  this.assetForm.patchValue({
+    userID: this.userId
+  });
+
+  this.assetForm.get('assetCategory')
+    ?.valueChanges.subscribe(() => {
+
+      this.loadAssetTypes();
     });
-this.assetForm.get('assetCategory')?.valueChanges.subscribe(() => {
-  this.loadAssetTypes();   // ✅ reuse same method
-});
-    this.loadEmployeesAndStatuses(); // load employees & statuses first
-  }
-  loadAllAssetTypesForDisplay() {
+
+  this.loadEmployeesAndStatuses();
+}
+  loadCompanyDetails() {
+
+  const companyId = Number(sessionStorage.getItem('CompanyId'));
+
+  this.service.getCompanyById(companyId).subscribe({
+    next: async (company: any) => {
+
+      this.companyName = company?.companyName || 'Company';
+      this.companyAddress = company?.companyAddress || 'Hyderabad';
+
+      const logo = company?.companyLogo;
+
+      if (logo && logo.trim() !== '') {
+
+        if (logo.startsWith('data:')) {
+          this.companyLogoBase64 = logo;
+        } else {
+
+          const logoPath = logo.replace(/\\/g, '/');
+          const fullUrl = `${environment.baseurl}/${logoPath}`;
+
+          this.companyLogoBase64 =
+            await this.getBase64ImageFromURL(fullUrl);
+        }
+
+      } else {
+        this.setDefaultLogo();
+      }
+    },
+
+    error: () => {
+      this.setDefaultLogo();
+    }
+  });
+}
+
+setDefaultLogo() {
+
+  const defaultLogo = '/assets/images/cor-logo.png';
+
+  this.getBase64ImageFromURL(defaultLogo)
+    .then(base64 => this.companyLogoBase64 = base64)
+    .catch(() => this.companyLogoBase64 = '');
+}
+
+getBase64ImageFromURL(url: string): Promise<string> {
+
+  return new Promise((resolve, reject) => {
+
+    const img = new Image();
+
+    img.crossOrigin = 'anonymous';
+    img.src = url;
+
+    img.onload = () => {
+
+      const canvas = document.createElement('canvas');
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext('2d');
+
+      ctx?.drawImage(img, 0, 0);
+
+      resolve(canvas.toDataURL('image/png'));
+    };
+
+    img.onerror = err => reject(err);
+  });
+}
+//   loadAllAssetTypesForDisplay() {
+//   this.service.getAssetTypesByCompanyRegion(
+//     this.companyId,
+//     this.regionId,
+//     0   // get all types
+//   ).subscribe((res: any) => {
+//     this.assetTypes = res.data || res;
+//   });
+// }
+loadAllAssetTypesForDisplay() {
+
   this.service.getAssetTypesByCompanyRegion(
     this.companyId,
     this.regionId,
-    0   // get all types
+    0
   ).subscribe((res: any) => {
-    this.assetTypes = res.data || res;
+
+    this.allAssetTypes = res.data || res;
+
+    console.log('ALL TYPES', this.allAssetTypes);
   });
 }
   loadCurrency() {
@@ -73,12 +197,277 @@ this.assetForm.get('assetCategory')?.valueChanges.subscribe(() => {
       this.currencies = res.data || res;
     });
   }
+downloadPDF() {
 
+  if (!this.assets.length) {
+
+    Swal.fire(
+      "No Data",
+      "No asset records to export",
+      "warning"
+    );
+
+    return;
+  }
+
+  const doc = new jsPDF();
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+
+  // ================= HEADER =================
+
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+
+  doc.text(this.companyName, 14, 12);
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  doc.text(
+    `Generated: ${new Date().toLocaleDateString()}`,
+    pageWidth - 14,
+    12,
+    { align: 'right' }
+  );
+
+  // ================= LOGO =================
+
+  if (this.companyLogoBase64) {
+
+    doc.addImage(
+      this.companyLogoBase64,
+      'PNG',
+      (pageWidth / 2) - 20,
+      5,
+      40,
+      20
+    );
+  }
+
+  // ================= LINE =================
+
+  doc.setDrawColor(200);
+
+  doc.line(14, 30, pageWidth - 14, 30);
+
+  // ================= TITLE =================
+
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+
+  doc.text(
+    "ASSET REPORT",
+    pageWidth / 2,
+    42,
+    { align: 'center' }
+  );
+
+  // ================= WATERMARK =================
+
+  if (this.companyLogoBase64) {
+
+    doc.saveGraphicsState();
+
+    (doc as any).setGState(
+      new (doc as any).GState({ opacity: 0.08 })
+    );
+
+    doc.addImage(
+      this.companyLogoBase64,
+      'PNG',
+      pageWidth / 2 - 60,
+      pageHeight / 2 - 40,
+      120,
+      80
+    );
+
+    doc.restoreGraphicsState();
+  }
+
+  // ================= TABLE DATA =================
+
+  const tableData = this.assets.map(item => [
+
+    item.assetName || '-',
+    item.assetCode || '-',
+    this.getAssetCategoryName(item.assetCategory) || '-',
+    this.getAssetTypeName(item.assetType) || '-',
+    item.assetLocation || '-',
+    `${item.currencyCode || '-'}  ${item.assetCost || '-'}`,
+    item.assetModel || '-',
+    item.purchaseOrder || '-',
+    this.getStatusName(item.assetStatusID) || '-'
+  ]);
+
+  autoTable(doc, {
+
+    startY: 55,
+
+    head: [[
+      'Asset Name',
+      'Asset Code',
+      'Category',
+      'Type',
+      'Location',
+      'Cost',
+      'Model',
+      'PO',
+      'Status'
+    ]],
+
+    body: tableData,
+
+    theme: 'grid',
+
+    styles: {
+      fontSize: 8,
+      cellPadding: 2,
+      halign: 'center',
+      valign: 'middle'
+    },
+
+    headStyles: {
+      fillColor: [200, 0, 0],
+      textColor: 255,
+      fontStyle: 'bold'
+    },
+
+    didParseCell: (data) => {
+
+      if (data.column.index === 8 &&
+          data.cell.section === 'body') {
+
+        const status =
+          (data.cell.raw || '')
+          .toString()
+          .toLowerCase();
+
+        if (status.includes('active')) {
+
+          data.cell.styles.textColor = [0, 128, 0];
+          data.cell.styles.fontStyle = 'bold';
+        }
+
+        else if (status.includes('inactive')) {
+
+          data.cell.styles.textColor = [255, 0, 0];
+          data.cell.styles.fontStyle = 'bold';
+        }
+      }
+    },
+
+    didDrawPage: () => {
+
+      doc.setFontSize(9);
+
+      doc.text(
+        `Page ${doc.getCurrentPageInfo().pageNumber}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: 'center' }
+      );
+    }
+  });
+
+  doc.save('Asset_Report.pdf');
+}
+downloadExcel() {
+
+  if (!this.assets.length) {
+
+    Swal.fire(
+      "No Data",
+      "No asset records to export",
+      "warning"
+    );
+
+    return;
+  }
+
+  const exportData = this.assets.map(item => ({
+
+    AssetName: item.assetName,
+    AssetCode: item.assetCode,
+    Category: this.getAssetCategoryName(item.assetCategory),
+    Type: this.getAssetTypeName(item.assetType),
+    Location: item.assetLocation,
+    Cost: `${item.currencyCode} ${item.assetCost}`,
+    Model: item.assetModel,
+    PurchaseOrder: item.purchaseOrder,
+    WarrantyStart:
+      item.warrantyStartDate
+        ? new Date(item.warrantyStartDate).toLocaleDateString()
+        : '',
+
+    WarrantyEnd:
+      item.warrantyEndDate
+        ? new Date(item.warrantyEndDate).toLocaleDateString()
+        : '',
+
+    ReturnDate:
+      item.assetReturnDate
+        ? new Date(item.assetReturnDate).toLocaleDateString()
+        : '',
+
+    Status: this.getStatusName(item.assetStatusID)
+  }));
+
+  const worksheet: XLSX.WorkSheet =
+    XLSX.utils.json_to_sheet(exportData);
+
+  const workbook: XLSX.WorkBook = {
+
+    Sheets: {
+      'Asset Report': worksheet
+    },
+
+    SheetNames: ['Asset Report']
+  };
+
+  const excelBuffer: any = XLSX.write(workbook, {
+
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const data: Blob = new Blob(
+    [excelBuffer],
+    {
+      type: 'application/octet-stream'
+    }
+  );
+
+  FileSaver.saveAs(
+    data,
+    'Asset_Report.xlsx'
+  );
+}
+// loadAssetTypes() {
+//   const categoryId = this.assetForm.get('assetCategory')?.value;
+
+//   if (!categoryId) {
+//     this.assetTypes = [];   // ✅ clear dropdown
+//     return;
+//   }
+
+//   this.service.getAssetTypesByCompanyRegion(
+//     this.companyId,
+//     this.regionId,
+//     categoryId
+//   ).subscribe((res: any) => {
+//     this.assetTypes = res.data || res;
+//   });
+// }
 loadAssetTypes() {
-  const categoryId = this.assetForm.get('assetCategory')?.value;
+
+  const categoryId =
+    this.assetForm.get('assetCategory')?.value;
 
   if (!categoryId) {
-    this.assetTypes = [];   // ✅ clear dropdown
+
+    this.assetTypes = [];
     return;
   }
 
@@ -87,6 +476,7 @@ loadAssetTypes() {
     this.regionId,
     categoryId
   ).subscribe((res: any) => {
+
     this.assetTypes = res.data || res;
   });
 }
@@ -200,11 +590,24 @@ const loggedUserId = user.userId;
 
       const userAssets = res.filter(a => a.userID === loggedUserId);
 
-      this.assets = userAssets.map(a => ({
-        ...a,
-        employeeName: this.employees.find(e => e.userId === a.userID)?.fullName ?? '',
-        assetStatusName: this.assetStatuses.find(s => s.assetStatusId === a.assetStatusID)?.assetStatusName ?? ''
-      }));
+      this.assets = userAssets.map((a: any) => ({
+
+  ...a,
+
+  assetType: a.assetType || a.assetTypeId,
+  assetCategory: a.assetCategory || a.assetCategoryId,
+
+  employeeName:
+    this.employees.find(
+      e => e.userId === a.userID
+    )?.fullName ?? '',
+
+  assetStatusName:
+    this.assetStatuses.find(
+      s => s.assetStatusId === a.assetStatusID
+    )?.assetStatusName ?? ''
+
+}));
 
       this.currentPage = 1;
 
@@ -265,12 +668,32 @@ const loggedUserId = user.userId;
     this.resetForm();
     this.loadAssets();
   }
+// getAssetTypeName(id?: number): string {
+//   if (!id || this.assetTypes.length === 0) return '-'; // ✅ ADD
+//   return this.assetTypes.find(x => x.assetTypeId === id)?.assetTypeName ?? '-';
+// }
 getAssetTypeName(id?: number): string {
-  if (!id || this.assetTypes.length === 0) return '-'; // ✅ ADD
-  return this.assetTypes.find(x => x.assetTypeId === id)?.assetTypeName ?? '-';
+
+  if (!id) return '-';
+
+  const type = this.allAssetTypes.find(
+    x => Number(x.assetTypeId) === Number(id)
+  );
+
+  return type?.assetTypeName || '-';
 }
+// getAssetCategoryName(id?: number): string {
+//   return this.assetCategories.find(x => x.assetCategoryId === id)?.assetCategoryName ?? '-';
+// }
 getAssetCategoryName(id?: number): string {
-  return this.assetCategories.find(x => x.assetCategoryId === id)?.assetCategoryName ?? '-';
+
+  if (!id) return '-';
+
+  const category = this.assetCategories.find(
+    x => Number(x.assetCategoryId) === Number(id)
+  );
+
+  return category?.assetCategoryName || '-';
 }
 
 
