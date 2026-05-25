@@ -17,7 +17,10 @@ import { environment } from '../../../../environments/environment.prod';
 export class AssetRequestComponent {
   assetRequestForm!: FormGroup;
   requests: any[] = [];
-
+departmentName: any;
+companyId :any;
+   regionId :any
+   userId :any;
 
   // ✅ Static Dropdown Data
   assetTypes: any[] = [];
@@ -25,19 +28,24 @@ export class AssetRequestComponent {
 
   assetCategories: any[] = [];
   priorities: any[] = [];
-  companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
-  regionId = Number(sessionStorage.getItem('RegionId')) || 0;
-  userId = Number(sessionStorage.getItem('UserId')) || 0;
+  // companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
+  // regionId = Number(sessionStorage.getItem('RegionId')) || 0;
+  // userId = Number(sessionStorage.getItem('UserId')) || 0;
 
 
   constructor(private fb: FormBuilder, private service: AdminService, private helpdeskService: HelpdeskService
     , private profileService: EmployeeResignationService, private assetService: AssetService) { }
 
   ngOnInit() {
+     this.departmentName = sessionStorage.getItem('DepartmentName');
+        console.log('Department Name from session:', this.departmentName);
+    this.companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
+  this. regionId = Number(sessionStorage.getItem('RegionId')) || 0;
+  this.userId = Number(sessionStorage.getItem('UserId')) || 0;
     this.assetRequestForm = this.fb.group({
       employeeName: [''],
       employeeId: [''],
-      department: [''],
+       departmentName: this.departmentName , 
 
       assetType: ['', Validators.required],
       assetCategory: [''],
@@ -74,7 +82,7 @@ this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
           this.assetRequestForm.patchValue({
             employeeName: data.fullName,
             employeeId: data.employeeCode,
-            department: data.rolename   // department = rolename
+             departmentName: this.departmentName || '',   // department = rolename   // department = rolename
           });
 
         }
@@ -147,7 +155,7 @@ this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
 
       employeeName: v.employeeName,
       employeeCode: v.employeeId,
-      department: v.department,
+       departmentName: v.departmentName,
 
       assetType: v.assetType,
       assetCategory: v.assetCategory,

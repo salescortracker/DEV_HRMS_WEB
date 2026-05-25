@@ -30,6 +30,8 @@ monthNames=[
     selectedEvent:any=null
 
     items:CalendarItem[]=[]
+    itemsByDate: Record<string, CalendarItem[]> = {}
+    calendarDays:(Date|null)[] = []
 
     /* Legend toggles */
 
@@ -55,11 +57,10 @@ monthNames=[
         const userId=Number(sessionStorage.getItem("UserId"))
         this.companyId=Number(sessionStorage.getItem("CompanyId"))
         this.regionId=Number(sessionStorage.getItem("RegionId"))
-        // this.loadCalendar(userId)
+        this.updateCalendar()
         this.loadWeekoffs(this.companyId, this.regionId)
         this.loadHolidays(this.companyId, this.regionId)
-        this.loadUserLeaves(userId) 
-       
+        this.loadUserLeaves(userId)
     }
 
 loadUserLeaves(userId:number){
@@ -87,6 +88,7 @@ status:x.status
 })
 
 this.items = [...this.items, ...leaveItems]
+this.buildItemsByDate()
 
 })
 
@@ -102,6 +104,7 @@ this.items = [...this.items, ...leaveItems]
     }else{
     this.currentMonth--
     }
+    this.updateCalendar()
 
     }
 
@@ -113,6 +116,7 @@ this.items = [...this.items, ...leaveItems]
     }else{
     this.currentMonth++
     }
+    this.updateCalendar()
 
     }
 loadWeekoffs(companyId:number, regionId:number){
@@ -123,7 +127,7 @@ const weekoffDays = res.data
   .filter((x:any)=>x.isActive && x.weekoffDate)   // ignore null
   .map((x:any)=>x.weekoffDate)
 
-const calendarDays = this.getCalendarDays()
+const calendarDays = this.calendarDays
 
 calendarDays.forEach((d:any)=>{
 
@@ -134,32 +138,41 @@ const dayName = d.toLocaleDateString('en-US',{weekday:'long'})
 if(weekoffDays.includes(dayName)){
 
 this.items.push({
-date:d.toLocaleDateString('en-CA'),
-type:'weekoff',
-title:'Weekoff'
+ date:d.toLocaleDateString('en-CA'),
+ type:'weekoff',
+ title:'Weekoff'
 })
 
 }
 
 })
 
+this.buildItemsByDate()
+
 })
 
 }
 
-// Get Holidays
+    buildItemsByDate(){
+      this.itemsByDate = this.items.reduce((map, item) => {
+        const key = item.date
+        if (!map[key]) {
+          map[key] = []
+        }
+        map[key].push(item)
+        return map
+      }, {} as Record<string, CalendarItem[]>)
+    }
 
-isWeekoffDate(date:any){
+    isWeekoffDate(date:any){
 
-if(!date) return false
+    if(!date) return false
 
-const formatted = date.toLocaleDateString('en-CA')
+    const formatted = date.toLocaleDateString('en-CA')
 
-return this.items.some(item => 
-  item.date === formatted && item.type === 'weekoff'
-)
+    return (this.itemsByDate[formatted] || []).some(item => item.type === 'weekoff')
 
-}
+    }
 
 loadHolidays(companyId:number, regionId:number){
 
@@ -176,6 +189,7 @@ const holidayItems = res.data
   }))
 
 this.items = [...this.items, ...holidayItems]
+this.buildItemsByDate()
 
 }
 
@@ -186,29 +200,31 @@ this.items = [...this.items, ...holidayItems]
     /* Calendar Days */
 
     getCalendarDays(){
+      return this.calendarDays
+    }
 
-const firstDay = new Date(this.currentYear,this.currentMonth,1)
-const lastDay = new Date(this.currentYear,this.currentMonth+1,0)
+    updateCalendar(){
+      const firstDay = new Date(this.currentYear,this.currentMonth,1)
+      const lastDay = new Date(this.currentYear,this.currentMonth+1,0)
+      const days:(Date|null)[] = []
 
-const days:any[]=[]
+      let startDay = firstDay.getDay()
+      startDay = startDay === 0 ? 6 : startDay - 1
 
-// convert Sunday=0 to last position
-let startDay = firstDay.getDay()
-startDay = startDay === 0 ? 6 : startDay - 1
+      for(let i=0;i<startDay;i++){
+        days.push(null)
+      }
 
-// empty cells before first date
-for(let i=0;i<startDay;i++){
-days.push(null)
-}
+      for(let i=1;i<=lastDay.getDate();i++){
+        days.push(new Date(this.currentYear,this.currentMonth,i))
+      }
 
-// month days
-for(let i=1;i<=lastDay.getDate();i++){
-days.push(new Date(this.currentYear,this.currentMonth,i))
-}
+      this.calendarDays = days
+    }
 
-return days
-
-}
+    trackByIndex(index:number, item:any){
+      return index
+    }
 
 
   
@@ -219,29 +235,24 @@ return days
     if(!date) return []
 
     const formatted=date.toLocaleDateString('en-CA')
+    const items = this.itemsByDate[formatted] || []
 
-    return this.items.filter(item=>{
-
-    const matchDate=item.date===formatted
-
-    const matchType=
-
-    (item.type==='asset' && this.showAssets) ||
-    (item.type==='expense' && this.showExpenses) ||
-    (item.type==='companyNews' && this.showCompanyNews) ||
-    (item.type==='policy' && this.showPolicies) ||
-    (item.type==='helpdesk' && this.showHelpdesk) ||
-    (item.type==='performance' && this.showPerformance) ||
-    (item.type==='leave' && this.showLeaves) ||
-    (item.type==='timesheet' && this.showTimesheet) ||
-    (item.type==='profile' && this.showProfile) ||
-    (item.type==='birthday' && this.showBirthdays) ||
-    (item.type==='workAnniversary' && this.showAnniversary) ||
-    (item.type==='weekoff' && this.showWeekoff)||
-    (item.type==='holiday' && this.showHoliday) 
-
-    return matchDate && matchType
-
+    return items.filter(item => {
+      return (
+        (item.type==='asset' && this.showAssets) ||
+        (item.type==='expense' && this.showExpenses) ||
+        (item.type==='companyNews' && this.showCompanyNews) ||
+        (item.type==='policy' && this.showPolicies) ||
+        (item.type==='helpdesk' && this.showHelpdesk) ||
+        (item.type==='performance' && this.showPerformance) ||
+        (item.type==='leave' && this.showLeaves) ||
+        (item.type==='timesheet' && this.showTimesheet) ||
+        (item.type==='profile' && this.showProfile) ||
+        (item.type==='birthday' && this.showBirthdays) ||
+        (item.type==='workAnniversary' && this.showAnniversary) ||
+        (item.type==='weekoff' && this.showWeekoff) ||
+        (item.type==='holiday' && this.showHoliday)
+      )
     })
 
     }

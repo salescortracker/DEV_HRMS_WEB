@@ -21,7 +21,7 @@ export class MyAssetComponent {
 assetCategories: any[] = [];
 priorities: any[] = [];
 filteredRequests: any[] = [];
-
+ departmentName: any;
    companyId!: number;
    regionId!: number;
   
@@ -43,6 +43,7 @@ filteredRequests: any[] = [];
   }
 this.companyId = Number(sessionStorage.getItem('CompanyId'));
   this.regionId = Number(sessionStorage.getItem('RegionId'));
+  this.departmentName = sessionStorage.getItem('DepartmentName');
   this.userId = Number(userId);
     this.loadRequests();
     this.loadUserFromSession();
