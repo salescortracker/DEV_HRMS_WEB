@@ -720,7 +720,8 @@
 }
 
 #tab1:checked ~ #content1,
-#tab2:checked ~ #content2 {
+#tab2:checked ~ #content2,
+#tab3:checked ~ #content3 {
   display:block;
 }
 
@@ -806,7 +807,8 @@ tbody tr:hover {
 }
 
 #tab1:checked ~ .tab-labels label[for="tab1"],
-#tab2:checked ~ .tab-labels label[for="tab2"] {
+#tab2:checked ~ .tab-labels label[for="tab2"],
+#tab3:checked ~ .tab-labels label[for="tab3"] {
   background:#b02828;
   color:#fff;
 }
@@ -820,7 +822,8 @@ tbody tr:hover {
 }
 
 #tab1:checked ~ .tab-content#content1,
-#tab2:checked ~ .tab-content#content2 {
+#tab2:checked ~ .tab-content#content2,
+ #tab3:checked ~ .tab-content#content3{
   display:block;
 }
 

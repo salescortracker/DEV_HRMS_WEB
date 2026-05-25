@@ -97,4 +97,16 @@ export class KpiPerformanceService {
   updateStatus(body: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/Manager/UpdateStatus`, body);
   }
+
+
+
+
+getPerformanceReports(userId: number, roleName: string) {
+
+  return this.http.get<any>(
+    `${this.baseUrl}/Manager/GetPerformanceReports?userId=${userId}&roleName=${roleName}`
+  );
+}
+
+
 }
