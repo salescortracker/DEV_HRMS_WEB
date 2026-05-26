@@ -22,22 +22,17 @@
         <!-- Employee -->
         <div class="col-md-4">
           <label class="form-label">Employee Name <span class="text-danger">*</span></label>
-<select
-  class="form-select"
-  formControlName="userId"
-  (ngModelChange)="onEmployeeChange($event)">
+          <select class="form-select" formControlName="userId">
 
-  <option value="">Select Employee</option>
+            <option value="">Select Employee</option>
 
-  <option
-    *ngFor="let emp of employees"
-    [ngValue]="emp.userId">
+            <option *ngFor="let emp of availableEmployees" [ngValue]="emp.userId">
 
-    {{ emp.fullName }} ({{ emp.employeeCode }})
+              {{ emp.fullName }} ({{ emp.employeeCode }})
 
-  </option>
+            </option>
 
-</select>
+          </select>
         </div>
 
         <!-- Employee Code -->
@@ -62,9 +57,9 @@
         <!-- Start Date -->
         <div class="col-md-4">
           <label class="form-label">Start Date <span class="text-danger">*</span></label>
-          <input type="date" class="form-control" formControlName="startDate" >
+          <input type="date" class="form-control" formControlName="startDate">
         </div>
-        
+
 
         <!-- End Date -->
         <div class="col-md-4">
@@ -93,7 +88,7 @@
     <h5 class="mb-3">Employee Assigned Shifts</h5>
 
     <table class="table table-bordered table-hover">
-      <thead >
+      <thead>
         <tr>
           <th>Employee Name</th>
           <th>Employee Code</th>
