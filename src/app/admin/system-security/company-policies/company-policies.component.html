@@ -76,9 +76,12 @@
 
                 <option value="">Select Category</option>
 
-                <option *ngFor="let c of categories" [value]="c">
-                  {{c}}
-                </option>
+               <option *ngFor="let c of categories"
+                          [value]="c.PolicyCategoryName">
+
+                    {{ c.PolicyCategoryName }}
+
+                  </option>
 
               </select>
             </div>
