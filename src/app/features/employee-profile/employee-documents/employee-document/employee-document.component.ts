@@ -81,8 +81,18 @@ getDocumentTypeName(id: number): string {
   return type ? type.typeName : '';
 }
 
- viewDocument(path: string,download = false) {
-    this.adminService.ViewDocument(path, download);
+  viewDocument(fileName: string, filePath?: string, download = false) {
+    if (!fileName && !filePath) {
+      Swal.fire('Error', 'File not found', 'error');
+      return;
+    }
+    
+    // Use filePath if available, otherwise construct from fileName
+    let fileUrl = filePath 
+      ? `${environment.baseurl}/${filePath.trim()}`
+      : `${environment.baseurl}/Uploads/EmployeeDocuments/${fileName.trim()}`;
+    
+    window.open(fileUrl, '_blank');
   }
 
 loadDocumentTypes() {

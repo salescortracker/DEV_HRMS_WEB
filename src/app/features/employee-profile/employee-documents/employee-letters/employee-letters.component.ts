@@ -113,9 +113,18 @@ export class EmployeeLettersComponent {
     });
   }
 
-  viewDocument(path: string, download = false) {
-    this.adminService.ViewDocument(environment.LettersPath + path, download);
+ viewDocument(path: string, download: boolean = false) {
+
+  if (!path) {
+    Swal.fire('Error', 'File not found', 'error');
+    return;
   }
+
+  const fileUrl = `${environment.baseurl}/${environment.LettersPath}${path.trim()}`;
+
+  window.open(fileUrl, '_blank');
+
+}
 
   getDocumentTypeName(id: string | number): string {
     const numericId = Number(id);
@@ -241,7 +250,11 @@ export class EmployeeLettersComponent {
   saveLetter(form: any) {
      this.isSubmitted = true;
 
-    if (form.invalid || this.selectedEmployees.length === 0 || this.selectedFiles.length === 0) {
+    if (
+  form.invalid ||
+  this.selectedEmployees.length === 0 ||
+  (!this.form.fileName && this.selectedFiles.length === 0)
+) {
       Swal.fire('Error', 'Select employees and files', 'error');
       return;
     }
@@ -326,18 +339,11 @@ export class EmployeeLettersComponent {
       employeeName: names[index]
     }));
   }
-  // ✅ FIX: bind existing files for display
-this.selectedFiles = [];
+      // clear newly selected files
+    this.selectedFiles = [];
 
-if (item.fileName) {
-  const files = item.fileName.split(',');
-
-  this.selectedFiles = files.map((f: string) => ({
-    name: f
-  } as File));
-}
-    this.isEdit = true;
-
+    // store existing file names separately
+    this.form.fileName = item.fileName;
   }
 
 
