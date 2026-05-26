@@ -58,7 +58,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { LocationStrategy,HashLocationStrategy } from '@angular/common';
+// import { LocationStrategy,HashLocationStrategy } from '@angular/common';
 import { EmployeeCertificationsComponent } from './features/employee-profile/employee-skills/employee-certifications/employee-certifications.component';
 import { EmployeeEducationComponent } from './features/employee-profile/employee-skills/employee-education/employee-education.component';
 import { EmployeeJobhistoryComponent } from './features/employee-profile/employee-skills/employee-jobhistory/employee-jobhistory.component';
@@ -282,7 +282,7 @@ import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticke
 
   providers: [
     provideClientHydration(withEventReplay()),
-   {provide: LocationStrategy, useClass: HashLocationStrategy},
+  //  {provide: LocationStrategy, useClass: HashLocationStrategy},
    {
     provide: HTTP_INTERCEPTORS,
     useClass: SpinnerInterceptor,
