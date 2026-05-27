@@ -38,6 +38,50 @@ name="DepartmentId">
 </select>
 </div>
 
+
+
+<!-- Company -->
+<div class="col-md-6">
+  <label>Company</label>
+
+  <select class="form-select"
+          [(ngModel)]="event.CompanyId"
+          name="CompanyId"
+          (change)="onCompanyChange()">
+
+    <option [ngValue]="null">Select Company</option>
+
+    <option *ngFor="let c of companies"
+            [ngValue]="c.companyId">
+
+      {{ c.companyName }}
+
+    </option>
+
+  </select>
+</div>
+
+<!-- Region -->
+<div class="col-md-6">
+  <label>Region</label>
+
+  <select class="form-select"
+          [(ngModel)]="event.RegionId"
+          name="RegionId">
+
+    <option [ngValue]="null">Select Region</option>
+
+    <option *ngFor="let r of filteredRegions"
+            [ngValue]="r.regionID">
+
+      {{ r.regionName }}
+
+    </option>
+
+  </select>
+</div>
+
+
 <div class="col-md-6">
 <label>Event Date</label>
 <input type="date"
