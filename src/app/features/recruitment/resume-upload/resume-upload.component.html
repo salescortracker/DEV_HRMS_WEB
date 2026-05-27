@@ -8,9 +8,17 @@
       <div class="card-header fw-bold">Personal Details</div>
       <div class="card-body">
         <div class="row g-3">
-          <!-- Resume -->
-            <div class="col-md-3">
-
+ <!-- Resume -->
+          <div class="col-md-3">
+            <label class="form-label">
+              Resume <span class="text-danger" *ngIf="!isEditMode"></span>
+            </label>
+            <input type="file" class="form-control" [required]="!isEditMode" (change)="onResumeFiles($event)">
+             <div *ngIf="existingResumeName" class="mt-1">
+                <small class="text-muted">
+                  Current Resume:
+                  <a (click)="viewDocument(existingResumeName)"
+                    style="cursor:pointer; color:#0d6efd; font-weight:500;">
               <label class="form-label">
                 Resume
                 <span class="text-danger" *ngIf="!isEditMode">*</span>
@@ -23,24 +31,22 @@
                 (change)="onResumeFiles($event)"
               />
 
-              <!-- Parsing -->
               <small class="text-info" *ngIf="isParsing">
                 Parsing resume...
               </small>
 
-              <!-- Existing Resume -->
               <div *ngIf="existingResumeName" class="mt-1">
-                <small class="text-muted">
+                <small>
                   Current Resume:
                   <a
                     (click)="viewDocument(existingResumeName)"
-                    style="cursor:pointer; color:#0d6efd; font-weight:500;"
+                    style="cursor:pointer; color:#0d6efd;"
                   >
                     View Resume
                   </a>
                 </small>
               </div>
-
+          </div>
             </div>
           <div class="col-md-3">
             <label class="form-label">
@@ -161,8 +167,8 @@
 
           <div class="col-md-3">
             <label class="form-label">Designation</label>
-          <!-- Resume -->
-          <!-- <div class="col-md-3">
+            <!-- Resume -->
+            <!-- <div class="col-md-3">
               <label class="form-label">
                 Resume
                 <span class="text-danger" *ngIf="!isEditMode">*</span>
@@ -192,28 +198,21 @@
               </div>
             </div> -->
 
-            <input class="form-control"
-                  list="designationList"
-                  [(ngModel)]="candidate.designation"
-                  name="designation"
-                  placeholder="Select or Type Designation"
-                  (change)="onDesignationChange()" />
+            <input class="form-control" list="designationList" [(ngModel)]="candidate.designation" name="designation"
+              placeholder="Select or Type Designation" (change)="onDesignationChange()" />
 
             <datalist id="designationList">
-              <option *ngFor="let d of designations"
-                      [value]="d.designationName">
+              <option *ngFor="let d of designations" [value]="d.designationName">
               </option>
             </datalist>
           </div>
 
 
-         <div class="col-md-3">
+          <div class="col-md-3">
             <label class="form-label">Department</label>
 
-            <input class="form-control"
-                  [(ngModel)]="candidate.department"
-                  name="department"
-                  placeholder="Enter Department" />
+            <input class="form-control" [(ngModel)]="candidate.department" name="department"
+              placeholder="Enter Department" />
           </div>
 
 
@@ -283,11 +282,8 @@
           <div class="col-md-3">
             <label class="form-label">Designation</label>
             <!-- <input class="form-control" [(ngModel)]="expForm.designation" name="expDesignation"> -->
-            <input class="form-control"
-              [(ngModel)]="expForm.designation"
-              name="expDesignation"
-              placeholder="Enter Designation"
-              required />
+            <input class="form-control" [(ngModel)]="expForm.designation" name="expDesignation"
+              placeholder="Enter Designation" required />
           </div>
 
           <div class="col-md-3">
@@ -433,7 +429,8 @@
   <!-- ================= SAVE SECTION ================= -->
   <!-- <div class="card mb-4"> -->
   <div class="card-body text-end">
-    <button class="btn btn-success px-4" [disabled]="!candidate.firstName || !candidate.email" (click)="saveCandidate()">
+    <button class="btn btn-success px-4" [disabled]="!candidate.firstName || !candidate.email"
+      (click)="saveCandidate()">
       {{ isEditMode ? 'Update Candidate' : 'Save Candidate' }}
     </button>
     <button class="btn btn-success px-4" type="button" (click)="onReset()">

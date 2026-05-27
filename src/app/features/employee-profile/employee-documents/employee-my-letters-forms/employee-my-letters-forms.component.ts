@@ -67,7 +67,17 @@ loadMyLetters() {
 
 
   viewDocument(file: string) {
-    window.open(environment.LettersPath + file, '_blank');
+    if (!file) {
+      return;
+    }
+
+    const trimmedFile = file.trim();
+    const isAbsolute = /^https?:\/\//i.test(trimmedFile);
+    const path = isAbsolute
+      ? trimmedFile
+      : `${environment.baseurl}/${environment.LettersPath.replace(/^\/+/, '')}${trimmedFile}`;
+
+    window.open(path, '_blank');
   }
 
 }

@@ -48,6 +48,7 @@ export class LoginComponent {
 
     this.loginService.login(this.username, this.password).subscribe({
       next: (response) => {
+        console.log('login details',response);
         this.loading = false;
         if (response && response.message) {
           // ✅ Save session or token

@@ -30,12 +30,11 @@ isParsing:any;
   // -------- Sorting --------
   sortColumn: string | null = null;
   sortDirection: 'asc' | 'desc' = 'asc';
-
   // -------- Pagination --------
   pageSize = 5;
   currentPage = 1;
   pageSizeOptions = [5, 10, 20, 50];
-
+  isParsing: boolean =false
 
   references: any[] = [];
 maritalStatuses: any[] = [];
@@ -88,7 +87,7 @@ maritalStatuses: any[] = [];
   editingCandidateId: number | null = null;
   editingExpIndex: number | null = null;
   editingEduIndex: number | null = null;
-  existingResumeName: string | null = null;
+  existingResumeName: string | any;
   expToYears: number[] = [];
   eduToYears: number[] = [];
   applications: any[] = [];
@@ -679,7 +678,7 @@ private bindCandidateForm(res: any) {
     this.selectedCandidate = null;
 
     this.resumeFile = null;
-    this.existingResumeName = null;
+    this.existingResumeName = '';
 
     this.expForm = {
       from: '',

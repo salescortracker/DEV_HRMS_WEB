@@ -15,6 +15,7 @@ export class CompanyEventsComponent {
   regions: any[] = [];
   departments: any[] = [];
 
+filteredRegions: any[] = [];
   eventsList: any[] = [];
   event: any = this.resetEvent();
 
@@ -41,9 +42,21 @@ export class CompanyEventsComponent {
     this.loadDepartments();
     this.getEvents();
     this.loadEventTypes();
+        this.onCompanyChange();
+
 
   }
+onCompanyChange() {
 
+  this.event.RegionId = null;
+
+  this.filteredRegions = this.event.CompanyId
+    ? this.regions.filter(r =>
+        Number(r.companyID) === Number(this.event.CompanyId)
+      )
+    : [];
+
+}
   loadCompanies() {
     this.cmpservice.getCompanies(null, this.userId).subscribe((res: any) => {
       this.companies = res;
@@ -239,6 +252,11 @@ eventTypes:any[]=[];
     this.event = { ...e };
 
     this.event.EventDateString = new Date(e.EventDate).toISOString().split('T')[0];
+
+      // ✅ FILTER REGIONS BASED ON COMPANY
+  this.filteredRegions = this.regions.filter(r =>
+    Number(r.companyID) === Number(this.event.CompanyId)
+  );
 
   }
 

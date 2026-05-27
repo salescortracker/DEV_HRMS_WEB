@@ -47,22 +47,38 @@ export class ShiftAllocationComponent {
     this.currentUserRegionId = +(sessionStorage.getItem('RegionId') || '0');
   }
 
-  ngOnInit(): void {
-       this.currentUserCompanyId = Number(sessionStorage.getItem('CompanyId') || 0);
-    this.currentUserRegionId = Number(sessionStorage.getItem('RegionId') || 0);
-    this.initForm();
-    this.shiftForm.get('startDate')?.valueChanges.subscribe(val => {
-    const endInput = document.querySelector<HTMLInputElement>('input[formControlName="endDate"]');
-    if (endInput) {
-      endInput.min = val; // End Date cannot be before Start Date
-    }
+ngOnInit(): void {
+
+  this.currentUserCompanyId = Number(sessionStorage.getItem('CompanyId') || 0);
+
+  this.currentUserRegionId = Number(sessionStorage.getItem('RegionId') || 0);
+
+  this.initForm();
+
+  // ADD HERE
+  this.shiftForm.get('userId')?.valueChanges.subscribe((userId) => {
+    this.onEmployeeChange(userId);
   });
-    this.loadLookups();
-    //this.getallShifts();
-    this.loadShifts();
-    this.loadAllocations();
-   
-  }
+
+  this.shiftForm.get('startDate')?.valueChanges.subscribe(val => {
+
+    const endInput = document.querySelector<HTMLInputElement>(
+      'input[formControlName="endDate"]'
+    );
+
+    if (endInput) {
+      endInput.min = val;
+    }
+
+  });
+
+  this.loadLookups();
+
+  this.loadShifts();
+
+  this.loadAllocations();
+
+}
 
   initForm() {
     this.shiftForm = this.fb.group({
@@ -160,11 +176,22 @@ export class ShiftAllocationComponent {
   });
 }
 get availableEmployees() {
+
   return this.employees.filter(emp => {
-    return !this.allocations.some(a => 
-      a.userID === emp.userId && this.getStatus(a) === 'Active'
+
+    // Allow current editing employee
+    if (this.editMode && emp.userId === this.shiftForm.get('userId')?.value) {
+      return true;
+    }
+
+    // Hide already assigned employees
+    return !this.allocations.some(a =>
+      a.userID === emp.userId &&
+      this.getStatus(a) === 'Active'
     );
+
   });
+
 }
 
 onEmployeeChange(userId: number) {
@@ -194,7 +221,8 @@ onEmployeeChange(userId: number) {
   validateDatesAndOverlap(dtoCandidate: ShiftAllocationDto): { ok: boolean; message?: string } {
     const start = dtoCandidate.startDate ? new Date(dtoCandidate.startDate) : null;
     const end = dtoCandidate.endDate ? new Date(dtoCandidate.endDate) : null;
-    const today = new Date(this.todayStr);
+   const today = new Date();
+today.setHours(0,0,0,0);
 
     if (!start) return { ok: false, message: 'Start Date is required' };
     if (start < today) return { ok: false, message: 'Start date cannot be earlier than today' };
@@ -228,7 +256,6 @@ onEmployeeChange(userId: number) {
   }
 
   onSubmit() {
-    debugger;
     if (this.shiftForm.invalid) {
 
       this.shiftForm.markAllAsTouched();
@@ -281,15 +308,18 @@ onEmployeeChange(userId: number) {
       createdDate: new Date().toISOString() 
     };
 
-    // const check = this.validateDatesAndOverlap(dto);
-    // if (!check.ok) {
-    //   Swal.fire({
-    //     icon: 'warning',
-    //     title: 'Overlap Detected',
-    //     text: check.message
-    //   });
-    //   return;
-    // }
+const check = this.validateDatesAndOverlap(dto);
+
+if (!check.ok) {
+
+  Swal.fire({
+    icon: 'warning',
+    title: 'Validation',
+    text: check.message
+  });
+
+  return;
+}
 
     if (!this.editMode) {
       this.svc.allocateShift(dto).subscribe({
@@ -396,61 +426,108 @@ onEdit(a: ShiftAllocationDto) {
   });
 
 }
+
 onDelete(id?: number) {
-  if (!id || id === 0) return;
+
+  if (!id || id === 0) {
+    return;
+  }
+
+  const allocation = this.allocations.find(
+    x => x.shiftAllocationId === id
+  );
+
+  if (!allocation) {
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'Validation',
+      text: 'Shift allocation record not found'
+    });
+
+    return;
+  }
 
   Swal.fire({
     title: 'Are you sure?',
-    text: "You won't be able to revert this!",
+    text: `Shift assigned to ${allocation.fullName}. Do you want to delete it?`,
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'No, cancel!',
+    confirmButtonText: 'Yes, Delete',
+    cancelButtonText: 'Cancel'
   }).then((result) => {
+
     if (result.isConfirmed) {
+
+      console.log('Deleting Allocation ID:', id);
+
       this.svc.deleteAllocation(id).subscribe({
+
         next: (res:any) => {
+
+          console.log('Delete Response:', res);
+
+          // REMOVE FROM UI IMMEDIATELY
+          this.allocations = this.allocations.filter(
+            x => x.shiftAllocationId !== id
+          );
+
           Swal.fire({
             icon: 'success',
-            title: 'Deleted!',
-            text: 'Shift deleted successfully',
-            timer: 1500,
+            title: 'Deleted',
+            text: 'Shift allocation deleted successfully',
+            timer: 2000,
             showConfirmButton: false
           });
-          // reload allocations after delete
+
+          // reload latest data
           this.loadAllocations();
-        },
-        error: (err:any) => {
-          console.error('Delete API error:', err);
-          // handle if backend sends 204
-          if (err.status === 204 || err.status === 200) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Deleted!',
-              text: 'Shift deleted successfully',
-              timer: 1500,
-              showConfirmButton: false
-            });
-            this.loadAllocations();
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Failed',
-              text: 'Delete failed'
-            });
+
+          // reset form if editing deleted record
+          if (this.editId === id) {
+            this.resetForm();
           }
+
+        },
+
+        error: (err:any) => {
+
+          console.error('Delete Error:', err);
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: err?.error?.message || 'Failed to delete allocation'
+          });
+
         }
+
       });
+
     }
+
   });
+
 }
 
+resetForm() {
 
-  resetForm() {
-    this.editMode = false;
-    this.editId = null;
-    this.shiftForm.reset({ isActive: true });
-  }
+  this.editMode = false;
+
+  this.editId = null;
+
+  this.shiftForm.reset({
+
+    userId: '',
+    employeeCode: '',
+    shiftID: '',
+    startDate: '',
+    endDate: '',
+    isActive: true
+
+  });
+
+}
 
   getStatus(a: ShiftAllocationDto): 'Active' | 'Inactive' {
     const today = new Date(this.todayStr);

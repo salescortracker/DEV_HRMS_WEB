@@ -151,19 +151,55 @@ onFileChange(event: any) {
 
     if (this.editMode && this.editId) {
       this.adminService.updateJobHistory(this.editId, payload).subscribe({
-        next: () => {
-          Swal.fire("Success", "Job History Updated Successfully", "success");
-          this.resetForm();
-          this.loadJobHistory();
-        }
+       next: () => {
+
+  Swal.fire(
+    "Success",
+    "Job History Added Successfully",
+    "success"
+  );
+
+  this.resetForm();
+
+  this.loadJobHistory();
+},
+
+error: (err) => {
+
+  Swal.fire(
+    "Error",
+    err?.error?.message ||
+    err?.error ||
+    "Something went wrong",
+    "error"
+  );
+}
       });
     } else {
       this.adminService.addJobHistory(formData).subscribe({
-        next: () => {
-          Swal.fire("Success", "Job History Added Successfully", "success");
-          this.resetForm();
-          this.loadJobHistory();
-        }
+       next: () => {
+
+  Swal.fire(
+    "Success",
+    "Job History Added Successfully",
+    "success"
+  );
+
+  this.resetForm();
+
+  this.loadJobHistory();
+},
+
+error: (err) => {
+
+  Swal.fire(
+    "Error",
+    err?.error?.message ||
+    err?.error ||
+    "Something went wrong",
+    "error"
+  );
+}
       });
     }
   }

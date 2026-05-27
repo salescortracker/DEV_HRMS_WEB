@@ -307,8 +307,13 @@ getAllocationsByCompanyRegion(companyId: number, regionId: number): Observable<S
   // deleteAllocation(id: number): Observable<any> {
   //   return this.http.delete(`${environment.apiUrl}/attendance/DeleteAllocation/${id}`);
   // }
-  deleteAllocation(id: number): Observable<any> {
-  return this.http.post(`${environment.apiUrl}/attendance/DeleteAllocation/${id}`, {});
+deleteAllocation(id: number): Observable<any> {
+
+  return this.http.post<any>(
+    `${environment.apiUrl}/attendance/DeleteAllocation/${id}`,
+    {}
+  );
+
 }
   getShiftallocationName(id: any): Observable<EmployeeShiftDto> {
     return this.http.get<EmployeeShiftDto>(`${environment.apiUrl}/attendance/ShiftallocationName/${id}`);
