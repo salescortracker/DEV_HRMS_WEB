@@ -27,11 +27,13 @@ export class EmployeeEmergencyContactComponent {
   ) {}
 
   ngOnInit(): void {
-      this.loadPermission();   // ✅ ADD THIS
+      this.initForm();
 
-    this.initForm();
-    this.loadrelationship();
-    this.getEmergencyContacts();
+  this.loadPermission();
+
+  this.loadrelationship();
+
+  this.getEmergencyContacts();
   }
 
   initForm() {
@@ -86,8 +88,8 @@ debugger;
       this.emergencyList = res.map(contact => ({
         ...contact,
         relationshipName: this.relationList.find(
-          r => r.id === contact.relationshipId
-        )?.relationshipName || 'N/A'
+  r => r.relationshipId === contact.relationshipId
+)?.relationshipName || 'N/A'
       }));
 
     });
@@ -107,7 +109,13 @@ debugger;
     Swal.fire("Updated successfully!", '', 'success');
   },
   error: (err) => {
-    Swal.fire("Permission Denied", err.error, "error");
+    Swal.fire(
+      "Error",
+      err?.error?.message ||
+      err?.error ||
+      "Something went wrong",
+      "error"
+    );
   }
 });
     } else {
@@ -117,9 +125,16 @@ debugger;
     this.getEmergencyContacts();
     Swal.fire("Created successfully!", '', 'success');
   },
-  error: (err) => {
-    Swal.fire("Permission Denied", err.error, "error");
-  }
+error: (err) => {
+
+  Swal.fire(
+    "Error",
+    err?.error?.message ||
+    err?.error ||
+    "Something went wrong",
+    "error"
+  );
+}
 });
     }
   }
