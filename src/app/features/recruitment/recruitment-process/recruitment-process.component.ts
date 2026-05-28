@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
   styleUrl: './recruitment-process.component.css'
 })
 export class RecruitmentProcessComponent {
-tabs = ['Resume Upload', 'Screening', 'Interview','Appointment','Offer', 'Onboarding','Application Resumes'];
+tabs = ['Resume Upload', 'Screening', 'Interview','Appointment','Offer','Documents Verification','Onboarding','Application Resumes'];
   totalStages = this.tabs.length;
   activeTab:Number = 1;
 
@@ -296,6 +296,7 @@ canViewAppointment = false;
 canViewOffer = false;
 canViewOnboarding = false;
 canViewApplicationResumes = false;
+canViewDocumentsVerification = false;
 
 loadPermissions() {
   const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
@@ -326,6 +327,9 @@ loadPermissions() {
   const appResumes = menus.find(
   (m: any) => m.menuName?.trim().toLowerCase() === "application resumes"
 );
+const documentsVerification = menus.find(
+  (m: any) => m.menuName?.trim().toLowerCase() === "documents verification"
+);
 
   this.canViewResume = resume?.canView ?? false;
   this.canViewScreening = screening?.canView ?? false;
@@ -333,6 +337,7 @@ loadPermissions() {
   this.canViewAppointment = appointment?.canView ?? false;
   this.canViewOffer = offer?.canView ?? false;
   this.canViewOnboarding = onboarding?.canView ?? false;
+  this.canViewDocumentsVerification = documentsVerification?.canView ?? false;
   this.canViewApplicationResumes = appResumes?.canView ?? false;
 
   // ✅ SET DEFAULT TAB
@@ -342,6 +347,7 @@ loadPermissions() {
   else if (this.canViewAppointment) this.activeTab = 4;
   else if (this.canViewOffer) this.activeTab = 5;
   else if (this.canViewOnboarding) this.activeTab = 6;
+  else if (this.canViewDocumentsVerification) this.activeTab = 8;
   else if (this.canViewApplicationResumes) this.activeTab = 7;
 }
 }

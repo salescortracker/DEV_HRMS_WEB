@@ -85,7 +85,8 @@ save() {
     candidateId: this.selectedCandidate.candidateId,
 
     levelNo: Number(this.selectedCandidate.levelNo),
-    interviewerId: this.userId,
+    interviewerId: this.userId.toString(),
+    interviewerIds: [this.userId],
     interviewerName: sessionStorage.getItem("Name"),
     interviewDate: this.selectedCandidate.interviewDate,
     location: this.selectedCandidate.location,

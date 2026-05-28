@@ -14,5 +14,7 @@ export const environment = {
   //companyNewsUrl : 'https://localhost:44370/api/CompanyNews',
   isDebugMode: true,
   LettersPath: 'Uploads/EmployeeLetters/',
-  leaveDocumentPath: '/uploads/LeaveDocuments/'
+  leaveDocumentPath: '/uploads/LeaveDocuments/',
+  documentsPath: 'Uploads/CandidateDocuments/',
+  fileBaseUrl: "https://localhost:44370/",
 };

@@ -30,6 +30,8 @@ showDropdown = false;
   departments: any[] = [];
   levels: any[] = [];
 interviewForm: any = {
+   department: '',
+  designation: '',
   level: '',
   interviewerIds: [],   // ✅ multiple
   dt: '',
@@ -71,6 +73,7 @@ interviewForm: any = {
     this.loadInterviewUsers();
     this.loadInterviewRecords();
     this.loadDesignations();
+    this.loadDepartments();
     this.loadInterviewLevels();
   }
   loadInterviewLevels() {
@@ -85,6 +88,7 @@ interviewForm: any = {
         }
       });
   }
+  
 onInterviewerChange(user: any, event: any) {
   if (event.target.checked) {
     this.interviewForm.interviewerIds.push(user.userId);
@@ -93,18 +97,32 @@ onInterviewerChange(user: any, event: any) {
       this.interviewForm.interviewerIds.filter((id: number) => id !== user.userId);
   }
 }
-  loadDesignations() {
-    this.recruitmentService
-      .getDesignations(this.companyId, this.regionId)
-      .subscribe({
-        next: (res: any) => {
-          this.designations = res;
-        },
-        error: () => {
-          Swal.fire('Error', 'Failed to load designations', 'error');
-        }
-      });
-  }
+
+  loadDepartments() {
+  this.recruitmentService
+    .getRecruitmentDepartments(this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any) => {
+        this.departments = res;
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load departments', 'error');
+      }
+    });
+}
+
+loadDesignations() {
+  this.recruitmentService
+    .getRecruitmentDesignations(this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any) => {
+        this.designations = res;
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load designations', 'error');
+      }
+    });
+}
   loadInterviewUsers() {
     this.recruitmentService
       .getReferenceUsers(this.companyId, this.regionId)
@@ -263,6 +281,7 @@ onInterviewerChange(user: any, event: any) {
     this.interviewForm.feedback = '';
      this.interviewForm.hrEmail = '';
     this.interviewForm.result = 'Pending';
+    this.showDropdown = false;
   }
   isSelected(candidate: any): boolean {
     return this.screeningSelectedCandidates.includes(candidate);
@@ -290,7 +309,7 @@ onInterviewerChange(user: any, event: any) {
     this.interviewForm.location = row.location;
     this.interviewForm.meetingLink = row.meetingLink;
     this.interviewForm.feedback = row.description;
-    this.interviewForm.result = row.result;
+    this.interviewForm.result = 'Pending';
 
     this.interviewForm.department = row.department;
     this.interviewForm.designation = row.designation;
@@ -313,37 +332,35 @@ onInterviewerChange(user: any, event: any) {
   }
 
   showResume() {
-    if (!this.interviewForm.department || !this.interviewForm.designation) {
-      Swal.fire('Warning', 'Select Department & Designation', 'warning');
-      return;
-    }
-
-    this.recruitmentService
-      .getScreeningCandidatesTopTableInterview(
-        // this.companyId,
-        // this.regionId,
-        // this.interviewForm.department,
-        // this.interviewForm.designation
-        this.userId
-      )
-      .subscribe({
-        next: (res: any) => {
-          this.screeningCandidates = res.map((x: any) => ({
-            candidateId: x.candidateId,   // 🔥 REQUIRED
-            seqNo: x.seqNo,
-            name: x.name,
-            mobile: x.mobile,
-            expectedCtc: x.expected,
-            stage: 3,
-            screening: []
-          }));
-
-        },
-        error: () => {
-          Swal.fire('Error', 'Failed to load Candidate', 'error');
-        }
-      });
+  if (!this.interviewForm.department || !this.interviewForm.designation) {
+    Swal.fire('Warning', 'Select Department & Designation', 'warning');
+    return;
   }
+
+  this.recruitmentService
+    .getScreeningCandidatesTopTableInterview(
+      this.userId,
+      this.interviewForm.department,
+      this.interviewForm.designation
+    )
+    .subscribe({
+      next: (res: any) => {
+
+        this.screeningCandidates = res.map((x: any) => ({
+          candidateId: x.candidateId,
+          seqNo: x.seqNo,
+          name: x.name,
+          mobile: x.mobile,
+          expectedCtc: x.expected,
+          stage: 3
+        }));
+
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load candidates', 'error');
+      }
+    });
+}
 
   calculateProgress(c: any) {
     if (!c || !c.stageId) return 0;

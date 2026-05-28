@@ -112,18 +112,17 @@ downloadResume(fileName: string) {
 //   );
 // }
 getScreeningCandidatesTopTable(
-  // companyId: number,
-  // regionId: number,
-  // department: string,
-  // designation: string,
-  userId :number
+  userId: number,
+  department: string,
+  designation: string
 ) {
   return this.http.get<any[]>(
     `${this.baseUrl}/Recruitment/GetScreeningCandidatesTopTable`,
     {
       params: {
-       
-        userId
+        userId,
+        department,
+        designation
       }
     }
   );
@@ -149,17 +148,17 @@ updateCandidateScreening(payload: any): Observable<any> {
 
 //////////////Interview Service /////////////
 getScreeningCandidatesTopTableInterview(
-  // companyId: number,
-  // regionId: number,
-  // department: string,
-  // designation: string
-  userId :number
+  userId: number,
+  department: string,
+  designation: string
 ) {
   return this.http.get<any[]>(
     `${this.baseUrl}/Recruitment/GetScreeningCandidatesTopTableInterview`,
     {
       params: {
-        userId
+        userId,
+        department,
+        designation
       }
     }
   );
@@ -208,21 +207,17 @@ updateAppointmentResult(payload: any) {
 
 ////////// Offer
 getOfferCandidatesTopTable(
-  // companyId: number,
-  // regionId: number,
-  // department: string,
-  // designation: string
-  userId :number
+  userId: number,
+  department: string,
+  designation: string
 ) {
   return this.http.get<any[]>(
     `${this.baseUrl}/Recruitment/GetOfferCandidatesTopTable`,
     {
       params: {
-        // companyId,
-        // regionId,
-        // department,
-        // designation
-        userId
+        userId,
+        department,
+        designation
       }
     }
   );
@@ -327,6 +322,62 @@ submitApplication(payload: FormData): Observable<any> {
 getJobApplications(): Observable<any[]> {
   return this.http.get<any[]>(
     `${this.baseUrl}/Recruitment/job-applications`
+  );
+}
+getRecruitmentDepartments(companyId: number, regionId: number) {
+  return this.http.get<string[]>(
+    `${this.baseUrl}/Recruitment/recruitment-departments`,
+    {
+      params: {
+        companyId,
+        regionId
+      }
+    }
+  );
+}
+
+getRecruitmentDesignations(companyId: number, regionId: number) {
+  return this.http.get<string[]>(
+    `${this.baseUrl}/Recruitment/recruitment-designations`,
+    {
+      params: {
+        companyId,
+        regionId
+      }
+    }
+  );
+}
+getOfferById(offerId: number) {
+  debugger;
+  return this.http.get(
+    `${this.baseUrl}/Recruitment/GetOfferById/${offerId}`
+  );
+
+}
+
+uploadCandidateDocuments(formData: FormData) {
+  return this.http.post(
+    `${this.baseUrl}/Recruitment/UploadCandidateDocuments`,
+    formData
+  );
+}
+getAllCandidateDocuments(companyId: number, regionId: number): Observable<any> {
+  return this.http.get(
+    `${this.baseUrl}/Recruitment/GetAllCandidateDocuments?companyId=${companyId}&regionId=${regionId}`
+  );
+}
+updateChecklistStatus(offerId: number, companyId: number, regionId: number, status: string) {
+  return this.http.post(
+    `${this.baseUrl}/Recruitment/UpdateChecklistStatus`,
+    null,
+    {
+      params: {
+        offerId: offerId,
+        companyId: companyId,
+        regionId: regionId,
+        status: status
+      }
+    }
   );
 }
 }

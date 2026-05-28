@@ -1,0 +1,89 @@
+<div class="card">
+  <div class="card-body table-responsive">
+
+    <table class="table table-bordered table-hover">
+
+      <thead class="table-dark">
+        <tr>
+          <th>Offer ID</th>
+          <th>Name</th>
+          <th>Designation</th>
+          <th>Department</th>
+          <th>Documents</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let d of documents">
+
+          <!-- OFFER ID -->
+          <td>{{ d.offerId }}</td>
+
+          <!-- NAME -->
+          <td>{{ d.firstName + ' ' + d.lastName }}</td>
+
+          <!-- DESIGNATION -->
+          <td>{{ d.designation }}</td>
+
+          <!-- DEPARTMENT -->
+          <td>{{ d.department }}</td>
+
+          <!-- DOCUMENTS (VIEW + DOWNLOAD) -->
+          <td>
+
+            <div *ngFor="let doc of documentsList">
+
+              <div *ngIf="d[doc.key]" class="d-flex justify-content-between mb-1">
+
+                <span>{{ doc.icon }} {{ doc.label }}</span>
+
+                <span>
+                  <!-- VIEW -->
+                  <a class="btn btn-sm btn-outline-primary me-1"
+                     [href]="getFileUrl(d[doc.key])"
+                     target="_blank">
+                    👁
+                  </a>
+
+                  <!-- DOWNLOAD -->
+                  <a class="btn btn-sm btn-outline-success"
+                     (click)="downloadFile(d[doc.key])"
+                     download>
+                    ⬇
+                  </a>
+                </span>
+
+              </div>
+
+            </div>
+
+          </td>
+
+          <!-- STATUS -->
+          <td>
+            <select class="form-select" [(ngModel)]="d.status">
+              <option *ngFor="let s of statusOptions" [value]="s">
+                {{ s }}
+              </option>
+            </select>
+          </td>
+
+          <!-- ACTION -->
+          <td>
+            <button class="btn btn-primary btn-sm"
+                    (click)="updateStatus(d)">
+              Save
+            </button>
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+</div>

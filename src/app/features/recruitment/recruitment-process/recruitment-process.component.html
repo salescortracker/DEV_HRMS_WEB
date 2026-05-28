@@ -80,6 +80,11 @@
             Offer
           </button>
 
+          <button *ngIf="canViewDocumentsVerification" class="btn flex-fill me-1" [class.btn-primary]="activeTab === 8"
+            [class.btn-outline-primary]="activeTab !== 8" (click)="setActiveTab(8)">
+            Documents Verification
+          </button>
+
           <button *ngIf="canViewOnboarding" class="btn flex-fill me-1" [class.btn-primary]="activeTab === 6"
             [class.btn-outline-primary]="activeTab !== 6" (click)="setActiveTab(6)">
             Onboarding
@@ -127,6 +132,11 @@
         <div *ngIf="activeTab === 5 && canViewOffer">
           <app-offer></app-offer>
         </div>
+
+         <!-- TAB 8: Documents Verification -->
+         <div *ngIf="activeTab === 8 && canViewDocumentsVerification">
+          <app-documents-verification></app-documents-verification>
+         </div>
 
         <div *ngIf="activeTab === 6 && canViewOnboarding">
           <app-onboarding></app-onboarding>

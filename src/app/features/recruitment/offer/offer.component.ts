@@ -10,19 +10,17 @@ import { RecruitmentService } from '../service/recruitment.service';
 export class OfferComponent {
  departments: any[] = [];
 designations: any[] = [];
- onDesignationChange() {
-    const selected = this.designations.find(
-      d => d.designationId == this.offerForm.designationId
-    );
 
-    if (selected) {
-      this.offerForm.department = selected.departmentName || 'Not Assigned';
-      this.offerForm.designation = selected.designationName; // VERY IMPORTANT
-    } else {
-      this.offerForm.department = '';
-      this.offerForm.designation = '';
-    }
+ onDesignationChange() {
+  const selected = this.designations.find(
+    d => d.designationId == this.offerForm.designation.designationId
+  );
+  if (selected) {
+    this.offerForm.department = selected.departmentName;
+  } else {
+    this.offerForm.department = '';
   }
+}
   candidates: any[] = [
     {
       id: 1,
@@ -45,7 +43,7 @@ designations: any[] = [];
     role: '',
     ctc: '',
     doj: '',
-    status: 'Offered',
+    status: '',
     hrName: '',
     file: null
   };
@@ -123,19 +121,33 @@ hrUsers: any[] = [];
     this.loadHRUsers(); 
     this.loadOfferRecords(); 
     this.loadDesignations();
+    this.loadDepartments();
   }
+   loadDepartments() {
+     this.recruitmentService
+       .getRecruitmentDepartments(this.companyId, this.regionId)
+       .subscribe({
+         next: (res: any) => {
+           this.departments = res;
+         },
+         error: () => {
+           Swal.fire('Error', 'Failed to load departments', 'error');
+         }
+       });
+   }
+   
    loadDesignations() {
-    this.recruitmentService
-      .getDesignations(this.companyId, this.regionId)
-      .subscribe({
-        next: (res: any) => {
-          this.designations = res;
-        },
-        error: () => {
-          Swal.fire('Error', 'Failed to load designations', 'error');
-        }
-      });
-  }
+     this.recruitmentService
+       .getRecruitmentDesignations(this.companyId, this.regionId)
+       .subscribe({
+         next: (res: any) => {
+           this.designations = res;
+         },
+         error: () => {
+           Swal.fire('Error', 'Failed to load designations', 'error');
+         }
+       });
+   }
   loadOfferRecords() {
   this.recruitmentService
     .getOfferRecords(this.userId, this.companyId, this.regionId)
@@ -175,37 +187,33 @@ loadHRUsers() {
 }
 
  showResume() {
-   if (!this.offerForm.department || !this.offerForm.designation) {
-     Swal.fire('Warning', 'Select Department & Designation', 'warning');
-     return;
-   }
- 
-   this.recruitmentService
-     .getOfferCandidatesTopTable(
-      //  this.companyId,
-      //  this.regionId,
-      //  this.offerForm.department,
-      //  this.offerForm.designation
-      this.userId
-     )
-     .subscribe({
-       next: (res:any) => {
-         this.screeningCandidates = res.map((x:any) => ({
-           candidateId: x.candidateId,   // 🔥 REQUIRED
-           seqNo: x.seqNo,
-           name: x.name,
-           mobile: x.mobile,
-           expectedCtc: x.expected,
-           stage: 5,
-           screening: []
-         }));
- 
-       },
-       error: () => {
-         Swal.fire('Error', 'Failed to load resumes', 'error');
-       }
-     });
- }
+  if (!this.offerForm.department || !this.offerForm.designation) {
+    Swal.fire('Warning', 'Select Department & Designation', 'warning');
+    return;
+  }
+
+  this.recruitmentService
+    .getOfferCandidatesTopTable(
+      this.userId,
+      this.offerForm.department,
+      this.offerForm.designation
+    )
+    .subscribe({
+      next: (res: any) => {
+        this.screeningCandidates = res.map((x: any) => ({
+          candidateId: x.candidateId,
+          seqNo: x.seqNo,
+          name: x.name,
+          mobile: x.mobile,
+          expectedCtc: x.expected,
+          stage: 5
+        }));
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load resumes', 'error');
+      }
+    });
+}
  
 isSelected(candidate: any): boolean {
   return this.screeningSelectedCandidates.includes(candidate);
