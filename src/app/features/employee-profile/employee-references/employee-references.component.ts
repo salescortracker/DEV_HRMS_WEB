@@ -25,10 +25,11 @@ canEdit: boolean = false;
   ngOnInit(): void {
     this.initForm();
     this.getReferences();
+    this.loadPermission();
   }
 
   initForm() {
-    this.referenceForm = this.fb.group({
+       this.referenceForm = this.fb.group({
       name: ['', Validators.required],
       title: ['', Validators.required],
       companyName: ['', Validators.required],
@@ -42,7 +43,7 @@ canEdit: boolean = false;
 
   // ➕ Add / ✏️ Update
   onSubmit() {
-    //if (this.referenceForm.invalid) return;
+   //if (this.referenceForm.invalid) return;
 
     const payload: Reference = {
       ...this.referenceForm.value,
@@ -60,12 +61,35 @@ canEdit: boolean = false;
           Swal.fire('Updated!', 'Reference has been updated.', 'success');
         });
     } else {
-      this.referenceService.addReference(payload)
-        .subscribe(() => {
+   
+       this.referenceService.addReference(payload)
+      .subscribe({
+
+        next: () => {
+
           this.resetForm();
+
           this.getReferences();
-          Swal.fire('Added!', 'Reference has been added.', 'success');
-        });
+
+          Swal.fire(
+            'Added!',
+            'Reference added successfully.',
+            'success'
+          );
+        },
+
+        error: (err) => {
+
+          Swal.fire(
+            'Warning',
+            err.error?.message || 'Employee already exists',
+            'warning'
+          );
+        }
+
+      });
+
+
     }
   }
 

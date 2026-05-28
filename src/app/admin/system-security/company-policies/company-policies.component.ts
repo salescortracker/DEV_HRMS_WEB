@@ -23,7 +23,7 @@ export class CompanyPoliciesComponent {
  companies: any[] = []
   regions: any[] = []
   departments: Department[] = []
-
+ categories: any[] = []; 
   policies: any[] = []
 
   userId!: number
@@ -35,14 +35,14 @@ export class CompanyPoliciesComponent {
 
   policy: any = this.resetPolicy()
 
-  categories: string[] = [
-    "HR Policy",
-    "Leave Policy",
-    "Attendance Policy",
-    "IT Security Policy",
-    "Work From Home Policy",
-    "Travel Policy"
-  ]
+  // categories: string[] = [
+  //   "HR Policy",
+  //   "Leave Policy",
+  //   "Attendance Policy",
+  //   "IT Security Policy",
+  //   "Work From Home Policy",
+  //   "Travel Policy"
+  // ]
 
   constructor(
     private adminService: AdminService,
@@ -59,7 +59,35 @@ export class CompanyPoliciesComponent {
     this.loadRegions()
     this.loadDepartments()
     this.getPolicies()
+    this.loadCategories()
 
+  }
+  loadCategories() {
+    this.adminService.getPolicyCategories(this.userId).subscribe({
+      next: (res: any) => {
+        const data = res.data || [];
+      this.categories = data.map((x: any) => ({
+  PolicyCategoryId: x.policyCategoryId,
+
+  // 🔥 FIX HERE (case-sensitive)
+  CompanyId: x.companyId ?? x.CompanyId,
+  RegionId: x.regionId ?? x.RegionId,
+
+  companyName: x.companyName,
+  regionName: x.regionName,
+  userId: x.userId,
+
+  PolicyCategoryName: x.policyCategoryName,
+  Description: x.description,
+  IsActive: x.isActive
+}));
+        this.spinner.hide();
+      },
+      error: () => {
+        this.spinner.hide();
+        Swal.fire('Error', 'Failed to load policy categories', 'error');
+      }
+    });
   }
 
   resetPolicy() {
@@ -173,7 +201,7 @@ this.policies = res.map((x: any) => ({
   }
 
 onSubmit() {
- const payload = {
+  const payload = {
 
     policyId: this.policy.PolicyId,
     userId: this.userId,

@@ -76,9 +76,12 @@
 
                 <option value="">Select Category</option>
 
-                <option *ngFor="let c of categories" [value]="c">
-                  {{c}}
-                </option>
+                <option *ngFor="let c of categories"
+                          [value]="c.PolicyCategoryName">
+
+                    {{ c.PolicyCategoryName }}
+
+                  </option>
 
               </select>
             </div>
@@ -122,7 +125,6 @@
                 </div>
 
               </div>
-            </div>
 
             <!-- Button -->
             <div class="col-md-6 d-flex align-items-end">
@@ -134,7 +136,7 @@
             </div>
 
           </div>
-
+</div>
         </form>
 
       </div>
