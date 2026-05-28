@@ -20,7 +20,7 @@ interface ReferenceUser {
 export class ResumeUploadComponent {
   today: string = '';
   sequenceCounter = 1;
-
+isParsing: boolean = false;
   tabs = ['Resume Upload', 'Screening', 'Interview', 'Appointment', 'Offer', 'Onboarding','Application Resumes'];
   years: number[] = [];
   experienceList: any[] = [];
