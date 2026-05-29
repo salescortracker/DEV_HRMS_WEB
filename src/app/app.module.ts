@@ -139,6 +139,8 @@ import { JobApplicationComponent } from './features/recruitment/job-application/
 import { ApplicationResumesComponent } from './features/recruitment/application-resumes/application-resumes.component';
 import { AssetReportComponent } from './features/asset/asset-report/asset-report.component';
 import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticket-reports.component';
+import { SuperAdminMenumasterComponent } from './superAdmin/super-admin-menumaster/super-admin-menumaster.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -268,6 +270,8 @@ import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticke
           LeaveReportComponent,
           AssetReportComponent,
           TicketReportsComponent,
+          SuperAdminMenumasterComponent,
+          
           
           
    

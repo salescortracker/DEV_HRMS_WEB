@@ -3113,5 +3113,33 @@ getCountriesByCompanyRegion(companyId: number, regionId: number) {
     `${this.baseUrl}/MasterData/countries/by-company-region?companyId=${companyId}&regionId=${regionId}`
   );
 }
+// SUPER ADMIN MENU MASTER
+
+getSuperAdminMenus() {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/AdminMenuMaster/GetAllMenus`
+  );
+}
+
+createSuperAdminMenu(model: any) {
+  return this.http.post(
+    `${this.baseUrl}/AdminMenuMaster/CreateMenu`,
+    model
+  );
+}
+
+updateSuperAdminMenu(id: number, model: any) {
+  return this.http.post(
+    `${this.baseUrl}/AdminMenuMaster/UpdateMenu/${id}`,
+    model
+  );
+}
+
+deleteSuperAdminMenu(id: number) {
+  return this.http.post(
+    `${this.baseUrl}/AdminMenuMaster/DeleteMenu/${id}`,
+    {}
+  );
+}
 
 }

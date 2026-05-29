@@ -60,6 +60,8 @@ import { MyTaskComponent } from './features/my-task/my-task/my-task.component';
 import { EmployeePersonalDetailsComponent } from './features/employee-profile/employee-details/employee-personal-details/employee-personal-details.component';
 import { BirthdayMasterComponent } from './admin/pages/birthday/birthday-master/birthday-master.component';
 import { JobApplicationComponent } from './features/recruitment/job-application/job-application.component';
+import { SuperAdminMenumasterComponent } from './superAdmin/super-admin-menumaster/super-admin-menumaster.component';
+
 const routes: Routes = [
   { path: '', component: LoginComponent },
    { path: 'forgot-password', component: ForgotPasswordComponent },
@@ -130,6 +132,8 @@ const routes: Routes = [
 { path: 'empdashboard', component: EmployeeDashboardComponent },
 { path: 'demo-users', component: SuperAdminDemousersComponent },
 { path: 'subscription-plans', component: SubscriptionPlansComponent },
+{ path: 'super-admin-menumaster', component: SuperAdminMenumasterComponent},
+
   
   {path: 'timesheet-Report', component:TimesheetReportComponent},
   {
