@@ -153,8 +153,8 @@ loadEmployees() {
   ? (api.fileNames || api.FileNames) 
   : [],
 
-filePaths: Array.isArray(api.filePaths || api.FilePaths) 
-  ? (api.filePaths || api.FilePaths) 
+filePaths: Array.isArray(api.filePaths || api.FilePaths)
+  ? [(api.filePaths || api.FilePaths).slice(-1)[0]]
   : [],
    employeeUploads: api.employeeUploads || []
 
