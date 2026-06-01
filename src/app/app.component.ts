@@ -26,9 +26,20 @@ export class AppComponent {
  checkSession() {
   const user = sessionStorage.getItem('UserId');
 
-  const publicRoutes = ['/login', '/Welcomedemo','/jobapply'];
+  const url = this.router.url;
 
-  if (!user && !publicRoutes.includes(this.router.url)) {
+  const publicRoutes = [
+    '/login',
+    '/Welcomedemo',
+    '/jobapply',
+    '/offer-documents'
+  ];
+
+  const isPublic = publicRoutes.some(route =>
+    url.startsWith(route)
+  );
+
+  if (!user && !isPublic) {
     this.logout();
   }
 }

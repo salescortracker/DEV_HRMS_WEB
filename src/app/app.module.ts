@@ -139,6 +139,8 @@ import { JobApplicationComponent } from './features/recruitment/job-application/
 import { ApplicationResumesComponent } from './features/recruitment/application-resumes/application-resumes.component';
 import { AssetReportComponent } from './features/asset/asset-report/asset-report.component';
 import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticket-reports.component';
+import { CandidateDocumentsComponent } from './features/recruitment/candidate-documents/candidate-documents.component';
+import { DocumentsVerificationComponent } from './features/recruitment/documents-verification/documents-verification.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -248,6 +250,8 @@ import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticke
     MainUsersComponent,
     JobApplicationComponent,
     ApplicationResumesComponent,
+    CandidateDocumentsComponent,
+    DocumentsVerificationComponent,
     SuperAdminDashboardComponent,
     
     SuperAdminDemousersComponent,
@@ -268,6 +272,8 @@ import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticke
           LeaveReportComponent,
           AssetReportComponent,
           TicketReportsComponent,
+          
+          
           
           
    

@@ -1,0 +1,125 @@
+<div class="container mt-4">
+
+  <div class="card shadow-lg border-0">
+
+    <div class="card-header bg-danger text-white">
+      <h4 class="mb-0 text-center">
+        Upload Joining Documents
+      </h4>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Candidate Info -->
+      <div class="row mb-4">
+
+        <div class="col-md-6">
+          <label class="fw-bold">Candidate Name</label>
+          <input class="form-control"
+                 [value]="candidateName"
+                 readonly>
+        </div>
+
+        <div class="col-md-6">
+          <label class="fw-bold">Designation</label>
+          <input class="form-control"
+                 [value]="designation"
+                 readonly>
+        </div>
+
+      </div>
+
+      <!-- ===== Personal Documents ===== -->
+
+      <h5 class="text-danger mb-3">
+        Personal Documents
+      </h5>
+
+      <div class="row g-3">
+
+        <div class="col-md-6">
+          <label>Aadhar Card</label>
+          <input type="file"
+                 class="form-control"
+                 (change)="onFileChange($event, 'aadharCard')">
+        </div>
+
+        <div class="col-md-6">
+          <label>PAN Card</label>
+          <input type="file"
+                 class="form-control"
+                 (change)="onFileChange($event, 'panCard')">
+        </div>
+
+        <div class="col-md-6">
+          <label>ID Proof</label>
+          <input type="file"
+                 class="form-control"
+                 (change)="onFileChange($event, 'idProof')">
+        </div>
+
+        <div class="col-md-6">
+          <label>Passport</label>
+          <input type="file"
+                 class="form-control"
+                 (change)="onFileChange($event, 'passport')">
+        </div>
+
+      </div>
+
+      <hr class="my-4">
+
+      <!-- ===== Employment Documents ===== -->
+
+      <h5 class="text-danger mb-3">
+        Employment Documents
+      </h5>
+
+      <div class="row g-3">
+
+        <div class="col-md-6">
+          <label>Previous Offer Letter</label>
+          <input type="file"
+                 class="form-control"
+                 (change)="onFileChange($event, 'offerLetter')">
+        </div>
+
+        <div class="col-md-6">
+          <label>Experience Letter</label>
+          <input type="file"
+                 class="form-control"
+                 (change)="onFileChange($event, 'experienceLetter')">
+        </div>
+
+        <div class="col-md-6">
+          <label>Relieving Letter</label>
+          <input type="file"
+                 class="form-control"
+                 (change)="onFileChange($event, 'relievingLetter')">
+        </div>
+
+        <div class="col-md-6">
+          <label>Hike Letter</label>
+          <input type="file"
+                 class="form-control"
+                 (change)="onFileChange($event, 'hikeLetter')">
+        </div>
+
+      </div>
+
+      <!-- Submit -->
+      <div class="text-center mt-5">
+
+        <button type="button"
+            class="btn btn-danger px-5"
+            (click)="submitDocuments()">
+        Submit Documents
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

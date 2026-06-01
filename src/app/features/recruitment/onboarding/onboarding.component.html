@@ -6,33 +6,36 @@
 
         <!-- ===== TOP FILTER ROW ===== -->
         <div class="row g-3 align-items-end mb-3">
-            <!-- Department -->
-         <div class="col-md-3">
-            <label>
-              Designation <span class="text-danger">*</span>
-            </label>
-            <select class="form-select" [(ngModel)]="candidate.designationId" name="designation"
-              (change)="onDesignationChange()" required #designation="ngModel">
-              <option value="">Select</option>
-              <option *ngFor="let des of designations" [value]="des.designationId">
-                {{ des.designationName }}
-              </option>
-            </select>
-            <small class="text-danger" *ngIf="designation.invalid && designation.touched">
-              Designation is required
-            </small>
-          </div>
+            <div class="col-md-3">
+  <label>Designation <span class="text-danger">*</span></label>
 
+  <select class="form-select"
+          [(ngModel)]="candidate.designation"
+          name="designation">
 
-          <!-- Department -->
-          <div class="col-md-3">
-            <label>Department</label>
-            <input class="form-control" [(ngModel)]="candidate.department" name="department" readonly>
-          </div>
-            
+    <option value="">Select Designation</option>
 
+    <option *ngFor="let d of designations" [value]="d">
+  {{ d }}
+</option>
 
+  </select>
+</div>
+<div class="col-md-3">
+  <label>Department <span class="text-danger">*</span></label>
 
+  <select class="form-select"
+          [(ngModel)]="candidate.department"
+          name="department">
+
+    <option value="">Select Department</option>
+
+    <option *ngFor="let dep of departments" [value]="dep">
+  {{ dep }}
+</option>
+
+  </select>
+</div>
             <!-- Show Resume -->
             <div class="col-md-2 d-flex">
                  <button class="btn btn-primary w-100" (click)="showResume()">
