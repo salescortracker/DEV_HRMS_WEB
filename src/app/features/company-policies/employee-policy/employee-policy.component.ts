@@ -20,28 +20,53 @@ export class EmployeePolicyComponent {
   policies: Policy[] = []
   filteredPoliciesList: Policy[] = []
 
-  categories: string[] = []
-
+  
   selectedCategory: string = ''
   fromDate?: string
   toDate?: string
 
   userId: number = 0
   userDepartmentId: number = 0
+  policyCategories: any[] = [];
 
   constructor(private adminService: AdminService) {}
 
   ngOnInit(): void {
 
-    this.userId = Number(sessionStorage.getItem("UserId"))
-    this.userDepartmentId = Number(sessionStorage.getItem("DepartmentId"))
+  this.userId = Number(sessionStorage.getItem("UserId"));
+  this.userDepartmentId = Number(sessionStorage.getItem("DepartmentId"));
 
-    console.log("UserId:", this.userId)
-    console.log("DepartmentId:", this.userDepartmentId)
+  this.loadPolicyCategories();
 
-    this.getPolicies()
+  this.getPolicies();
 
-  }
+}
+  loadPolicyCategories() {
+
+  const companyId = Number(sessionStorage.getItem("CompanyId"));
+  const regionId = Number(sessionStorage.getItem("RegionId"));
+
+  this.adminService
+    .getuserPolicyCategories(companyId, regionId)
+    .subscribe({
+
+      next: (res: any) => {
+
+        console.log("Policy Categories:", res);
+
+        this.policyCategories = res;
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+      }
+
+    });
+
+}
 
   // -----------------------------
   // Get Policies
@@ -65,7 +90,6 @@ export class EmployeePolicyComponent {
 
         }))
 
-        this.loadCategories()
 
         this.filterTodayPolicies()
 
@@ -73,15 +97,7 @@ export class EmployeePolicyComponent {
 
   }
 
-  // -----------------------------
-  // Load Categories
-  // -----------------------------
-  loadCategories() {
-
-    this.categories = [...new Set(this.policies.map(x => x.Category))]
-
-  }
-
+  
   // -----------------------------
   // Show Today's Policies
   // -----------------------------

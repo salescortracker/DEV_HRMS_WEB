@@ -221,7 +221,16 @@ certificateFileInput!: ElementRef<HTMLInputElement>;
           this.resetForm();
           this.loadEducation();
         },
-        error: err => console.error(err)
+        error: (err) => {
+
+    Swal.fire(
+      "Warning",
+      err.error?.message || "Duplicate education record already exists",
+      "warning"
+    );
+
+    console.error(err);
+  }
       });
     }
   }

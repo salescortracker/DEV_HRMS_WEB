@@ -3094,5 +3094,10 @@ getCountriesByCompanyRegion(companyId: number, regionId: number) {
     `${this.baseUrl}/MasterData/countries/by-company-region?companyId=${companyId}&regionId=${regionId}`
   );
 }
+getuserPolicyCategories(companyId: number, regionId: number) {
+  return this.http.get(
+    `${this.baseUrl}/MasterData/GetPolicyCategories?companyId=${companyId}&regionId=${regionId}`
+  );
+}
 
 }

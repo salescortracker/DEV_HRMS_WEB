@@ -18,17 +18,18 @@
           <label class="form-label">Category</label>
 
           <select class="form-select"
-                  [(ngModel)]="selectedCategory">
+        [(ngModel)]="selectedCategory">
 
-            <option value="">All Categories</option>
-            <option>HR Policy</option>
-            <option>Leave Policy</option>
-            <option>Attendance Policy</option>
-            <option>IT Security Policy</option>
-            <option>Work From Home Policy</option>
-            <option>Travel Policy</option>
+          <option value="">All Categories</option>
 
-          </select>
+          <option *ngFor="let c of policyCategories"
+                  [value]="c.policyCategoryName">
+
+            {{ c.policyCategoryName }}
+
+          </option>
+
+        </select>
 
         </div>
 
