@@ -140,6 +140,8 @@ import { ApplicationResumesComponent } from './features/recruitment/application-
 import { AssetReportComponent } from './features/asset/asset-report/asset-report.component';
 import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticket-reports.component';
 import { SuperadminUsersfulldetailsComponent } from './superAdmin/superadmin-usersfulldetails/superadmin-usersfulldetails.component';
+import { CandidateDocumentsComponent } from './features/recruitment/candidate-documents/candidate-documents.component';
+import { DocumentsVerificationComponent } from './features/recruitment/documents-verification/documents-verification.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -249,6 +251,8 @@ import { SuperadminUsersfulldetailsComponent } from './superAdmin/superadmin-use
     MainUsersComponent,
     JobApplicationComponent,
     ApplicationResumesComponent,
+    CandidateDocumentsComponent,
+    DocumentsVerificationComponent,
     SuperAdminDashboardComponent,
     
     SuperAdminDemousersComponent,
@@ -270,6 +274,8 @@ import { SuperadminUsersfulldetailsComponent } from './superAdmin/superadmin-use
           AssetReportComponent,
           TicketReportsComponent,
           SuperadminUsersfulldetailsComponent,
+          
+          
           
           
    

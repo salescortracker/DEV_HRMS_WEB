@@ -19,13 +19,11 @@ export class OnboardingComponent {
   screeningCandidates: any[] = [];
 
   screeningSelectedCandidates: any[] = [];
-  departments = ['HR', 'IT', 'Finance', 'Sales'];
+  departments: any[] = [];
  designations: any[] = [];
   candidate: any = {
-
     department: '',
     designation: '',
-
   };
   topPageSize = 5;
   topCurrentPage = 1;
@@ -69,12 +67,13 @@ closeEmployeeModal() {
     }
     this.loadOnboardedCandidates();
      this.loadDesignations();
+     this.loadDepartments();
 
   }
 
     loadDesignations() {
     this.recruitmentService
-      .getDesignations(this.companyId, this.regionId)
+      .getRecruitmentDesignations(this.companyId, this.regionId)
       .subscribe({
         next: (res: any) => {
           this.designations = res;
@@ -84,6 +83,18 @@ closeEmployeeModal() {
         }
       });
   }
+  loadDepartments() {
+  this.recruitmentService
+    .getRecruitmentDepartments(this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any) => {
+        this.departments = res;
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load departments', 'error');
+      }
+    });
+}
   loadOnboardedCandidates() {
     this.recruitmentService.getOnboardedCandidates(this.companyId, this.regionId)
       .subscribe({
@@ -223,37 +234,37 @@ closeEmployeeModal() {
     return 'red';
   }
    showResume() {
-     if (!this.candidate.department || !this.candidate.designation) {
-       Swal.fire('Warning', 'Select Department & Designation', 'warning');
-       return;
-     }
-   
-     this.recruitmentService
-       .getOfferCandidatesTable(
-        //  this.companyId,
-        //  this.regionId,
-        //  this.candidate.department,
-        //  this.candidate.designation
-        this.userId
-       )
-       .subscribe({
-         next: (res:any) => {
-           this.screeningCandidates = res.map((x:any) => ({
-             candidateId: x.candidateId,   // 🔥 REQUIRED
-             seqNo: x.seqNo,
-             name: x.name,
-             mobile: x.mobile,
-             expectedCtc: x.expected,
-             stage: 5,
-             screening: []
-           }));
-   
-         },
-         error: () => {
-           Swal.fire('Error', 'Failed to load resumes', 'error');
-         }
-       });
-   }
+
+  if (!this.candidate.department || !this.candidate.designation) {
+    Swal.fire('Warning', 'Select Department & Designation', 'warning');
+    return;
+  }
+
+  this.recruitmentService
+    .getonboardingCandidatesTopTable(
+      this.companyId,
+      this.regionId,
+      this.candidate.department,
+      this.candidate.designation
+    )
+    .subscribe({
+      next: (res: any) => {
+
+        this.screeningCandidates = res.map((x: any) => ({
+          candidateId: x.candidateId,
+          seqNo: x.seqNo,
+          name: x.name,
+          mobile: x.mobile,
+          expectedCtc: x.expected,
+          stage: 6
+        }));
+
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load onboarding resumes', 'error');
+      }
+    });
+}
 
   sortTop(column: string) {
     if (this.topSortColumn === column) {

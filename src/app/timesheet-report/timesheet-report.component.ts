@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TimesheetService } from '../features/timesheet/service/timesheet.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { AdminService } from '../admin/servies/admin.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -21,6 +21,7 @@ interface EmployeeOption {
 })
 export class TimesheetReportComponent implements OnInit {
  filtersForm!: FormGroup;
+  searchTermControl!: FormControl;
   timesheets: any[] = [];
   filteredTimesheets: any[] = [];
   
@@ -104,12 +105,15 @@ companyAddress: string = '';
 
   buildForm(): void {
     this.filtersForm = this.fb.group({
+      searchTerm: [''],
       employeeName: [''],
       employeeCode: [''],
       status: [''],
       fromDate: [''],
       toDate: ['']
     });
+
+    this.searchTermControl = this.filtersForm.get('searchTerm') as FormControl;
 
     this.filtersForm.valueChanges.subscribe(() => {
       this.applyFilters();
@@ -183,6 +187,7 @@ companyAddress: string = '';
     const userIdFilter = isUserIdFilter ? Number(employeeNameValue) : null;
     
     const employeeCode = f.employeeCode?.trim().toLowerCase();
+    const searchTerm = f.searchTerm?.trim().toLowerCase();
     const status = f.status;
     const fromDate = f.fromDate ? new Date(f.fromDate) : null;
     const toDate = f.toDate ? new Date(f.toDate) : null;
@@ -212,8 +217,22 @@ companyAddress: string = '';
         ? (ts.userId === userIdFilter)
         : (!employeeName || ts.employeeNameNorm.includes(employeeName));
 
+      const projectSearch = (ts.projects || [])
+        .map((p: any) => (p.projectName || '').toLowerCase())
+        .join(' ');
+
+      const matchesSearch = !searchTerm || [
+        ts.employeeNameNorm,
+        ts.employeeCodeNorm,
+        ts.status?.toLowerCase(),
+        projectSearch,
+        ts.totalHoursText?.toLowerCase(),
+        ts.otHoursText?.toLowerCase()
+      ].some(value => value && value.includes(searchTerm));
+
       ts.visible =
         matchesEmployee &&
+        matchesSearch &&
         (!employeeCode || ts.employeeCodeNorm.includes(employeeCode)) &&
         (!status || ts.status === status) &&
         matchesFromDate &&

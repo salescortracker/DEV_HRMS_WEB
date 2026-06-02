@@ -21,6 +21,10 @@
 
   <form [formGroup]="filtersForm" class="row g-3">
 
+    
+
+    
+
     <div class="col-md-4">
       <label class="form-label">Employee Name</label>
       <select class="form-control" formControlName="employeeName" (change)="onEmployeeChange($event)">
@@ -68,8 +72,15 @@
 
   <!-- ================= RESULTS INFO ================= -->
   <div class="d-flex justify-content-between align-items-center mb-2">
-    <div>
-      Showing {{ paginatedTimesheets.length }} of {{ filteredTimesheets.length }} records
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span>Showing {{ paginatedTimesheets.length }} of {{ filteredTimesheets.length }} records</span>
+
+      <div class="d-flex align-items-center gap-2 ms-2">
+        <label class="mb-0 small text-muted">Search</label>
+        <input class="form-control form-control-sm" type="text"
+               [formControl]="searchTermControl"
+               placeholder="Search employee, code, project, or status">
+      </div>
     </div>
 
     <div>

@@ -183,10 +183,24 @@ export class TeamtaskComponent {
   }
 
   loadEmployees() {
+    const roleName = (sessionStorage.getItem('roleName') || '').trim().toLowerCase();
+    const reportingManagerId = Number(sessionStorage.getItem('reportingManagerId') || 0);
+
+    if (roleName === 'manager' && reportingManagerId) {
+      this.helpdeskService.getEmployeesByManager(reportingManagerId)
+        .subscribe({
+          next: (res: any) => {
+            this.employees = Array.isArray(res) ? res : res?.data || [];
+          },
+          error: (err) => console.error(err)
+        });
+      return;
+    }
+
     this.adminService.getEmployees(this.companyId, this.regionId)
       .subscribe({
         next: (res: any) => {
-          this.employees = res;
+          this.employees = Array.isArray(res) ? res : res?.data || [];
         },
         error: (err) => console.error(err)
       });

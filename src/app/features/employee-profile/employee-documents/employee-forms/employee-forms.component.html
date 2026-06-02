@@ -36,7 +36,7 @@
       <div *ngIf="showEmpDropdown" class="border p-2 position-absolute w-100 bg-white">
         <div *ngFor="let emp of employees">
           <input type="checkbox" [checked]="isEmployeeSelected(emp)" (change)="onEmployeeToggle(emp, $event)">
-          {{ emp.employeeName }} ({{ emp.employeeCode }})
+          {{ emp.employeeName }} 
         </div>
       </div>
 

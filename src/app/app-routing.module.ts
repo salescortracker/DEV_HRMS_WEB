@@ -61,6 +61,7 @@ import { EmployeePersonalDetailsComponent } from './features/employee-profile/em
 import { BirthdayMasterComponent } from './admin/pages/birthday/birthday-master/birthday-master.component';
 import { JobApplicationComponent } from './features/recruitment/job-application/job-application.component';
 import { SuperadminUsersfulldetailsComponent } from './superAdmin/superadmin-usersfulldetails/superadmin-usersfulldetails.component';
+import { CandidateDocumentsComponent } from './features/recruitment/candidate-documents/candidate-documents.component';
 const routes: Routes = [
   { path: '', component: LoginComponent },
    { path: 'forgot-password', component: ForgotPasswordComponent },
@@ -69,6 +70,8 @@ const routes: Routes = [
   { path: 'dashboard', component: LayoutComponent },
   {path:'Welcomedemo',component:WelcomedemoComponent},
     {path:'job-application',component:JobApplicationComponent},
+    //{path: 'offer-documents/:token', component: CandidateDocumentsComponent },
+   { path: 'offer-documents/:offerId/:candidateId/:companyId/:regionId', component: CandidateDocumentsComponent },
   {path : 'change-password', component : ChangePasswordComponent},
   // { path: 'hr-dashboard', component: NavbarHrLayoutComponent },
   // // { path: 'manager-dashboard', component: NavbarManagerLayoutComponent },

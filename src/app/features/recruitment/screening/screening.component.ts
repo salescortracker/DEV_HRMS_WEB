@@ -13,8 +13,9 @@ export class ScreeningComponent {
   screeningSelectedCandidates: any[] = [];
   filterStage: any = '';
   globalFilter = '';
-   designations: any[] = [];
   candidates: any[] = [];
+  designations: string[] = [];
+  departments: string[] = [];
   screeningRecruiters: string[] = [];
 
   screeningResult = 'Pass';
@@ -22,9 +23,8 @@ export class ScreeningComponent {
   
   candidate: any = {
     appliedDate: '',
-
     department: '',
-    designation: '',
+    designation: ''
 
   };
    references: any[] = [];
@@ -55,7 +55,9 @@ export class ScreeningComponent {
   bottomPageSize = 5;
   bottomCurrentPage = 1;
 
-  constructor(private recruitmentService: RecruitmentService) { }
+  constructor(private recruitmentService: RecruitmentService) { 
+    
+  }
   ngOnInit(): void {
 
     this.userId = Number(sessionStorage.getItem("UserId"));
@@ -68,7 +70,8 @@ export class ScreeningComponent {
     }
  
     this.loadScreeningRecords();
- this.loadDesignations();
+    this.loadRecruitmentDesignations();
+this.loadRecruitmentDepartments();
  this.loadReferenceUsers();
   }
     loadReferenceUsers() {
@@ -83,31 +86,60 @@ export class ScreeningComponent {
           }
         });
     }
-    loadDesignations() {
-      this.recruitmentService
-        .getDesignations(this.companyId, this.regionId)
-        .subscribe({
-          next: (res: any) => {
-            this.designations = res;
-          },
-          error: () => {
-            Swal.fire('Error', 'Failed to load designations', 'error');
-          }
-        });
-    }
-      onDesignationChange() {
-    const selected = this.designations.find(
-      d => d.designationId == this.candidate.designationId
-    );
+    loadRecruitmentDepartments() {
 
-    if (selected) {
-      this.candidate.department = selected.departmentName || 'Not Assigned';
-      this.candidate.designation = selected.designationName; // VERY IMPORTANT
-    } else {
-      this.candidate.department = '';
-      this.candidate.designation = '';
-    }
+  this.recruitmentService
+    .getRecruitmentDepartments(this.companyId, this.regionId)
+    .subscribe({
+
+      next: (res: string[]) => {
+        this.departments = res;
+      },
+
+      error: () => {
+        Swal.fire(
+          'Error',
+          'Failed to load departments',
+          'error'
+        );
+      }
+
+    });
+}
+
+loadRecruitmentDesignations() {
+
+  this.recruitmentService
+    .getRecruitmentDesignations(this.companyId, this.regionId)
+    .subscribe({
+
+      next: (res: string[]) => {
+        this.designations = res;
+      },
+
+      error: () => {
+        Swal.fire(
+          'Error',
+          'Failed to load designations',
+          'error'
+        );
+      }
+
+    });
+}
+      onDesignationChange() {
+
+  const selected = this.designations.find(
+    x => x === this.candidate.designation
+  );
+
+  if (!selected) {
+    this.candidate.department = '';
+    return;
   }
+
+  
+}
   loadScreeningRecords() {
     this.recruitmentService
       .getScreeningRecords(this.userId, this.companyId, this.regionId)
@@ -142,8 +174,9 @@ export class ScreeningComponent {
 
     this.recruitmentService
       .getScreeningCandidatesTopTable(
-      
-        this.userId
+        this.userId,
+        this.candidate.department,
+        this.candidate.designation
       )
       .subscribe({
         next: (res:any) => {
@@ -309,6 +342,7 @@ if (result === 'Rejected') msg = 'Candidate Rejected';
         Swal.fire('Error', 'Failed to update screening', 'error');
       }
     });
+    this.loadScreeningRecords();
   }
   resetForm() {
     this.isEditMode = false;
