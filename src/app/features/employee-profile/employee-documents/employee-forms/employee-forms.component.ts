@@ -145,7 +145,8 @@ loadEmployees() {
           id: api.id,
           type: typeObj ? typeObj.typeName : '',   // <-- FIX HERE
           name: api.documentName,
-         employee: `${api.employeeName} (${api.employeeCode})`,
+          employee: api.employeeName || '',
+          employeeCodes: api.employeeCode || '',
           date: api.issueDate,
           remarks: api.remarks,
           confidential: api.isConfidential,
@@ -340,8 +341,14 @@ getFileUrl(path: string): string {
   // }
 
 viewDocument(path: string) {
-  const baseUrl = environment.apiUrl.replace('/api', ''); // remove /api
-  const url = `${baseUrl}/${path}`;
+  if (!path || path.trim() === '') {
+    Swal.fire('Error', 'File path not found', 'error');
+    return;
+  }
+  
+  // Use fileBaseUrl and ensure proper path formatting
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+  const url = `${environment.fileBaseUrl}${cleanPath}`;
   window.open(url, '_blank');
 }
 
@@ -442,15 +449,24 @@ removeFile(index: number) {
   this.issuedDate = record.date;
   this.remarks = record.remarks;
   this.confidential = record.confidential;
-  const empList = record.employee.split(',');
+  
 
-  this.selectedEmployees = empList.map((e: string) => {
-    const match = e.match(/(.*)\((.*)\)/);
-    return {
-      employeeName: match ? match[1].trim() : '',
-      employeeCode: match ? match[2].trim() : ''
-    };
-  });
+  const names = (record.employee || '')
+  .split(',')
+  .map(x => x.trim())
+  .filter(x => x);
+
+this.selectedEmployees = [];
+
+names.forEach(name => {
+  const emp = this.employees.find(
+    x => x.employeeName.trim() === name
+  );
+
+  if (emp) {
+    this.selectedEmployees.push(emp);
+  }
+});
 
   this.existingFiles = record.filePaths || [];
 
