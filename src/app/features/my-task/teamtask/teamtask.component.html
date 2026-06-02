@@ -259,8 +259,8 @@
 
                   <option value="">Select Employee</option>
 
-                  <option *ngFor="let e of employees" [value]="e.employeeName">
-                    {{ e.employeeName }} ({{ e.employeeCode }})
+                  <option *ngFor="let e of employees" [value]="e.fullName">
+                    {{ e.fullName }} ({{ e.employeeCode }})
                   </option>
 
                 </select>

@@ -48,9 +48,9 @@ updateTicketStatus(payload: any) {
     payload
   );
 }
-getEmployeesByManager(managerId: number) {
+getEmployeesByManager(userid: number) {
   return this.http.get<any[]>(
-    `${this.baseUrl}/Helpdesk/GetEmployeesByManager/${managerId}`
+    `${this.baseUrl}/Helpdesk/GetEmployeesByManager/${userid}`
   );
 }
 

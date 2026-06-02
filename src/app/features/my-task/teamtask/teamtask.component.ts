@@ -181,30 +181,50 @@ export class TeamtaskComponent {
         this.priorities = res;
       });
   }
-
   loadEmployees() {
-    const roleName = (sessionStorage.getItem('roleName') || '').trim().toLowerCase();
-    const reportingManagerId = Number(sessionStorage.getItem('reportingManagerId') || 0);
+debugger;
+  const userId = Number(sessionStorage.getItem('UserId'));
 
-    if (roleName === 'manager' && reportingManagerId) {
-      this.helpdeskService.getEmployeesByManager(reportingManagerId)
-        .subscribe({
-          next: (res: any) => {
-            this.employees = Array.isArray(res) ? res : res?.data || [];
-          },
-          error: (err) => console.error(err)
-        });
-      return;
-    }
+  this.helpdeskService.getEmployeesByManager(userId)
+    .subscribe({
+      next: (res: any) => {
+        this.employees = Array.isArray(res)
+          ? res
+          : res?.data || [];
 
-    this.adminService.getEmployees(this.companyId, this.regionId)
-      .subscribe({
-        next: (res: any) => {
-          this.employees = Array.isArray(res) ? res : res?.data || [];
-        },
-        error: (err) => console.error(err)
-      });
-  }
+        console.log(this.employees);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+    
+}
+
+  // loadEmployees() {
+  //   debugger;
+  //   const roleName = (sessionStorage.getItem('roleName') || '').trim().toLowerCase();
+  //   const reportingManagerId = Number(sessionStorage.getItem('reportingManagerId') || 0);
+
+  //   if (roleName === 'manager' && reportingManagerId) {
+  //     this.helpdeskService.getEmployeesByManager(reportingManagerId)
+  //       .subscribe({
+  //         next: (res: any) => {
+  //           this.employees = Array.isArray(res) ? res : res?.data || [];
+  //         },
+  //         error: (err) => console.error(err)
+  //       });
+  //     return;
+  //   }
+
+  //   this.adminService.getEmployees(this.companyId, this.regionId)
+  //     .subscribe({
+  //       next: (res: any) => {
+  //         this.employees = Array.isArray(res) ? res : res?.data || [];
+  //       },
+  //       error: (err) => console.error(err)
+  //     });
+  // }
   getStatusName(id: number) {
     const s = this.taskStatuses.find(x => x.taskStatusId == id);
     return s ? s.taskStatusName : '';
