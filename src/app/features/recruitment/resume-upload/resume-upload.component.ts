@@ -34,7 +34,7 @@ export class ResumeUploadComponent {
   pageSize = 5;
   currentPage = 1;
   pageSizeOptions = [5, 10, 20, 50];
-
+isParsing: any
 
   references: any[] = [];
 maritalStatuses: any[] = [];

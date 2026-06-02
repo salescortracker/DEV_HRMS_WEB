@@ -1,0 +1,196 @@
+<div class="admin-layout">
+
+    <!-- TOPBAR -->
+    <app-super-admin-topbar
+        (toggleSidebar)="toggleSidebar()">
+    </app-super-admin-topbar>
+
+    <div class="main-content">
+
+        <!-- SIDEBAR -->
+        <app-super-admin-sidebar
+            [collapsed]="collapsed"
+            (menuSelected)="onMenuSelected($event)">
+        </app-super-admin-sidebar>
+
+        <!-- CONTENT -->
+        <div class="content-body">
+
+            <app-super-admin-submenu
+                [submenus]="submenus">
+            </app-super-admin-submenu>
+
+            <div class="container-fluid mt-3">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-body">
+
+                        <h3 class="mb-4">
+                            All Admin Users With Companies And Users
+                        </h3>
+
+                        <div class="table-responsive">
+
+                            <table class="table table-bordered table-striped">
+
+                                <thead class="table-dark">
+
+                                    <tr>
+
+                                        <th>Company</th>
+
+                                        <th>Name</th>
+
+                                        <th>Email</th>
+
+                                        <th>Phone</th>
+
+                                        <th>Demo Start</th>
+
+                                        <th>Demo Expiry</th>
+
+                                        <th>Status</th>
+
+                                        <th>Total Companies</th>
+
+                                        <th>Total Users</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <tr *ngFor="let user of paginatedUsers">
+
+                                        <td>
+                                            {{user.company}}
+                                        </td>
+
+                                        <td>
+                                            {{user.name}}
+                                        </td>
+
+                                        <td>
+                                            {{user.email}}
+                                        </td>
+
+                                        <td>
+                                            {{user.phone}}
+                                        </td>
+
+                                        <td>
+                                            {{user.demoStart | date:'dd-MM-yyyy'}}
+                                        </td>
+
+                                        <td>
+                                            {{user.demoExpiry | date:'dd-MM-yyyy'}}
+                                        </td>
+
+                                        <td>
+
+                                            <span
+                                                class="badge bg-success"
+                                                *ngIf="user.status == 'Active'">
+
+                                                Active
+
+                                            </span>
+
+                                            <span
+                                                class="badge bg-danger"
+                                                *ngIf="user.status != 'Active'">
+
+                                                Expired
+
+                                            </span>
+
+                                        </td>
+
+                                        <td>
+
+                                            <span class="badge bg-primary">
+
+                                                {{user.totalCompanies}}
+
+                                            </span>
+
+                                        </td>
+
+                                        <td>
+
+                                            <span class="badge bg-info">
+
+                                                {{user.totalUsers}}
+
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                        <!-- PAGINATION -->
+
+                        <nav class="mt-3">
+
+                            <ul class="pagination">
+
+                                <li class="page-item"
+                                    [class.disabled]="currentPage == 1">
+
+                                    <a class="page-link"
+                                       (click)="changePage(currentPage - 1)">
+
+                                        Previous
+
+                                    </a>
+
+                                </li>
+
+                                <li class="page-item"
+                                    *ngFor="let page of totalPagesArray"
+                                    [class.active]="page == currentPage">
+
+                                    <a class="page-link"
+                                       (click)="changePage(page)">
+
+                                        {{page}}
+
+                                    </a>
+
+                                </li>
+
+                                <li class="page-item"
+                                    [class.disabled]="currentPage == totalPages">
+
+                                    <a class="page-link"
+                                       (click)="changePage(currentPage + 1)">
+
+                                        Next
+
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
+                        </nav>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
