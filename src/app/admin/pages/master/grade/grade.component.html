@@ -1,102 +1,224 @@
-<div class="container">
+<div class="card shadow-sm">
+    <div class="container-fluid p-4 grade-management">
 
-    <!-- FORM CARD -->
-    <div class="card form-card">
-        <h3>Grade Master</h3>
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-semibold mb-0">
+                <i class="fa-solid fa-layer-group me-2 text-danger"></i>
+                Grade Management
+            </h4>
+        </div>
 
-        <form [formGroup]="gradeForm">
+        <hr class="mb-4" />
 
-            <div class="row">
-                <!-- Company -->
-<div class="col">
-  <label>Company</label>
-  <select class="form-select" formControlName="companyID" (change)="onCompanyChange()">
-    <option value="">Select Company</option>
-    <option *ngFor="let company of companies" [value]="company.companyId">
-      {{ company.companyName }}
-    </option>
-  </select>
-  <div class="error" *ngIf="gradeForm.get('companyId')?.touched && gradeForm.get('companyId')?.invalid">
-    Company is required
-  </div>
-</div>
+        <!-- Form -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
 
-<!-- Region -->
-<div class="col">
-  <label>Region</label>
-  <select formControlName="regionId">
-    <option value="">---Select Region---</option>
-    <option *ngFor="let r of filteredRegions" [value]="r.regionID">
-      {{ r.regionName }}
-    </option>
-  </select>
-  <div class="error" *ngIf="gradeForm.get('regionId')?.touched && gradeForm.get('regionId')?.invalid">
-    Region is required
-  </div>
-</div>
+                <form [formGroup]="gradeForm">
 
-                <!-- Grade -->
-                <div class="col">
-                    <label>Grade</label>
-                    <!-- Grade -->
-                    <input type="text" formControlName="gradeName" placeholder="Enter Grade" />
-                    <div class="error"
-                        *ngIf="gradeForm.get('gradeName')?.touched && gradeForm.get('gradeName')?.invalid">
-                        Grade is required
+                    <div class="row g-3">
+
+                        <!-- Company -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Company</label>
+                            <select class="form-select" formControlName="companyID" (change)="onCompanyChange()">
+
+                                <option value="">Select Company</option>
+
+                                <option *ngFor="let company of companies" [value]="company.companyId">
+
+                                    {{ company.companyName }}
+
+                                </option>
+
+                            </select>
+
+                            <small class="text-danger" *ngIf="gradeForm.get('companyID')?.touched &&
+                       gradeForm.get('companyID')?.invalid">
+
+                                Company is required
+
+                            </small>
+                        </div>
+
+                        <!-- Region -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Region</label>
+
+                            <select class="form-select" formControlName="regionId">
+
+                                <option value="">Select Region</option>
+
+                                <option *ngFor="let r of filteredRegions" [value]="r.regionID">
+
+                                    {{ r.regionName }}
+
+                                </option>
+
+                            </select>
+
+                            <small class="text-danger" *ngIf="gradeForm.get('regionId')?.touched &&
+                       gradeForm.get('regionId')?.invalid">
+
+                                Region is required
+
+                            </small>
+                        </div>
+
+                        <!-- Grade Name -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Grade Name</label>
+
+                            <input type="text" class="form-control" formControlName="gradeName"
+                                placeholder="Enter Grade Name" />
+
+                            <small class="text-danger" *ngIf="gradeForm.get('gradeName')?.touched &&
+                       gradeForm.get('gradeName')?.invalid">
+
+                                Grade is required
+
+                            </small>
+                        </div>
+
+                        <!-- Active Switch -->
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-check form-switch mt-3">
+
+                                <input class="form-check-input" type="checkbox" formControlName="isActive">
+
+                                <label class="form-check-label ms-2">
+
+                                    {{
+                                    gradeForm.get('isActive')?.value
+                                    ? 'Active'
+                                    : 'Inactive'
+                                    }}
+
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-md-6 d-flex align-items-end gap-2">
+
+                            <button type="button" class="btn btn-danger w-100" (click)="resetForm()">
+
+                                <i class="fa-solid fa-xmark me-2"></i>
+                                Cancel
+
+                            </button>
+
+                            <button type="button" class="btn btn-dark w-100" (click)="save()">
+
+                                <i class="fa-solid fa-save me-2"></i>
+
+                                {{ isEdit ? 'Update Grade' : 'Save Grade' }}
+
+                            </button>
+
+                        </div>
+
                     </div>
+
+                </form>
+
+            </div>
+        </div>
+        <!-- Grade List -->
+
+
+
+
+        <!-- Filters -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-body">
+
+                <div class="row g-3 mb-3">
+
+                    <div class="col-md-4">
+
+                        <input type="text" class="form-control" placeholder="Search Grade" [(ngModel)]="searchText">
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <select class="form-select" [(ngModel)]="statusFilter">
+
+                            <option value="">All Status</option>
+                            <option [ngValue]="true">Active</option>
+                            <option [ngValue]="false">Inactive</option>
+
+                        </select>
+
+                    </div>
+
                 </div>
 
-                <!-- Active -->
-                <div class="col checkbox">
-                    <label>
-                        <input type="checkbox" formControlName="isActive" />
-                        Active
-                    </label>
+                <!-- Table -->
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>#</th>
+                                <th>Company</th>
+                                <th>Region</th>
+                                <th>Grade</th>
+                                <th>Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr *ngFor="let g of pagedGrades; let i=index">
+
+                                <td>{{(currentPage-1)*pageSize+i+1}}</td>
+                                <td>{{g.companyName}}</td>
+                                <td>{{g.regionName}}</td>
+                                <td>{{g.gradeName}}</td>
+
+                                <td>
+                                    <span class="badge" [ngClass]="g.isActive ? 'bg-success' : 'bg-secondary'">
+
+                                        {{g.isActive ? 'Active' : 'Inactive'}}
+
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+
+                                    <button class="btn btn-sm btn-outline-primary me-2" (click)="edit(g)">
+
+                                        <i class="fa-solid fa-pen-to-square"></i>
+
+                                    </button>
+
+                                    <button class="btn btn-sm btn-outline-danger" (click)="delete(g)">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
                 </div>
+
             </div>
 
-            <!-- Buttons -->
-            <div class="btn-group">
-                <button type="button" class="btn save" (click)="save()">Save</button>
-                <button type="button" class="btn cancel" (click)="resetForm()">Cancel</button>
-            </div>
-
-        </form>
-    </div>
-
-    <!-- TABLE CARD -->
-    <div class="card table-card">
-        <h3>Grade List</h3>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Company</th>
-                    <th>Region</th>
-                    <th>Grade</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr *ngFor="let g of grades">
-                    <td>{{g.companyName}}</td>
-                    <td>{{g.regionName}}</td>
-                    <td>{{g.gradeName}}</td>
-                    <td>
-                        <span [class.active]="g.isActive" [class.inactive]="!g.isActive">
-                            {{g.isActive ? 'Active' : 'Inactive'}}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="icon edit" (click)="edit(g)">✏️</button>
-                        <button class="icon delete" (click)="delete(g)">🗑️</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-    </div>
-
-</div>
+        </div>

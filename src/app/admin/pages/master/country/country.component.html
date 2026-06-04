@@ -18,19 +18,7 @@
 
           <div class="row g-3">
 
-            <!-- COUNTRY -->
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">
-                Country Name *
-              </label>
 
-              <input
-                type="text"
-                class="form-control"
-                name="CountryName"
-                [(ngModel)]="country.countryName"
-                required>
-            </div>
 
             <!-- COMPANY -->
             <div class="col-md-4">
@@ -38,20 +26,14 @@
                 Company *
               </label>
 
-              <select
-                class="form-select"
-                name="CompanyId"
-                [(ngModel)]="country.companyId"
-                (change)="onCompanyChange()"
+              <select class="form-select" name="CompanyId" [(ngModel)]="country.companyId" (change)="onCompanyChange()"
                 required>
 
                 <option [ngValue]="0">
                   -- Select Company --
                 </option>
 
-                <option
-                  *ngFor="let c of companies"
-                  [ngValue]="c.companyId">
+                <option *ngFor="let c of companies" [ngValue]="c.companyId">
 
                   {{ c.companyName }}
                 </option>
@@ -64,23 +46,26 @@
                 Region *
               </label>
 
-              <select
-                class="form-select"
-                name="RegionId"
-                [(ngModel)]="country.regionId"
-                required>
+              <select class="form-select" name="RegionId" [(ngModel)]="country.regionId" required>
 
                 <option [ngValue]="0">
                   -- Select Region --
                 </option>
 
-                <option
-                  *ngFor="let r of regions"
-                  [ngValue]="r.regionID">
+                <option *ngFor="let r of regions" [ngValue]="r.regionID">
 
                   {{ r.regionName }}
                 </option>
               </select>
+            </div>
+
+            <!-- COUNTRY -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">
+                Country Name *
+              </label>
+
+              <input type="text" class="form-control" name="CountryName" [(ngModel)]="country.countryName" required>
             </div>
 
             <!-- ACTIVE -->
@@ -90,31 +75,26 @@
               </label>
 
               <div class="form-check form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  name="IsActive"
-                  [(ngModel)]="country.isActive">
+                <input class="form-check-input" type="checkbox" name="IsActive" [(ngModel)]="country.isActive">
               </div>
             </div>
 
             <!-- BUTTONS -->
-            <div class="col-md-10 mt-4 text-end">
+            <div class="col-md-6 d-flex align-items-end gap-2 mt-4">
 
-              <button
-                class="btn btn-success me-2"
-                type="submit"
-                [disabled]="!countryForm.valid">
+              <button type="button" class="btn btn-danger w-100" (click)="resetForm()">
 
-                {{ isEditMode ? 'Update' : 'Save' }}
+                <i class="fa-solid fa-xmark me-2"></i>
+                Cancel
+
               </button>
 
-              <button
-                class="btn btn-secondary"
-                type="button"
-                (click)="resetForm()">
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!countryForm.valid">
 
-                Reset
+                <i class="fa-solid fa-save me-2"></i>
+
+                {{ isEditMode ? 'Update Country' : 'Save Country' }}
+
               </button>
 
             </div>
@@ -131,10 +111,7 @@
       <div class="card-body">
 
         <div class="mb-3 d-flex justify-content-end">
-          <input
-            class="form-control w-25"
-            placeholder="Search Country"
-            [(ngModel)]="searchText">
+          <input class="form-control w-25" placeholder="Search Country" [(ngModel)]="searchText">
         </div>
 
         <table class="table table-bordered table-hover align-middle">
@@ -169,9 +146,7 @@
               </td>
 
               <td class="text-center">
-                <i
-                  class="fa-solid"
-                  [ngClass]="c.isActive
+                <i class="fa-solid" [ngClass]="c.isActive
                     ? 'fa-circle-check text-success'
                     : 'fa-circle-xmark text-danger'">
                 </i>
@@ -179,16 +154,12 @@
 
               <td class="text-center">
 
-                <button
-                  class="btn btn-sm btn-outline-primary me-2"
-                  (click)="editCountry(c)">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editCountry(c)">
 
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
 
-                <button
-                  class="btn btn-sm btn-outline-danger"
-                  (click)="deleteCountry(c)">
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteCountry(c)">
 
                   <i class="fa-solid fa-trash"></i>
                 </button>

@@ -20,16 +20,7 @@
 
           <div class="row g-3">
 
-            <!-- Notice Period -->
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Notice Period *</label>
-              <input type="text"
-                     class="form-control"
-                     name="NoticePeriod"
-                     [(ngModel)]="noticePeriod.NoticePeriod"
-                     required>
-            </div>
-
+           
             <!-- Company -->
             <div class="col-md-4">
               <label class="form-label fw-semibold">Company *</label>
@@ -67,6 +58,17 @@
 
               </select>
             </div>
+
+             <!-- Notice Period -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Notice Period *</label>
+              <input type="text"
+                     class="form-control"
+                     name="NoticePeriod"
+                     [(ngModel)]="noticePeriod.NoticePeriod"
+                     required>
+            </div>
+
 
             <!-- Is Active -->
             <div class="col-md-2 d-flex align-items-center mt-4">

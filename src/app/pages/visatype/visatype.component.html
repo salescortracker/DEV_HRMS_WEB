@@ -18,36 +18,14 @@
 
           <div class="row g-3">
 
-            <!-- Visa Type -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Visa Type</label>
-              <input
-                type="text"
-                class="form-control"
-                name="visaType1"
-                [(ngModel)]="visa.visaType1"
-                placeholder="Enter Visa Type"
-                required
-              />
-            </div>
 
-            <!-- Description -->
-            <div class="col-md-6">
-              <label>Description</label>
-              <input type="text" class="form-control"
-                     [(ngModel)]="visa.description"
-                     name="description">
-            </div>
 
             <!-- Company -->
             <div class="col-md-6">
               <label>Company</label>
-              <select class="form-select"
-                      [(ngModel)]="visa.companyId"
-                      name="companyId" (change)="onCompanyChange()">
+              <select class="form-select" [(ngModel)]="visa.companyId" name="companyId" (change)="onCompanyChange()">
                 <option value="">Select</option>
-                <option *ngFor="let c of companies"
-                        [value]="c.companyId">
+                <option *ngFor="let c of companies" [value]="c.companyId">
                   {{ c.companyName }}
                 </option>
               </select>
@@ -56,24 +34,31 @@
             <!-- Region -->
             <div class="col-md-6">
               <label>Region</label>
-              <select class="form-select"
-                      [(ngModel)]="visa.regionId"
-                      name="regionId">
+              <select class="form-select" [(ngModel)]="visa.regionId" name="regionId">
                 <option value="">Select</option>
-                <option *ngFor="let r of filteredRegions"
-                        [value]="r.regionID">
+                <option *ngFor="let r of filteredRegions" [value]="r.regionID">
                   {{ r.regionName }}
                 </option>
               </select>
             </div>
 
+            <!-- Visa Type -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Visa Type</label>
+              <input type="text" class="form-control" name="visaType1" [(ngModel)]="visa.visaType1"
+                placeholder="Enter Visa Type" required />
+            </div>
+
+            <!-- Description -->
+            <div class="col-md-6">
+              <label>Description</label>
+              <input type="text" class="form-control" [(ngModel)]="visa.description" name="description">
+            </div>
+
             <!-- Status -->
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check form-switch mt-3">
-                <input class="form-check-input"
-                       type="checkbox"
-                       [(ngModel)]="visa.isActive"
-                       name="isActive">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="visa.isActive" name="isActive">
                 <label class="ms-2">
                   {{ visa.isActive ? 'Active' : 'Inactive' }}
                 </label>
@@ -116,16 +101,13 @@
             <td>{{ getCompanyName(v.companyId) }}</td>
             <td>{{ getRegionName(v.regionId) }}</td>
             <td>
-              <span class="badge"
-                    [ngClass]="v.isActive ? 'bg-success':'bg-secondary'">
+              <span class="badge" [ngClass]="v.isActive ? 'bg-success':'bg-secondary'">
                 {{ v.isActive ? 'Active':'Inactive' }}
               </span>
             </td>
             <td>
-              <button class="btn btn-sm btn-primary"
-                      (click)="editVisa(v)">Edit</button>
-              <button class="btn btn-sm btn-danger"
-                      (click)="deleteVisa(v)">Delete</button>
+              <button class="btn btn-sm btn-primary" (click)="editVisa(v)">Edit</button>
+              <button class="btn btn-sm btn-danger" (click)="deleteVisa(v)">Delete</button>
             </td>
           </tr>
         </tbody>

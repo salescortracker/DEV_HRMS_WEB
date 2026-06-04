@@ -14,7 +14,7 @@
 
       </h4>
 
-    
+
     </div>
 
     <hr class="mb-4" />
@@ -25,31 +25,10 @@
 
       <div class="card-body">
 
-        <form
-          (ngSubmit)="onSubmit()"
-          #eventTypeForm="ngForm"
-          novalidate>
+        <form (ngSubmit)="onSubmit()" #eventTypeForm="ngForm" novalidate>
 
           <div class="row g-3">
 
-            <!-- Event Type Name -->
-
-            <div class="col-md-6">
-
-              <label class="form-label fw-semibold">
-
-                Event Type Name <span style="color: red;">*</span>
-
-              </label>
-
-              <input
-                type="text"
-                class="form-control"
-                name="eventTypeName"
-                [(ngModel)]="eventType.eventTypeName"
-                placeholder="Enter Event Type Name"
-                required />
-            </div>
 
             <!-- Company -->
 
@@ -61,12 +40,8 @@
 
               </label>
 
-              <select
-                class="form-select"
-                name="companyID"
-                [(ngModel)]="eventType.companyID"
-                (change)="onCompanyChange()"
-                required>
+              <select class="form-select" name="companyID" [(ngModel)]="eventType.companyID"
+                (change)="onCompanyChange()" required>
 
                 <option value="0">
 
@@ -74,9 +49,7 @@
 
                 </option>
 
-                <option
-                  *ngFor="let c of companies"
-                  [value]="c.companyId">
+                <option *ngFor="let c of companies" [value]="c.companyId">
 
                   {{ c.companyName }}
 
@@ -95,11 +68,7 @@
 
               </label>
 
-              <select
-                class="form-select"
-                name="regionId"
-                [(ngModel)]="eventType.regionId"
-                required>
+              <select class="form-select" name="regionId" [(ngModel)]="eventType.regionId" required>
 
                 <option value="0">
 
@@ -107,9 +76,7 @@
 
                 </option>
 
-                <option
-                  *ngFor="let r of filteredRegions"
-                  [value]="r.regionID">
+                <option *ngFor="let r of filteredRegions" [value]="r.regionID">
 
                   {{ r.regionName }}
 
@@ -120,7 +87,22 @@
 
             <!-- Description -->
 
-           
+            <!-- Event Type Name -->
+
+            <div class="col-md-6">
+
+              <label class="form-label fw-semibold">
+
+                Event Type Name <span style="color: red;">*</span>
+
+              </label>
+
+              <input type="text" class="form-control" name="eventTypeName" [(ngModel)]="eventType.eventTypeName"
+                placeholder="Enter Event Type Name" required />
+            </div>
+
+
+
 
             <!-- Status -->
 
@@ -128,11 +110,7 @@
 
               <div class="form-check form-switch mt-3">
 
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  name="isActive"
-                  [(ngModel)]="eventType.isActive" />
+                <input class="form-check-input" type="checkbox" name="isActive" [(ngModel)]="eventType.isActive" />
 
                 <label class="form-check-label ms-2">
 
@@ -147,26 +125,20 @@
 
             <div class="col-md-4 d-flex align-items-end gap-3">
 
-              <button
-                type="button"
-                class="btn btn-danger w-100"
-                (click)="onCancel()">
+              <button type="button" class="btn btn-danger w-100" (click)="onCancel()">
 
                 <i class="fa-solid fa-xmark me-2"></i>
 
                 Cancel
               </button>
 
-              <button
-                type="submit"
-                class="btn btn-dark w-100"
-                [disabled]="!eventTypeForm.valid">
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!eventTypeForm.valid">
 
                 <i class="fa-solid fa-save me-2"></i>
 
                 {{ isEditMode
-                  ? 'Update'
-                  : 'Save' }}
+                ? 'Update'
+                : 'Save' }}
               </button>
 
             </div>
@@ -191,18 +163,12 @@
 
           <div class="col-md-4">
 
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search Event Type"
-              [(ngModel)]="searchText" />
+            <input type="text" class="form-control" placeholder="Search Event Type" [(ngModel)]="searchText" />
           </div>
 
           <div class="col-md-4">
 
-            <select
-              class="form-select"
-              [(ngModel)]="statusFilter">
+            <select class="form-select" [(ngModel)]="statusFilter">
 
               <option value="">
 
@@ -260,8 +226,7 @@
 
             <tbody>
 
-              <tr
-                *ngFor="let e of pagedEventTypes; let i = index">
+              <tr *ngFor="let e of pagedEventTypes; let i = index">
 
                 <td>
                   {{ (currentPage - 1) * pageSize + i + 1 }}
@@ -281,9 +246,7 @@
 
                 <td>
 
-                  <span
-                    class="badge"
-                    [ngClass]="
+                  <span class="badge" [ngClass]="
                       e.isActive
                         ? 'bg-success'
                         : 'bg-secondary'
@@ -297,17 +260,13 @@
 
                 <td class="text-center">
 
-                  <button
-                    class="btn btn-sm btn-outline-primary me-2"
-                    (click)="editEventType(e)">
+                  <button class="btn btn-sm btn-outline-primary me-2" (click)="editEventType(e)">
 
                     <i class="fa-solid fa-pen-to-square"></i>
 
                   </button>
 
-                  <button
-                    class="btn btn-sm btn-outline-danger"
-                    (click)="deleteEventType(e)">
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteEventType(e)">
 
                     <i class="fa-solid fa-trash"></i>
 
@@ -335,19 +294,13 @@
 
         <!-- Pagination -->
 
-        <nav
-          *ngIf="totalPages > 1"
-          class="d-flex justify-content-end mt-3">
+        <nav *ngIf="totalPages > 1" class="d-flex justify-content-end mt-3">
 
           <ul class="pagination pagination-sm mb-0">
 
-            <li
-              class="page-item"
-              [class.disabled]="currentPage === 1">
+            <li class="page-item" [class.disabled]="currentPage === 1">
 
-              <a
-                class="page-link"
-                (click)="goToPage(currentPage - 1)">
+              <a class="page-link" (click)="goToPage(currentPage - 1)">
 
                 Previous
 
@@ -355,17 +308,12 @@
 
             </li>
 
-            <li
-              class="page-item"
-              *ngFor="
+            <li class="page-item" *ngFor="
                 let page of [].constructor(totalPages);
                 let i = index
-              "
-              [class.active]="currentPage === i + 1">
+              " [class.active]="currentPage === i + 1">
 
-              <a
-                class="page-link"
-                (click)="goToPage(i + 1)">
+              <a class="page-link" (click)="goToPage(i + 1)">
 
                 {{ i + 1 }}
 
@@ -373,13 +321,9 @@
 
             </li>
 
-            <li
-              class="page-item"
-              [class.disabled]="currentPage === totalPages">
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
 
-              <a
-                class="page-link"
-                (click)="goToPage(currentPage + 1)">
+              <a class="page-link" (click)="goToPage(currentPage + 1)">
 
                 Next
 

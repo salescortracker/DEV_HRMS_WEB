@@ -79,7 +79,7 @@ export class RolesPermissionsComponent {
   // ---------- Permissions ----------
   permissions: MenuItem[] = [];
 
-
+selectAll: boolean = false;
   constructor(private roleService: AdminService) { }
 
   ngOnInit(): void {
@@ -96,7 +96,36 @@ export class RolesPermissionsComponent {
     this.applyPermissionsAndSelectionRecursive(menu, checked);
     // update parents so their checked/indeterminate reflect child states
     this.updateAncestorsSelection(menu);
+    this.updateSelectAllState();
   }
+  toggleSelectAll(event: Event): void {
+  const checked = (event.target as HTMLInputElement).checked;
+
+  this.selectAll = checked;
+
+  this.permissions.forEach(menu => {
+    this.applyPermissionsAndSelectionRecursive(menu, checked);
+  });
+}
+updateSelectAllState(): void {
+  const allChecked = this.permissions.every(m => this.isFullyChecked(m));
+  this.selectAll = allChecked;
+}
+isFullyChecked(menu: MenuItem): boolean {
+  const ownChecked =
+    menu.permissions &&
+    menu.permissions.view &&
+    menu.permissions.create &&
+    menu.permissions.edit &&
+    menu.permissions.delete &&
+    menu.permissions.approve;
+
+  const childrenChecked =
+    !menu.children?.length ||
+    menu.children.every(c => this.isFullyChecked(c));
+
+  return !!ownChecked && childrenChecked;
+}
 
   /**
    * Recursively set all permissions and selected flag for menu and its children.
@@ -313,11 +342,13 @@ export class RolesPermissionsComponent {
       parent.selected = parent.children.every(c => c.selected);
       this.updateParentStatus(parent);
     }
+    this.updateSelectAllState();
   }
 
 
   resetPermissions(): void {
     this.permissions.forEach(m => this.applyPermissionsRecursive(m, false));
+      this.selectAll = false;
   }
 
   // resetPermissions(): void {

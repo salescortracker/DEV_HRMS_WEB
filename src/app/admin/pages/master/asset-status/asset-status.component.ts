@@ -133,4 +133,7 @@ export class AssetStatusComponent {
       x.assetStatusName.toLowerCase().includes(this.searchText.toLowerCase())
     );
   }
+  onCancel(): void {
+  this.reset();
+}
 }

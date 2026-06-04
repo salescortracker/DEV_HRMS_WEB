@@ -13,6 +13,35 @@
 
           <div class="row g-3">
 
+
+            <!-- Company -->
+            <div class="col-md-4">
+              <label class="form-label">Company</label>
+              <select class="form-select" [(ngModel)]="structure.companyId" (change)="onCompanyChange()"
+                name="companyId">
+
+                <option [ngValue]="null">Select Company</option>
+
+                <option *ngFor="let c of companies" [ngValue]="c.companyId">
+                  {{ c.companyName }}
+                </option>
+
+              </select>
+            </div>
+
+            <!-- Region -->
+            <div class="col-md-4">
+              <label class="form-label">Region</label>
+              <select class="form-select" [(ngModel)]="structure.regionId" name="regionId">
+
+                <option [ngValue]="null">Select Region</option>
+
+                <option *ngFor="let r of filteredRegions" [ngValue]="r.regionId">
+                  {{ r.regionName }}
+                </option>
+
+              </select>
+            </div>
             <!-- Structure Name -->
             <div class="col-md-4">
               <label class="form-label">Structure Name *</label>
@@ -36,13 +65,14 @@
             <!-- Designation -->
             <div class="col-md-4">
               <label class="form-label">Designation</label>
-              <select class="form-select" [(ngModel)]="structure.designationId" name="designationId" (change)="onDesignationChange()">
+              <select class="form-select" [(ngModel)]="structure.designationId" name="designationId"
+                (change)="onDesignationChange()">
 
                 <option [ngValue]="null">Select Designation</option>
 
-<option *ngFor="let d of designations" [ngValue]="d.designationId">
-  {{ d.designationName }}
-</option>
+                <option *ngFor="let d of designations" [ngValue]="d.designationId">
+                  {{ d.designationName }}
+                </option>
               </select>
             </div>
 
@@ -52,33 +82,6 @@
               <input type="text" class="form-control" [(ngModel)]="structure.gradeName" name="gradeName" readonly>
             </div>
 
-            <!-- Company -->
-            <div class="col-md-4">
-              <label class="form-label">Company</label>
-            <select class="form-select" [(ngModel)]="structure.companyId" (change)="onCompanyChange()" name="companyId">
-
-  <option [ngValue]="null">Select Company</option>
-
-  <option *ngFor="let c of companies" [ngValue]="c.companyId">
-    {{ c.companyName }}
-  </option>
-
-</select>
-            </div>
-
-            <!-- Region -->
-            <div class="col-md-4">
-              <label class="form-label">Region</label>
-<select class="form-select" [(ngModel)]="structure.regionId" name="regionId">
-
-  <option [ngValue]="null">Select Region</option>
-
-  <option *ngFor="let r of filteredRegions" [ngValue]="r.regionId">
-    {{ r.regionName }}
-  </option>
-
-</select>
-            </div>
 
             <!-- Dynamic Components Section -->
             <!-- Dynamic Components Section -->
@@ -186,18 +189,18 @@
           </tbody>
         </table>
 
-       <div class="d-flex justify-content-end align-items-center mt-3">
- 
+        <div class="d-flex justify-content-end align-items-center mt-3">
+
           <button class="btn btn-sm btn-secondary me-2" (click)="prevPage()" [disabled]="currentPage === 1">
             Prev
           </button>
- 
+
           <span>Page {{ currentPage }} of {{ totalPages() }}</span>
- 
+
           <button class="btn btn-sm btn-secondary ms-2" (click)="nextPage()" [disabled]="currentPage === totalPages()">
             Next
           </button>
- 
+
         </div>
 
       </div>

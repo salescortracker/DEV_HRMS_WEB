@@ -35,13 +35,37 @@
         <form (ngSubmit)="onSubmit()" #attachmentForm="ngForm" novalidate>
           <div class="row g-3">
 
+
+            <!-- Company -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Company *</label>
+              <select class="form-select" name="company" [(ngModel)]="attachment.companyId" (change)="onCompanyChange()"
+                required>
+
+                <option [ngValue]="0">-- Select Company --</option>
+                <option *ngFor="let c of companies" [ngValue]="c.companyId">
+                  {{ c.companyName }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Region -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Region *</label>
+              <select class="form-select" name="region" [(ngModel)]="attachment.regionId" required>
+
+                <option [ngValue]="0">-- Select Region --</option>
+                <option *ngFor="let r of regions" [ngValue]="r.regionID">
+                  {{ r.regionName }}
+                </option>
+              </select>
+            </div>
+
             <!-- Category Dropdown -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Attachment Category</label>
-              <select class="form-select"
-                      name="AttachmentCategory"
-                      [(ngModel)]="attachment.attachmentCategory"
-                      required>
+              <select class="form-select" name="AttachmentCategory" [(ngModel)]="attachment.attachmentCategory"
+                required>
                 <option value="">Select Category</option>
                 <option value="Letters">Letters</option>
                 <option value="Forms">Forms</option>
@@ -52,52 +76,15 @@
             <!-- Attachment Type Name -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Attachment Type</label>
-              <input type="text"
-                     class="form-control"
-                     name="AttachmentTypeName"
-                     [(ngModel)]="attachment.attachmentTypeName"
-                     placeholder="Enter Attachment Type"
-                     required />
+              <input type="text" class="form-control" name="AttachmentTypeName"
+                [(ngModel)]="attachment.attachmentTypeName" placeholder="Enter Attachment Type" required />
             </div>
-            <!-- Company -->
-<div class="col-md-6">
-  <label class="form-label fw-semibold">Company *</label>
-  <select class="form-select"
-          name="company"
-          [(ngModel)]="attachment.companyId"
-          (change)="onCompanyChange()"
-          required>
-
-    <option [ngValue]="0">-- Select Company --</option>
-    <option *ngFor="let c of companies" [ngValue]="c.companyId">
-      {{ c.companyName }}
-    </option>
-  </select>
-</div>
-
-<!-- Region -->
-<div class="col-md-6">
-  <label class="form-label fw-semibold">Region *</label>
-  <select class="form-select"
-          name="region"
-          [(ngModel)]="attachment.regionId"
-          required>
-
-    <option [ngValue]="0">-- Select Region --</option>
-    <option *ngFor="let r of regions" [ngValue]="r.regionID">
-      {{ r.regionName }}
-    </option>
-  </select>
-</div>
 
             <!-- Status Switch -->
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check form-switch mt-3">
-                <input class="form-check-input"
-                       type="checkbox"
-                       id="isActiveSwitch"
-                       [(ngModel)]="attachment.isActive"
-                       name="IsActive">
+                <input class="form-check-input" type="checkbox" id="isActiveSwitch" [(ngModel)]="attachment.isActive"
+                  name="IsActive">
                 <label class="form-check-label ms-2" for="isActiveSwitch">
                   {{ attachment.isActive ? 'Active' : 'Inactive' }}
                 </label>
@@ -106,9 +93,7 @@
 
             <!-- Save Button -->
             <div class="col-md-12 mt-3">
-              <button type="submit"
-                      class="btn btn-dark px-4"
-                      [disabled]="!attachmentForm.valid">
+              <button type="submit" class="btn btn-dark px-4" [disabled]="!attachmentForm.valid">
                 <i class="fa-solid fa-save me-2"></i>
                 {{ isEditMode ? 'Update Attachment' : 'Save Attachment' }}
               </button>
@@ -126,10 +111,7 @@
         <!-- Search & Filter -->
         <div class="mb-3 row g-3 align-items-end">
           <div class="col-md-4">
-            <input type="text"
-                   class="form-control"
-                   placeholder="Search Attachment"
-                   [(ngModel)]="searchText" />
+            <input type="text" class="form-control" placeholder="Search Attachment" [(ngModel)]="searchText" />
           </div>
 
           <div class="col-md-4">
@@ -176,20 +158,17 @@
                 <td>{{ regionMap[a.regionId] || '—' }}</td>
 
                 <td>
-                  <span class="badge"
-                        [ngClass]="a.isActive ? 'bg-success' : 'bg-secondary'">
+                  <span class="badge" [ngClass]="a.isActive ? 'bg-success' : 'bg-secondary'">
                     {{ a.isActive ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
 
                 <td class="text-center">
-                  <button class="btn btn-sm btn-outline-primary me-2"
-                          (click)="editAttachment(a)">
+                  <button class="btn btn-sm btn-outline-primary me-2" (click)="editAttachment(a)">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
 
-                  <button class="btn btn-sm btn-outline-danger"
-                          (click)="deleteAttachment(a)">
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteAttachment(a)">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </td>
@@ -211,9 +190,8 @@
               <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
             </li>
 
-            <li class="page-item"
-                *ngFor="let page of [].constructor(totalPages); let i = index"
-                [class.active]="currentPage === i + 1">
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="currentPage === i + 1">
               <a class="page-link" (click)="goToPage(i + 1)">
                 {{ i + 1 }}
               </a>
@@ -232,10 +210,6 @@
 </div>
 
 <!-- Bulk Upload Component -->
-<app-common-upload
-  [visible]="showUploadPopup"
-  [screenName]="'AttachmentType'"
-  [model]="attachmentsModel"
-  (close)="closeUploadPopup()"
-  (uploadComplete)="onBulkUploadComplete($event)">
+<app-common-upload [visible]="showUploadPopup" [screenName]="'AttachmentType'" [model]="attachmentsModel"
+  (close)="closeUploadPopup()" (uploadComplete)="onBulkUploadComplete($event)">
 </app-common-upload>

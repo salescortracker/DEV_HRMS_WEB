@@ -17,16 +17,7 @@
 
                     <div class="row g-3">
 
-                        <!-- Weekoff Date -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Weekoff Date *</label>
-                            <select class="form-select" name="WeekoffDate" [(ngModel)]="weekoff.WeekoffDate" required>
-                                <option value="">-- Select Day --</option>
-                                <option *ngFor="let d of weekoffDates" [value]="d.value">
-                                    {{ d.display }}
-                                </option>
-                                </select>
-                        </div>
+                        
 
                         <!-- Company -->
                         <div class="col-md-4">
@@ -56,6 +47,17 @@
                                 </option>
 
                             </select>
+                        </div>
+
+                        <!-- Weekoff Date -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Weekoff Date *</label>
+                            <select class="form-select" name="WeekoffDate" [(ngModel)]="weekoff.WeekoffDate" required>
+                                <option value="">-- Select Day --</option>
+                                <option *ngFor="let d of weekoffDates" [value]="d.value">
+                                    {{ d.display }}
+                                </option>
+                                </select>
                         </div>
 
                         <!-- Is Active -->
