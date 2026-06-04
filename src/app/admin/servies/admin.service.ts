@@ -358,15 +358,43 @@ export interface ResignationModel {
 //   companyId: number;
 //   regionId: number;
 // }
+// export interface LeaveType {
+//   LeaveTypeId: number;
+//   LeaveTypeName: string;
+//   LeaveDays: number;
+//   IsActive: boolean;
+//    CompanyID: number;
+//   RegionID: number;
+//   userId:number;
+//    gradeAllocations: GradeAllocation[];
+// }
 export interface LeaveType {
-  LeaveTypeId: number;
-  LeaveTypeName: string;
-  LeaveDays: number;
-  IsActive: boolean;
-   CompanyID: number;
-  RegionID: number;
-  userId:number;
-   gradeAllocations: GradeAllocation[];
+
+  leaveTypeID: number;
+
+  companyID: number;
+
+  regionID: number;
+
+  leaveTypeName: string;
+
+  leaveDays: number;
+
+  isActive: boolean;
+
+  userId: number;
+
+  isCarryForward: boolean;
+
+  maxCarryForwardDays?: number;
+
+  leavesPerMonth?: number;
+
+  maxLeavesPerMonth?: number;
+
+  allowAdvanceLeave: boolean;
+
+  gradeAllocations: GradeAllocation[];
 }
 export interface GradeAllocation {
   gradeID: number;
