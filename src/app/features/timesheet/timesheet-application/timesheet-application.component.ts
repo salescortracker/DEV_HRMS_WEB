@@ -215,17 +215,22 @@ model: TimesheetModel = {
 
   // ================= LOAD TIMESHEETS =================
   loadMyTimesheets() {
-    this.timesheetService.gettimesheetlisting(this.userId).subscribe(res => {
-      this.submittedTimesheets = res.map((row: any) => ({
+  this.timesheetService.gettimesheetlisting(this.userId).subscribe(res => {
+
+    this.submittedTimesheets = res
+      .map((row: any) => ({
         ...row,
         timesheetDate: new Date(row.timesheetDate),
         projects: row.projects.map((p: any) => ({
           ...p,
           otHoursText: p.otHoursText ?? '0 Hours'
         }))
-      }));
-    });
-  }
+      }))
+      .sort((a: any, b: any) =>
+        new Date(b.timesheetDate).getTime() - new Date(a.timesheetDate).getTime()
+      ); 
+  });
+}
 
   // ================= SELECT ALL =================
   toggleSelectAll(event: any) {
