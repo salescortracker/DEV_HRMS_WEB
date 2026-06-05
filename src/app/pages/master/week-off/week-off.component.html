@@ -17,7 +17,7 @@
 
                     <div class="row g-3">
 
-                        
+
 
                         <!-- Company -->
                         <div class="col-md-4">
@@ -57,7 +57,7 @@
                                 <option *ngFor="let d of weekoffDates" [value]="d.value">
                                     {{ d.display }}
                                 </option>
-                                </select>
+                            </select>
                         </div>
 
                         <!-- Is Active -->
@@ -70,7 +70,7 @@
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-md-10 mt-4 text-end">
+                        <!-- <div class="col-md-10 mt-4 text-end">
                             <button class="btn btn-success me-2" type="submit" [disabled]="!weekoffForm.valid">
 
                                 <i class="fa-solid fa-save me-2"></i>
@@ -80,6 +80,22 @@
                             <button class="btn btn-secondary" type="button" (click)="clearForm()">
                                 <i class="fa-solid fa-rotate-left me-2"></i> Reset
                             </button>
+                        </div> -->
+                        <!-- Buttons -->
+                        <div class="col-md-6 d-flex align-items-end gap-2 mt-4">
+
+                            <!-- Cancel Button -->
+                            <button type="button" class="btn btn-danger w-100" (click)="clearForm()">
+                                <i class="fa-solid fa-xmark me-2"></i>
+                                Cancel
+                            </button>
+
+                            <!-- Save / Update Button -->
+                            <button type="submit" class="btn btn-dark w-100" [disabled]="!weekoffForm.valid">
+                                <i class="fa-solid fa-save me-2"></i>
+                                {{ isEditMode ? 'Update Week Off' : 'Save Week Off' }}
+                            </button>
+
                         </div>
 
                     </div>
@@ -114,7 +130,7 @@
 
                         <tr *ngFor="let w of filteredWeekoffs(); let i = index">
                             <td>{{ i + 1 }}</td>
-                            <td>{{ w.WeekoffDate  }}</td>
+                            <td>{{ w.WeekoffDate }}</td>
                             <td>{{ companyMap[w.CompanyID] || '—' }}</td>
                             <td>{{ regionMap[w.RegionID] || '—' }}</td>
 

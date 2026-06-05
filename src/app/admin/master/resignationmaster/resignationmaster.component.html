@@ -56,7 +56,7 @@
               <input type="checkbox" name="isActive" [(ngModel)]="resignation.isActive">
             </div>
 
-            <div class="col-md-12 text-end mt-3">
+            <!-- <div class="col-md-12 text-end mt-3">
               <button class="btn btn-success me-2" type="submit" [disabled]="!resignationForm.valid">
                 {{ isEditMode ? 'Update' : 'Save' }}
               </button>
@@ -64,6 +64,21 @@
               <button class="btn btn-secondary" type="button" (click)="clearForm()">
                 Reset
               </button>
+            </div> -->
+            <div class="col-md-6 d-flex align-items-end gap-2 mt-3">
+
+              <!-- Cancel Button -->
+              <button type="button" class="btn btn-danger w-100" (click)="clearForm()">
+                <i class="fa-solid fa-xmark me-2"></i>
+                Cancel
+              </button>
+
+              <!-- Save / Update Button -->
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!resignationForm.valid">
+                <i class="fa-solid fa-save me-2"></i>
+                {{ isEditMode ? 'Update Resignation' : 'Save Resignation' }}
+              </button>
+
             </div>
 
           </div>
