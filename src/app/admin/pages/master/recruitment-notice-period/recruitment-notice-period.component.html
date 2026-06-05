@@ -20,29 +20,16 @@
 
           <div class="row g-3">
 
-            <!-- Notice Period -->
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Notice Period *</label>
-              <input type="text"
-                     class="form-control"
-                     name="NoticePeriod"
-                     [(ngModel)]="noticePeriod.NoticePeriod"
-                     required>
-            </div>
 
             <!-- Company -->
             <div class="col-md-4">
               <label class="form-label fw-semibold">Company *</label>
-              <select class="form-select"
-                      name="CompanyId"
-                      [(ngModel)]="companyId"
-                      (change)="onCompanyChange()"
-                      required>
+              <select class="form-select" name="CompanyId" [(ngModel)]="companyId" (change)="onCompanyChange()"
+                required>
 
                 <option value="">-- Select Company --</option>
 
-                <option *ngFor="let c of companies"
-                        [value]="c.companyId">
+                <option *ngFor="let c of companies" [value]="c.companyId">
                   {{ c.companyName }}
                 </option>
 
@@ -52,49 +39,61 @@
             <!-- Region -->
             <div class="col-md-4">
               <label class="form-label fw-semibold">Region *</label>
-              <select class="form-select"
-                      name="RegionId"
-                      [(ngModel)]="regionId"
-                      (change)="onRegionChange()"
-                      required>
+              <select class="form-select" name="RegionId" [(ngModel)]="regionId" (change)="onRegionChange()" required>
 
                 <option value="">-- Select Region --</option>
 
-                <option *ngFor="let r of regions"
-                        [value]="r.regionID">
+                <option *ngFor="let r of regions" [value]="r.regionID">
                   {{ r.regionName }}
                 </option>
 
               </select>
             </div>
 
+            <!-- Notice Period -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Notice Period *</label>
+              <input type="text" class="form-control" name="NoticePeriod" [(ngModel)]="noticePeriod.NoticePeriod"
+                required>
+            </div>
+
+
             <!-- Is Active -->
             <div class="col-md-2 d-flex align-items-center mt-4">
               <label class="me-2 fw-semibold">Is Active</label>
               <div class="form-check form-switch">
-                <input class="form-check-input"
-                       type="checkbox"
-                       name="IsActive"
-                       [(ngModel)]="noticePeriod.IsActive">
+                <input class="form-check-input" type="checkbox" name="IsActive" [(ngModel)]="noticePeriod.IsActive">
               </div>
             </div>
 
             <!-- Buttons -->
-            <div class="col-md-10 mt-4 text-end">
-              <button class="btn btn-success me-2"
-                      type="submit"
-                      [disabled]="!noticeForm.valid">
+            <!-- <div class="col-md-10 mt-4 text-end">
+              <button class="btn btn-success me-2" type="submit" [disabled]="!noticeForm.valid">
 
                 <i class="fa-solid fa-save me-2"></i>
                 {{ isEditMode ? 'Update' : 'Save' }}
               </button>
 
-              <button class="btn btn-secondary"
-                      type="button"
-                      (click)="clearForm()">
+              <button class="btn btn-secondary" type="button" (click)="clearForm()">
                 <i class="fa-solid fa-rotate-left me-2"></i>
                 Reset
               </button>
+            </div> -->
+            <!-- Buttons -->
+            <div class="col-md-10 d-flex align-items-end gap-2 mt-4">
+
+              <!-- Cancel Button -->
+              <button type="button" class="btn btn-danger w-100" (click)="clearForm()">
+                <i class="fa-solid fa-xmark me-2"></i>
+                Cancel
+              </button>
+
+              <!-- Save / Update Button -->
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!noticeForm.valid">
+                <i class="fa-solid fa-save me-2"></i>
+                {{ isEditMode ? 'Update Notice Period' : 'Save Notice Period' }}
+              </button>
+
             </div>
 
           </div>
@@ -111,9 +110,7 @@
 
         <!-- Search -->
         <div class="mb-3 d-flex justify-content-end">
-          <input class="form-control w-25"
-                 placeholder="Search Notice Period"
-                 [(ngModel)]="searchText">
+          <input class="form-control w-25" placeholder="Search Notice Period" [(ngModel)]="searchText">
         </div>
 
         <table class="table table-bordered table-hover align-middle">
@@ -137,8 +134,7 @@
               <td>{{ regionMap[n.RegionID] || '—' }}</td>
 
               <td class="text-center">
-                <i class="fa-solid"
-                   [ngClass]="n.IsActive ?
+                <i class="fa-solid" [ngClass]="n.IsActive ?
                    'fa-circle-check text-success' :
                    'fa-circle-xmark text-danger'">
                 </i>
@@ -146,13 +142,11 @@
 
               <td class="text-center">
 
-                <button class="btn btn-sm btn-outline-primary me-2"
-                        (click)="editNoticePeriod(n)">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editNoticePeriod(n)">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
 
-                <button class="btn btn-sm btn-outline-danger"
-                        (click)="deleteNoticePeriod(n)">
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteNoticePeriod(n)">
                   <i class="fa-solid fa-trash"></i>
                 </button>
 
@@ -160,8 +154,7 @@
             </tr>
 
             <tr *ngIf="filteredNoticePeriods().length === 0">
-              <td colspan="6"
-                  class="text-center text-muted">
+              <td colspan="6" class="text-center text-muted">
                 No records found
               </td>
             </tr>

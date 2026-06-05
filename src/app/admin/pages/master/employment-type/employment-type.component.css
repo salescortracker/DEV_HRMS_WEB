@@ -1,0 +1,22 @@
+.employment-master .btn-dark,
+.employment-master .btn-danger {
+  min-width: 160px;
+  font-weight: 500;
+}
+
+.employment-master .form-label {
+  font-weight: 500;
+}
+
+.employment-master table th,
+.employment-master table td {
+  vertical-align: middle;
+}
+
+.employment-master .card {
+  border: none;
+}
+
+.employment-master .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}

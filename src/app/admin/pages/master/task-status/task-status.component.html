@@ -13,17 +13,6 @@
                 <form #taskStatusForm="ngForm" (ngSubmit)="onSubmit()">
                     <div class="row g-3">
 
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Task Status *</label>
-                            <input type="text" class="form-control" name="TaskStatusName"
-                                [(ngModel)]="taskStatus.taskStatusName" required>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Description</label>
-                            <input type="text" class="form-control" name="Description"
-                                [(ngModel)]="taskStatus.description">
-                        </div>
 
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Company *</label>
@@ -45,6 +34,19 @@
                                 </option>
                             </select>
                         </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Task Status *</label>
+                            <input type="text" class="form-control" name="TaskStatusName"
+                                [(ngModel)]="taskStatus.taskStatusName" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Description</label>
+                            <input type="text" class="form-control" name="Description"
+                                [(ngModel)]="taskStatus.description">
+                        </div>
+
                         <div class="col-md-2 d-flex align-items-center mt-4">
                             <label class="me-2 fw-semibold">Is Active</label>
                             <div class="form-check form-switch">
@@ -53,13 +55,23 @@
                             </div>
                         </div>
 
-                        <div class="col-md-10 mt-4 text-end">
-                            <button class="btn btn-success me-2" type="submit" [disabled]="!taskStatusForm.valid">
-                                {{ isEditMode ? 'Update' : 'Save' }}
+                        <div class="col-md-6 d-flex align-items-end gap-2 mt-4">
+
+                            <button type="button" class="btn btn-danger w-100" (click)="resetForm()">
+
+                                <i class="fa-solid fa-xmark me-2"></i>
+                                Cancel
+
                             </button>
-                            <button class="btn btn-secondary" type="button" (click)="resetForm()">
-                                Reset
+
+                            <button type="submit" class="btn btn-dark w-100" [disabled]="!taskStatusForm.valid">
+
+                                <i class="fa-solid fa-save me-2"></i>
+
+                                {{ isEditMode ? 'Update Task Status' : 'Save Task Status' }}
+
                             </button>
+
                         </div>
 
                     </div>

@@ -12,3 +12,15 @@
   border-color: #198754;
   color: #fff;
 }
+.relationship-master .btn-dark,
+.relationship-master .btn-danger {
+  min-width: 160px;
+}
+
+.relationship-master .btn-dark {
+  font-weight: 500;
+}
+
+.relationship-master .btn-danger {
+  font-weight: 500;
+}

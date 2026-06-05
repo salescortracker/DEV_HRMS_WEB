@@ -39,21 +39,12 @@
         <form *ngIf="certification" (ngSubmit)="onSubmit()" #certForm="ngForm" novalidate>
           <div class="row g-3">
 
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Certification Type</label>
-              <input
-                type="text"
-                class="form-control"
-                name="CertificationTypeName"
-                [(ngModel)]="certification.certificationTypeName"
-                placeholder="Enter Certification Type"
-                required
-              />
-            </div>
- <!-- Company Name -->
+
+            <!-- Company Name -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Company</label>
-              <select class="form-select" [(ngModel)]="certification.companyID" name="companyId" (change)="onCompanyChange()" required>
+              <select class="form-select" [(ngModel)]="certification.companyID" name="companyId"
+                (change)="onCompanyChange()" required>
                 <option value="">Select Company</option>
                 <option *ngFor="let company of companies" [value]="company.companyId">
                   {{ company.companyName }}
@@ -71,25 +62,37 @@
                 </option>
               </select>
             </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Certification Type</label>
+              <input type="text" class="form-control" name="CertificationTypeName"
+                [(ngModel)]="certification.certificationTypeName" placeholder="Enter Certification Type" required />
+            </div>
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check form-switch mt-3">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  name="IsActive"
-                  [(ngModel)]="certification.isActive"
-                />
+                <input class="form-check-input" type="checkbox" name="IsActive" [(ngModel)]="certification.isActive" />
                 <label class="form-check-label ms-2">
                   {{ certification.isActive ? 'Active' : 'Inactive' }}
                 </label>
               </div>
             </div>
 
-            <div class="col-md-12 mt-3">
-              <button type="submit" class="btn btn-dark px-4" [disabled]="!certForm.valid">
+            <div class="col-md-6 d-flex align-items-end gap-2 mt-3">
+
+              <button type="button" class="btn btn-danger w-100" (click)="resetForm()">
+
+                <i class="fa-solid fa-xmark me-2"></i>
+                Cancel
+
+              </button>
+
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!certForm.valid">
+
                 <i class="fa-solid fa-save me-2"></i>
                 {{ isEditMode ? 'Update Certification' : 'Save Certification' }}
+
               </button>
+
             </div>
 
           </div>
@@ -125,7 +128,7 @@
                   <i class="fa" [ngClass]="getSortIcon('certificationTypeName')"></i>
                 </th>
                 <th>Company</th>
-<th>Region</th>
+                <th>Region</th>
 
                 <th>Status</th>
                 <th class="text-center">Actions</th>
@@ -137,7 +140,7 @@
                 <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                 <td>{{ c.certificationTypeName }}</td>
                 <td>{{ c.companyName }}</td>
-<td>{{ c.regionName }}</td>
+                <td>{{ c.regionName }}</td>
 
                 <td>
                   <span class="badge" [ngClass]="c.isActive ? 'bg-success' : 'bg-secondary'">
@@ -148,11 +151,9 @@
                   <button class="btn btn-sm btn-outline-primary me-2" (click)="editCertification(c)">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
-                 <button
-  class="btn btn-sm btn-outline-danger"
-  (click)="deleteCertification(c)">
-  <i class="fa-solid fa-trash"></i>
-</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteCertification(c)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
 
                 </td>
               </tr>
@@ -171,11 +172,6 @@
 </div>
 
 <!-- ================= BULK UPLOAD ================= -->
-<app-common-upload
-  *ngIf="showUploadPopup && certificationModel"
-  [visible]="showUploadPopup"
-  [screenName]="'CertificationType'"
-  [model]="certificationModel"
-  (close)="closeUploadPopup()"
-  (uploadComplete)="onBulkUploadComplete()"
-></app-common-upload>
+<app-common-upload *ngIf="showUploadPopup && certificationModel" [visible]="showUploadPopup"
+  [screenName]="'CertificationType'" [model]="certificationModel" (close)="closeUploadPopup()"
+  (uploadComplete)="onBulkUploadComplete()"></app-common-upload>

@@ -28,18 +28,7 @@
                 <form #holidayForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
                     <div class="row g-3">
 
-                        <!-- Holiday Name -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Holiday Name *</label>
-                            <input type="text" class="form-control" name="HolidayListName"
-                                [(ngModel)]="holiday.HolidayListName" required placeholder="Enter Holiday Name">
-                        </div>
 
-                        <!-- Holiday Date -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Holiday Date *</label>
-                            <input type="date" class="form-control" name="Date" [(ngModel)]="holiday.Date" required>
-                        </div>
 
                         <!-- Company (Readonly from session) -->
                         <!-- Company -->
@@ -66,6 +55,19 @@
                             </select>
                         </div>
 
+                        <!-- Holiday Name -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Holiday Name *</label>
+                            <input type="text" class="form-control" name="HolidayListName"
+                                [(ngModel)]="holiday.HolidayListName" required placeholder="Enter Holiday Name">
+                        </div>
+
+                        <!-- Holiday Date -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Holiday Date *</label>
+                            <input type="date" class="form-control" name="Date" [(ngModel)]="holiday.Date" required>
+                        </div>
+
                         <!-- Is Active -->
                         <div class="col-md-2 d-flex align-items-center mt-4">
                             <label class="me-2 fw-semibold">Is Active</label>
@@ -76,7 +78,7 @@
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-md-10 mt-4 text-end">
+                        <!-- <div class="col-md-10 mt-4 text-end">
                             <button class="btn btn-success me-2" type="submit" [disabled]="!holidayForm.valid">
                                 <i class="fa-solid fa-save me-2"></i>
                                 {{ isEditMode ? 'Update' : 'Save' }}
@@ -85,6 +87,22 @@
                             <button class="btn btn-secondary" type="button" (click)="resetForm()">
                                 <i class="fa-solid fa-rotate-left me-2"></i> Reset
                             </button>
+                        </div> -->
+                        <!-- Buttons -->
+                        <div class="col-md-6 d-flex align-items-end gap-2 mt-4">
+
+                            <!-- Cancel Button -->
+                            <button type="button" class="btn btn-danger w-100" (click)="resetForm()">
+                                <i class="fa-solid fa-xmark me-2"></i>
+                                Cancel
+                            </button>
+
+                            <!-- Save / Update Button -->
+                            <button type="submit" class="btn btn-dark w-100" [disabled]="!holidayForm.valid">
+                                <i class="fa-solid fa-save me-2"></i>
+                                {{ isEditMode ? 'Update Holiday' : 'Save Holiday' }}
+                            </button>
+
                         </div>
 
                     </div>

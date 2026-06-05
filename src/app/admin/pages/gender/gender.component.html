@@ -35,23 +35,12 @@
       <div class="card-body">
         <form (ngSubmit)="onSubmit()" #genderForm="ngForm" novalidate>
           <div class="row g-3">
-   <!-- Gender Name -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Gender Name</label>
-              <input type="text"
-                     class="form-control"
-                     name="genderName"
-                     [(ngModel)]="gender.genderName"
-                     placeholder="Enter Gender Name"
-                     required />
-            </div>
+
             <!-- Company -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Company</label>
-              <select class="form-select"
-                      name="companyId" (change)="onCompanyChange()"
-                      [(ngModel)]="gender.companyId"
-                      required>
+              <select class="form-select" name="companyId" (change)="onCompanyChange()" [(ngModel)]="gender.companyId"
+                required>
                 <option value="0">Select Company</option>
                 <option *ngFor="let c of companies" [value]="c.companyId">
                   {{ c.companyName }}
@@ -62,15 +51,19 @@
             <!-- Region -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Region</label>
-              <select class="form-select"
-                      name="regionId"
-                      [(ngModel)]="gender.regionId"
-                      required>
+              <select class="form-select" name="regionId" [(ngModel)]="gender.regionId" required>
                 <option value="0">Select Region</option>
                 <option *ngFor="let r of filteredRegions" [value]="r.regionID">
                   {{ r.regionName }}
                 </option>
               </select>
+            </div>
+
+            <!-- Gender Name -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Gender Name</label>
+              <input type="text" class="form-control" name="genderName" [(ngModel)]="gender.genderName"
+                placeholder="Enter Gender Name" required />
             </div>
 
             <!-- Description -->
@@ -86,10 +79,7 @@
             <!-- Status -->
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check form-switch mt-3">
-                <input class="form-check-input"
-                       type="checkbox"
-                       name="isActive"
-                       [(ngModel)]="gender.isActive" />
+                <input class="form-check-input" type="checkbox" name="isActive" [(ngModel)]="gender.isActive" />
                 <label class="form-check-label ms-2">
                   {{ gender.isActive ? 'Active' : 'Inactive' }}
                 </label>
@@ -98,17 +88,11 @@
 
             <!-- Submit -->
             <div class="col-md-4 d-flex align-items-end gap-4">
-                <button
-                type="button"
-                class="btn btn-danger px-6 w-100"
-                (click)="onCancel()"
-              >
+              <button type="button" class="btn btn-danger px-6 w-100" (click)="onCancel()">
                 <i class="fa-solid fa-xmark me-2"></i>
                 Cancel
               </button>
-              <button type="submit"
-                      class="btn btn-dark w-100"
-                      [disabled]="!genderForm.valid">
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!genderForm.valid">
                 <i class="fa-solid fa-save me-2"></i>
                 {{ isEditMode ? 'Update Gender' : 'Save Gender' }}
               </button>
@@ -126,10 +110,7 @@
         <!-- Filters -->
         <div class="mb-3 row g-3 align-items-end">
           <div class="col-md-4">
-            <input type="text"
-                   class="form-control"
-                   placeholder="Search by Gender Name"
-                   [(ngModel)]="searchText" />
+            <input type="text" class="form-control" placeholder="Search by Gender Name" [(ngModel)]="searchText" />
           </div>
 
           <div class="col-md-4">
@@ -148,8 +129,8 @@
               <tr>
                 <th>#</th>
                 <th>Gender Name</th>
-               <th>Company</th>
-<th>Region</th>
+                <th>Company</th>
+                <th>Region</th>
                 <th>Status</th>
                 <th class="text-center">Actions</th>
               </tr>
@@ -158,21 +139,18 @@
               <tr *ngFor="let g of pagedGenders; let i = index">
                 <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                 <td>{{ g.genderName }}</td>
-               <td>{{ g.companyName }}</td>
-<td>{{ g.regionName }}</td>
+                <td>{{ g.companyName }}</td>
+                <td>{{ g.regionName }}</td>
                 <td>
-                  <span class="badge"
-                        [ngClass]="g.isActive ? 'bg-success' : 'bg-secondary'">
+                  <span class="badge" [ngClass]="g.isActive ? 'bg-success' : 'bg-secondary'">
                     {{ g.isActive ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
                 <td class="text-center">
-                  <button class="btn btn-sm btn-outline-primary me-2"
-                          (click)="editGender(g)">
+                  <button class="btn btn-sm btn-outline-primary me-2" (click)="editGender(g)">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
-                  <button class="btn btn-sm btn-outline-danger"
-                          (click)="deleteGender(g)">
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteGender(g)">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </td>
@@ -193,9 +171,8 @@
               <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
             </li>
 
-            <li class="page-item"
-                *ngFor="let page of [].constructor(totalPages); let i = index"
-                [class.active]="currentPage === i + 1">
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="currentPage === i + 1">
               <a class="page-link" (click)="goToPage(i + 1)">
                 {{ i + 1 }}
               </a>
@@ -213,10 +190,6 @@
 </div>
 
 <!-- Upload Popup -->
-<app-common-upload
-  [visible]="showUploadPopup"
-  [screenName]="'Gender'"
-  [model]="genderModel"
-  (close)="closeUploadPopup()"
-  (uploadComplete)="onBulkUploadComplete($event)">
+<app-common-upload [visible]="showUploadPopup" [screenName]="'Gender'" [model]="genderModel"
+  (close)="closeUploadPopup()" (uploadComplete)="onBulkUploadComplete($event)">
 </app-common-upload>
