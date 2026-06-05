@@ -2804,6 +2804,14 @@ deleteEmploymentType(id: number) {
 getDemoUsers(){
   return this.http.get<any>(`${this.baseUrl}/usermanagement/demo-users`);
 }
+
+getALLSubcriptionUsers() {
+  return this.http.get<any>(
+    `${this.baseUrl}/usermanagement/GetALLSubcriptionUsers`
+  );
+}
+
+
 updateDemoExpiry(data:any){
 
 return this.http.post(
