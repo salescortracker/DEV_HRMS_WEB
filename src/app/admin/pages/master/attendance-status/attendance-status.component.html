@@ -35,13 +35,7 @@
 
           <div class="row g-3">
 
-            <!-- Attendance Status -->
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Attendance Status *</label>
-              <input type="text" class="form-control" name="attendanceStatusName"
-                [(ngModel)]="attendance.attendanceStatusName" required placeholder="Enter Status Name"
-                (input)="checkDuplicate()">
-            </div>
+
 
             <!-- ✅ Company -->
             <div class="col-md-4">
@@ -68,6 +62,14 @@
               </select>
             </div>
 
+            <!-- Attendance Status -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Attendance Status *</label>
+              <input type="text" class="form-control" name="attendanceStatusName"
+                [(ngModel)]="attendance.attendanceStatusName" required placeholder="Enter Status Name"
+                (input)="checkDuplicate()">
+            </div>
+
             <!-- Active -->
             <div class="col-md-2 d-flex align-items-center mt-4">
               <label class="me-2 fw-semibold">Is Active</label>
@@ -77,7 +79,7 @@
             </div>
 
             <!-- Buttons -->
-            <div class="col-md-10 mt-4 text-end">
+            <!-- <div class="col-md-10 mt-4 text-end">
               <button class="btn btn-success me-2" type="submit" [disabled]="!statusForm.valid || isDuplicate">
 
                 {{ isEditMode ? 'Update' : 'Save' }}
@@ -86,7 +88,28 @@
               <button class="btn btn-secondary" type="button" (click)="resetForm()">
                 Reset
               </button>
-            </div>
+            </div> -->
+            <!-- Buttons -->
+<div class="col-md-6 d-flex align-items-end gap-2">
+
+  <button
+    type="button"
+    class="btn btn-danger w-100"
+    (click)="onCancel()">
+    <i class="fa-solid fa-xmark me-2"></i>
+    Cancel
+  </button>
+
+  <button
+    type="submit"
+    class="btn btn-dark w-100"
+    [disabled]="!statusForm.valid || isDuplicate">
+
+    <i class="fa-solid fa-save me-2"></i>
+    {{ isEditMode ? 'Update Attendance Status' : 'Save Attendance Status' }}
+  </button>
+
+</div>
 
           </div>
 

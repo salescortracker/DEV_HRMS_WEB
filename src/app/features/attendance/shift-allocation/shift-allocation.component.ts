@@ -225,7 +225,7 @@ onEmployeeChange(userId: number) {
 today.setHours(0,0,0,0);
 
     if (!start) return { ok: false, message: 'Start Date is required' };
-    if (start < today) return { ok: false, message: 'Start date cannot be earlier than today' };
+  //  if (start < today) return { ok: false, message: 'Start date cannot be earlier than today' };
     if (end && end < start) return { ok: false, message: 'End date must be same or after Start date' };
 
     const sameUserAllocs = this.allocations.filter(a => 

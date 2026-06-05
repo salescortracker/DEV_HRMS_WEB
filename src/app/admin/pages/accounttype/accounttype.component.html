@@ -18,65 +18,47 @@
 
           <div class="row g-3">
 
+
+
+            <!-- Company -->
+            <div class="col-md-6">
+              <label>Company</label>
+              <select class="form-select" [(ngModel)]="account.companyId" name="companyId">
+                <option [ngValue]="null">Select</option>
+                <option *ngFor="let c of companies" [ngValue]="c.companyId">
+                  {{ c.companyName }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Region -->
+            <div class="col-md-6">
+              <label>Region</label>
+              <select class="form-select" [(ngModel)]="account.regionId" name="regionId">
+                <option [ngValue]="null">Select</option>
+                <option *ngFor="let r of regions" [ngValue]="r.regionID">
+                  {{ r.regionName }}
+                </option>
+              </select>
+            </div>
+
             <!-- Account Type -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Account Type</label>
-              <input
-                type="text"
-                class="form-control"
-                name="accountType1"
-                [(ngModel)]="account.accountType1"
-                placeholder="Enter Account Type"
-                required
-              />
+              <input type="text" class="form-control" name="accountType1" [(ngModel)]="account.accountType1"
+                placeholder="Enter Account Type" required />
             </div>
 
             <!-- Description -->
             <div class="col-md-6">
               <label>Description</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="account.description"
-                name="description">
+              <input type="text" class="form-control" [(ngModel)]="account.description" name="description">
             </div>
-
-            <!-- Company -->
-            <div class="col-md-6">
-  <label>Company</label>
-  <select class="form-select"
-          [(ngModel)]="account.companyId"
-          name="companyId">
-    <option [ngValue]="null">Select</option>
-    <option *ngFor="let c of companies"
-            [ngValue]="c.companyId">
-      {{ c.companyName }}
-    </option>
-  </select>
-</div>
-
-            <!-- Region -->
-            <div class="col-md-6">
-  <label>Region</label>
-  <select class="form-select"
-          [(ngModel)]="account.regionId"
-          name="regionId">
-    <option [ngValue]="null">Select</option>
-    <option *ngFor="let r of regions"
-            [ngValue]="r.regionID">
-      {{ r.regionName }}
-    </option>
-  </select>
-</div>
 
             <!-- Status -->
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check form-switch mt-3">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  [(ngModel)]="account.isActive"
-                  name="isActive">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="account.isActive" name="isActive">
                 <label class="ms-2">
                   {{ account.isActive ? 'Active' : 'Inactive' }}
                 </label>
@@ -85,14 +67,11 @@
 
             <!-- Buttons -->
             <div class="col-md-6 d-flex gap-2">
-              <button class="btn btn-danger w-100"
-                      type="button"
-                      (click)="resetForm()">
+              <button class="btn btn-danger w-100" type="button" (click)="resetForm()">
                 Cancel
               </button>
 
-              <button class="btn btn-dark w-100"
-                      type="submit">
+              <button class="btn btn-dark w-100" type="submit">
                 {{ isEditMode ? 'Update' : 'Save' }}
               </button>
             </div>
@@ -126,20 +105,17 @@
             <td>{{ getRegionName(a.regionId) }}</td>
 
             <td>
-              <span class="badge"
-                    [ngClass]="a.isActive ? 'bg-success':'bg-secondary'">
+              <span class="badge" [ngClass]="a.isActive ? 'bg-success':'bg-secondary'">
                 {{ a.isActive ? 'Active':'Inactive' }}
               </span>
             </td>
 
             <td>
-              <button class="btn btn-sm btn-primary"
-                      (click)="editAccount(a)">
+              <button class="btn btn-sm btn-primary" (click)="editAccount(a)">
                 Edit
               </button>
 
-              <button class="btn btn-sm btn-danger"
-                      (click)="deleteAccount(a)">
+              <button class="btn btn-sm btn-danger" (click)="deleteAccount(a)">
                 Delete
               </button>
             </td>

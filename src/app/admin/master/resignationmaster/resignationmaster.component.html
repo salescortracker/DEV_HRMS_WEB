@@ -16,32 +16,12 @@
 
           <div class="row g-3">
 
-            <!-- Resignation Type -->
-            <div class="col-md-4">
-              <label>Resignation Type *</label>
-              <input type="text" class="form-control"
-                     name="resignationType"
-                     [(ngModel)]="resignation.resignationType"
-                     required>
-            </div>
 
-            <!-- Notice Period -->
-            <div class="col-md-4">
-              <label>Notice Period (Days) *</label>
-              <input type="number" class="form-control"
-                     name="noticePeriodDays"
-                     [(ngModel)]="resignation.noticePeriodDays"
-                     required>
-            </div>
 
             <!-- Company -->
             <div class="col-md-4">
               <label>Company *</label>
-              <select class="form-select"
-                      name="companyId"
-                      [(ngModel)]="companyId"
-                      (change)="loadRegions()"
-                      required>
+              <select class="form-select" name="companyId" [(ngModel)]="companyId" (change)="loadRegions()" required>
                 <option value="">-- Select Company --</option>
                 <option *ngFor="let c of companies" [value]="c.companyId">{{ c.companyName }}</option>
               </select>
@@ -50,13 +30,24 @@
             <!-- Region -->
             <div class="col-md-4">
               <label>Region *</label>
-              <select class="form-select"
-                      name="regionId"
-                      [(ngModel)]="regionId"
-                      required>
+              <select class="form-select" name="regionId" [(ngModel)]="regionId" required>
                 <option value="">-- Select Region --</option>
                 <option *ngFor="let r of regions" [value]="r.regionID">{{ r.regionName }}</option>
               </select>
+            </div>
+
+            <!-- Resignation Type -->
+            <div class="col-md-4">
+              <label>Resignation Type *</label>
+              <input type="text" class="form-control" name="resignationType" [(ngModel)]="resignation.resignationType"
+                required>
+            </div>
+
+            <!-- Notice Period -->
+            <div class="col-md-4">
+              <label>Notice Period (Days) *</label>
+              <input type="number" class="form-control" name="noticePeriodDays"
+                [(ngModel)]="resignation.noticePeriodDays" required>
             </div>
 
             <!-- Active -->
@@ -65,7 +56,7 @@
               <input type="checkbox" name="isActive" [(ngModel)]="resignation.isActive">
             </div>
 
-            <div class="col-md-12 text-end mt-3">
+            <!-- <div class="col-md-12 text-end mt-3">
               <button class="btn btn-success me-2" type="submit" [disabled]="!resignationForm.valid">
                 {{ isEditMode ? 'Update' : 'Save' }}
               </button>
@@ -73,6 +64,21 @@
               <button class="btn btn-secondary" type="button" (click)="clearForm()">
                 Reset
               </button>
+            </div> -->
+            <div class="col-md-6 d-flex align-items-end gap-2 mt-3">
+
+              <!-- Cancel Button -->
+              <button type="button" class="btn btn-danger w-100" (click)="clearForm()">
+                <i class="fa-solid fa-xmark me-2"></i>
+                Cancel
+              </button>
+
+              <!-- Save / Update Button -->
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!resignationForm.valid">
+                <i class="fa-solid fa-save me-2"></i>
+                {{ isEditMode ? 'Update Resignation' : 'Save Resignation' }}
+              </button>
+
             </div>
 
           </div>
@@ -87,9 +93,7 @@
       <div class="card-body">
 
         <div class="d-flex justify-content-end mb-3">
-          <input type="text" class="form-control w-25"
-                 placeholder="Search..."
-                 [(ngModel)]="searchText">
+          <input type="text" class="form-control w-25" placeholder="Search..." [(ngModel)]="searchText">
         </div>
 
         <table class="table table-bordered table-hover">
@@ -115,7 +119,7 @@
 
               <td class="text-center">
                 <i class="fa-solid"
-                   [ngClass]="r.isActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'"></i>
+                  [ngClass]="r.isActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'"></i>
               </td>
 
               <td class="text-center">

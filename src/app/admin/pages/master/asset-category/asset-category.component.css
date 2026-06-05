@@ -1,0 +1,22 @@
+.asset-category-management .btn-dark,
+.asset-category-management .btn-danger {
+  min-width: 160px;
+  font-weight: 500;
+}
+
+.asset-category-management .form-label {
+  font-weight: 500;
+}
+
+.asset-category-management table th,
+.asset-category-management table td {
+  vertical-align: middle;
+}
+
+.asset-category-management .card {
+  border: none;
+}
+
+.asset-category-management .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}

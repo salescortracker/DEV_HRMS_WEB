@@ -1,0 +1,14 @@
+.country-management .btn-dark,
+.country-management .btn-danger {
+  min-width: 160px;
+  font-weight: 500;
+}
+
+.country-management .form-label {
+  font-weight: 500;
+}
+
+.country-management table th,
+.country-management table td {
+  vertical-align: middle;
+}

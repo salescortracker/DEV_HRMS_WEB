@@ -11,3 +11,18 @@
 .form-label {
   font-size: 14px;
 }
+.priority-master .btn-dark,
+.priority-master .btn-danger {
+  min-width: 160px;
+  font-weight: 500;
+}
+
+.priority-master .table th,
+.priority-master .table td {
+  vertical-align: middle;
+}
+
+.priority-master .form-label {
+  font-size: 14px;
+  font-weight: 500;
+}

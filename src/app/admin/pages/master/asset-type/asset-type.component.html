@@ -17,28 +17,7 @@
                 <form #f="ngForm" (ngSubmit)="onSubmit()" novalidate>
                     <div class="row g-3">
 
-                        <!-- Asset Category -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Asset Category *</label>
 
-                            <select class="form-select" name="assetCategory" [(ngModel)]="assetType.assetCategoryId"
-                                required>
-
-                                <option [ngValue]="0">-- Select Category --</option>
-
-                                <option *ngFor="let c of assetCategories" [ngValue]="c.assetCategoryId">
-                                    {{ c.assetCategoryName }}
-                                </option>
-
-                            </select>
-                        </div>
-
-                        <!-- Name -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Asset Type *</label>
-                            <input type="text" class="form-control" name="name" [(ngModel)]="assetType.assetTypeName"
-                                required placeholder="Enter Asset Type">
-                        </div>
 
                         <!-- Description -->
                         <!-- <div class="col-md-4">
@@ -71,6 +50,28 @@
                                 </option>
                             </select>
                         </div>
+                        <!-- Asset Category -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Asset Category *</label>
+
+                            <select class="form-select" name="assetCategory" [(ngModel)]="assetType.assetCategoryId"
+                                required>
+
+                                <option [ngValue]="0">-- Select Category --</option>
+
+                                <option *ngFor="let c of assetCategories" [ngValue]="c.assetCategoryId">
+                                    {{ c.assetCategoryName }}
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <!-- Name -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Asset Type *</label>
+                            <input type="text" class="form-control" name="name" [(ngModel)]="assetType.assetTypeName"
+                                required placeholder="Enter Asset Type">
+                        </div>
 
                         <!-- Active Toggle -->
                         <div class="col-md-2 d-flex align-items-center mt-4">
@@ -82,7 +83,7 @@
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-md-10 mt-4 text-end">
+                        <!-- <div class="col-md-10 mt-4 text-end">
                             <button class="btn btn-success me-2" type="submit" [disabled]="!f.valid">
 
                                 {{ isEditMode ? 'Update' : 'Save' }}
@@ -91,7 +92,31 @@
                             <button class="btn btn-secondary" type="button" (click)="resetForm()">
                                 Reset
                             </button>
-                        </div>
+                        </div> -->
+                        <div class="col-md-6 d-flex align-items-end gap-2 mt-4">
+
+    <button
+        type="button"
+        class="btn btn-danger w-100"
+        (click)="resetForm()">
+
+        <i class="fa-solid fa-xmark me-2"></i>
+        Cancel
+
+    </button>
+
+    <button
+        type="submit"
+        class="btn btn-dark w-100"
+        [disabled]="!f.valid">
+
+        <i class="fa-solid fa-save me-2"></i>
+
+        {{ isEditMode ? 'Update Asset Type' : 'Save Asset Type' }}
+
+    </button>
+
+</div>
 
                     </div>
                 </form>

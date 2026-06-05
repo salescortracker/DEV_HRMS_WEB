@@ -43,17 +43,8 @@
             <!-- Department Name -->
            
 
-            <!-- Description -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Department Name</label>
-              <input
-                type="text"
-                class="form-control"
-                name="description"
-                [(ngModel)]="department.description"
-                placeholder="Enter department Name"
-              />
-            </div>
+          
+            
 
             <!-- Company Name -->
             <div class="col-md-6">
@@ -75,6 +66,17 @@
                   {{ region.regionName }}
                 </option>
               </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Department Name</label>
+              <input
+                type="text"
+                class="form-control"
+                name="description"
+                [(ngModel)]="department.description"
+                placeholder="Enter department Name"
+              />
             </div>
 
             <!-- Status -->

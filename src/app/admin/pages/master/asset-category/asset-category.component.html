@@ -17,19 +17,7 @@
                 <form (ngSubmit)="onSubmit()" #f="ngForm" novalidate>
                     <div class="row g-3">
 
-                        <!-- Name -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Asset Category *</label>
-                            <input type="text" class="form-control" [(ngModel)]="model.assetCategoryName" name="name"
-                                required placeholder="Enter Asset Category">
-                        </div>
 
-                        <!-- Description -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Description</label>
-                            <input type="text" class="form-control" [(ngModel)]="model.description" name="desc"
-                                placeholder="Enter Description">
-                        </div>
 
                         <!-- Company -->
                         <div class="col-md-4">
@@ -56,6 +44,20 @@
                             </select>
                         </div>
 
+                        <!-- Name -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Asset Category *</label>
+                            <input type="text" class="form-control" [(ngModel)]="model.assetCategoryName" name="name"
+                                required placeholder="Enter Asset Category">
+                        </div>
+
+                        <!-- Description -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Description</label>
+                            <input type="text" class="form-control" [(ngModel)]="model.description" name="desc"
+                                placeholder="Enter Description">
+                        </div>
+
                         <!-- Toggle -->
                         <div class="col-md-2 d-flex align-items-center mt-4">
                             <label class="me-2 fw-semibold">Is Active</label>
@@ -66,7 +68,7 @@
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-md-10 mt-4 text-end">
+                        <!-- <div class="col-md-10 mt-4 text-end">
                             <button class="btn btn-success me-2" [disabled]="!f.valid">
                                 {{ isEditMode ? 'Update' : 'Save' }}
                             </button>
@@ -74,6 +76,24 @@
                             <button type="button" class="btn btn-secondary" (click)="reset()">
                                 Reset
                             </button>
+                        </div> -->
+                        <div class="col-md-6 d-flex align-items-end gap-2 mt-4">
+
+                            <button type="button" class="btn btn-danger w-100" (click)="reset()">
+
+                                <i class="fa-solid fa-xmark me-2"></i>
+                                Cancel
+
+                            </button>
+
+                            <button type="submit" class="btn btn-dark w-100" [disabled]="!f.valid">
+
+                                <i class="fa-solid fa-save me-2"></i>
+
+                                {{ isEditMode ? 'Update Asset Category' : 'Save Asset Category' }}
+
+                            </button>
+
                         </div>
 
                     </div>

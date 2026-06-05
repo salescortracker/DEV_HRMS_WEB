@@ -17,15 +17,7 @@
         <form #f="ngForm" (ngSubmit)="onSubmit()" novalidate>
           <div class="row g-3">
 
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Asset Status *</label>
-              <input type="text" class="form-control" [(ngModel)]="model.assetStatusName" name="name" required>
-            </div>
 
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Description</label>
-              <input type="text" class="form-control" [(ngModel)]="model.description" name="desc">
-            </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Company *</label>
@@ -50,6 +42,16 @@
               </select>
             </div>
 
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Asset Status *</label>
+              <input type="text" class="form-control" [(ngModel)]="model.assetStatusName" name="name" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Description</label>
+              <input type="text" class="form-control" [(ngModel)]="model.description" name="desc">
+            </div>
+
             <div class="col-md-2 d-flex align-items-center mt-4">
               <label class="me-2 fw-semibold">Is Active</label>
               <div class="form-check form-switch">
@@ -57,11 +59,28 @@
               </div>
             </div>
 
-            <div class="col-md-10 mt-4 text-end">
+            <!-- <div class="col-md-10 mt-4 text-end">
               <button class="btn btn-success me-2" [disabled]="!f.valid">
                 {{ isEditMode ? 'Update' : 'Save' }}
               </button>
               <button type="button" class="btn btn-secondary" (click)="reset()">Reset</button>
+            </div> -->
+            <!-- Buttons -->
+            <div class="col-md-6 d-flex align-items-end gap-2">
+
+              <!-- Cancel Button -->
+              <button type="button" class="btn btn-danger w-100" (click)="onCancel()">
+                <i class="fa-solid fa-xmark me-2"></i>
+                Cancel
+              </button>
+
+              <!-- Save / Update Button -->
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!f.valid">
+
+                <i class="fa-solid fa-save me-2"></i>
+                {{ isEditMode ? 'Update Asset Status' : 'Save Asset Status' }}
+              </button>
+
             </div>
 
           </div>

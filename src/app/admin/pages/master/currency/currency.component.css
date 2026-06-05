@@ -1,0 +1,22 @@
+.currency-management .btn-dark,
+.currency-management .btn-danger {
+  min-width: 160px;
+  font-weight: 500;
+}
+
+.currency-management .form-label {
+  font-weight: 500;
+}
+
+.currency-management table th,
+.currency-management table td {
+  vertical-align: middle;
+}
+
+.currency-management .card {
+  border: none;
+}
+
+.currency-management .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}

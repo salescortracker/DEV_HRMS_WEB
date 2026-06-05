@@ -28,35 +28,12 @@
         <form #employmentForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
           <div class="row g-3">
 
-            <!-- Employment Type Name -->
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Employment Type *</label>
-              <input type="text"
-                     class="form-control"
-                     name="EmploymenttypeName"
-                     [(ngModel)]="employment.EmploymenttypeName"
-                     required
-                     placeholder="Enter Employment Type">
-            </div>
-
-            <!-- Description -->
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Description</label>
-              <input type="text"
-                     class="form-control"
-                     name="Description"
-                     [(ngModel)]="employment.Description"
-                     placeholder="Enter Description">
-            </div>
 
             <!-- Company -->
             <div class="col-md-4">
               <label class="form-label fw-semibold">Company *</label>
-              <select class="form-select"
-                      name="CompanyId"
-                      [(ngModel)]="companyId"
-                      (change)="onCompanyChange()"
-                      required>
+              <select class="form-select" name="CompanyId" [(ngModel)]="companyId" (change)="onCompanyChange()"
+                required>
                 <option value="">-- Select Company --</option>
                 <option *ngFor="let c of companies" [value]="c.companyId">
                   {{ c.companyName }}
@@ -67,11 +44,7 @@
             <!-- Region -->
             <div class="col-md-4">
               <label class="form-label fw-semibold">Region *</label>
-              <select class="form-select"
-                      name="RegionId"
-                      [(ngModel)]="regionId"
-                      (change)="onRegionChange()"
-                      required>
+              <select class="form-select" name="RegionId" [(ngModel)]="regionId" (change)="onRegionChange()" required>
                 <option value="">-- Select Region --</option>
                 <option *ngFor="let r of regions" [value]="r.regionID">
                   {{ r.regionName }}
@@ -79,31 +52,57 @@
               </select>
             </div>
 
+            <!-- Employment Type Name -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Employment Type *</label>
+              <input type="text" class="form-control" name="EmploymenttypeName"
+                [(ngModel)]="employment.EmploymenttypeName" required placeholder="Enter Employment Type">
+            </div>
+
+            <!-- Description -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Description</label>
+              <input type="text" class="form-control" name="Description" [(ngModel)]="employment.Description"
+                placeholder="Enter Description">
+            </div>
+
+
             <!-- Is Active -->
             <div class="col-md-2 d-flex align-items-center mt-4">
               <label class="me-2 fw-semibold">Is Active</label>
               <div class="form-check form-switch">
-                <input class="form-check-input"
-                       type="checkbox"
-                       name="IsActive"
-                       [(ngModel)]="employment.IsActive">
+                <input class="form-check-input" type="checkbox" name="IsActive" [(ngModel)]="employment.IsActive">
               </div>
             </div>
 
             <!-- Buttons -->
-            <div class="col-md-10 mt-4 text-end">
-              <button class="btn btn-success me-2"
-                      type="submit"
-                      [disabled]="!employmentForm.valid">
+            <!-- <div class="col-md-10 mt-4 text-end">
+              <button class="btn btn-success me-2" type="submit" [disabled]="!employmentForm.valid">
                 <i class="fa-solid fa-save me-2"></i>
                 {{ isEditMode ? 'Update' : 'Save' }}
               </button>
 
-              <button class="btn btn-secondary"
-                      type="button"
-                      (click)="resetForm()">
+              <button class="btn btn-secondary" type="button" (click)="resetForm()">
                 <i class="fa-solid fa-rotate-left me-2"></i> Reset
               </button>
+            </div> -->
+            <div class="col-md-6 d-flex align-items-end gap-2 mt-4">
+
+              <button type="button" class="btn btn-danger w-100" (click)="resetForm()">
+
+                <i class="fa-solid fa-xmark me-2"></i>
+                Cancel
+
+              </button>
+
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!employmentForm.valid">
+
+                <i class="fa-solid fa-save me-2"></i>
+
+                {{ isEditMode ? 'Update Employment Type' : 'Save Employment Type' }}
+
+              </button>
+
             </div>
 
           </div>
@@ -117,9 +116,7 @@
 
         <!-- Search -->
         <div class="mb-3 d-flex justify-content-end">
-          <input class="form-control w-25"
-                 placeholder="Search Employment Type"
-                 [(ngModel)]="searchText">
+          <input class="form-control w-25" placeholder="Search Employment Type" [(ngModel)]="searchText">
         </div>
 
         <table class="table table-bordered table-hover align-middle">
@@ -145,18 +142,16 @@
 
               <td class="text-center">
                 <i class="fa-solid"
-                   [ngClass]="e.IsActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'">
+                  [ngClass]="e.IsActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'">
                 </i>
               </td>
 
               <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-2"
-                        (click)="editEmployment(e)">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editEmployment(e)">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
 
-                <button class="btn btn-sm btn-outline-danger"
-                        (click)="deleteEmployment(e)">
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteEmployment(e)">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </td>

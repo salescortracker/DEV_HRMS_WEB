@@ -387,4 +387,7 @@ export class PriorityComponent {
 
   exportExcel() { }
   exportPDF() { }
+  onCancel(): void {
+  this.resetForm();
+}
 }
