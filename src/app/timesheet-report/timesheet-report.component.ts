@@ -521,8 +521,4 @@ getBase64ImageFromURL(url: string): Promise<string> {
     XLSX.utils.book_append_sheet(wb, ws, 'Timesheet Report');
     XLSX.writeFile(wb, 'timesheet-report.xlsx');
   }
-
-
-  
-  
 }

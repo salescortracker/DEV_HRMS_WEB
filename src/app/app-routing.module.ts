@@ -70,7 +70,7 @@ const routes: Routes = [
   {path:'Welcomedemo',component:WelcomedemoComponent},
     {path:'job-application',component:JobApplicationComponent},
     //{path: 'offer-documents/:token', component: CandidateDocumentsComponent },
-   { path: 'offer-documents/:offerId/:candidateId/:companyId/:regionId', component: CandidateDocumentsComponent },
+  // { path: 'offer-documents/:offerId/:candidateId/:companyId/:regionId', component: CandidateDocumentsComponent },
   {path : 'change-password', component : ChangePasswordComponent},
   // { path: 'hr-dashboard', component: NavbarHrLayoutComponent },
   // // { path: 'manager-dashboard', component: NavbarManagerLayoutComponent },

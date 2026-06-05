@@ -1,27 +1,30 @@
 <h3 class="mb-3">All Expenses</h3>
-
+ 
 <!-- ================= FILTERS ================= -->
 <form [formGroup]="filtersForm" class="row mb-3 g-2">
-
-
+ 
+ 
     <div class="col-md-12 text-end">
     <button class="btn btn-primary me-2" type="button" (click)="downloadPDF()">
       Download PDF
     </button>
-
+ 
     <button class="btn btn-primary" type="button" (click)="exportToExcel()">
       Download Excel
     </button>
   </div>
-
+ 
   
-  <div class="col-md-3">
-    <input
-      formControlName="project"
-      placeholder="Project"
-      class="form-control" />
-  </div>
-
+<div class="col-md-3">
+  <select class="form-select" formControlName="projectName">
+    <option value="">All Projects</option>
+ 
+    <option *ngFor="let proj of projects" [value]="proj.projectName">
+      {{ proj.projectName }}
+    </option>
+  </select>
+</div>
+ 
   <div class="col-md-3">
     <select formControlName="categoryId" class="form-select">
       <option value="">All Categories</option>
@@ -32,7 +35,7 @@
       </option>
     </select>
   </div>
-
+ 
   <div class="col-md-2">
     <select formControlName="country" class="form-select">
       <option value="">All Countries</option>
@@ -41,16 +44,17 @@
       </option>
     </select>
   </div>
-
+ 
   <div class="col-md-2">
     <select formControlName="status" class="form-select">
       <option value="">All Status</option>
-      <option *ngFor="let s of statuses" [value]="s">
+      <option 
+      *ngFor="let s of statuses" [value]="s">
         {{ s }}
       </option>
     </select>
   </div>
-
+ 
   <div class="col-md-2">
     <button
       type="button"
@@ -60,7 +64,7 @@
     </button>
   </div>
 </form>
-
+ 
 <!-- ================= TABLE ================= -->
 <div class="table-responsive">
   <table class="table table-bordered table-hover align-middle">
@@ -69,29 +73,29 @@
         <th (click)="sortBy('projectName')" style="cursor:pointer">
           Project
         </th>
-
+ 
         <th (click)="sortBy('expenseCategoryName')" style="cursor:pointer">
           Category
         </th>
-
+ 
         <th (click)="sortBy('country')" style="cursor:pointer">
           Country
         </th>
-
+ 
         <th (click)="sortBy('amount')" style="cursor:pointer">
           Amount
         </th>
-
+ 
         <th (click)="sortBy('expenseDate')" style="cursor:pointer">
           Date
         </th>
-
+ 
         <th (click)="sortBy('status')" style="cursor:pointer">
           Status
         </th>
       </tr>
     </thead>
-
+ 
     <tbody>
       <tr *ngFor="let e of pagedExpenses">
         <td>{{ e.projectName }}</td>
@@ -101,8 +105,8 @@
         <td>{{ e.expenseDate | date:'yyyy-MM-dd' }}</td>
         <td>{{ e.status }}</td>
       </tr>
-
-      <tr *ngIf="noRecordsFound">
+ 
+      <tr ngIf="noRecordsFound">
         <td colspan="6" class="text-center text-muted">
           No expenses found
         </td>
@@ -110,10 +114,10 @@
     </tbody>
   </table>
 </div>
-
+ 
 <!-- ================= PAGINATION ================= -->
 <div class="d-flex justify-content-between align-items-center mt-3">
-
+ 
   <div>
     <label>
       Show
@@ -128,7 +132,7 @@
       entries
     </label>
   </div>
-
+ 
   <div>
     <button
       class="btn btn-outline-secondary btn-sm me-2"
@@ -136,9 +140,9 @@
       [disabled]="currentPage === 1">
       Previous
     </button>
-
+ 
     <span>Page {{ currentPage }} of {{ totalPages }}</span>
-
+ 
     <button
       class="btn btn-outline-secondary btn-sm ms-2"
       (click)="changePage(currentPage + 1)"

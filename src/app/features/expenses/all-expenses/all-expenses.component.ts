@@ -27,6 +27,7 @@ userId!: number;
 companyId!: number;
 regionId!: number;
   // UI
+  projects: any[] = [];
   noRecordsFound = false;
 
   // Sorting
@@ -121,7 +122,7 @@ regionId!: number;
   // ============================================================
   buildForm(): void {
     this.filtersForm = this.fb.group({
-      project: [''],
+      projectName: [''],
       categoryId: [''],
       country: [''],
       status: ['']
@@ -148,6 +149,16 @@ regionId!: number;
           projectNorm: e.projectName?.toLowerCase().trim() || '',
           countryNorm: e.country?.toLowerCase().trim() || ''
         }));
+
+
+          this.projects = [
+            ...new Map(
+              this.expenses.map(x => [
+                x.projectName,
+                { projectName: x.projectName }
+              ])
+            ).values()
+          ];
 
         this.countries = [
           ...new Set(this.expenses.map(x => x.countryNorm))
@@ -235,7 +246,7 @@ regionId!: number;
   applyFilters(): void {
     const f = this.filtersForm.value;
 
-    const project = f.project?.trim().toLowerCase();
+    const project = f.projectName?.trim().toLowerCase();
     const categoryId = f.categoryId ? Number(f.categoryId) : null;
     const country = f.country?.toLowerCase();
     const status = f.status;
