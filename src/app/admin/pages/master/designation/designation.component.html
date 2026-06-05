@@ -35,6 +35,37 @@
         <form (ngSubmit)="onSubmit()" #designationForm="ngForm" novalidate>
           <div class="row g-3">
             <!-- Designation Name -->
+
+
+
+
+            <!-- Company -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Company</label>
+              <select class="form-select" [(ngModel)]="designation.companyId" name="companyId"
+                (change)="onCompanyChange()" required>
+                <option value="">Select Company</option>
+                <option *ngFor="let company of companies" [value]="company.companyId">
+                  <!-- <option *ngFor="let company of companies" [ngValue]="company.companyID"> -->
+                  {{ company.companyName }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Region -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Region</label>
+              <select class="form-select" [(ngModel)]="designation.regionId" name="regionId" required>
+                <option value="">Select Region</option>
+                <!-- <option *ngFor="let region of regions" [value]="region.regionID">
+                  {{ region.regionName }}
+                </option> -->
+                <option *ngFor="let region of filteredRegions" [value]="region.regionID">
+                  {{ region.regionName }}
+                </option>
+              </select>
+            </div>
+
             <div class="col-md-6">
               <label class="form-label fw-semibold">Designation Name</label>
               <input type="text" class="form-control" name="designationName" [(ngModel)]="designation.designationName"
@@ -52,34 +83,6 @@
               </select>
             </div>
 
-
-
-            <!-- Company -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Company</label>
-              <select class="form-select" [(ngModel)]="designation.companyId" name="companyId" (change)="onCompanyChange()" required>
-                <option value="">Select Company</option>
-                <option *ngFor="let company of companies" [value]="company.companyId">
-                                 <!-- <option *ngFor="let company of companies" [ngValue]="company.companyID"> -->
-                  {{ company.companyName }}
-                </option>
-              </select>
-            </div>
-
-            <!-- Region -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Region</label>
-              <select class="form-select" [(ngModel)]="designation.regionId" name="regionId" required>
-                <option value="">Select Region</option>
-                <!-- <option *ngFor="let region of regions" [value]="region.regionID">
-                  {{ region.regionName }}
-                </option> -->
-                <option *ngFor="let region of filteredRegions" [value]="region.regionID">
-  {{ region.regionName }}
-</option>
-              </select>
-            </div>
-
             <!-- Status -->
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check form-switch mt-3">
@@ -90,27 +93,23 @@
                 </label>
               </div>
             </div>
-<div class="col-md-6">
-  <label class="form-label fw-semibold">Grade</label>
-  <select class="form-select" [(ngModel)]="designation.gradeId" name="gradeId" required>
-    <!-- <option value="">Select Grade</option>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Grade</label>
+              <select class="form-select" [(ngModel)]="designation.gradeId" name="gradeId" required>
+                <!-- <option value="">Select Grade</option>
     <option *ngFor="let g of grades" [value]="g.gradeID">
       {{ g.gradeName }}
     </option> -->
-    <option [ngValue]="null">Select Grade</option>
-<option *ngFor="let g of grades" [ngValue]="g.gradeID">
-  {{ g.gradeName }}
-</option>
-  </select>
-</div>
+                <option [ngValue]="null">Select Grade</option>
+                <option *ngFor="let g of grades" [ngValue]="g.gradeID">
+                  {{ g.gradeName }}
+                </option>
+              </select>
+            </div>
 
             <!-- Submit -->
             <div class="col-md-6 d-flex align-items-end gap-2">
-               <button
-                type="button"
-                class="btn btn-danger px-6 w-100"
-                (click)="onCancel()"
-              >
+              <button type="button" class="btn btn-danger px-6 w-100" (click)="onCancel()">
                 <i class="fa-solid fa-xmark me-2"></i>
                 Cancel
               </button>
@@ -199,7 +198,7 @@
                 <!-- <td>{{ getCompanyName(d.companyId) }}</td>
                 <td>{{ getRegionName(d.regionId) }}</td> -->
                 <td>{{ d.companyName }}</td>
-<td>{{ d.regionName }}</td>
+                <td>{{ d.regionName }}</td>
                 <td class="text-center">
                   <span class="badge" [ngClass]="d.isActive ? 'bg-success' : 'bg-secondary'">
                     {{ d.isActive ? 'Active' : 'Inactive' }}

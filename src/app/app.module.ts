@@ -139,6 +139,7 @@ import { JobApplicationComponent } from './features/recruitment/job-application/
 import { ApplicationResumesComponent } from './features/recruitment/application-resumes/application-resumes.component';
 import { AssetReportComponent } from './features/asset/asset-report/asset-report.component';
 import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticket-reports.component';
+import { SuperadminUsersfulldetailsComponent } from './superAdmin/superadmin-usersfulldetails/superadmin-usersfulldetails.component';
 import { CandidateDocumentsComponent } from './features/recruitment/candidate-documents/candidate-documents.component';
 import { DocumentsVerificationComponent } from './features/recruitment/documents-verification/documents-verification.component';
 @NgModule({
@@ -272,6 +273,7 @@ import { DocumentsVerificationComponent } from './features/recruitment/documents
           LeaveReportComponent,
           AssetReportComponent,
           TicketReportsComponent,
+          SuperadminUsersfulldetailsComponent,
           
           
           

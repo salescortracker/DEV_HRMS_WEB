@@ -16,36 +16,23 @@
 
           <div class="row g-3">
 
-            <div class="col-md-4">
-              <label class="fw-semibold">Category Name *</label>
-              <input type="text" class="form-control"
-                name="PolicyCategoryName"
-                [(ngModel)]="category.PolicyCategoryName"
-                required />
-            </div>
+
 
             <div class="col-md-4">
               <label class="fw-semibold">Company *</label>
-               <select class="form-select"
-              [(ngModel)]="companyId"
-              name="CompanyId"
-              (change)="loadRegions()"
-              required>
+              <select class="form-select" [(ngModel)]="companyId" name="CompanyId" (change)="loadRegions()" required>
 
-              <option [ngValue]="null">-- Select Company --</option>
+                <option [ngValue]="null">-- Select Company --</option>
 
-              <option *ngFor="let c of companies" [ngValue]="c.companyId">
-                {{ c.companyName }}
-              </option>
-            </select>
+                <option *ngFor="let c of companies" [ngValue]="c.companyId">
+                  {{ c.companyName }}
+                </option>
+              </select>
             </div>
 
             <div class="col-md-4">
               <label class="fw-semibold">Region *</label>
-              <select class="form-select"
-                [(ngModel)]="regionId"
-                name="RegionId"
-                required>
+              <select class="form-select" [(ngModel)]="regionId" name="RegionId" required>
                 <option [ngValue]="null">-- Select Region --</option>
 
                 <option *ngFor="let r of regions" [ngValue]="r.regionID">
@@ -54,31 +41,39 @@
               </select>
             </div>
 
+            <div class="col-md-4">
+              <label class="fw-semibold">Category Name *</label>
+              <input type="text" class="form-control" name="PolicyCategoryName"
+                [(ngModel)]="category.PolicyCategoryName" required />
+            </div>
+
             <div class="col-md-12">
               <label class="fw-semibold">Description</label>
-              <textarea class="form-control" rows="2"
-                name="Description"
-                [(ngModel)]="category.Description"></textarea>
+              <textarea class="form-control" rows="2" name="Description" [(ngModel)]="category.Description"></textarea>
             </div>
 
             <div class="col-md-2 d-flex align-items-center mt-3">
               <label class="me-2 fw-semibold">Active</label>
-              <input type="checkbox" class="form-check-input"
-                name="IsActive"
-                [(ngModel)]="category.IsActive" />
+              <input type="checkbox" class="form-check-input" name="IsActive" [(ngModel)]="category.IsActive" />
             </div>
 
-            <div class="col-md-10 text-end mt-3">
-              <button class="btn btn-success me-2"
-                type="submit"
-                [disabled]="!categoryForm.valid">
-                {{ isEditMode ? 'Update' : 'Save' }}
+            <div class="col-md-6 d-flex align-items-end gap-2 mt-3">
+
+              <button type="button" class="btn btn-danger w-100" (click)="clearForm()">
+
+                <i class="fa-solid fa-xmark me-2"></i>
+                Cancel
+
               </button>
-              <button class="btn btn-secondary"
-                type="button"
-                (click)="clearForm()">
-                Reset
+
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!categoryForm.valid">
+
+                <i class="fa-solid fa-save me-2"></i>
+
+                {{ isEditMode ? 'Update Policy Category' : 'Save Policy Category' }}
+
               </button>
+
             </div>
 
           </div>
@@ -91,9 +86,7 @@
       <div class="card-body">
 
         <div class="mb-3 d-flex justify-content-end">
-          <input class="form-control w-25"
-            placeholder="Search Category"
-            [(ngModel)]="searchText">
+          <input class="form-control w-25" placeholder="Search Category" [(ngModel)]="searchText">
         </div>
 
         <table class="table table-bordered table-hover align-middle">
@@ -121,12 +114,10 @@
                   [ngClass]="c.IsActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'"></i>
               </td>
               <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-2"
-                  (click)="editCategory(c)">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editCategory(c)">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger"
-                  (click)="deleteCategory(c)">
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteCategory(c)">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </td>

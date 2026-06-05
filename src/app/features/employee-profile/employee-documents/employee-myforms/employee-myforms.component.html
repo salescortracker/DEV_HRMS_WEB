@@ -41,7 +41,7 @@
           <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
           <td>{{ getDocumentTypeName(f.documentType) }}</td>
           <td>{{ f.name }}</td>
-          <td>{{ f.issuedDate }}</td>
+          <td>{{ f.issuedDate | date:'dd/MM/yyyy' : '-'}}</td>
 
           <td>
             <span *ngIf="f.filePaths?.length > 0">

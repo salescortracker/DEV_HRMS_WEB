@@ -1,0 +1,7 @@
+.main-content{
+   display:flex;
+}
+
+.content-body{
+   flex:1;
+}

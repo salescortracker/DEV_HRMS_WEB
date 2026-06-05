@@ -28,17 +28,7 @@
                 <form #priorityForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
                     <div class="row g-3">
 
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Priority *</label>
-                            <input type="text" class="form-control" name="PriorityName"
-                                [(ngModel)]="priority.priorityName" required placeholder="Enter Priority">
-                        </div>
 
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Description</label>
-                            <input type="text" class="form-control" name="Description"
-                                [(ngModel)]="priority.description" placeholder="Enter Description">
-                        </div>
 
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Company *</label>
@@ -67,6 +57,18 @@
 
                         </div>
 
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Priority *</label>
+                            <input type="text" class="form-control" name="PriorityName"
+                                [(ngModel)]="priority.priorityName" required placeholder="Enter Priority">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Description</label>
+                            <input type="text" class="form-control" name="Description"
+                                [(ngModel)]="priority.description" placeholder="Enter Description">
+                        </div>
+
                         <div class="col-md-2 d-flex align-items-center mt-4">
                             <label class="me-2 fw-semibold">Is Active</label>
                             <div class="form-check form-switch">
@@ -75,11 +77,26 @@
                             </div>
                         </div>
 
-                        <div class="col-md-10 mt-4 text-end">
+                        <!-- <div class="col-md-10 mt-4 text-end">
                             <button class="btn btn-success me-2" type="submit" [disabled]="!priorityForm.valid">
                                 {{ isEditMode ? 'Update' : 'Save' }}
                             </button>
                             <button class="btn btn-secondary" type="button" (click)="resetForm()">Reset</button>
+                        </div> -->
+                        <div class="col-md-6 d-flex align-items-end gap-2">
+
+                            <button type="button" class="btn btn-danger w-100" (click)="onCancel()">
+
+                                <i class="fa-solid fa-xmark me-2"></i>
+                                Cancel
+                            </button>
+
+                            <button type="submit" class="btn btn-dark w-100" [disabled]="!priorityForm.valid">
+
+                                <i class="fa-solid fa-save me-2"></i>
+                                {{ isEditMode ? 'Update Priority' : 'Save Priority' }}
+                            </button>
+
                         </div>
 
                     </div>

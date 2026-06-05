@@ -18,28 +18,18 @@
 
           <div class="row g-3">
 
-            <!-- Project Name -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Project Name</label>
-              <input
-                type="text"
-                class="form-control"
-                name="projectName"
-                [(ngModel)]="project.projectName"
-                required
-                placeholder="Enter Project Name"
-              />
-            </div>
+
 
             <!-- Company -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Company</label>
-               <select class="form-select" [(ngModel)]="project.companyId" name="companyId" (change)="onCompanyChange()" required>
+              <select class="form-select" [(ngModel)]="project.companyId" name="companyId" (change)="onCompanyChange()"
+                required>
                 <option [ngValue]="null">Select Company</option>
                 <option *ngFor="let c of companies" [ngValue]="c.companyId">
-                    {{ c.companyName }}
+                  {{ c.companyName }}
                 </option>
-                </select>
+              </select>
             </div>
 
             <!-- Region -->
@@ -48,20 +38,22 @@
               <select class="form-select" [(ngModel)]="project.regionId" name="regionId">
                 <option [ngValue]="null">Select Region</option>
                 <option *ngFor="let r of filteredRegions" [ngValue]="r.regionID">
-                    {{ r.regionName }}
+                  {{ r.regionName }}
                 </option>
-                </select>
+              </select>
+            </div>
+
+            <!-- Project Name -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Project Name</label>
+              <input type="text" class="form-control" name="projectName" [(ngModel)]="project.projectName" required
+                placeholder="Enter Project Name" />
             </div>
 
             <!-- Status -->
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check form-switch mt-3">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  [(ngModel)]="project.isActive"
-                  name="isActive"
-                />
+                <input class="form-check-input" type="checkbox" [(ngModel)]="project.isActive" name="isActive" />
                 <label class="ms-2">
                   {{ project.isActive ? 'Active' : 'Inactive' }}
                 </label>
@@ -88,8 +80,7 @@
     <!-- Search -->
     <div class="mb-3 row g-3">
       <div class="col-md-4">
-        <input class="form-control" [(ngModel)]="searchText"
-          placeholder="Search Project">
+        <input class="form-control" [(ngModel)]="searchText" placeholder="Search Project">
       </div>
 
       <div class="col-md-4">
@@ -122,17 +113,14 @@
             <td>{{ getCompanyName(p.companyId) }}</td>
             <td>{{ getRegionName(p.regionId) }}</td>
             <td>
-              <span class="badge"
-                [ngClass]="p.isActive ? 'bg-success' : 'bg-secondary'">
+              <span class="badge" [ngClass]="p.isActive ? 'bg-success' : 'bg-secondary'">
                 {{ p.isActive ? 'Active' : 'Inactive' }}
               </span>
             </td>
             <td>
-              <button class="btn btn-sm btn-primary me-2"
-                (click)="editProject(p)">Edit</button>
+              <button class="btn btn-sm btn-primary me-2" (click)="editProject(p)">Edit</button>
 
-              <button class="btn btn-sm btn-danger"
-                (click)="deleteProject(p)">Delete</button>
+              <button class="btn btn-sm btn-danger" (click)="deleteProject(p)">Delete</button>
             </td>
           </tr>
         </tbody>

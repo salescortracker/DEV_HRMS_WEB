@@ -393,4 +393,7 @@ export class AttendanceStatusComponent {
       error: () => Swal.fire('Error', 'Failed to upload data.', 'error')
     });
   }
+  onCancel(): void {
+  this.resetForm();
+}
 }

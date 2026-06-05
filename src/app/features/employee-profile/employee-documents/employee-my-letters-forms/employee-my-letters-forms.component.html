@@ -19,8 +19,8 @@
           <td>{{ i + 1 }}</td>
           <td>{{ getDocumentTypeName(l.documentType) }}</td>
           <td>{{ l.title }}</td>
-          <td>{{ l.issuedDate }}</td>
-          <td>{{ l.validityDate || '-' }}</td>
+          <td>{{ l.issuedDate | date:'dd/MM/yyyy' }}</td>
+          <td>{{ l.validityDate | date:'dd/MM/yyyy' : '-' }}</td>
 
           <td>
             <span *ngIf="l.fileName">

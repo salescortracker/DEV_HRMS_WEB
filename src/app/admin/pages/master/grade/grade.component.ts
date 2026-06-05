@@ -276,4 +276,50 @@ resetForm() {
 
   this.isEdit = false;
 }
+searchText = '';
+statusFilter: boolean | '' = '';
+
+pageSize = 5;
+currentPage = 1;
+
+Math = Math;
+filteredGrades() {
+  const search = this.searchText.toLowerCase();
+
+  return this.grades.filter(g => {
+
+    const matchesSearch =
+      g.gradeName?.toLowerCase().includes(search);
+
+    const matchesStatus =
+      this.statusFilter === '' ||
+      g.isActive === this.statusFilter;
+
+    return matchesSearch && matchesStatus;
+
+  });
+}
+get pagedGrades() {
+
+  const start =
+    (this.currentPage - 1) * this.pageSize;
+
+  return this.filteredGrades()
+    .slice(start, start + this.pageSize);
+}
+
+get totalPages() {
+  return Math.ceil(
+    this.filteredGrades().length / this.pageSize
+  );
+}
+
+goToPage(page: number) {
+  this.currentPage = page;
+}
+
+changePageSize(event: any) {
+  this.pageSize = +event.target.value;
+  this.currentPage = 1;
+}
 }
