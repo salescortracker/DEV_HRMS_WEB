@@ -71,14 +71,19 @@ export class EmployeeMyformsComponent {
     this.adminService.getMyForms(this.employeeCode, this.companyId, this.regionId).subscribe({
       next: (res: any[]) => {
         console.log('Forms API Response:', res);
-        this.forms = res.map(x => ({
-          id: x.id,
-          documentType: Number(x.documentTypeId), // IMPORTANT
-          name: x.documentName,
-          issuedDate: x.issueDate,
-          remarks: x.remarks,
-          filePaths: x.filePaths || []
-        }));
+        this.forms = res.map(x => {
+          const allPaths: string[] = x.filePaths || x.FilePaths || [];
+          const latestPath = allPaths.length ? [allPaths[allPaths.length - 1]] : [];
+
+          return {
+            id: x.id,
+            documentType: Number(x.documentTypeId), // IMPORTANT
+            name: x.documentName,
+            issuedDate: x.issueDate,
+            remarks: x.remarks,
+            filePaths: latestPath
+          };
+        });
       },
       error: (err) => console.error(err)
     });
@@ -142,8 +147,15 @@ export class EmployeeMyformsComponent {
     });
   }
   viewDocument(path: string) {
-    const baseUrl = environment.apiUrl.replace('/api', '');
-    window.open(`${baseUrl}/${path}`, '_blank');
+    if (!path || path.trim() === '') {
+      Swal.fire('Error', 'File path not found', 'error');
+      return;
+    }
+    
+    // Use fileBaseUrl and ensure proper path formatting
+    const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    const url = `${environment.fileBaseUrl}${cleanPath}`;
+    window.open(url, '_blank');
   }
   onFileSelect(event: any, formId: number) {
     const files = event.target.files;

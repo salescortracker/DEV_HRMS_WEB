@@ -95,18 +95,23 @@ export class EmployeeLettersComponent {
   loadEmployeeLetters() {
     this.adminService.getEmployeeLettersByEmployeeId(this.userId).subscribe({
       next: (res) => {
-        this.letters = res.map((x: any) => ({
-          id: x.id,
-          documentType: String(x.documentTypeId),
-          title: x.documentName,
-          empCode: x.employeeCode,
-          empName: x.employeeName,
-          issuedDate: x.issuedDate,
-          validityDate: x.validityDate,
-          fileName: x.fileName,
-          remarks: x.remarks,
-          confidential: x.isConfidential
-        }));
+        this.letters = res.map((x: any) => {
+          const allFiles = (x.fileName || '').toString().split(',').map((f: string) => f.trim()).filter((f: string) => f);
+          const latestFile = allFiles.length ? allFiles[allFiles.length - 1] : '';
+
+          return {
+            id: x.id,
+            documentType: String(x.documentTypeId),
+            title: x.documentName,
+            empCode: x.employeeCode,
+            empName: x.employeeName,
+            issuedDate: x.issuedDate,
+            validityDate: x.validityDate,
+            fileName: latestFile,
+            remarks: x.remarks,
+            confidential: x.isConfidential
+          };
+        });
 
       },
       error: (err) => console.error(err)
@@ -326,20 +331,23 @@ export class EmployeeLettersComponent {
 
   // ------------------- EDIT ------------------------
   editLetter(item: EmployeeLetter) {
+    this.isEdit = true;
     this.form = {
       ...item,
       documentType: item.documentType   // This is DocumentTypeId
     };
-     if (item.empCode && item.empName) {
-    const codes = item.empCode.split(',');
-    const names = item.empName.split(',');
 
-    this.selectedEmployees = codes.map((code: string, index: number) => ({
-      employeeCode: code,
-      employeeName: names[index]
-    }));
-  }
-      // clear newly selected files
+    if (item.empCode && item.empName) {
+      const codes = item.empCode.split(',');
+      const names = item.empName.split(',');
+
+      this.selectedEmployees = codes.map((code: string, index: number) => ({
+        employeeCode: code,
+        employeeName: names[index]
+      }));
+    }
+
+    // clear newly selected files
     this.selectedFiles = [];
 
     // store existing file names separately
