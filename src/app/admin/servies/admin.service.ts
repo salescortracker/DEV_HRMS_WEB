@@ -2201,6 +2201,28 @@ deleteClockInOut(id: number) {
     });
   }
 
+  getAttendanceByDateRange(
+  employeeCode: string,
+  companyId: number,
+  regionId: number,
+  fromDate: string,
+  toDate: string
+): Observable<any[]> {
+
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Attendance/GetAttendanceByDateRange`,
+    {
+      params: {
+        employeeCode,
+        companyId,
+        regionId,
+        fromDate,
+        toDate
+      }
+    }
+  );
+}
+
   createClockInOut(payload: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/Attendance/CreateClockInOut`, payload);
   }
