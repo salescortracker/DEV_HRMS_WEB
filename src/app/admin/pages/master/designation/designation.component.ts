@@ -27,6 +27,7 @@ export class DesignationComponent {
   Math = Math;
   userId: number = sessionStorage.getItem('UserId') ? Number(sessionStorage.getItem('UserId')) : 0;
   filteredRegions: any[] = [];
+  filteredDepartments: any[] = [];
   constructor(
     private adminservice: AdminService,
     private spinner: NgxSpinnerService
@@ -54,6 +55,20 @@ loadDepartments(): void {
     }
   });
 }
+filterDepartments(): void {
+
+  if (!this.designation.companyId || !this.designation.regionId) {
+    this.filteredDepartments = [];
+    return;
+  }
+
+  this.filteredDepartments = this.departments.filter(d =>
+    Number(d.companyId) === Number(this.designation.companyId) &&
+    Number(d.regionId) === Number(this.designation.regionId)
+  );
+
+  console.log('Filtered Departments', this.filteredDepartments);
+}
 companies:any;
 regions:any;
   loadCompanies(): void {
@@ -78,6 +93,13 @@ regions:any;
         Number(r.companyID) === Number(this.designation.companyId)
       )
     : [];
+    this.filteredDepartments = [];
+}
+onRegionChange(): void {
+
+  this.designation.departmentId = 0;
+
+  this.filterDepartments();
 }
   // getCompanyName(companyId: number): string {
   //   const c = this.companies.find((x:any) => x.companyID === companyId);
@@ -233,6 +255,7 @@ editDesignation(d: any): void {
   this.filteredRegions = this.regions.filter((r: Region) =>
   Number(r.companyID) === Number(this.designation.companyId)
 );
+this.filterDepartments();
 }
 
   // ------------------------------------------------------------

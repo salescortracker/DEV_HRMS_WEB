@@ -83,32 +83,11 @@
                 </button>
               </div>
             </div>
-            <!-- Department -->
-            <!-- <div class="col-md-6">
-            <label class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
-            <select class="form-select" name="DepartmentId" [(ngModel)]="user.departmentId" [disabled]="user.regionId == 0" required>
-              <option [ngValue]="0">Select Department</option>
-              <option *ngFor="let d of departments" [ngValue]="d.departmentId">
-                {{ d.departmentName }}
-              </option>
-            </select>
-          </div> -->
+           
             <div class="col-md-6">
               <label class="form-label fw-semibold">
                 Department <span class="text-danger">*</span>
               </label>
-
-              <!-- <select class="form-select" name="DepartmentId" [(ngModel)]="user.departmentId"
-                [disabled]="!user.regionId" required>
-
-                <option [ngValue]="0">Select Department</option>
-
-                
-                <option *ngFor="let d of filteredDepartments" [ngValue]="d.departmentId">
-                  {{ d.departmentName }}
-                </option>
-
-              </select> -->
 
               <select class="form-select" name="DepartmentId" [(ngModel)]="user.departmentId"
                 (ngModelChange)="onDepartmentChange($event)" [disabled]="!user.regionId" required>
@@ -143,13 +122,52 @@
             <!-- Reporting To -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Reporting To <span class="text-danger">*</span></label>
-              <select class="form-select" name="reportingTo" [(ngModel)]="user.reportingTo" required>
-                <option value="0">Select Reporting Manager</option>
-                <option *ngFor="let manager  of reportingManagers" [ngValue]="manager.userId">
-                  {{ manager.fullName }}
-                </option>
-              </select>
+              <select
+  class="form-select"
+  [(ngModel)]="user.reportingTo"
+  name="reportingTo">
+
+  <option [ngValue]="0">Select Reporting Manager</option>
+
+  <option
+    *ngFor="let emp of reportingToUsers"
+    [ngValue]="emp.userId">
+
+    {{ emp.fullName }} ({{ emp.employeeCode }})
+
+  </option>
+
+</select>
             </div>
+            <!-- Reporting HR -->
+<!-- Reporting HR -->
+<div class="col-md-6">
+  <label class="form-label fw-semibold">
+    Reporting HR <span class="text-danger">*</span>
+  </label>
+
+  <select class="form-select"
+          name="reportingHr"
+          [(ngModel)]="user.reportingHr"
+          required>
+
+    <option [ngValue]="0">Select HR</option>
+
+    <option *ngFor="let hr of filteredHrUsers"
+            [ngValue]="hr.userId">
+      {{ hr.fullName }} ({{ hr.designationName }})
+    </option>
+
+  </select>
+</div>
+
+<!-- Joining Date -->
+<div class="col-md-6">
+  <label class="form-label fw-semibold">Joining Date <span class="text-danger">*</span></label>
+  <input type="date" class="form-control"
+         name="joiningDate"
+         [(ngModel)]="user.joiningDate" />
+</div>
 
             <div class="col-md-6">
               <label class="form-label fw-semibold">Login Type <span class="text-danger">*</span></label>

@@ -101,7 +101,7 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="let a of allocations" [class.table-success]="getStatus(a) === 'Active'">
+        <tr *ngFor="let a of allocations" [ngClass]="{'table-success': a.isActive,'table-danger': !a.isActive}">
           <td>{{ a.fullName}}</td>
           <td>{{ a.employeeCode }}</td>
           <td>{{ a.shiftName }}</td>
