@@ -429,75 +429,90 @@ onEdit(a: ShiftAllocationDto) {
 
 onDelete(id?: number) {
 
-  if (!id || id === 0) {
-    return;
-  }
+  if (!id || id === 0) return;
 
   const allocation = this.allocations.find(
     x => x.shiftAllocationId === id
   );
 
   if (!allocation) {
-
     Swal.fire({
       icon: 'warning',
       title: 'Validation',
       text: 'Shift allocation record not found'
     });
-
     return;
   }
 
   Swal.fire({
     title: 'Are you sure?',
-    text: `Shift assigned to ${allocation.fullName}. Do you want to delete it?`,
+    text: `Shift assigned to ${allocation.fullName}. It will be marked as INACTIVE.`,
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Yes, Delete',
+    confirmButtonText: 'Yes, Inactivate',
     cancelButtonText: 'Cancel'
   }).then((result) => {
 
     if (result.isConfirmed) {
 
-      console.log('Deleting Allocation ID:', id);
+      const dto: ShiftAllocationDto = {
+        shiftAllocationId: allocation.shiftAllocationId,
+        userID: allocation.userID,
+        employeeCode: allocation.employeeCode,
+        fullName: allocation.fullName,
+        companyID: allocation.companyID,
+        regionID: allocation.regionID,
+        shiftID: allocation.shiftID,
+        shiftName: allocation.shiftName,
+        startDate: allocation.startDate,
+        endDate: allocation.endDate,
+        isActive: false,
+        createdBy: allocation.createdBy,
+        createdDate: allocation.createdDate
+      };
 
-      this.svc.deleteAllocation(id).subscribe({
+      this.svc.updateAllocation(dto).subscribe({
 
-        next: (res:any) => {
-
-          console.log('Delete Response:', res);
-
-          // REMOVE FROM UI IMMEDIATELY
-          this.allocations = this.allocations.filter(
-            x => x.shiftAllocationId !== id
-          );
+        next: () => {
 
           Swal.fire({
             icon: 'success',
-            title: 'Deleted',
-            text: 'Shift allocation deleted successfully',
+            title: 'Inactivated',
+            text: 'Shift allocation marked as inactive',
             timer: 2000,
             showConfirmButton: false
           });
 
-          // reload latest data
           this.loadAllocations();
 
-          // reset form if editing deleted record
           if (this.editId === id) {
             this.resetForm();
           }
-
         },
 
-        error: (err:any) => {
+        error: (err: any) => {
 
-          console.error('Delete Error:', err);
+          console.log('Delete Error:', err);
+
+          // 🔥 IMPORTANT FIX: treat success-as-error case
+          if (err.status === 200 || err.status === 204) {
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Inactivated',
+              text: 'Shift allocation marked as inactive',
+              timer: 2000,
+              showConfirmButton: false
+            });
+
+            this.loadAllocations();
+            return;
+          }
 
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: err?.error?.message || 'Failed to delete allocation'
+            text: err?.error?.message || 'Failed to inactivate allocation'
           });
 
         }
@@ -507,7 +522,6 @@ onDelete(id?: number) {
     }
 
   });
-
 }
 
 resetForm() {
