@@ -1,0 +1,25 @@
+.dashboard-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* SAME RED BUTTON AS TIMESHEET */
+.custom-red-btn {
+  background-color: #b02828;
+  border-color: #b02828;
+  color: #fff;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-weight: 500;
+}
+
+.custom-red-btn:hover {
+  background-color: #8e0000;
+  border-color: #8e0000;
+}
+
+.table-dark {
+  background-color: #343a40 !important;
+  color: white;
+}
