@@ -80,9 +80,25 @@
                         {{ emp.clockIn ? emp.clockIn : '--:--' }}
                     </td>
                     <td>
-                        <span class="text-danger fw-bold" *ngIf="emp.lateMinutes && emp.lateMinutes > 0">
-                            Late by {{ formatLateMinutes(emp.lateMinutes) }}
+
+                        <span *ngIf="emp.arrivalStatus?.includes('Late')" class="text-danger fw-bold">
+
+                            {{ emp.arrivalStatus }}
+
                         </span>
+
+                        <span *ngIf="emp.arrivalStatus?.includes('Early')" class="text-success fw-bold">
+
+                            {{ emp.arrivalStatus }}
+
+                        </span>
+
+                        <span *ngIf="emp.arrivalStatus === 'On Time'" class="text-primary fw-bold">
+
+                            {{ emp.arrivalStatus }}
+
+                        </span>
+
                     </td>
 
                     <td>
@@ -215,7 +231,7 @@
         </table>
 
 
-      
+
         <!-- REPORT TABLE PAGINATION -->
         <div class="pagination-container" *ngIf="reportTotalPages > 0">
 

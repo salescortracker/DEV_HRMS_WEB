@@ -773,21 +773,48 @@ formatLateMinutes(minutes: number): string {
   return `${mins} minute${mins > 1 ? 's' : ''}`;
 }
 
+// getStatusClass(status: string): string {
+
+//   if (!status) return '';
+
+//   status = status.toLowerCase();
+
+//   if (status === 'present') return 'badge-present';
+
+//   if (status === 'absent') return 'badge-absent';
+
+//   if (status === 'Halfday' || status === 'Half day') return 'badge-Halfday';
+
+//   if (status.includes('leave')) return 'badge-leave'; // casual, sick, LOP etc.
+
+//   if (status === 'weekoff') return 'badge-weekoff';
+
+//   return 'badge-default';
+// }
 getStatusClass(status: string): string {
 
   if (!status) return '';
 
   status = status.toLowerCase();
 
-  if (status === 'present') return 'badge-present';
+  if (status === 'present')
+    return 'badge-present';
 
-  if (status === 'absent') return 'badge-absent';
+  if (status === 'absent')
+    return 'badge-absent';
 
-  if (status === 'Halfday' || status === 'Half day') return 'badge-Halfday';
+  if (status === 'halfday' || status === 'half day')
+    return 'badge-Halfday';
 
-  if (status.includes('leave')) return 'badge-leave'; // casual, sick, LOP etc.
+  if (status.includes('leave'))
+    return 'badge-leave';
 
-  if (status === 'weekoff') return 'badge-weekoff';
+  if (status === 'weekoff')
+    return 'badge-weekoff';
+
+  // ✅ ADD THIS
+  if (status === 'incomplete attendance')
+    return 'badge-incomplete';
 
   return 'badge-default';
 }
