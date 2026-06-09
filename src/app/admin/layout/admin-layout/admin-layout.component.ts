@@ -119,27 +119,59 @@ export class AdminLayoutComponent {
   }
 
   // ✅ Called when a sidebar menu is clicked
+  // onMenuSelected(menuName: string) {
+  //   if (this.selectedMenu === menuName) return; // avoid reload same menu
+
+  //   this.activeMenu = menuName;
+  //   this.selectedMenu = menuName;
+  //   this.selectedSubmenus = []; // clear first to force UI refresh
+
+  //   setTimeout(() => {
+  //     // Load the new submenu after clearing
+  //     this.selectedSubmenus = this.menuMap[menuName] || [];
+
+  //     // Navigate to first submenu automatically
+  //     if (this.selectedSubmenus.length) {
+  //       const firstRoute = this.selectedSubmenus[0].route;
+  //       this.activeRoute = firstRoute;
+  //       if (firstRoute !== '#') {
+  //         this.router.navigate([firstRoute]);
+  //       }
+  //     }
+  //   }, 0);
+  // }
   onMenuSelected(menuName: string) {
-    if (this.selectedMenu === menuName) return; // avoid reload same menu
 
-    this.activeMenu = menuName;
-    this.selectedMenu = menuName;
-    this.selectedSubmenus = []; // clear first to force UI refresh
+  // Dashboard clicked
+  if (menuName === 'Dashboard') {
+    this.activeMenu = 'Dashboard';
+    this.selectedMenu = '';
+    this.selectedSubmenus = [];
+    this.activeRoute = '';
 
-    setTimeout(() => {
-      // Load the new submenu after clearing
-      this.selectedSubmenus = this.menuMap[menuName] || [];
-
-      // Navigate to first submenu automatically
-      if (this.selectedSubmenus.length) {
-        const firstRoute = this.selectedSubmenus[0].route;
-        this.activeRoute = firstRoute;
-        if (firstRoute !== '#') {
-          this.router.navigate([firstRoute]);
-        }
-      }
-    }, 0);
+    this.router.navigate(['/admin/dashboard']);
+    return;
   }
+
+  if (this.selectedMenu === menuName) return;
+
+  this.activeMenu = menuName;
+  this.selectedMenu = menuName;
+  this.selectedSubmenus = [];
+
+  setTimeout(() => {
+    this.selectedSubmenus = this.menuMap[menuName] || [];
+
+    if (this.selectedSubmenus.length) {
+      const firstRoute = this.selectedSubmenus[0].route;
+      this.activeRoute = firstRoute;
+
+      if (firstRoute !== '#') {
+        this.router.navigate([firstRoute]);
+      }
+    }
+  }, 0);
+}
 
   // ✅ Called when a submenu is clicked
   onSubmenuSelected(route: string) {
