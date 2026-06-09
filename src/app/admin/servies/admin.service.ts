@@ -2528,6 +2528,11 @@ getResignations(companyId: number, regionId: number) {
     `${this.baseUrl}/MasterData/GetResignations?companyId=${companyId}&regionId=${regionId}`
   );
 }
+getAllResignations(userId: number) {
+  return this.http.get<ResignationModel[]>(
+    `${this.baseUrl}/MasterData/GetAllResignations/${userId}`
+  );
+}
 
 getResignationById(id: number) {
   return this.http.get<ResignationModel>(
