@@ -1,179 +1,135 @@
 <div class="card shadow-sm p-4">
 
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="dashboard-title mb-0">Task Report</h2>
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="dashboard-title mb-0">Task Report</h2>
 
-        <div>
-            <button class="btn btn-sm me-2" style="color:white;background:#b02828" (click)="downloadPDF()">
-                Download PDF
-            </button>
+    <div>
+      <button class="btn btn-sm me-2 custom-red-btn" type="button" (click)="downloadPdf()">
+        Download PDF
+      </button>
 
-            <button class="btn btn-sm" style="color:white;background:#b02828" (click)="exportToExcel()">
-                Download Excel
-            </button>
-        </div>
+      <button class="btn btn-sm custom-red-btn" type="button" (click)="exportToExcel()">
+        Download Excel
+      </button>
     </div>
+  </div>
 
-    <!-- FILTERS -->
-    <div class="card shadow-sm p-3 mb-3">
+  <!-- FILTERS -->
+  <div class="card shadow-sm p-3 mb-3">
+    <h5 class="mb-3">Filters</h5>
 
-        <h5 class="mb-3">Filters</h5>
+    <div class="row g-3">
 
-        <form [formGroup]="filtersForm" class="row g-3">
+      <!-- Assigned To -->
+      <div class="col-md-3">
+        <label class="form-label">Assigned To</label>
+        <select class="form-control" [(ngModel)]="selectedEmployee">
+          <option value="">All Employees</option>
+          <option *ngFor="let e of employees" [value]="e.employeeName">
+            {{e.employeeName}}
+          </option>
+        </select>
+      </div>
 
-            <!-- Employee -->
-            <div class="col-md-4">
-                <label class="form-label">Employee Name</label>
-                <!-- <select class="form-control" formControlName="employeeId">
-                    <option value="">All Employees</option>
-                    <option *ngFor="let emp of employees" [value]="emp.userId">
-                        {{ emp.fullName }}
-                    </option>
-                </select> -->
-                <select class="form-control" formControlName="employeeId">
+      <!-- Status -->
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select class="form-control" [(ngModel)]="selectedStatus">
+          <option value="">All Status</option>
+          <option *ngFor="let s of taskStatuses" [value]="s.taskStatusId">
+            {{s.taskStatusName}}
+          </option>
+        </select>
+      </div>
 
-                    <option value="">Select Employee</option>
+      <!-- Priority -->
+      <div class="col-md-3">
+        <label class="form-label">Priority</label>
+        <select class="form-control" [(ngModel)]="selectedPriority">
+          <option value="">All Priority</option>
+          <option *ngFor="let p of priorities" [value]="p.priorityId">
+            {{p.priorityName}}
+          </option>
+        </select>
+      </div>
 
-                    <option *ngFor="let e of employees" [value]="e.userId">
-                        {{ e.employeeName }}
-                    </option>
+      <!-- From Date -->
+      <div class="col-md-3">
+        <label class="form-label">From Date</label>
+        <input type="date" class="form-control" [(ngModel)]="fromDate">
+      </div>
 
-                </select>
-            </div>
+      <!-- To Date -->
+      <div class="col-md-3">
+        <label class="form-label">To Date</label>
+        <input type="date" class="form-control" [(ngModel)]="toDate">
+      </div>
 
-            <!-- Status -->
-            <div class="col-md-4">
-                <label class="form-label">Status</label>
-                <select class="form-control" formControlName="statusId">
-                    <option value="">All Status</option>
-                    <option *ngFor="let s of taskStatuses" [value]="s.taskStatusId">
-                        {{ s.taskStatusName }}
-                    </option>
-                </select>
-            </div>
-
-            <!-- Priority -->
-            <div class="col-md-4">
-                <label class="form-label">Priority</label>
-                <select class="form-control" formControlName="priorityId">
-                    <option value="">Select Priority</option>
-                    <option *ngFor="let p of priorities" [value]="p.priorityId">
-                        {{ p.priorityName }}
-                    </option>
-                </select>
-            </div>
-
-            <!-- From Date -->
-            <div class="col-md-4">
-                <label class="form-label">From Date</label>
-                <input type="date" class="form-control" formControlName="fromDate">
-            </div>
-
-            <!-- To Date -->
-            <div class="col-md-4">
-                <label class="form-label">To Date</label>
-                <input type="date" class="form-control" formControlName="toDate">
-            </div>
-
-            <!-- Clear -->
-            <div class="col-md-4 d-flex align-items-end">
-                <button type="button" class="btn w-100" style="background:#b02828;color:white" (click)="clearFilters()">
-                    Clear Filters
-                </button>
-            </div>
-            <div class="col-md-12 d-flex justify-content-end mt-2">
-                <button class="btn btn-danger" (click)="loadTasks()">
-                    Search
-                </button>
-            </div>
-
-        </form>
-    </div>
-
-    <!-- RESULTS -->
-    <div class="d-flex justify-content-between mb-2">
-        <div>
-            Showing {{ paginatedTasks.length }} of {{ filteredTasks.length }}
-        </div>
-
-        <div>
-            <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-                <option *ngFor="let s of pageSizeOptions" [value]="s">
-                    {{ s }}
-                </option>
-            </select>
-        </div>
-    </div>
-
-    <!-- TABLE -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-
-            <thead class="table-dark">
-                <tr>
-                    <th>S.No</th>
-                    <th>Task Name</th>
-                    <th>Project</th>
-                    <th>Assigned To</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Start Date</th>
-                    <th>Due Date</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr *ngFor="let t of paginatedTasks; let i = index">
-                    <td>
-                        {{ ((currentPage - 1) * pageSize) + i + 1 }}
-                    </td>
-
-                    <td>{{ t.taskName }}</td>
-                    <td>{{ getProjectName(t.projectId) }}</td>
-                    <td>{{ t.assignedTo }}</td>
-
-                    <td>
-                        <span class="badge bg-secondary">
-                            {{ getPriorityName(t.priorityId) }}
-                        </span>
-                    </td>
-
-                    <td>
-                        <span class="badge bg-primary">
-                            {{ getStatusName(t.statusId) }}
-                        </span>
-                    </td>
-
-                    <td>{{ t.startDate | date }}</td>
-                    <td>{{ t.dueDate | date }}</td>
-
-                </tr>
-
-                <tr *ngIf="filteredTasks.length === 0">
-                    <td colspan="8" class="text-center text-muted">
-                        No tasks found
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
-    </div>
-
-    <!-- PAGINATION -->
-    <div class="d-flex justify-content-between mt-3" *ngIf="totalPages > 1">
-
-        <button class="btn btn-sm btn-outline-secondary" (click)="goToPage(currentPage-1)" [disabled]="currentPage===1">
-            Previous
+      <!-- Buttons -->
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn custom-red-btn w-100 me-2" (click)="searchReport()">
+          Search
         </button>
+      </div>
 
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-
-        <button class="btn btn-sm btn-outline-secondary" (click)="goToPage(currentPage+1)"
-            [disabled]="currentPage===totalPages">
-            Next
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-secondary w-100" (click)="clearFilters()">
+          Clear Filters
         </button>
+      </div>
 
     </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Task Name</th>
+          <th>Project</th>
+          <th>Assigned To</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Start Date</th>
+          <th>Due Date</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let task of reportTasks; let i=index">
+          <td>{{i+1}}</td>
+          <td>{{task.taskName}}</td>
+          <td>{{getProjectName(task.projectId)}}</td>
+          <td>{{task.assignedTo}}</td>
+          <td>{{getPriorityName(task.priorityId)}}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+      'bg-warning': getStatusName(task.statusId) === 'Pending',
+      'bg-primary': getStatusName(task.statusId) === 'In Progress',
+      'bg-success': getStatusName(task.statusId) === 'Completed',
+      'bg-danger': getStatusName(task.statusId) === 'Overdue',
+      'bg-secondary': getStatusName(task.statusId) === 'On Hold',
+      'bg-info': getStatusName(task.statusId) === 'Done'
+    }">
+              {{getStatusName(task.statusId)}}
+            </span>
+          </td>
+          <td>{{task.startDate | date:'dd-MM-yyyy'}}</td>
+          <td>{{task.dueDate | date:'dd-MM-yyyy'}}</td>
+        </tr>
+
+        <tr *ngIf="reportTasks.length==0">
+          <td colspan="8" class="text-center text-muted">
+            No records found
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
 
 </div>
