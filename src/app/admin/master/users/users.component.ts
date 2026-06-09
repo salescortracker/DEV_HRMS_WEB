@@ -30,6 +30,9 @@ filter = {
   companyId: 0,
   regionId: 0
 };
+hrUsers: any[] = [];
+filteredHrUsers: any[] = [];
+reportingToUsers: any[] = [];
 
 designations: any[] = [];
 filteredDesignations: any[] = [];
@@ -68,19 +71,36 @@ loadDesignations(): void {
   });
 }
 
-// filterDesignations(): void {
-//   if (!this.user.companyId || !this.user.regionId) {
-//     this.filteredDesignations = [];
-//     return;
-//   }
+loadHrUsers(companyId: number, regionId: number): void {
 
-//   this.filteredDesignations = this.designations.filter(d =>
-//     Number(d.companyID) === Number(this.user.companyId) &&   // ✅ FIX
-//     Number(d.regionID) === Number(this.user.regionId)        // ✅ FIX
-//   );
+  console.log('Calling HR API', companyId, regionId);
 
-//   console.log("Filtered Designations:", this.filteredDesignations);
-// }
+  this.userService.getHrUsers(companyId, regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
+        console.log('HR Users Response', res);
+
+        this.filteredHrUsers = res.filter(x =>
+          x.designationName?.toLowerCase().includes('human resource') ||
+          x.designationName?.toLowerCase().includes('hr')
+        );
+      },
+      error: (err) => {
+        console.error('HR API Error', err);
+      }
+    });
+}
+loadReportingToUsers(companyId: number, regionId: number): void {
+
+  this.userService
+    .getUsersByCompanyRegion(companyId, regionId)
+    .subscribe({
+      next: (res: any) => {
+        this.reportingToUsers = res;
+      }
+    });
+}
 filterDesignations(): void {
   if (!this.user.companyId || !this.user.regionId || !this.user.departmentId) {
     this.filteredDesignations = [];
@@ -116,6 +136,8 @@ getEmptyUser(): User {
       designationId: 0,
       reportingTo:0,
       password: '',
+      reportingHr: 0,        
+      joiningDate: '',
       status: 'Active',
       userCompanyId:sessionStorage.getItem('UserId') ? Number(sessionStorage.getItem('UserId')) : 0
      , loginType: ''
@@ -429,6 +451,8 @@ filterDepartments(): void {
 
   // ✅ Step 2: filter designations (🔥 ADD HERE)
   this.filterDesignations();
+  this.loadHrUsers(this.user.companyId, this.user.regionId);
+  this.loadReportingToUsers(this.user.companyId, this.user.regionId);
 
   this.user.roleId = u.roleId;
   this.user.departmentId = u.departmentId;
@@ -437,6 +461,9 @@ filterDepartments(): void {
   this.user.designationId = u.designationId;
 
   this.user.loginType = u.loginType;
+  this.user.reportingHr = u.reportingHr;
+  this.user.reportingHr = u.reportingHr;
+this.user.joiningDate = u.joiningDate;
 }
 
   deleteUser(u: User): void {

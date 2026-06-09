@@ -35,6 +35,7 @@ isParsing: boolean = false;
   currentPage = 1;
   pageSizeOptions = [5, 10, 20, 50];
   //isParsing: boolean = false;
+  // isParsing: boolean = false;
 
   references: any[] = [];
 maritalStatuses: any[] = [];
@@ -91,6 +92,8 @@ maritalStatuses: any[] = [];
   expToYears: number[] = [];
   eduToYears: number[] = [];
   applications: any[] = [];
+
+  
 
   constructor(private recruitmentService: RecruitmentService, private empResignationService: EmployeeResignationService, private adminService: AdminService) { }
  

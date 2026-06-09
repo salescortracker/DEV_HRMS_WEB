@@ -556,6 +556,8 @@ export interface User {
   departmentId:number;
   reportingTo:number;
   password?: string;
+  reportingHr?: number;
+  joiningDate?: string;
   status: string;
   userCompanyId?: number; // ✅ added for tracking which company the user belongs to
   loginType?: string; // "Admin" or "User",
@@ -1185,7 +1187,6 @@ deleteDepartment(id: number): Observable<any> {
 }
 
 getDesignations(userId:number): Observable<Designation[]> {
-  debugger;
   return this.getAll<Designation>(`MasterData/GetDesignations?userId=`+userId);
 }
 
@@ -2201,6 +2202,28 @@ deleteClockInOut(id: number) {
     });
   }
 
+  getAttendanceByDateRange(
+  employeeCode: string,
+  companyId: number,
+  regionId: number,
+  fromDate: string,
+  toDate: string
+): Observable<any[]> {
+
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Attendance/GetAttendanceByDateRange`,
+    {
+      params: {
+        employeeCode,
+        companyId,
+        regionId,
+        fromDate,
+        toDate
+      }
+    }
+  );
+}
+
   createClockInOut(payload: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/Attendance/CreateClockInOut`, payload);
   }
@@ -2503,6 +2526,11 @@ deleteWeekoff(id: number) {
 getResignations(companyId: number, regionId: number) {
   return this.http.get<ResignationModel[]>(
     `${this.baseUrl}/MasterData/GetResignations?companyId=${companyId}&regionId=${regionId}`
+  );
+}
+getAllResignations(userId: number) {
+  return this.http.get<ResignationModel[]>(
+    `${this.baseUrl}/MasterData/GetAllResignations/${userId}`
   );
 }
 
@@ -3121,5 +3149,14 @@ getCountriesByCompanyRegion(companyId: number, regionId: number) {
     `${this.baseUrl}/MasterData/countries/by-company-region?companyId=${companyId}&regionId=${regionId}`
   );
 }
-
+getHrUsers(companyId: number, regionId: number) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Employee/hr-designation-names?companyId=${companyId}&regionId=${regionId}`
+  );
+}
+getUsersByCompanyRegion(companyId: number, regionId: number) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Employee/users-by-company-region?companyId=${companyId}&regionId=${regionId}`
+  );
+}
 }

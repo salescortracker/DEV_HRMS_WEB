@@ -1,12 +1,11 @@
 <div class="sidebar" [class.collapsed]="collapsed">
-  <div
-    class="menu-item"
-    routerLink="/admin/dashboard"
-    [class.active]="activeMenu === 'Dashboard'"
-   >
-    <i class="fas fa-database menu-icon"></i>
-    <span *ngIf="!collapsed">Dashboard</span>
-  </div>
+<div
+  class="menu-item"
+  [class.active]="activeMenu === 'Dashboard'"
+  (click)="selectMenu('Dashboard')">
+  <i class="fas fa-database menu-icon"></i>
+  <span *ngIf="!collapsed">Dashboard</span>
+</div>
 
   <div
     class="menu-item"

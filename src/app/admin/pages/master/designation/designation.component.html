@@ -55,15 +55,21 @@
             <!-- Region -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Region</label>
-              <select class="form-select" [(ngModel)]="designation.regionId" name="regionId" required>
-                <option value="">Select Region</option>
-                <!-- <option *ngFor="let region of regions" [value]="region.regionID">
-                  {{ region.regionName }}
-                </option> -->
-                <option *ngFor="let region of filteredRegions" [value]="region.regionID">
-                  {{ region.regionName }}
-                </option>
-              </select>
+              <select
+  class="form-select"
+  [(ngModel)]="designation.regionId"
+  name="regionId"
+  (change)="onRegionChange()"
+  required>
+
+  <option value="">Select Region</option>
+
+  <option *ngFor="let region of filteredRegions"
+          [value]="region.regionID">
+    {{ region.regionName }}
+  </option>
+
+</select>
             </div>
 
             <div class="col-md-6">
@@ -77,9 +83,10 @@
               <select class="form-select" [(ngModel)]="designation.departmentId" name="departmentId" required>
                 <option value="">Select Department</option>
 
-                <option *ngFor="let dept of departments" [value]="dept.departmentId">
-                  {{ dept.departmentName || dept.description }}
-                </option>
+                <option *ngFor="let dept of filteredDepartments"
+        [value]="dept.departmentId">
+  {{ dept.departmentName || dept.description }}
+</option>
               </select>
             </div>
 

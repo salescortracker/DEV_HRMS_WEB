@@ -197,21 +197,38 @@ export class ResignationmasterComponent {
 
     this.loadCompanies();
     this.loadResignations();
+    
   }
 
   loadResignations() {
-    this.spinner.show();
-    this.adminService.getResignations(this.companyId, this.regionId).subscribe({
-      next: (res: any) => {
-        this.resignations = res || [];
-        this.spinner.hide();
-      },
-      error: () => {
-        this.spinner.hide();
-        Swal.fire('Error', 'Failed to load resignations', 'error');
-      }
-    });
-  }
+
+  console.log('UserId = ', this.userId);
+
+  this.spinner.show();
+
+  this.adminService.getAllResignations(this.userId).subscribe({
+    next: (res: any) => {
+
+      console.log('Resignation Response => ', res);
+
+      this.resignations = res ?? [];
+
+      this.spinner.hide();
+    },
+    error: (err) => {
+
+      console.error(err);
+
+      this.spinner.hide();
+
+      Swal.fire(
+        'Error',
+        'Failed to load resignations',
+        'error'
+      );
+    }
+  });
+}
 
   onSubmit() {
     this.resignation.companyId = this.companyId;
@@ -312,25 +329,27 @@ loadCompanies() {
 loadRegions() {
   this.adminService.getRegions(null, this.userId).subscribe({
     next: (res: any) => {
-      console.log('All Regions 👉', res);
 
       const data = res?.data ?? res ?? [];
 
-      // 🔥 Only active regions
-      const activeRegions = data.filter((r: any) => r.isActive === true);
+      const activeRegions = data.filter(
+        (r: any) => r.isActive === true
+      );
 
-      // ✅ Filter by selected company
+      // 🔥 Region map ki ALL regions
+      this.regionMap = {};
+
+      activeRegions.forEach((r: any) => {
+        this.regionMap[r.regionID] = r.regionName;
+      });
+
+      // 🔥 Dropdown ki current company regions only
       this.regions = activeRegions.filter(
         (r: any) => r.companyID == this.companyId
       );
 
-      // ✅ Reset & build region map
-      this.regionMap = {};
-      this.regions.forEach((r: any) => {
-        this.regionMap[r.regionID] = r.regionName;
-      });
-
-      console.log('Filtered Regions 👉', this.regions);
+      console.log('Region Map =>', this.regionMap);
+      console.log('Dropdown Regions =>', this.regions);
     }
   });
 }

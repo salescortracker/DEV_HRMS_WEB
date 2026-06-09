@@ -15,49 +15,364 @@ import { environment } from '../../../../environments/environment';
   styleUrl: './taskreport.component.css'
 })
 export class TaskreportComponent {
-  filtersForm!: FormGroup;
+  reportTasks: any[] = [];
+  allReportTasks: any[] = [];
 
-  tasks: any[] = [];
-  allTasks: any[] = [];
-  filteredTasks: any[] = [];
-
-  employees: any[] = [];
-  priorities: any[] = [];
-  taskStatuses: any[] = [];
-  projects: any[] = [];
-  statuses: any[] = [];
-
-
-  pageSize = 10;
-  pageSizeOptions = [5, 10, 20];
-  currentPage = 1;
+  selectedEmployee = '';
+  selectedStatus = '';
+  selectedPriority = '';
+  fromDate = '';
+  toDate = '';
   userId!: number;
   companyId!: number;
   regionId!: number;
 
-  companyLogoBase64: string = '';
-  companyName: string = '';
-  companyAddress: string = '';
-  constructor(
-    private fb: FormBuilder,
-    private taskService: TaskService,
-    private adminService: AdminService,
-    private helpdeskService: HelpdeskService,
+  constructor(private adminService: AdminService, private helpdeskService: HelpdeskService, private service: AdminService
+    , private taskService: TaskService
   ) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));
-    this.buildForm();
+    this.loadTaskReport();
     this.loadEmployees();
-    this.loadStatuses();
+    this.loadTaskStatuses();
     this.loadPriorities();
     this.loadProjects();
     this.loadCompanyDetails();
     // this.loadTasks();
+  }
+  loadTaskReport() {
+
+    this.taskService
+      .getTasks(this.userId)
+      .subscribe((res: any) => {
+        console.log('Tasks:', res.data);
+
+        this.allReportTasks = res.data || [];
+        this.reportTasks = [...this.allReportTasks];
+
+      });
 
   }
+  searchReport() {
+
+    this.reportTasks =
+      this.allReportTasks.filter(task => {
+
+        const employeeMatch =
+          !this.selectedEmployee ||
+          task.assignedTo === this.selectedEmployee;
+
+        const statusMatch =
+          !this.selectedStatus ||
+          task.statusId == this.selectedStatus;
+
+        const priorityMatch =
+          !this.selectedPriority ||
+          task.priorityId == this.selectedPriority;
+
+        let dateMatch = true;
+
+        if (this.fromDate) {
+          dateMatch =
+            dateMatch &&
+            new Date(task.startDate) >=
+            new Date(this.fromDate);
+        }
+
+        if (this.toDate) {
+          dateMatch =
+            dateMatch &&
+            new Date(task.dueDate) <=
+            new Date(this.toDate);
+        }
+
+        return (
+          employeeMatch &&
+          statusMatch &&
+          priorityMatch &&
+          dateMatch
+        );
+
+      });
+
+  }
+  clearFilters() {
+
+    this.selectedEmployee = '';
+    this.selectedStatus = '';
+    this.selectedPriority = '';
+    this.fromDate = '';
+    this.toDate = '';
+
+    this.reportTasks =
+      [...this.allReportTasks];
+
+  }
+  // Dropdown Data
+  employees: any[] = [];
+  taskStatuses: any[] = [];
+  priorities: any[] = [];
+  projects: any[] = [];
+
+  // Employee Name
+  getEmployeeName(employeeId: number): string {
+    const employee = this.employees.find(x => x.employeeId === employeeId);
+    return employee ? employee.employeeName : '-';
+  }
+
+  // Project Name
+  getProjectName(projectId: number): string {
+
+    const project = this.projects.find(
+      x => x.projectMasterId == projectId
+    );
+
+    return project ? project.projectName : '-';
+
+  }
+
+
+  // Priority Name
+  getPriorityName(priorityId: number): string {
+    const priority = this.priorities.find(x => x.priorityId === priorityId);
+    return priority ? priority.priorityName : '-';
+  }
+
+  // Status Name
+  getStatusName(statusId: number): string {
+
+    const status = this.taskStatuses.find(
+      x => x.taskStatusId == statusId
+    );
+
+    return status ? status.taskStatusName : '-';
+
+  }
+  loadEmployees() {
+    this.adminService.getEmployees(this.companyId, this.regionId)
+      .subscribe({
+        next: (res: any) => {
+          this.employees = Array.isArray(res) ? res : res?.data || [];
+        },
+        error: (err) => console.error(err)
+      });
+  }
+
+  loadTaskStatuses() {
+    this.adminService
+      .getTaskStatusesByCompanyRegion(this.companyId, this.regionId)
+      .subscribe({
+        next: (res: any) => {
+          console.log('Statuses:', res.data);
+          this.taskStatuses = res.data || res;
+        },
+        error: (err) => console.error(err)
+      });
+  }
+  loadPriorities() {
+    this.helpdeskService
+      .getPriorities(this.companyId, this.regionId)
+      .subscribe(res => {
+        this.priorities = res;
+      });
+  }
+
+  loadProjects(): void {
+    this.service.getProjectNames(this.companyId, this.regionId)
+      .subscribe(res => {
+        console.log('Projects:', res.data);
+        if (res.success && res.data) {
+          this.projects = res.data;
+        }
+      });
+  }
+
+  exportToExcel(): void {
+
+    const data = this.reportTasks.map((task: any) => ({
+      'Task Name': task.taskName || '',
+      'Project': this.getProjectName(task.projectId),
+      'Assigned To': task.assignedTo || '',
+      'Priority': this.getPriorityName(task.priorityId),
+      'Status': this.getStatusName(task.statusId),
+      'Start Date': task.startDate || '',
+      'Due Date': task.dueDate || ''
+    }));
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Task Report');
+
+    XLSX.writeFile(wb, 'TaskReport.xlsx');
+  }
+  downloadPdf(): void {
+
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    /* ================= BORDER ================= */
+
+    doc.setDrawColor(200, 0, 0);
+    doc.setLineWidth(1);
+    doc.rect(5, 5, pageWidth - 10, pageHeight - 10);
+
+    let y = 15;
+
+    /* ================= COMPANY LOGO ================= */
+
+    if (this.companyLogoBase64) {
+      doc.addImage(
+        this.companyLogoBase64,
+        'PNG',
+        pageWidth / 2 - 20,
+        8,
+        40,
+        15
+      );
+    }
+
+    /* ================= COMPANY NAME ================= */
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(200, 0, 0);
+
+    doc.text(
+      this.companyName?.toUpperCase() || 'COMPANY',
+      20,
+      y
+    );
+
+    /* ================= ADDRESS ================= */
+
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+
+    let addressY = y + 6;
+
+    if (this.companyAddress) {
+
+      const lines =
+        this.companyAddress.split(',');
+
+      lines.forEach((line) => {
+
+        doc.text(
+          line.trim(),
+          20,
+          addressY
+        );
+
+        addressY += 4;
+
+      });
+    }
+
+    /* ================= RIGHT SIDE ================= */
+
+    doc.setTextColor(0);
+    doc.setFontSize(10);
+
+    doc.text(
+      `Print Date: ${new Date().toLocaleDateString()}`,
+      pageWidth - 20,
+      y,
+      { align: 'right' }
+    );
+
+    doc.text(
+      'Task Report',
+      pageWidth - 20,
+      y + 5,
+      { align: 'right' }
+    );
+
+    /* ================= RED LINE ================= */
+
+    const lineY = addressY + 4;
+
+    doc.setDrawColor(200, 0, 0);
+    doc.setLineWidth(0.5);
+
+    doc.line(
+      20,
+      lineY,
+      pageWidth - 20,
+      lineY
+    );
+
+    /* ================= TABLE ================= */
+
+    const rows = this.reportTasks.map((task: any) => [
+
+      task.taskName || '',
+      this.getProjectName(task.projectId),
+      task.assignedTo || '',
+      this.getPriorityName(task.priorityId),
+      this.getStatusName(task.statusId),
+
+      task.startDate
+        ? new Date(task.startDate).toLocaleDateString()
+        : '',
+
+      task.dueDate
+        ? new Date(task.dueDate).toLocaleDateString()
+        : ''
+
+    ]);
+
+    autoTable(doc, {
+
+      startY: lineY + 8,
+
+      head: [[
+        'Task Name',
+        'Project',
+        'Assigned To',
+        'Priority',
+        'Status',
+        'Start Date',
+        'Due Date'
+      ]],
+
+      body: rows,
+
+      styles: {
+        fontSize: 8
+      },
+
+      headStyles: {
+        fillColor: [200, 0, 0]
+      }
+
+    });
+
+    /* ================= FOOTER ================= */
+
+    const finalY =
+      (doc as any).lastAutoTable.finalY + 10;
+
+    doc.setFontSize(8);
+    doc.setTextColor(120);
+
+    doc.text(
+      `© ${this.companyName} — System Generated Task Report`,
+      pageWidth / 2,
+      finalY,
+      { align: 'center' }
+    );
+
+    doc.save('Task_Report.pdf');
+  }
+  companyLogoBase64: string = '';
+  companyName: string = '';
+  companyAddress: string = '';
   loadCompanyDetails() {
     const companyId = Number(sessionStorage.getItem('CompanyId'));
 
@@ -116,331 +431,6 @@ export class TaskreportComponent {
 
       img.onerror = err => reject(err);
     });
-  }
-  loadTasks() {
-    const filters = this.filtersForm.value;
-
-    const payload = {
-      employeeId: filters.employeeId || null,
-      statusId: filters.statusId || null,
-      priorityId: filters.priorityId || null,
-      fromDate: filters.fromDate || null,
-      toDate: filters.toDate || null
-    };
-
-    this.taskService
-      .getTaskReport(payload, this.companyId, this.regionId)
-      .subscribe((res: any) => {
-
-        this.allTasks = res.data || res;
-        this.filteredTasks = [...this.allTasks];
-        this.currentPage = 1;
-      });
-  }
-  buildForm() {
-    this.filtersForm = this.fb.group({
-      employeeId: [''],
-      statusId: [''],
-      priorityId: [''],
-      fromDate: [''],
-      toDate: ['']
-    });
-
-    this.filtersForm.valueChanges.subscribe(() => {
-      //this.applyFilters();
-    });
-  }
-  loadProjects(): void {
-
-    this.adminService
-      .getProjectNames(this.companyId, this.regionId)
-      .subscribe((res: any) => {
-
-        this.projects = res.data || res;
-
-      });
-  }
-
-  loadPriorities() {
-    this.helpdeskService
-      .getPriorities(this.companyId, this.regionId)
-      .subscribe(res => {
-        this.priorities = res;
-      });
-  }
-
-  loadEmployees() {
-    this.adminService.getEmployees(this.companyId, this.regionId).subscribe((res: any) => {
-      this.employees = res;
-    });
-  }
-
-  loadStatuses() {
-    this.adminService.getTaskStatusesByCompanyRegion(this.companyId, this.regionId)
-      .subscribe((res: any) => {
-        this.taskStatuses = res.data || res;
-      });
-  }
-
-  applyFilters() {
-
-    // const f = this.filtersForm.value;
-
-    // this.filteredTasks = this.allTasks.filter(t => {
-
-    //   const matchEmp =
-    //     !f.employeeId || t.assignedToId == f.employeeId;
-
-    //   const matchStatus =
-    //     !f.statusId || t.statusId == f.statusId;
-
-    //   const matchPriority =
-    //     !f.priorityId || t.priorityId == f.priorityId;
-
-    //   const matchDate =
-    //     (!f.fromDate || new Date(t.startDate) >= new Date(f.fromDate)) &&
-    //     (!f.toDate || new Date(t.dueDate) <= new Date(f.toDate));
-
-    //   return matchEmp && matchStatus && matchPriority && matchDate;
-    // });
-
-    // this.currentPage = 1;
-    this.loadTasks();
-  }
-
-  get paginatedTasks() {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.filteredTasks.slice(start, start + this.pageSize);
-  }
-
-  get totalPages() {
-    return Math.ceil(this.filteredTasks.length / this.pageSize);
-  }
-
-  goToPage(p: number) {
-    if (p >= 1 && p <= this.totalPages) {
-      this.currentPage = p;
-    }
-  }
-
-  onPageSizeChange() {
-    this.currentPage = 1;
-  }
-
-  clearFilters() {
-    this.filtersForm.reset();
-    this.loadTasks();
-  }
-
-  getStatusName(id: number) {
-    return this.taskStatuses.find(x => x.taskStatusId == id)?.taskStatusName;
-  }
-
-  getPriorityName(id: number) {
-    return this.priorities.find(x => x.priorityId == id)?.priorityName;
-  }
-
-  getProjectName(id: number) {
-    return this.projects.find(x => x.projectMasterId == id)?.projectName;
-  }
-  downloadPDF(): void {
-
-    const doc = new jsPDF('p', 'mm', 'a4');
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-
-    const data = this.filteredTasks;
-
-    /* ================= BORDER ================= */
-
-    doc.setDrawColor(200, 0, 0);
-    doc.setLineWidth(1);
-
-    doc.rect(5, 5, pageWidth - 10, pageHeight - 10);
-
-    let y = 15;
-
-    /* ================= COMPANY LOGO ================= */
-
-    if (this.companyLogoBase64) {
-      doc.addImage(
-        this.companyLogoBase64,
-        'PNG',
-        pageWidth / 2 - 20,
-        8,
-        40,
-        15
-      );
-    }
-
-    /* ================= COMPANY NAME ================= */
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(200, 0, 0);
-
-    doc.text(
-      this.companyName?.toUpperCase() || 'COMPANY',
-      20,
-      y
-    );
-
-    /* ================= ADDRESS ================= */
-
-    doc.setFontSize(9);
-    doc.setTextColor(100);
-
-    let addressY = y + 6;
-
-    if (this.companyAddress) {
-
-      const lines = this.companyAddress.split(',');
-
-      lines.forEach((l) => {
-        doc.text(l.trim(), 20, addressY);
-        addressY += 4;
-      });
-    }
-
-    /* ================= RIGHT SIDE INFO ================= */
-
-    doc.setTextColor(0);
-    doc.setFontSize(10);
-
-    doc.text(
-      `Print Date: ${new Date().toLocaleDateString()}`,
-      pageWidth - 20,
-      y,
-      { align: 'right' }
-    );
-
-    doc.text(
-      `Task Report`,
-      pageWidth - 20,
-      y + 5,
-      { align: 'right' }
-    );
-
-    /* ================= RED LINE ================= */
-
-    const lineY = addressY + 4;
-
-    doc.setDrawColor(200, 0, 0);
-    doc.setLineWidth(0.5);
-
-    doc.line(20, lineY, pageWidth - 20, lineY);
-
-    /* ================= TABLE ================= */
-
-    const rows = data.map((t, index) => [
-
-      index + 1,
-
-      t.taskName || '',
-
-      this.getProjectName(t.projectId) || '',
-
-      t.assignedTo || '',
-
-      this.getPriorityName(t.priorityId) || '',
-
-      this.getStatusName(t.statusId) || '',
-
-      t.startDate
-        ? new Date(t.startDate).toLocaleDateString()
-        : '',
-
-      t.dueDate
-        ? new Date(t.dueDate).toLocaleDateString()
-        : ''
-
-    ]);
-
-    autoTable(doc, {
-
-      startY: lineY + 8,
-
-      head: [[
-        'S.No',
-        'Task Name',
-        'Project',
-        'Assigned To',
-        'Priority',
-        'Status',
-        'Start Date',
-        'Due Date'
-      ]],
-
-      body: rows,
-
-      styles: {
-        fontSize: 8
-      },
-
-      headStyles: {
-        fillColor: [200, 0, 0]
-      }
-
-    });
-
-    /* ================= FOOTER ================= */
-
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
-
-    doc.setFontSize(8);
-    doc.setTextColor(120);
-
-    doc.text(
-      `© ${this.companyName} — System Generated Task Report`,
-      pageWidth / 2,
-      finalY,
-      { align: 'center' }
-    );
-
-    doc.save('Task_Report.pdf');
-  }
-
-  exportToExcel(): void {
-
-    const data = this.filteredTasks.map((t, index) => ({
-
-      'S.No': index + 1,
-
-      'Task Name': t.taskName || '',
-
-      'Project': this.getProjectName(t.projectId) || '',
-
-      'Assigned To': t.assignedTo || '',
-
-      'Priority': this.getPriorityName(t.priorityId) || '',
-
-      'Status': this.getStatusName(t.statusId) || '',
-
-      'Start Date': t.startDate
-        ? new Date(t.startDate).toLocaleDateString()
-        : '',
-
-      'Due Date': t.dueDate
-        ? new Date(t.dueDate).toLocaleDateString()
-        : ''
-
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(data);
-
-    const wb = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-      wb,
-      ws,
-      'Task Report'
-    );
-
-    XLSX.writeFile(
-      wb,
-      'task-report.xlsx'
-    );
   }
 
 }

@@ -33,6 +33,9 @@ export class ClockinClockoutComponent {
   currentDate = new Date();
   records: any[] = [];
 
+  fromDate: string = '';
+  toDate: string = '';
+
   employeeCode = sessionStorage.getItem('EmployeeCode');
   companyId = sessionStorage.getItem('CompanyId') as unknown as number;
   regionId = sessionStorage.getItem('RegionId') as unknown as number;
@@ -358,14 +361,39 @@ export class ClockinClockoutComponent {
 
   getStatusClass(): string {
 
-  if (!this.lateLoginText) return '';
+    if (!this.lateLoginText) return '';
 
-  const text = this.lateLoginText.toLowerCase();
+    const text = this.lateLoginText.toLowerCase();
 
-  if (text.includes('late')) return 'badge-late';
-  if (text.includes('early')) return 'badge-early';
-  if (text.includes('on time')) return 'badge-ontime';
+    if (text.includes('late')) return 'badge-late';
+    if (text.includes('early')) return 'badge-early';
+    if (text.includes('on time')) return 'badge-ontime';
 
-  return 'badge-default';
-}
+    return 'badge-default';
+  }
+
+  searchAttendance() {
+
+    if (!this.fromDate || !this.toDate) {
+
+      this.loadAttendance();
+
+      return;
+
+    }
+
+    this.adminService.getAttendanceByDateRange(
+      String(this.currentUser.employeeCode),
+      this.currentUser.companyId,
+      this.currentUser.regionId,
+      this.fromDate,
+      this.toDate
+    )
+      .subscribe(res => {
+
+        this.attendanceRecords = res;
+
+      });
+
+  }
 }
