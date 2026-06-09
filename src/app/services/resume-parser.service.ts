@@ -1,6 +1,6 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import * as mammoth from 'mammoth';
+//import * as mammoth from 'mammoth';
 
 @Injectable({
   providedIn: 'root'
@@ -22,31 +22,31 @@ export class ResumeParserService {
       }
 
       // Dynamic import
-      const pdfjsLib = await import('pdfjs-dist');
+      //const pdfjsLib = await import('pdfjs-dist');
 
-      pdfjsLib.GlobalWorkerOptions.workerSrc =
-        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.worker.min.mjs';
+      // pdfjsLib.GlobalWorkerOptions.workerSrc =
+      //   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.worker.min.mjs';
 
-      const buffer = await file.arrayBuffer();
+      // const buffer = await file.arrayBuffer();
 
-      const pdf = await pdfjsLib.getDocument({
-        data: buffer
-      }).promise;
+      // const pdf = await pdfjsLib.getDocument({
+      //   data: buffer
+      // }).promise;
 
-      let text = '';
+     // let text = '';
 
-      for (let i = 1; i <= pdf.numPages; i++) {
+      // for (let i = 1; i <= pdf.numPages; i++) {
 
-        const page = await pdf.getPage(i);
+      //   const page = await pdf.getPage(i);
 
-        const content = await page.getTextContent();
+      //   const content = await page.getTextContent();
 
-        text += content.items
-          .map((x: any) => x.str)
-          .join(' ') + ' ';
-      }
+      //   text += content.items
+      //     .map((x: any) => x.str)
+      //     .join(' ') + ' ';
+      // }
 
-      return text.trim();
+    //  return text.trim();
     }
 
     // ================= DOCX =================
@@ -55,11 +55,11 @@ export class ResumeParserService {
 
       const arrayBuffer = await file.arrayBuffer();
 
-      const result = await mammoth.extractRawText({
-        arrayBuffer
-      });
+      // const result = await mammoth.extractRawText({
+      //   arrayBuffer
+      // });
 
-      return result.value;
+     // return result.value;
     }
 
     return '';

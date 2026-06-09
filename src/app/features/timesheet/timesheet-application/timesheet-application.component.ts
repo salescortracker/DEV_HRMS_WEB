@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { TimesheetService } from '../service/timesheet.service';
+import Swal from 'sweetalert2';
 
 export interface TimesheetProject {
   projectName: string;
@@ -107,9 +108,34 @@ model: TimesheetModel = {
     });
   }
 
-  removeProject(index: number) {
-    this.model.projects.splice(index, 1);
-  }
+removeProject(index: number) {
+
+  Swal.fire({
+    title: 'Delete Task?',
+    text: 'This task will be removed permanently.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Yes, Delete'
+  }).then((result) => {
+
+    if (result.isConfirmed) {
+
+      this.model.projects.splice(index, 1);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted',
+        text: 'Task removed successfully',
+        timer: 1500,
+        showConfirmButton: false
+      });
+
+    }
+
+  });
+
+}
 
   // ================= HOURS CALC =================
   calculateProjectHours(project: TimesheetProject) {
@@ -147,7 +173,11 @@ model: TimesheetModel = {
   // ================= SAVE =================
   saveTimesheet(form: any) {
     if (!form.valid || this.model.projects.length === 0) {
-      alert('Please complete the form');
+      Swal.fire({
+  icon: 'warning',
+  title: 'Incomplete Form',
+  text: 'Please complete the form'
+});
       return;
     }
 
@@ -180,14 +210,24 @@ model: TimesheetModel = {
 
     this.timesheetService.submittimesheet(formData).subscribe({
       next: () => {
-        alert('Timesheet saved successfully');
+       Swal.fire({
+  icon: 'success',
+  title: 'Success',
+  text: 'Timesheet saved successfully',
+  timer: 2000,
+  showConfirmButton: false
+});
         form.resetForm();
         this.model.projects = [];
         this.loadMyTimesheets();
       },
       error: err => {
         console.error(err);
-        alert('Save failed');
+        Swal.fire({
+  icon: 'error',
+  title: 'Error',
+  text: 'Failed to save timesheet'
+});
       }
     });
   }
@@ -239,25 +279,59 @@ model: TimesheetModel = {
       if (row.status === 'Pending') row.selected = checked;
     });
   }
+sendSelectedTimesheets() {
 
-  sendSelectedTimesheets() {
-    const selectedIds = this.submittedTimesheets.filter(x => x.selected).map(x => x.timesheetId);
-    if (!selectedIds.length) {
-      alert("Select at least one pending timesheet");
-      return;
-    }
-    this.timesheetService.sendSelectedTimesheets(selectedIds).subscribe({
-      next: () => {
-        alert("Timesheets sent successfully");
-        this.loadMyTimesheets();
-      },
-      error: err => {
-        console.error(err);
-        alert("Failed to send timesheets");
-      }
+  const selectedIds = this.submittedTimesheets
+    .filter(x => x.selected)
+    .map(x => x.timesheetId);
+
+  if (!selectedIds.length) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'No Selection',
+      text: 'Select at least one pending timesheet'
     });
+    return;
   }
 
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You want to submit selected timesheets?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Send',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+
+    if (result.isConfirmed) {
+
+      this.timesheetService.sendSelectedTimesheets(selectedIds).subscribe({
+        next: () => {
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Submitted',
+            text: 'Timesheets sent successfully'
+          });
+
+          this.loadMyTimesheets();
+        },
+        error: () => {
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Failed',
+            text: 'Failed to send timesheets'
+          });
+
+        }
+      });
+
+    }
+
+  });
+
+}
   // ================= SORTING =================
   sortBy(column: keyof TimesheetModel | 'totalHoursText' | 'otHoursText' | 'timesheetDate') {
     if (this.sortColumn === column) {
