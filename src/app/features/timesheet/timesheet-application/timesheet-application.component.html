@@ -93,9 +93,16 @@
     </button>
 
     <div class="text-end mt-4">
-      <button class="btn btn-success" type="submit" [disabled]="!isFormValid()">
+      <!-- <button class="btn btn-success" type="submit" [disabled]="!isFormValid()">
         Save Timesheet
-      </button>
+      </button> -->
+      <button class="btn btn-success"
+        type="submit"
+        [disabled]="!isFormValid()">
+
+  {{ isEditMode ? 'Update Timesheet' : 'Save Timesheet' }}
+
+</button>
     </div>
 
   </form>
@@ -177,11 +184,28 @@
               'bg-danger': row.status==='Rejected'
             }">{{ row.status }}</span>
           </td>
-          <td class="text-center">
+          <!-- <td class="text-center">
             <a href="javascript:void(0)" (click)="openViewModal(row)">
               <i class="fa-solid fa-eye text-primary fs-5"></i>
             </a>
-          </td>
+          </td> -->
+          <td class="text-center">
+
+  <!-- View -->
+  <a href="javascript:void(0)"
+     class="me-2"
+     (click)="openViewModal(row)">
+    <i class="fa-solid fa-eye text-primary fs-5"></i>
+  </a>
+
+  <!-- Edit -->
+  <a href="javascript:void(0)"
+     *ngIf="row.status === 'Pending'"
+     (click)="editTimesheet(row)">
+    <i class="fa-solid fa-pen-to-square text-success fs-5"></i>
+  </a>
+
+</td>
         </tr>
       </tbody>
     </table>

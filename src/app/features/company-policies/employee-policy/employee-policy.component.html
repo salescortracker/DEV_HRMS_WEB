@@ -14,8 +14,8 @@
       <div class="row g-3">
 
         <!-- Category -->
-        <div class="col-md-4">
-          <label class="form-label">Category</label>
+      <div class="col-md-4">
+  <label class="form-label">Category</label>
 
           <select class="form-select" [(ngModel)]="selectedCategory">
 
@@ -26,16 +26,31 @@
               {{ c.policyCategoryName }}
 
             </option>
+  <select
+    class="form-select"
+    [(ngModel)]="selectedCategory"
+    name="Category">
 
-          </select>
+    <option value="">Select Category</option>
 
-        </div>
+    <option *ngFor="let c of categories"
+            [value]="c.PolicyCategoryName">
+      {{ c.PolicyCategoryName }}
+    </option>
+
+  </select>
+</div>
 
         <!-- From Date -->
         <div class="col-md-4">
           <label class="form-label">From Date</label>
 
           <input type="date" class="form-control" [(ngModel)]="fromDate">
+           <input
+    type="date"
+    class="form-control"
+    [(ngModel)]="fromDate"
+    (change)="applyFilter()">
 
         </div>
 
