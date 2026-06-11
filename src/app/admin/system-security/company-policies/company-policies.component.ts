@@ -25,14 +25,19 @@ export class CompanyPoliciesComponent {
   departments: Department[] = []
  categories: any[] = []; 
   policies: any[] = []
-
+  paginatedPolicies: any[] = []
+filteredDepartments: any[] = [];
   userId!: number
   companyId!: number
   regionId!: number
   filteredRegions: any[] = []; 
 
-  isEditMode = false
+  currentPage = 1
+  pageSize = 5
+  totalPages = 1
 
+  isEditMode = false
+showDepartmentDropdown = false;
   policy: any = this.resetPolicy()
 
   // categories: string[] = [
@@ -97,8 +102,7 @@ export class CompanyPoliciesComponent {
     PolicyId: 0,
     CompanyId: this.companyId || null,
     RegionId: this.regionId || null,
-    DepartmentId: null,
-
+ DepartmentIds: [],
     Title: '',
     Category: '',
     EffectiveDate: new Date().toISOString().split('T')[0],
@@ -131,6 +135,7 @@ onCompanyChange() {
   this.filteredRegions = this.policy.CompanyId
     ? this.regions.filter(r => Number(r.companyID) === Number(this.policy.CompanyId))
     : [];
+    this.filteredDepartments = [];
 }
 
   loadDepartments() {
@@ -138,18 +143,24 @@ onCompanyChange() {
     this.adminService.getDepartments(this.userId)
       .subscribe((res: any) => {
         debugger;
-        this.departments = res.data.data.filter((x: any) => x.isActive)
-      })
+        this.departments = res.data.data.filter((x: any) => x.isActive);
+        this.filterDepartments();
+        
+      });
 
   }
 
-  getDepartmentName(id: number) {
+  getDepartmentName(ids: number[]): string {
 
-    const d = this.departments.find(x => x.departmentId == id)
-
-    return d ? d.departmentName : '-'
-
+  if (!ids || ids.length === 0) {
+    return '-';
   }
+
+  return this.departments
+    .filter(d => ids.includes(d.departmentId))
+    .map(d => d.departmentName)
+    .join(', ');
+}
 
   getPolicies() {
 
@@ -161,9 +172,9 @@ onCompanyChange() {
 this.policies = res.map((x: any) => ({
 
   PolicyId: x.policyId,
-  CompanyId: x.companyId,
-  RegionId: x.regionId,
-  DepartmentId: x.departmentId,
+  CompanyId: x.companyId ?? x.companyID,
+  RegionId: x.regionId ?? x.regionID,
+  DepartmentIds: x.departmentIds || [],
 
   Title: x.policyTitle,
   Category: x.category,
@@ -176,6 +187,8 @@ this.policies = res.map((x: any) => ({
   FileUrl: x.attachmentPath
 
 }))
+
+        this.setPagination()
 
         this.spinner.hide()
 
@@ -214,9 +227,7 @@ onSubmit() {
       ? Number(this.policy.RegionId)
       : null,
 
-    departmentId: this.policy.DepartmentId
-      ? Number(this.policy.DepartmentId)
-      : null,
+    departmentIds: this.policy.DepartmentIds || [],
 
     policyTitle: this.policy.Title,
     policyDescription: this.policy.Description,
@@ -255,6 +266,9 @@ attachmentPath: this.policy.Attachment
     this.resetForm()
 
     this.getPolicies()
+    console.log('DepartmentIds = ', this.policy.DepartmentIds);
+
+console.log(JSON.stringify(payload, null, 2));
 
 
   // ✅ CLEAR FILE INPUT
@@ -266,20 +280,86 @@ attachmentPath: this.policy.Attachment
 
 }
 
-  editPolicy(p: any) {
+  // editPolicy(p: any) {
 
-    this.isEditMode = true
+  //   this.isEditMode = true
 
-    this.policy = { ...p }
+  //   this.policy = { ...p }
 
-    this.policy.EffectiveDate = new Date(p.EffectiveDate)
-      .toISOString()
-      .split('T')[0]
-      this.filteredRegions = this.regions.filter(r =>
-    Number(r.companyID) === Number(this.policy.CompanyId)
+  //   this.policy.EffectiveDate = new Date(p.EffectiveDate)
+  //     .toISOString()
+  //     .split('T')[0]
+  //     this.filteredRegions = this.regions.filter(r =>
+  //   Number(r.companyID) === Number(this.policy.CompanyId)
+  // );
+
+  // }
+
+//   editPolicy(p: any) {
+
+//   this.isEditMode = true;
+
+//   this.policy = {
+//     ...p,
+//     CompanyId: Number(p.CompanyId),
+//     RegionId: Number(p.RegionId),
+//     DepartmentIds: [...(p.DepartmentIds || [])]
+//   };
+
+//   // Date Format
+//   this.policy.EffectiveDate = new Date(p.EffectiveDate)
+//     .toISOString()
+//     .split('T')[0];
+
+//   // Company Set
+//   this.policy.CompanyId = Number(p.CompanyId);
+
+//   // Region Dropdown Load
+//   this.filteredRegions = this.regions.filter(
+//     r => Number(r.companyID) === Number(this.policy.CompanyId)
+//   );
+
+//   // Region Set
+//   this.policy.RegionId = Number(p.RegionId);
+
+//   // Department Dropdown Load
+//   this.filterDepartments();
+
+//   console.log(this.policy);
+// }
+
+
+
+editPolicy(p: any) {
+
+  this.isEditMode = true;
+
+  this.policy = {
+    ...p,
+    CompanyId: Number(p.CompanyId),
+    RegionId: Number(p.RegionId),
+    DepartmentIds: [...(p.DepartmentIds || [])]
+  };
+
+  this.policy.EffectiveDate = new Date(p.EffectiveDate)
+    .toISOString()
+    .split('T')[0];
+
+  // Company selected ayyaka region list load cheyyali
+  this.filteredRegions = this.regions.filter(
+    (r: any) => Number(r.companyID) === Number(this.policy.CompanyId)
   );
 
-  }
+  // Department list load cheyyali
+  this.filteredDepartments = this.departments.filter(
+    (d: any) =>
+      Number(d.companyId) === Number(this.policy.CompanyId) &&
+      Number(d.regionId) === Number(this.policy.RegionId)
+  );
+
+  console.log('Edit Policy:', this.policy);
+}
+
 
   deletePolicy(p: any) {
 
@@ -295,13 +375,16 @@ attachmentPath: this.policy.Attachment
       if (r.isConfirmed) {
 
         this.adminService.deletePolicy(p.PolicyId, this.userId)
-          .subscribe(() => {
-
-            Swal.fire("Deleted", "Policy removed", "success")
-
-            this.getPolicies()
-
-          })
+        .subscribe({
+          next: () => {
+            Swal.fire("Deleted", "Policy removed", "success");
+            this.getPolicies();
+          },
+          error: (err) => {
+            console.log(err);
+            Swal.fire("Error", "Delete failed", "error");
+          }
+        });
 
       }
 
@@ -319,4 +402,132 @@ attachmentPath: this.policy.Attachment
     this.isEditMode = false
 
   }
+
+
+  onRegionChange() {
+  this.filterDepartments();
+}
+
+filterDepartments() {
+
+  this.filteredDepartments = this.departments.filter(
+    (d: any) =>
+      Number(d.companyId) === Number(this.policy.CompanyId) &&
+      Number(d.regionId) === Number(this.policy.RegionId)
+  );
+}
+
+onDepartmentChange(event: any, departmentId: number) {
+
+  if (!this.policy.DepartmentIds) {
+    this.policy.DepartmentIds = [];
+  }
+
+  if (event.target.checked) {
+    this.policy.DepartmentIds.push(departmentId);
+  } else {
+    this.policy.DepartmentIds =
+      this.policy.DepartmentIds.filter(
+        (id: number) => id !== departmentId
+      );
+  }
+}
+
+toggleAllDepartments(event: any) {
+
+  if (event.target.checked) {
+
+    this.policy.DepartmentIds =
+      this.filteredDepartments.map(
+        (d: any) => d.departmentId
+      );
+
+  } else {
+
+    this.policy.DepartmentIds = [];
+
+  }
+
+}
+
+isAllDepartmentsSelected(): boolean {
+
+  return this.filteredDepartments.length > 0 &&
+    this.policy.DepartmentIds?.length ===
+    this.filteredDepartments.length;
+
+}
+
+// getSelectedDepartmentNames(): string {
+
+//   if (!this.policy.DepartmentIds?.length) {
+//     return 'Select Departments';
+//   }
+
+//   return this.filteredDepartments
+//     .filter((d: any) =>
+//       this.policy.DepartmentIds.includes(d.departmentId)
+//     )
+//     .map((d: any) => d.departmentName)
+//     .join(', ');
+// }
+
+getSelectedDepartmentNames(): string {
+
+  if (!this.policy.DepartmentIds?.length) {
+    return 'Select Departments';
+  }
+
+  const names = this.filteredDepartments
+    .filter((d: any) =>
+      this.policy.DepartmentIds.includes(d.departmentId)
+    )
+    .map((d: any) => d.departmentName);
+
+  return names.length
+    ? names.join(', ')
+    : `${this.policy.DepartmentIds.length} Department(s) Selected`;
+}
+
+setPagination(): void {
+
+  this.totalPages = Math.ceil(this.policies.length / this.pageSize) || 1;
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  if (this.currentPage < 1) {
+    this.currentPage = 1;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.paginatedPolicies = this.policies.slice(start, end);
+}
+
+changePage(page: number): void {
+
+  if (page < 1 || page > this.totalPages) return;
+
+  this.currentPage = page;
+  this.setPagination();
+}
+
+nextPage(): void {
+
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.setPagination();
+  }
+}
+
+prevPage(): void {
+
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.setPagination();
+  }
+}
 }

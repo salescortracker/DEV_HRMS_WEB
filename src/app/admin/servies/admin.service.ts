@@ -444,6 +444,10 @@ export interface News {
 
   departmentId?: number | null;
 
+  departmentIds?: string;
+
+  DepartmentIds?: string;
+
   Title: string;
 
   Category: string;
@@ -1409,9 +1413,9 @@ deletePolicyCategory(policyCategoryId: number) {
   }
 
   // Get Today's Policies
-  getTodayPolicies(userId: number) {
+  getTodayPolicies(companyId: number, regionId: number) {
     return this.http.get<any[]>(
-      `${this.baseUrl}/MasterData/GetTodayPolicies?userId=${userId}`
+      `${this.baseUrl}/MasterData/GetTodayPolicies?companyId=${companyId}&regionId=${regionId}`
     )
   }
 
@@ -1466,6 +1470,14 @@ deletePolicyCategory(policyCategoryId: number) {
   getPolicyCategories(userId: number) {
   return this.http.get(`${this.baseUrl}/MasterData/policy-category?userId=${userId}`);
 }
+
+
+  getPolicyCategorie( companyId: number,
+  regionId: number) {
+  return this.http.get(`${this.baseUrl}/MasterData/policy-category/company-region?companyId=${companyId}&regionId=${regionId}`);
+}
+
+
 getAttachmentTypes(companyId: number, regionId: number) {
   return this.http.get<any>(`${this.baseUrl}/MasterData/GetByUserAttachment?userId=${sessionStorage.getItem('UserId')}`);}
 

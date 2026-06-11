@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../../admin/servies/admin.service';
-
+import { NgxSpinnerService } from 'ngx-spinner';
+import Swal from 'sweetalert2';
 interface Policy {
   Title: string
   Category: string
@@ -8,7 +9,8 @@ interface Policy {
   Description?: string
   FileName?: string
   FileUrl?: string
-  DepartmentId: number
+  // DepartmentId: number
+  DepartmentIds: number[];
 }
 @Component({
   selector: 'app-employee-policy',
@@ -20,16 +22,16 @@ export class EmployeePolicyComponent {
   policies: Policy[] = []
   filteredPoliciesList: Policy[] = []
 
-  categories: string[] = []
+  categories: any[] = []
 
-  selectedCategory: string = ''
+  selectedCategory  = '';
   fromDate?: string
   toDate?: string
 
   userId: number = 0
   userDepartmentId: number = 0
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private spinner: NgxSpinnerService) {}
 
   ngOnInit(): void {
 
@@ -39,6 +41,7 @@ export class EmployeePolicyComponent {
     console.log("UserId:", this.userId)
     console.log("DepartmentId:", this.userDepartmentId)
 
+    this.loadCategories()
     this.getPolicies()
 
   }
@@ -48,7 +51,10 @@ export class EmployeePolicyComponent {
   // -----------------------------
   getPolicies() {
 
-    this.adminService.getTodayPolicies(this.userId)
+    const companyId = Number(sessionStorage.getItem("CompanyId"));
+    const regionId = Number(sessionStorage.getItem("RegionId"));
+
+    this.adminService.getTodayPolicies(companyId, regionId)
       .subscribe((res: any[]) => {
 
         console.log("Policy API Response:", res)
@@ -61,27 +67,52 @@ export class EmployeePolicyComponent {
           Description: p.policyDescription,
           FileName: p.fileName,
           FileUrl: p.fileUrl,
-          DepartmentId: Number(p.departmentId)
+          DepartmentIds: p.departmentIds || []
 
         }))
+        this.filteredPoliciesList = this.policies.filter(p =>
+  p.DepartmentIds.includes(this.userDepartmentId)
+);
 
-        this.loadCategories()
-
-        this.filterTodayPolicies()
+        // this.filterTodayPolicies()
 
       })
+}
 
-  }
 
   // -----------------------------
   // Load Categories
   // -----------------------------
   loadCategories() {
+    const companyId = Number(sessionStorage.getItem("CompanyId"));
+    const regionId = Number(sessionStorage.getItem("RegionId"));
 
-    this.categories = [...new Set(this.policies.map(x => x.Category))]
-
-  }
-
+    this.adminService.getPolicyCategorie(companyId, regionId).subscribe({
+       next: (res: any) => {
+         const data = res.data || [];
+       this.categories = data.map((x: any) => ({
+   PolicyCategoryId: x.policyCategoryId,
+ 
+   // 🔥 FIX HERE (case-sensitive)
+   CompanyId: x.companyId ?? x.CompanyId,
+   RegionId: x.regionId ?? x.RegionId,
+ 
+   companyName: x.companyName,
+   regionName: x.regionName,
+   userId: x.userId,
+ 
+   PolicyCategoryName: x.policyCategoryName,
+   Description: x.description,
+   IsActive: x.isActive
+ }));
+         this.spinner.hide();
+       },
+       error: () => {
+         this.spinner.hide();
+         Swal.fire('Error', 'Failed to load policy categories', 'error');
+       }
+     });
+   }
   // -----------------------------
   // Show Today's Policies
   // -----------------------------
@@ -94,7 +125,7 @@ export class EmployeePolicyComponent {
       const policyDate = new Date(p.EffectiveDate).toDateString()
 
       return (
-        p.DepartmentId === this.userDepartmentId &&
+       p.DepartmentIds.includes(this.userDepartmentId)  &&
         policyDate === today
       )
 
@@ -105,33 +136,71 @@ export class EmployeePolicyComponent {
   // -----------------------------
   // Apply Filter
   // -----------------------------
+  // applyFilter() {
+  //    const hasFilter =
+  //   this.selectedCategory ||
+  //   this.fromDate ||
+  //   this.toDate;
+
+  // if (!hasFilter) {
+  //   this.filterTodayPolicies();
+  //   return;
+  // }
+
+  //   this.filteredPoliciesList = this.policies.filter(p => {
+
+  //     const policyDate = new Date(p.EffectiveDate)
+
+  //     const matchDept =
+  // p.DepartmentIds.includes(this.userDepartmentId);
+
+  //     const matchCategory =
+  //       this.selectedCategory
+  //         ? p.Category === this.selectedCategory
+  //         : true
+
+  //     const matchFrom =
+  //       this.fromDate
+  //         ? policyDate >= new Date(this.fromDate)
+  //         : true
+
+  //     const matchTo =
+  //       this.toDate
+  //         ? policyDate <= new Date(this.toDate)
+  //         : true
+
+  //     return matchDept && matchCategory && matchFrom && matchTo
+
+  //   })
+
+  // }
+
+
   applyFilter() {
 
-    this.filteredPoliciesList = this.policies.filter(p => {
+  this.filteredPoliciesList = this.policies.filter(p => {
 
-      const policyDate = new Date(p.EffectiveDate)
+    const policyDate = new Date(p.EffectiveDate);
 
-      const matchDept =
-        p.DepartmentId === this.userDepartmentId
+    const matchDept =
+      p.DepartmentIds.includes(this.userDepartmentId);
 
-      const matchCategory =
-        this.selectedCategory
-          ? p.Category === this.selectedCategory
-          : true
+    const matchCategory =
+      this.selectedCategory
+        ? p.Category === this.selectedCategory
+        : true;
 
-      const matchFrom =
-        this.fromDate
-          ? policyDate >= new Date(this.fromDate)
-          : true
+    const matchDate =
+      this.fromDate
+        ? policyDate.toDateString() ===
+          new Date(this.fromDate).toDateString()
+        : true;
 
-      const matchTo =
-        this.toDate
-          ? policyDate <= new Date(this.toDate)
-          : true
+    return matchDept &&
+           matchCategory &&
+           matchDate;
 
-      return matchDept && matchCategory && matchFrom && matchTo
+  });
 
-    })
-
-  }
+}
 }
