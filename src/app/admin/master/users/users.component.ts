@@ -259,6 +259,8 @@ onRegionChange(regionId: number): void {
   );
 
   this.filterDepartments();
+  this.loadReportingToUsers(this.user.companyId, regionId);
+  this.loadHrUsers(this.user.companyId, regionId);
 
   this.filteredDesignations = [];
   this.generateNextEmployeeCode();
