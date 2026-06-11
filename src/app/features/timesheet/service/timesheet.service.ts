@@ -18,6 +18,14 @@ getLoggedInUser(userId: number): Observable<any> {
 gettimesheetlisting(userId: number): Observable<any> {
   return this.http.get<any>(`${environment.apiUrl}/Timesheet/GetMyTimesheets/${userId}`);
 }
+
+updateTimesheet(data: FormData) {
+  return this.http.put(
+    `${environment.apiUrl}/Timesheet/UpdateTimesheet`,
+    data
+  );
+}
+
 submittimesheet(formData: FormData): Observable<any> {
     return this.http.post(`${environment.apiUrl}/Timesheet/SaveTimesheet`, formData);
   }

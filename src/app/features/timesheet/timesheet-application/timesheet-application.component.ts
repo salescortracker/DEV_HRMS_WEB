@@ -43,7 +43,8 @@ model: TimesheetModel = {
     projects: [],
     status: 'Pending'
   };
-
+isEditMode = false;
+editingTimesheetId = 0;
   userId!: number;
   companyId!: number;
   regionId!: number;
@@ -145,44 +146,214 @@ model: TimesheetModel = {
   }
 
   // ================= SAVE =================
-  saveTimesheet(form: any) {
-    if (!form.valid || this.model.projects.length === 0) {
-      alert('Please complete the form');
-      return;
-    }
+//   saveTimesheet(form: any) {
+//     if (!form.valid || this.model.projects.length === 0) {
+//       alert('Please complete the form');
+//       return;
+//     }
 
-    const formData = new FormData();
-    formData.append('UserId', this.userId.toString());
-    formData.append('CompanyId', this.companyId.toString());
-    formData.append('RegionId', this.regionId.toString());
-    formData.append('EmployeeCode', this.model.employeeCode);
-    formData.append('EmployeeName', this.model.employeeName);
-    formData.append('TimesheetDate', this.model.date);
-    formData.append('Comments', this.model.comments ?? '');
-    formData.append('Status', 'Pending');
-    formData.append('HrEmail', this.model.hrEmail || '');
+//     const formData = new FormData();
+//     formData.append('UserId', this.userId.toString());
+//     formData.append('CompanyId', this.companyId.toString());
+//     formData.append('RegionId', this.regionId.toString());
+//     formData.append('EmployeeCode', this.model.employeeCode);
+//     formData.append('EmployeeName', this.model.employeeName);
+//     formData.append('TimesheetDate', this.model.date);
+//     formData.append('Comments', this.model.comments ?? '');
+//     formData.append('Status', 'Pending');
+//     formData.append('HrEmail', this.model.hrEmail || '');
 
-    if (this.model.attachment) {
-      formData.append('Attachment', this.model.attachment);
-    }
+//     if (this.model.attachment) {
+//       formData.append('Attachment', this.model.attachment);
+//     }
+// if (this.isEditMode) {
 
-    this.model.projects.forEach((p, i) => {
-      this.calculateProjectHours(p);
-      formData.append(`Projects[${i}].ProjectName`, p.projectName);
-      formData.append(`Projects[${i}].Description`, p.description || '');
-      formData.append(`Projects[${i}].StartTime`, p.startTime);
-      formData.append(`Projects[${i}].EndTime`, p.endTime);
-      formData.append(`Projects[${i}].TotalMinutes`, String(p.totalMinutes ?? 0));
-      formData.append(`Projects[${i}].TotalHoursText`, p.totalHoursText ?? '0 Hours');
-      formData.append(`Projects[${i}].OTMinutes`, String(p.otMinutes ?? 0));
-      formData.append(`Projects[${i}].OTHoursText`, p.otHoursText ?? '0 Hours');
-    });
+//   formData.append('TimesheetId',
+//     this.editingTimesheetId.toString());
 
-    this.timesheetService.submittimesheet(formData).subscribe({
+//   this.timesheetService
+//       .updateTimesheet(formData)
+//       .subscribe({
+//         next: () => {
+
+//           alert('Timesheet updated successfully');
+
+//           this.isEditMode = false;
+//           this.editingTimesheetId = 0;
+
+//           form.resetForm();
+
+//           this.model.projects = [];
+
+//           this.loadMyTimesheets();
+//         },
+//         error: err => {
+//           console.error(err);
+//           alert('Update failed');
+//         }
+//       });
+
+//   return;
+// }
+//     this.model.projects.forEach((p, i) => {
+//       this.calculateProjectHours(p);
+//       formData.append(`Projects[${i}].ProjectName`, p.projectName);
+//       formData.append(`Projects[${i}].Description`, p.description || '');
+//       formData.append(`Projects[${i}].StartTime`, p.startTime);
+//       formData.append(`Projects[${i}].EndTime`, p.endTime);
+//       formData.append(`Projects[${i}].TotalMinutes`, String(p.totalMinutes ?? 0));
+//       formData.append(`Projects[${i}].TotalHoursText`, p.totalHoursText ?? '0 Hours');
+//       formData.append(`Projects[${i}].OTMinutes`, String(p.otMinutes ?? 0));
+//       formData.append(`Projects[${i}].OTHoursText`, p.otHoursText ?? '0 Hours');
+//     });
+
+//     this.timesheetService.submittimesheet(formData).subscribe({
+//       next: () => {
+//         alert('Timesheet saved successfully');
+//         form.resetForm();
+//         this.model.projects = [];
+//         this.loadMyTimesheets();
+//       },
+//       error: err => {
+//         console.error(err);
+//         alert('Save failed');
+//       }
+//     });
+//   }
+saveTimesheet(form: any) {
+
+  if (!form.valid || this.model.projects.length === 0) {
+    alert('Please complete the form');
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append('UserId', this.userId.toString());
+  formData.append('CompanyId', this.companyId.toString());
+  formData.append('RegionId', this.regionId.toString());
+
+  formData.append('EmployeeCode', this.model.employeeCode);
+  formData.append('EmployeeName', this.model.employeeName);
+
+  formData.append('TimesheetDate', this.model.date);
+  formData.append('Comments', this.model.comments || '');
+  formData.append('Status', 'Pending');
+
+  formData.append('HrEmail', this.model.hrEmail || '');
+
+  if (this.model.attachment) {
+    formData.append('Attachment', this.model.attachment);
+  }
+
+  // Append projects for both Save and Update
+  this.model.projects.forEach((p, i) => {
+
+    this.calculateProjectHours(p);
+
+    formData.append(
+      `Projects[${i}].ProjectName`,
+      p.projectName
+    );
+
+    formData.append(
+      `Projects[${i}].Description`,
+      p.description || ''
+    );
+
+    formData.append(
+      `Projects[${i}].StartTime`,
+      p.startTime
+    );
+
+    formData.append(
+      `Projects[${i}].EndTime`,
+      p.endTime
+    );
+
+    formData.append(
+      `Projects[${i}].TotalMinutes`,
+      String(p.totalMinutes ?? 0)
+    );
+
+    formData.append(
+      `Projects[${i}].TotalHoursText`,
+      p.totalHoursText || '0 Hours'
+    );
+
+    formData.append(
+      `Projects[${i}].OTMinutes`,
+      String(p.otMinutes ?? 0)
+    );
+
+    formData.append(
+      `Projects[${i}].OTHoursText`,
+      p.otHoursText || '0 Hours'
+    );
+  });
+
+  // UPDATE
+  if (this.isEditMode) {
+
+    formData.append(
+      'TimesheetId',
+      this.editingTimesheetId.toString()
+    );
+
+    this.timesheetService
+      .updateTimesheet(formData)
+      .subscribe({
+        next: () => {
+
+          alert('Timesheet updated successfully');
+
+          this.isEditMode = false;
+          this.editingTimesheetId = 0;
+
+          form.resetForm();
+
+          this.model = {
+            employeeName: sessionStorage.getItem('Name') || '',
+            employeeCode: sessionStorage.getItem('EmployeeCode') || '',
+            date: '',
+            comments: '',
+            attachment: null,
+            projects: [],
+            status: 'Pending',
+            hrEmail: ''
+          };
+
+          this.loadMyTimesheets();
+        },
+        error: err => {
+          console.error(err);
+          alert('Update failed');
+        }
+      });
+
+    return;
+  }
+
+  // SAVE
+  this.timesheetService.submittimesheet(formData)
+    .subscribe({
       next: () => {
+
         alert('Timesheet saved successfully');
+
         form.resetForm();
-        this.model.projects = [];
+
+        this.model = {
+          employeeName: sessionStorage.getItem('Name') || '',
+          employeeCode: sessionStorage.getItem('EmployeeCode') || '',
+          date: '',
+          comments: '',
+          attachment: null,
+          projects: [],
+          status: 'Pending',
+          hrEmail: ''
+        };
+
         this.loadMyTimesheets();
       },
       error: err => {
@@ -190,7 +361,43 @@ model: TimesheetModel = {
         alert('Save failed');
       }
     });
-  }
+}
+editTimesheet(row: any) {
+
+  this.isEditMode = true;
+  this.editingTimesheetId = row.timesheetId;
+
+  this.model = {
+    employeeName: row.employeeName,
+    employeeCode: row.employeeCode,
+    date: row.timesheetDate
+      ? new Date(row.timesheetDate).toISOString().split('T')[0]
+      : '',
+    comments: row.comments,
+    attachment: null,
+    hrEmail: row.hrEmail,
+    status: row.status,
+
+    projects: row.projects.map((p: any) => ({
+      projectName: p.projectName,
+      description: p.description,
+      startTime: p.startTime,
+      endTime: p.endTime,
+      totalHours: p.totalHours,
+      totalHoursText: p.totalHoursText,
+      totalMinutes: p.totalMinutes,
+      overtimeHours: p.overtimeHours,
+      otMinutes: p.otMinutes,
+      otHoursText: p.otHoursText
+    }))
+  };
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
   isFormValid(): boolean {
 
   if (!this.model.date) return false;
