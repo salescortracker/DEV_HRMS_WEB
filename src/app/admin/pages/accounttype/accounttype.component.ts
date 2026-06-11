@@ -17,7 +17,10 @@ export class AccounttypeComponent {
   account: any = this.getEmptyAccount();
   isEditMode = false;
 
-  userId = Number(sessionStorage.getItem("UserId"));
+  // userId = Number(sessionStorage.getItem("UserId"));
+  userId = Number(sessionStorage.getItem('UserId'));
+companyId = Number(sessionStorage.getItem('CompanyId'));
+regionId = Number(sessionStorage.getItem('RegionId'));
 
   constructor(private service: AdminService) {}
 
@@ -26,25 +29,43 @@ export class AccounttypeComponent {
     this.loadCompanies();
     this.loadRegions();
   }
-   getEmptyAccount() {
-    return {
-      accountTypeId: 0,
-      accountType1: '',
-      description: '',
-      companyId: null,
-      regionId: null,
-      isActive: true,
-      userId: Number(sessionStorage.getItem("UserId"))
-    };
-  }
+  //  getEmptyAccount() {
+  //   return {
+  //     accountTypeId: 0,
+  //     accountType1: '',
+  //     description: '',
+  //     companyId: null,
+  //     regionId: null,
+  //     isActive: true,
+  //     userId: Number(sessionStorage.getItem("UserId"))
+  //   };
+  // }
+
+  getEmptyAccount() {
+  return {
+    accountTypeId: 0,
+    accountType1: '',
+    description: '',
+    companyId: this.companyId,
+    regionId: this.regionId,
+    isActive: true,
+    userId: this.userId
+  };
+}
 
   // 🔹 Load Account Types
-  loadAccountTypes() {
-    this.service.getAccountTypeList(this.userId).subscribe((res: any) => {
-      this.accountTypes = res.data || res; 
+  // loadAccountTypes() {
+  //   this.service.getAccountTypes(this.userId).subscribe((res: any) => {
+  //     this.accountTypes = res.data || res; 
+  //   });
+  // }
+loadAccountTypes() {
+  this.service
+    .getAccountTypeList( this.userId)
+    .subscribe((res: any) => {
+      this.accountTypes = res.data || res;
     });
-  }
-
+}
   // 🔹 Load Dropdowns
   loadCompanies() {
     this.service.getCompanies(null, this.userId)
@@ -55,17 +76,44 @@ export class AccounttypeComponent {
     this.service.getRegions(null, this.userId)
       .subscribe(res => this.regions = res);
   }
-  onSubmit() {
+//   onSubmit() {
+//     debugger;
+//   this.account.userId = this.userId;
+
+//   if (
+//     !this.account.accountType1?.trim() ||
+//     this.account.companyId === null ||
+//     this.account.regionId === null
+//   ) {
+//     Swal.fire('Error', 'Please fill required fields', 'error');
+//     return;
+//   }
+//   if (this.isEditMode) {
+//     this.service.updateAccountType(this.account).subscribe(() => {
+//       Swal.fire('Updated!', 'Account Type updated', 'success');
+//       this.loadAccountTypes();
+//       this.resetForm();
+//     });
+//   } else {
+//     this.service.createAccountType(this.account).subscribe(() => {
+//       Swal.fire('Added!', 'Account Type created', 'success');
+//       this.loadAccountTypes();
+//       this.resetForm();
+//     });
+//   }
+// }
+
+
+onSubmit() {
+
   this.account.userId = this.userId;
 
-  if (
-    !this.account.accountType1?.trim() ||
-    this.account.companyId === null ||
-    this.account.regionId === null
-  ) {
+
+  if (!this.account.accountType1?.trim()) {
     Swal.fire('Error', 'Please fill required fields', 'error');
     return;
   }
+
   if (this.isEditMode) {
     this.service.updateAccountType(this.account).subscribe(() => {
       Swal.fire('Updated!', 'Account Type updated', 'success');
@@ -80,10 +128,18 @@ export class AccounttypeComponent {
     });
   }
 }
-
   // 🔹 Edit
   editAccount(a: any) {
-    this.account = { ...a };
+    debugger;
+    //this.account = { ...a };
+     this.account = {
+    ...a,
+    companyId: Number(a.companyId),
+    regionId: Number(a.regionId)
+  };
+  console.log('Account:', this.account);
+  console.log('Companies:', this.companies);
+  console.log('Regions:', this.regions);
     this.isEditMode = true;
   }
 
