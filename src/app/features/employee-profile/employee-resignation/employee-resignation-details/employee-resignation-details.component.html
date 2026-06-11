@@ -7,46 +7,91 @@
 
     <div class="row mb-3">
         <!-- Employee Code -->
-        <div class="col-md-4">
-            <label class="form-label">Employee Code</label>
-            <input type="text" class="form-control" value="{{employeeCode}}" name="employeeCode" disabled />
-        </div>
+        <!-- Employee Code -->
+<div class="col-md-4">
+  <label class="form-label">Employee Code</label>
+
+  <input type="text" class="form-control" [value]="employeeCode" disabled />
+</div>
 
         <!-- Employee Name -->
-        <div class="col-md-4">
-            <label class="form-label">Employee Name</label>
-            <input type="text" class="form-control" value="{{employeeName}}" name="employeeName" disabled />
-        </div>
+<div class="col-md-4">
+  <label class="form-label">Employee Name</label>
+
+  <!-- HR -->
+  <select *ngIf="isHR"
+        class="form-select"
+        [(ngModel)]="selectedEmployeeId"
+        name="selectedEmployeeId"
+        (change)="onEmployeeChange()">
+
+  <option value="">Select Employee</option>
+
+  <option *ngFor="let emp of employees"
+          [value]="emp.employeeCode">
+    {{ emp.fullName }}
+  </option>
+
+</select>
+
+  <!-- Employee -->
+  <input *ngIf="!isHR"
+         type="text"
+         class="form-control"
+         [value]="employeeName"
+         disabled />
+</div>
         <!-- Resignation Type -->
-        <div class="col-md-4">
-            <label class="form-label">Resignation Type <span class="text-danger">*</span></label>
-            <select class="form-select" [(ngModel)]="resignationModel.resignationType" name="resignationType" required
-                #resignationType="ngModel" (change)="onResignationTypeChange()">
-                <option value="">Select resignation type</option>
-                 <option *ngFor="let type of resignationTypes" [value]="type.resignationType">
-                    {{ type.resignationType }}
-                </option>
-            </select>
-            <div *ngIf="resignationType.invalid && (resignationType.touched || formSubmitted)"
-                class="text-danger small mt-1">
-                Please select a resignation type.
-            </div>
-        </div>
+        <!-- HR -->
+<div class="col-md-4" *ngIf="isHR">
+  <label class="form-label">Resignation Type</label>
+
+  <select class="form-select"
+          [(ngModel)]="resignationModel.resignationType"
+          name="resignationType"
+          required
+          (change)="onResignationTypeChange()">
+
+    <option value="">Select resignation type</option>
+    <option *ngFor="let type of resignationTypes"
+            [value]="type.resignationType">
+      {{ type.resignationType }}
+    </option>
+  </select>
+</div>
+
+<!-- Employee (ONLY ONE VALUE) -->
+<div class="col-md-4" *ngIf="!isHR">
+  <label class="form-label">Resignation Type</label>
+
+  <select class="form-select"
+          [(ngModel)]="resignationModel.resignationType"
+          name="resignationType"
+          required
+          (change)="onResignationTypeChange()">
+
+    <option value="">Select resignation type</option>
+
+    <option *ngFor="let type of resignationTypes"
+            [value]="type.resignationType">
+      {{ type.resignationType }}
+    </option>
+
+  </select>
+</div>
 
         <!-- Notice Period -->
         <div class="col-md-4">
             <label class="form-label">Notice Period <span class="text-danger">*</span></label>
 
-            <input type="text" class="form-control" maxlength="2" [(ngModel)]="resignationModel.noticePeriod"
-                name="noticePeriod" placeholder="Enter notice period (e.g., 30)" required pattern="^[0-9]{2}$"
-                #noticePeriod="ngModel" />
+            <input type="text" class="form-control" [(ngModel)]="resignationModel.noticePeriod" name="noticePeriod" placeholder="Enter notice period (e.g., 0, 30, 120)"
+                required maxlength="3" pattern="^[0-9]+$" #noticePeriod="ngModel"/>
 
             <div *ngIf="noticePeriod.invalid && (noticePeriod.touched || formSubmitted)" class="text-danger small mt-1">
                 <div *ngIf="noticePeriod.errors?.['required']">Notice period is required.</div>
-                <div *ngIf="noticePeriod.errors?.['pattern']">Only 2 digits allowed (e.g., 30, 60, 90).</div>
+                <div *ngIf="noticePeriod.errors?.['pattern']">Only numbers are allowed.</div>
             </div>
         </div>
-
 
         <!-- Last Working Day -->
         <div class="col-md-4">
@@ -88,7 +133,7 @@
     <!-- ROW 3 (Buttons) -->
     <div class="row mb-3">
         <div class="col-md-12 text-start">
-            <button type="submit" class="btn btn-primary me-2"  [disabled]="!canSubmitResignation()">
+            <button type="submit" class="btn btn-primary me-2"  [disabled]="!isHR && !canSubmitResignation()">
                 {{ isEditMode ? 'Update Resignation' : 'Submit Resignation' }}
             </button>
             <button type="button" class="btn btn-secondary" (click)="resetForm(resignForm)">

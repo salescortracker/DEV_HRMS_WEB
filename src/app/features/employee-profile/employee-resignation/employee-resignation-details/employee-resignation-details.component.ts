@@ -39,27 +39,90 @@ export class EmployeeResignationDetailsComponent {
   totalPagesArray: number[] = [];
 
   // Session Values
-  companyId = Number(sessionStorage.getItem('CompanyId'));
-  regionId = Number(sessionStorage.getItem('RegionId'));
+  companyId = Number(sessionStorage.getItem('CompanyId') || 0);
+  regionId = Number(sessionStorage.getItem('RegionId') || 0);
   roleId = Number(sessionStorage.getItem('roleId'));
 
   activeTab: 'list' | 'manager' | 'hr' = 'list';
+  roleName = '';
+  designationName = '';
+  isHR = false;
+  employees: any[] = [];
+
+  selectedEmployeeId: string | null = null;
+
 
   constructor(private resignationService: EmployeeResignationService,private adminService: AdminService) {}
 
   ngOnInit(): void {
-    this.loadResignations();
-    this.loadResignationTypes();
+
+  this.loadResignations();
+  this.loadResignationTypes();
+  this.roleName = (sessionStorage.getItem('roleName') || '').trim().toLowerCase();
+  this.designationName = (sessionStorage.getItem('DesignationName') || '').trim().toLowerCase();
+
+  this.isHR =
+  this.roleName.includes('hr') ||
+  this.roleName.includes('human') ||
+  this.designationName.includes('hr') ||
+  this.designationName.includes('human');
+
+  if (this.isHR === true) {
+    this.loadEmployees();   // ✅ guaranteed call
   }
- loadResignationTypes() {
-    this.adminService.getResignations(this.companyId, this.regionId).subscribe({
-      next: (res: ResignationModel[]) => {
-        // optionally filter active ones only
-        this.resignationTypes = res.filter(r => r.isActive);
+}
+  onEmployeeChange() {
+
+  const emp = this.employees.find(
+    x => x.employeeCode == this.selectedEmployeeId
+  );
+
+  if (!emp) return;
+
+  this.employeeName = emp.fullName;
+  this.employeeCode = emp.employeeCode;
+
+  this.resignationModel.userId = emp.userId;
+  this.resignationModel.employeeId = emp.employeeCode;
+}
+loadEmployees() {
+  this.adminService.getUsersByCompanyRegion(this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any) => {
+
+        console.log('Employee API Response:', res);
+
+        // ✅ SAFE FIX (handle both array & object response)
+        this.employees = Array.isArray(res) ? res : (res?.data || res?.result || []);
+
       },
-      error: (err) => console.error('Error loading resignation types:', err)
+      error: (err) => {
+        console.error('Employee API failed', err);
+      }
     });
-  }
+}
+ loadResignationTypes() {
+  this.adminService.getResignations(this.companyId, this.regionId)
+    .subscribe({
+      next: (res: ResignationModel[]) => {
+
+        const active = res.filter(r => r.isActive);
+
+        // 🔥 Allowed types for EMPLOYEE
+        const employeeAllowedTypes = ['resignation', 'resign', 'res'];
+
+        this.resignationTypes = this.isHR
+          ? active
+          : active.filter(x =>
+              employeeAllowedTypes.includes(
+                (x.resignationType || '').trim().toLowerCase()
+              )
+            );
+
+      },
+      error: (err) => console.error(err)
+    });
+}
  onResignationTypeChange() {
   const selected = this.resignationTypes.find(r => r.resignationType === this.resignationModel.resignationType);
   if (selected) {
@@ -92,17 +155,25 @@ setLastWorkingDay(noticePeriodStr: string) {
   loadResignations() {
   const loggedEmployeeCode = sessionStorage.getItem('EmployeeCode');
 
-  this.resignationService.getAll(this.companyId, this.regionId, this.roleId).subscribe({
-    next: (data) => {
+  this.resignationService.getAll(this.companyId, this.regionId, this.roleId)
+    .subscribe({
+      next: (data) => {
 
-      // ✅ FILTER ONLY LOGIN USER DATA
-      this.resignations = data.filter(r => r.employeeId === loggedEmployeeCode);
+        if (this.isHR) {
+          // HR → see all data
+          this.resignations = data;
+        } else {
+          // Employee → only own data
+          this.resignations = data.filter(r =>
+            r.employeeId === loggedEmployeeCode
+          );
+        }
 
-      this.filteredResignations = this.resignations;
-      this.updatePagination();
-    },
-    error: (err) => console.error('Error loading resignations:', err),
-  });
+        this.filteredResignations = this.resignations;
+        this.updatePagination();
+      },
+      error: (err) => console.error('Error loading resignations:', err),
+    });
 }
 
   // ---------------- FILTER --------------------
@@ -185,90 +256,146 @@ setLastWorkingDay(noticePeriodStr: string) {
     }
   }
 
-
 canSubmitResignation(): boolean {
+
+  // ✅ HR → always allow
+  if (this.isHR) return true;
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // ❌ Approved → always block
-  const hasApproved = this.resignations.some(r =>
-    r.status?.trim().toLowerCase() === 'approved'
+  // normalize statuses once (performance + safety)
+  const resignations = this.resignations || [];
+
+  const hasApproved = resignations.some(r =>
+    (r.status || '').trim().toLowerCase() === 'approved'
   );
 
+  // ❌ already approved → block submit
   if (hasApproved) return false;
 
-  // 🔍 Pending check
-  const pending = this.resignations.find(r =>
-    r.status?.trim().toLowerCase() === 'pending'
+  const pending = resignations.find(r =>
+    (r.status || '').trim().toLowerCase() === 'pending'
   );
 
-  if (!pending) return true;
+  // ⛔ if pending resignation exists and LWD not passed → block
+  if (pending?.lastWorkingDay) {
+    const lastDay = new Date(pending.lastWorkingDay);
+    lastDay.setHours(0, 0, 0, 0);
 
-  if (!pending.lastWorkingDay) return false;
+    if (today <= lastDay) {
+      return false;
+    }
+  }
 
-  const lastDay = new Date(pending.lastWorkingDay);
-  lastDay.setHours(0, 0, 0, 0);
-
-  return today > lastDay; // ✅ allow only after last day
+  // ✅ otherwise allow
+  return true;
 }
 
   saveResignation(form: NgForm) {
-    this.formSubmitted = true;
-    this.message = '';
 
-    Object.values(form.controls).forEach(control => {
-      control.markAsTouched();
-      control.updateValueAndValidity();
-    });
- if (!this.isEditMode && !this.canSubmitResignation()) {
+  this.formSubmitted = true;
+  this.message = '';
 
-  const hasApproved = this.resignations.some(r =>
-    r.status?.trim().toLowerCase() === 'approved'
-  );
+  Object.values(form.controls).forEach(control => {
+    control.markAsTouched();
+    control.updateValueAndValidity();
+  });
 
-  if (hasApproved) {
-    this.message = 'You already have an approved resignation. Cannot create new record.';
-  } else {
-    this.message = 'You have a pending resignation. You can apply again only after your last working day is completed.';
+  if (!this.isEditMode && !this.canSubmitResignation()) {
+
+    const hasApproved = this.resignations.some(r =>
+      r.status?.trim().toLowerCase() === 'approved'
+    );
+
+    if (hasApproved) {
+      this.message =
+        'You already have an approved resignation. Cannot create new record.';
+    } else {
+      this.message =
+        'You have a pending resignation. You can apply again only after your last working day is completed.';
+    }
+
+    return;
   }
 
-  return;
-}
-    if (
-      !this.resignationModel.resignationReason ||
-      this.resignationModel.resignationReason.trim().length < 10 ||
-      form.invalid ||
-      this.dateError
-    ) return;
+  if (
+    !this.resignationModel.resignationReason ||
+    this.resignationModel.resignationReason.trim().length < 10 ||
+    form.invalid ||
+    this.dateError
+  ) {
+    return;
+  }
 
-    if (this.isEditMode && this.resignationModel.status?.trim().toLowerCase() === 'approved') {
-      this.message = 'Approved resignations cannot be updated.';
+  if (
+    this.isEditMode &&
+    this.resignationModel.status?.trim().toLowerCase() === 'approved'
+  ) {
+    this.message = 'Approved resignations cannot be updated.';
+    return;
+  }
+
+  // ✅ ALWAYS SET USER DETAILS BEFORE SAVE
+
+  if (this.isHR) {
+
+    const emp = this.employees.find(
+      x => x.employeeCode == this.selectedEmployeeId
+    );
+
+    if (!emp) {
+      this.message = 'Please select an employee';
       return;
     }
 
-    this.resignationModel.userId = Number(sessionStorage.getItem('UserId'));
-    this.resignationModel.employeeId = sessionStorage.getItem('EmployeeCode') || '';
-    this.resignationModel.companyId = this.companyId;
-    this.resignationModel.regionId = this.regionId;
+    this.resignationModel.userId = emp.userId;
+    this.resignationModel.employeeId = emp.employeeCode;
 
-    const apiCall = this.isEditMode && this.resignationModel.resignationId
-      ? this.resignationService.update(this.resignationModel.resignationId, this.resignationModel)
+  } else {
+
+    this.resignationModel.userId =
+      Number(sessionStorage.getItem('UserId'));
+
+    this.resignationModel.employeeId =
+      sessionStorage.getItem('EmployeeCode') || '';
+  }
+
+  // ✅ COMPANY / REGION
+
+  this.resignationModel.companyId = this.companyId;
+  this.resignationModel.regionId = this.regionId;
+
+  console.log('Submitting Resignation => ', this.resignationModel);
+
+  const apiCall =
+    this.isEditMode && this.resignationModel.resignationId
+      ? this.resignationService.update(
+          this.resignationModel.resignationId,
+          this.resignationModel
+        )
       : this.resignationService.create(this.resignationModel);
 
-    apiCall.subscribe({
-      next: () => {
-        this.message = this.isEditMode
-          ? 'Resignation updated successfully!'
-          : 'Resignation submitted successfully!';
-        this.resetForm(form);
-        this.loadResignations();
-      },
-      error: (err) => {
-        console.error('Error saving resignation:', err);
-        this.message = err.error?.message || 'Resignation already exists for selected Last Working Day';
-      },
-    });
-  }
+  apiCall.subscribe({
+    next: () => {
+
+      this.message = this.isEditMode
+        ? 'Resignation updated successfully!'
+        : 'Resignation submitted successfully!';
+
+      this.resetForm(form);
+      this.loadResignations();
+    },
+    error: (err) => {
+
+      console.error('Error saving resignation:', err);
+
+      this.message =
+        err.error?.message ||
+        'Resignation already exists for selected Last Working Day';
+    }
+  });
+}
 
   editResignation(item: EmployeeResignation) {
     if (!this.isEditable(item)) {
