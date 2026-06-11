@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminService } from '../../../admin/servies/admin.service';
 import Swal from 'sweetalert2';
 import { KpiPerformanceService } from '../kpi-performance.service';
@@ -177,6 +177,13 @@ export class KpiPerformanceComponent {
       })
     );
   }
+allowOnlyInteger(event: KeyboardEvent) {
+  const invalidKeys = ['.', ',', 'e', 'E', '-', '+'];
+
+  if (invalidKeys.includes(event.key)) {
+    event.preventDefault();
+  }
+}
 
   removeKpi(index: number) {
     this.kpis.removeAt(index);
