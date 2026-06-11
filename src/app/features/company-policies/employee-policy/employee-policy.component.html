@@ -17,16 +17,15 @@
         <div class="col-md-4">
           <label class="form-label">Category</label>
 
-          <select class="form-select"
-                  [(ngModel)]="selectedCategory">
+          <select class="form-select" [(ngModel)]="selectedCategory">
 
             <option value="">All Categories</option>
-            <option>HR Policy</option>
-            <option>Leave Policy</option>
-            <option>Attendance Policy</option>
-            <option>IT Security Policy</option>
-            <option>Work From Home Policy</option>
-            <option>Travel Policy</option>
+
+            <option *ngFor="let c of categories" [value]="c.policyCategoryName">
+
+              {{ c.policyCategoryName }}
+
+            </option>
 
           </select>
 
@@ -36,16 +35,13 @@
         <div class="col-md-4">
           <label class="form-label">From Date</label>
 
-          <input type="date"
-                 class="form-control"
-                 [(ngModel)]="fromDate">
+          <input type="date" class="form-control" [(ngModel)]="fromDate">
 
         </div>
 
         <!-- Filter Button -->
         <div class="col-md-4 d-flex align-items-end">
-          <button class="btn btn-primary w-100"
-                  (click)="applyFilter()">
+          <button class="btn btn-primary w-100" (click)="applyFilter()">
             Filter Policies
           </button>
         </div>
@@ -57,11 +53,9 @@
 
 
   <!-- POLICY CARDS -->
-  <div class="row g-4 justify-content-center"
-       *ngIf="filteredPoliciesList.length > 0">
+  <div class="row g-4 justify-content-center" *ngIf="filteredPoliciesList.length > 0">
 
-    <div class="col-md-6 col-lg-4"
-         *ngFor="let p of filteredPoliciesList">
+    <div class="col-md-6 col-lg-4" *ngFor="let p of filteredPoliciesList">
 
       <div class="card policy-card shadow-sm h-100">
 
@@ -95,12 +89,9 @@
         <!-- Footer -->
         <div class="card-footer bg-white border-0 text-end">
 
-          <a *ngIf="p.FileUrl"
-             [href]="p.FileUrl"
-             target="_blank"
-             class="btn btn-sm btn-success">
+          <a *ngIf="p.FileUrl" [href]="p.FileUrl" target="_blank" class="btn btn-sm btn-success">
 
-             Download Policy
+            Download Policy
 
           </a>
 
@@ -114,8 +105,7 @@
 
 
   <!-- NO DATA -->
-  <div *ngIf="filteredPoliciesList.length == 0"
-       class="text-center mt-5">
+  <div *ngIf="filteredPoliciesList.length == 0" class="text-center mt-5">
 
     <h5 class="text-muted">
       No Policies Available

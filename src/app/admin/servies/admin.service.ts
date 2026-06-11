@@ -1400,6 +1400,14 @@ deletePolicyCategory(policyCategoryId: number) {
     {}
   );
 }
+getPolicyCategoriesByCompanyRegion(
+  companyId: number,
+  regionId: number
+) {
+  return this.http.get(
+    `${this.baseUrl}/MasterData/policy-category/company-region?companyId=${companyId}&regionId=${regionId}`
+  );
+}
 // ===================== POLICIES =====================
 
   // Get All Policies

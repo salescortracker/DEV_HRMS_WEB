@@ -36,7 +36,7 @@ export class AdminLayoutComponent {
       { title: 'Marital Status', route: '/admin/marital-status' },
       { title: 'Relationship', route: '/admin/relationship' },
       { title: 'Certification Type', route: '/admin/certification-type' },
-      { title: 'Policy Category', route: '/admin/policy-category' },
+      // { title: 'Policy Category', route: '/admin/policy-category' },
      // { title: 'KPI Category', route: '/admin/kpi-category' },
       { title: 'Document Type', route: '/admin/attachment-type' },
       { title: 'Project Status', route: '/admin/project-status' },
@@ -56,7 +56,7 @@ export class AdminLayoutComponent {
          { title: 'Recruitment Notice Period', route: '/admin/recruitment-notice-period' }, 
      //  { title: 'Screnning Result', route: '/admin/screening-result' },
        { title: 'Interview Level', route: '/admin/interview-level' },
-     { title: 'Company News Category', route: '/admin/company-news-category' },
+    //  { title: 'Company News Category', route: '/admin/company-news-category' },
      { title: 'Employment Type', route: '/admin/employment-type'},
      { title: 'Asset Category', route: '/admin/asset-category'},
      { title: 'Asset Type', route: '/admin/asset-type'},
@@ -71,7 +71,7 @@ export class AdminLayoutComponent {
      { title: 'Geo Location', route: '/admin/Geo-Locations'},
      { title: 'Task Status', route: '/admin/task-status' },
      {title: 'Country', route: '/admin/country'},
-       { title: 'Event Type', route: '/admin/Event-type' },
+      //  { title: 'Event Type', route: '/admin/Event-type' },
     ],  
     // 'Configuration': [
     //   { title: 'Approval Workflows', route: '/admin/approval-workflow' },
@@ -102,6 +102,9 @@ export class AdminLayoutComponent {
     'System & Security': [
       // { title: 'Audit Logs', route: '/admin/audit-log' },
       // { title: 'System Logs', route: '/admin/system-log' },
+      { title: 'Company News Category', route: '/admin/company-news-category' },
+        { title: 'Policy Category', route: '/admin/policy-category' },
+          { title: 'Event Type', route: '/admin/Event-type' },
       { title: 'Company News', route: '/admin/company-news' },
       { title: 'Company Policies', route: '/admin/company-policies' },
       { title: 'Company Events', route: '/admin/company-events' }
