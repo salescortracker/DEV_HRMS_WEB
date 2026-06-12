@@ -22,6 +22,7 @@ export class EmployeePolicyComponent {
   policies: Policy[] = []
   filteredPoliciesList: Policy[] = []
 
+  // categories: string[] = []
   categories: any[] = []
 
   selectedCategory  = '';
@@ -30,7 +31,12 @@ export class EmployeePolicyComponent {
 
   userId: number = 0
   userDepartmentId: number = 0
+  companyId: number = 0;
+  regionId: number = 0;
 
+  categories: any[] = [];
+
+  constructor(private adminService: AdminService) { }
   constructor(private adminService: AdminService, private spinner: NgxSpinnerService) {}
 
   ngOnInit(): void {
@@ -40,9 +46,31 @@ export class EmployeePolicyComponent {
 
     console.log("UserId:", this.userId)
     console.log("DepartmentId:", this.userDepartmentId)
+    this.companyId = Number(sessionStorage.getItem("CompanyId"));
+    this.regionId = Number(sessionStorage.getItem("RegionId"));
+    console.log("CompanyId:", this.companyId);
+    console.log("RegionId:", this.regionId);
+    this.loadPolicyCategories();
 
     this.loadCategories()
     this.getPolicies()
+
+  }
+  loadPolicyCategories() {
+
+    this.adminService
+      .getPolicyCategoriesByCompanyRegion(
+        this.companyId,
+        this.regionId
+      )
+      .subscribe((res: any) => {
+        console.log("Policy Categories API:", res);
+
+        this.categories =
+          res.data || [];
+        console.log("Categories:", this.categories);
+
+      });
 
   }
 
@@ -74,6 +102,9 @@ export class EmployeePolicyComponent {
   p.DepartmentIds.includes(this.userDepartmentId)
 );
 
+        // this.loadCategories()
+
+        this.filterTodayPolicies()
         // this.filterTodayPolicies()
 
       })
@@ -83,6 +114,12 @@ export class EmployeePolicyComponent {
   // -----------------------------
   // Load Categories
   // -----------------------------
+  // loadCategories() {
+
+  //   this.categories = [...new Set(this.policies.map(x => x.Category))]
+
+  // }
+
   loadCategories() {
     const companyId = Number(sessionStorage.getItem("CompanyId"));
     const regionId = Number(sessionStorage.getItem("RegionId"));

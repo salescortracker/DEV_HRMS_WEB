@@ -1,234 +1,214 @@
 <div class="card shadow-sm">
-<div class="container-fluid p-4">
+  <div class="container-fluid p-4">
 
-<div class="d-flex justify-content-between mb-4">
-<h4><i class="fa-solid fa-calendar-days me-2 text-danger"></i>Company Events</h4>
-</div>
+    <div class="d-flex justify-content-between mb-4">
+      <h4><i class="fa-solid fa-calendar-days me-2 text-danger"></i>Company Events</h4>
+    </div>
 
-<hr>
+    <hr>
 
-<div class="card mb-4">
-<div class="card-body">
+    <div class="card mb-4">
+      <div class="card-body">
 
-<form (ngSubmit)="onSubmit()" #eventForm="ngForm">
+        <form (ngSubmit)="onSubmit()" #eventForm="ngForm">
 
-<div class="row g-3">
+          <div class="row g-3">
 
-<div class="col-md-6">
-<label>Event Title</label>
-<input class="form-control" [(ngModel)]="event.EventTitle" name="EventTitle">
-</div>
+            <!-- Company -->
+            <div class="col-md-6">
+              <label>Company</label>
 
-<div class="col-md-6">
-<label>Department</label>
+              <select class="form-select" [(ngModel)]="event.CompanyId" name="CompanyId" (change)="onCompanyChange()">
 
-<select class="form-select"
-[(ngModel)]="event.DepartmentId"
-name="DepartmentId">
+                <option [ngValue]="null">Select Company</option>
 
-<option value="">Select Department</option>
+                <option *ngFor="let c of companies" [ngValue]="c.companyId">
 
-<option *ngFor="let d of departments"
-[value]="d.departmentId">
+                  {{ c.companyName }}
 
-{{d.departmentName}}
+                </option>
 
-</option>
+              </select>
+            </div>
 
-</select>
-</div>
+            <!-- Region -->
+            <div class="col-md-6">
+              <label>Region</label>
 
+              <select class="form-select" [(ngModel)]="event.RegionId" name="RegionId">
 
+                <option [ngValue]="null">Select Region</option>
 
-<!-- Company -->
-<div class="col-md-6">
-  <label>Company</label>
+                <option *ngFor="let r of filteredRegions" [ngValue]="r.regionID">
 
-  <select class="form-select"
-          [(ngModel)]="event.CompanyId"
-          name="CompanyId"
-          (change)="onCompanyChange()">
+                  {{ r.regionName }}
 
-    <option [ngValue]="null">Select Company</option>
+                </option>
 
-    <option *ngFor="let c of companies"
-            [ngValue]="c.companyId">
+              </select>
+            </div>
 
-      {{ c.companyName }}
+            <div class="col-md-6">
+              <label>Event Title</label>
+              <input class="form-control" [(ngModel)]="event.EventTitle" name="EventTitle">
+            </div>
 
-    </option>
+            <div class="col-md-6">
+              <label>Department</label>
 
-  </select>
-</div>
+              <select class="form-select" [(ngModel)]="event.DepartmentId" name="DepartmentId">
 
-<!-- Region -->
-<div class="col-md-6">
-  <label>Region</label>
+                <option value="">Select Department</option>
 
-  <select class="form-select"
-          [(ngModel)]="event.RegionId"
-          name="RegionId">
+                <option *ngFor="let d of departments" [value]="d.departmentId">
 
-    <option [ngValue]="null">Select Region</option>
+                  {{d.departmentName}}
 
-    <option *ngFor="let r of filteredRegions"
-            [ngValue]="r.regionID">
+                </option>
 
-      {{ r.regionName }}
+              </select>
+            </div>
 
-    </option>
 
-  </select>
-</div>
+            <div class="col-md-6">
+              <label>Event Date</label>
+              <input type="date" class="form-control" [(ngModel)]="event.EventDateString" name="EventDate">
+            </div>
 
+            <div class="col-md-3">
+              <label>Start Time</label>
+              <input type="time" class="form-control" [(ngModel)]="event.StartTime" name="StartTime">
+            </div>
 
-<div class="col-md-6">
-<label>Event Date</label>
-<input type="date"
-class="form-control"
-[(ngModel)]="event.EventDateString"
-name="EventDate">
-</div>
+            <div class="col-md-3">
+              <label>End Time</label>
+              <input type="time" class="form-control" [(ngModel)]="event.EndTime" name="EndTime">
+            </div>
 
-<div class="col-md-3">
-<label>Start Time</label>
-<input type="time"
-class="form-control"
-[(ngModel)]="event.StartTime"
-name="StartTime">
-</div>
+            <div class="col-md-6">
+              <label>Event Location</label>
+              <input class="form-control" [(ngModel)]="event.EventLocation" name="EventLocation">
+            </div>
 
-<div class="col-md-3">
-<label>End Time</label>
-<input type="time"
-class="form-control"
-[(ngModel)]="event.EndTime"
-name="EndTime">
-</div>
+            <div class="col-md-6">
+              <label>Event Type</label>
+              <select class="form-select" [(ngModel)]="event.EventType" name="EventType">
 
-<div class="col-md-6">
-<label>Event Location</label>
-<input class="form-control"
-[(ngModel)]="event.EventLocation"
-name="EventLocation">
-</div>
+                <option value="">
+                  Select Event Type
+                </option>
 
-<div class="col-md-6">
-<label>Event Type</label>
-<select class="form-select"
-        [(ngModel)]="event.EventType"
-        name="EventType">
+                <option *ngFor="let e of eventTypes" [value]="e.eventTypeName">
 
-  <option value="">
-    Select Event Type
-  </option>
+                  {{ e.eventTypeName }}
 
-  <option *ngFor="let e of eventTypes"
-          [value]="e.eventTypeName">
+                </option>
 
-    {{ e.eventTypeName }}
+              </select>
+            </div>
 
-  </option>
+            <div class="col-md-6">
+              <label>Meeting Link</label>
+              <input class="form-control" [(ngModel)]="event.MeetingLink" name="MeetingLink">
+            </div>
 
-</select>
-</div>
+            <div class="col-md-12">
+              <label>Description</label>
+              <textarea class="form-control" [(ngModel)]="event.EventDescription" name="EventDescription"></textarea>
+            </div>
 
-<div class="col-md-6">
-<label>Meeting Link</label>
-<input class="form-control"
-[(ngModel)]="event.MeetingLink"
-name="MeetingLink">
-</div>
+            <div class="col-md-6">
+              <label>
+                <input type="checkbox" [(ngModel)]="event.IsMeeting" name="IsMeeting">
+                Is Meeting
+              </label>
+            </div>
 
-<div class="col-md-12">
-<label>Description</label>
-<textarea class="form-control"
-[(ngModel)]="event.EventDescription"
-name="EventDescription"></textarea>
-</div>
+            <div class="col-md-6 d-flex align-items-end">
 
-<div class="col-md-6">
-<label>
-<input type="checkbox"
-[(ngModel)]="event.IsMeeting"
-name="IsMeeting">
- Is Meeting
-</label>
-</div>
+              <button class="btn btn-dark w-100">
+                {{isEditMode?'Update':'Save'}}
+              </button>
 
-<div class="col-md-6 d-flex align-items-end">
+            </div>
 
-<button class="btn btn-dark w-100">
-{{isEditMode?'Update':'Save'}}
-</button>
+          </div>
 
-</div>
+        </form>
 
-</div>
+      </div>
+    </div>
 
-</form>
+    <div class="card">
+      <div class="card-body">
 
-</div>
-</div>
+        <input class="form-control mb-3" placeholder="Search Event" [(ngModel)]="searchText">
 
-<div class="card">
-<div class="card-body">
+        <table class="table table-bordered">
 
-<input class="form-control mb-3"
-placeholder="Search Event"
-[(ngModel)]="searchText">
+          <thead>
 
-<table class="table table-bordered">
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Date</th>
+              <th>Department</th>
+              <th>Type</th>
+              <th>Actions</th>
+            </tr>
 
-<thead>
+          </thead>
 
-<tr>
-<th>#</th>
-<th>Title</th>
-<th>Date</th>
-<th>Department</th>
-<th>Type</th>
-<th>Actions</th>
-</tr>
+          <tbody>
 
-</thead>
+            <tr *ngFor="let e of filteredEvents();let i=index">
 
-<tbody>
+              <td>{{i+1}}</td>
 
-<tr *ngFor="let e of filteredEvents();let i=index">
+              <td>{{e.EventTitle}}</td>
 
-<td>{{i+1}}</td>
+              <td>{{e.EventDate | date:'dd-MMM-yyyy'}}</td>
 
-<td>{{e.EventTitle}}</td>
+              <td>{{getDepartmentName(e.DepartmentId)}}</td>
 
-<td>{{e.EventDate | date:'dd-MMM-yyyy'}}</td>
+              <td>{{e.EventType}}</td>
 
-<td>{{getDepartmentName(e.DepartmentId)}}</td>
+              <!-- <td>
 
-<td>{{e.EventType}}</td>
+                <button class="btn btn-sm btn-primary me-2" (click)="editEvent(e)">
+                  Edit
+                </button>
 
-<td>
+                <button class="btn btn-sm btn-danger" (click)="confirmDelete(e)">
+                  Delete
+                </button>
 
-<button class="btn btn-sm btn-primary me-2"
-(click)="editEvent(e)">
-Edit
-</button>
+              </td> -->
 
-<button class="btn btn-sm btn-danger"
-(click)="confirmDelete(e)">
-Delete
-</button>
+              <td class="text-center">
 
-</td>
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editEvent(e)" title="Edit">
 
-</tr>
+                  <i class="fa-solid fa-pen-to-square"></i>
 
-</tbody>
+                </button>
 
-</table>
+                <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(e)" title="Delete">
 
-</div>
-</div>
+                  <i class="fa-solid fa-trash"></i>
 
-</div>
+                </button>
+
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+    </div>
+
+  </div>
 </div>
