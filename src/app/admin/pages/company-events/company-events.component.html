@@ -13,34 +13,6 @@
 <form (ngSubmit)="onSubmit()" #eventForm="ngForm">
 
 <div class="row g-3">
-
-<div class="col-md-6">
-<label>Event Title</label>
-<input class="form-control" [(ngModel)]="event.EventTitle" name="EventTitle">
-</div>
-
-<div class="col-md-6">
-<label>Department</label>
-
-<select class="form-select"
-[(ngModel)]="event.DepartmentId"
-name="DepartmentId">
-
-<option value="">Select Department</option>
-
-<option *ngFor="let d of departments"
-[value]="d.departmentId">
-
-{{d.departmentName}}
-
-</option>
-
-</select>
-</div>
-
-
-
-<!-- Company -->
 <div class="col-md-6">
   <label>Company</label>
 
@@ -60,14 +32,14 @@ name="DepartmentId">
 
   </select>
 </div>
-
 <!-- Region -->
 <div class="col-md-6">
   <label>Region</label>
 
   <select class="form-select"
-          [(ngModel)]="event.RegionId"
-          name="RegionId">
+        [(ngModel)]="event.RegionId"
+        name="RegionId"
+        (change)="onRegionChange()">
 
     <option [ngValue]="null">Select Region</option>
 
@@ -80,6 +52,68 @@ name="DepartmentId">
 
   </select>
 </div>
+<div class="col-md-6">
+<label>Event Title</label>
+<input class="form-control" [(ngModel)]="event.EventTitle" name="EventTitle">
+</div>
+
+<div class="col-md-6 position-relative">
+
+  <label>Departments</label>
+
+  <div class="form-select"
+       style="cursor:pointer"
+       (click)="showDepartmentDropdown=!showDepartmentDropdown">
+
+    {{ getSelectedDepartmentNames() }}
+
+  </div>
+
+  <div *ngIf="showDepartmentDropdown"
+       class="border rounded bg-white shadow mt-1 p-2 position-absolute w-100"
+       style="z-index:1000;max-height:250px;overflow-y:auto;">
+
+    <div class="form-check mb-2">
+
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [checked]="isAllDepartmentsSelected()"
+        (change)="toggleAllDepartments($event)">
+
+      <label class="form-check-label fw-bold">
+        Select All
+      </label>
+
+    </div>
+
+    <hr>
+
+    <div *ngFor="let d of filteredDepartments"
+         class="form-check">
+
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [checked]="event.DepartmentIds.includes(d.departmentId)"
+        (change)="onDepartmentChange($event,d.departmentId)">
+
+      <label class="form-check-label">
+        {{ d.departmentName }}
+      </label>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- Company -->
+
+
+
 
 
 <div class="col-md-6">
@@ -176,7 +210,8 @@ name="IsMeeting">
 
 <input class="form-control mb-3"
 placeholder="Search Event"
-[(ngModel)]="searchText">
+[(ngModel)]="searchText"
+(ngModelChange)="setPagination()">
 
 <table class="table table-bordered">
 
@@ -195,7 +230,7 @@ placeholder="Search Event"
 
 <tbody>
 
-<tr *ngFor="let e of filteredEvents();let i=index">
+<tr *ngFor="let e of paginatedEvents; let i=index">
 
 <td>{{i+1}}</td>
 
@@ -203,7 +238,7 @@ placeholder="Search Event"
 
 <td>{{e.EventDate | date:'dd-MMM-yyyy'}}</td>
 
-<td>{{getDepartmentName(e.DepartmentId)}}</td>
+<td>{{ getDepartmentNames(e.DepartmentIds) }}</td>
 
 <td>{{e.EventType}}</td>
 
@@ -226,6 +261,32 @@ Delete
 </tbody>
 
 </table>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <div>
+    Showing {{ (currentPage - 1) * pageSize + 1 }}
+    to {{ (currentPage - 1) * pageSize + paginatedEvents.length }}
+    of {{ filteredEvents().length }} entries
+  </div>
+
+  <nav>
+    <ul class="pagination mb-0">
+
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" type="button" (click)="prevPage()">Previous</button>
+      </li>
+
+      <li class="page-item active">
+        <span class="page-link">{{ currentPage }}</span>
+      </li>
+
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" type="button" (click)="nextPage()">Next</button>
+      </li>
+
+    </ul>
+  </nav>
+</div>
 
 </div>
 </div>
