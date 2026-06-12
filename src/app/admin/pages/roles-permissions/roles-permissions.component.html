@@ -10,7 +10,7 @@
         </h4>
         <small class="text-muted ms-4">Create, update, and manage user roles.</small>
       </div>
-      <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+      <button class="btn btn-danger" data-bs-toggle="modal"  (click)="resetForm()" data-bs-target="#addRoleModal">
         <i class="fa fa-plus me-2"></i>Add Role
       </button>
     </div>
@@ -107,7 +107,7 @@
           </div>
 
           <form (ngSubmit)="onSubmit()" #roleForm="ngForm">
-            <div class="modal-body">
+            <!-- <div class="modal-body">
               <div class="mb-3">
                 <label class="form-label fw-semibold">Role Name</label>
                 <input type="text" class="form-control" [(ngModel)]="role.roleName" name="roleName"
@@ -125,8 +125,84 @@
                   name="isActive" />
                 <label class="form-check-label" for="roleActive"> Active </label>
               </div>
-            </div>
+            </div> -->
+<div class="modal-body">
 
+  <!-- Company -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Company</label>
+
+    <select class="form-select"
+            [(ngModel)]="role.companyId"
+            name="companyId"
+            (change)="onRoleCompanyChange()"
+            required>
+
+      <option [ngValue]="0">Select Company</option>
+
+      <option *ngFor="let company of companies"
+              [value]="company.companyId">
+        {{ company.companyName }}
+      </option>
+
+    </select>
+  </div>
+
+  <!-- Region -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Region</label>
+
+    <select class="form-select"
+            [(ngModel)]="role.regionId"
+            name="regionId"
+            required>
+
+      <option [ngValue]="0">Select Region</option>
+
+      <option *ngFor="let region of roleRegions"
+              [value]="region.regionID">
+        {{ region.regionName }}
+      </option>
+
+    </select>
+  </div>
+
+  <!-- Role Name -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Role Name</label>
+
+    <input type="text"
+           class="form-control"
+           [(ngModel)]="role.roleName"
+           name="roleName"
+           placeholder="Enter role name"
+           required />
+  </div>
+
+  <!-- Description -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Description</label>
+
+    <textarea class="form-control"
+              rows="2"
+              [(ngModel)]="role.roleDescription"
+              name="roleDescription">
+    </textarea>
+  </div>
+
+  <div class="form-check">
+    <input class="form-check-input"
+           type="checkbox"
+           id="roleActive"
+           [(ngModel)]="role.isActive"
+           name="isActive" />
+
+    <label class="form-check-label" for="roleActive">
+      Active
+    </label>
+  </div>
+
+</div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               <button type="submit" class="btn btn-danger" [disabled]="!roleForm.valid">
@@ -142,12 +218,65 @@
     <div class="card shadow-sm mt-4">
       <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
         <h5 class="mb-0">Roles & Permissions</h5>
-        <div>
-          <select class="form-select form-select-sm role-select" (change)="fnChangeRoles($event)">
-            <option selected disabled>Select Role</option>
-            <option *ngFor="let r of roles" [value]="r.roleId">{{ r.roleName }}</option>
-          </select>
-        </div>
+        <div class="row g-2">
+
+  <!-- Company -->
+  <div class="col-md-4">
+    <select class="form-select form-select-sm"
+            [(ngModel)]="selectedCompanyId"
+            (change)="onPermissionCompanyChange()">
+
+      <option value="0">Select Company</option>
+
+      <option *ngFor="let company of companies"
+              [value]="company.companyId">
+
+        {{ company.companyName }}
+
+      </option>
+
+    </select>
+  </div>
+
+  <!-- Region -->
+  <div class="col-md-4">
+   <select class="form-select form-select-sm"
+        [(ngModel)]="selectedRegionId"
+        (change)="onPermissionRegionChange()">
+
+  <option value="0">Select Region</option>
+
+  <option *ngFor="let region of permissionRegions"
+          [value]="region.regionID">
+    {{ region.regionName }}
+  </option>
+
+</select>
+  </div>
+
+  <!-- Role -->
+  <div class="col-md-4">
+    <select class="form-select form-select-sm role-select"
+            (change)="fnChangeRoles($event)">
+
+      <option selected disabled>Select Role</option>
+
+      <!-- <option *ngFor="let r of roles"
+              [value]="r.roleId">
+ 
+        {{ r.roleName }}
+
+      </option> -->
+      <option *ngFor="let r of filteredRoles"
+        [value]="r.roleId">
+  {{ r.roleName }}
+</option>
+
+    </select>
+  </div>
+
+</div>
+            
       </div>
 
       <div class="card-body">

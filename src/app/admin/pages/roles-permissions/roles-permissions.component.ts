@@ -61,7 +61,9 @@ export class RolesPermissionsComponent {
   roles: RoleMaster[] = [];
   role: RoleMaster = this.getEmptyRole();
   isEditMode = false;
-
+filteredRoles: RoleMaster[] = [];
+roleRegions: any[] = [];
+permissionRegions: any[] = [];
   // ---------- Pagination & Sorting ----------
   pageNumber = 1;
   pageSize = 10;
@@ -71,7 +73,15 @@ export class RolesPermissionsComponent {
   pagedRegions: RoleMaster[] = [];
   sortBy = 'roleName';
   isDescending = false;
+companies: any[] = [];
+regions: any[] = [];
 
+filteredRegions: any[] = [];
+
+selectedCompanyId: number = 0;
+selectedRegionId: number = 0;
+
+userId: number = Number(sessionStorage.getItem('UserId'));
   // ---------- Filters ----------
   searchText = '';
   statusFilter: boolean | '' = '';
@@ -83,9 +93,57 @@ selectAll: boolean = false;
   constructor(private roleService: AdminService) { }
 
   ngOnInit(): void {
+      this.loadCompanies();
+  this.loadRegions();
+
     this.loadRoles();
     this.loadMenuPermissions(); // ✅ Fetch MenuMaster hierarchy dynamically
   }
+  loadCompanies(): void {
+  this.roleService.getCompanies(null, this.userId).subscribe({
+    next: (res: any) => {
+      this.companies = res;
+    },
+    error: () => {
+      Swal.fire('Error', 'Failed to load companies.', 'error');
+    }
+  });
+}
+
+loadRegions(): void {
+  this.roleService.getRegions(null, this.userId).subscribe({
+    next: (res: any) => {
+      this.regions = res;
+    },
+    error: () => {
+      Swal.fire('Error', 'Failed to load regions.', 'error');
+    }
+  });
+}
+onRoleCompanyChange(): void {
+
+  this.role.regionId = 0;
+
+  this.roleRegions = this.role.companyId
+    ? this.regions.filter((r: any) =>
+        Number(r.companyID) === Number(this.role.companyId)
+      )
+    : [];
+}
+onPermissionCompanyChange(): void {
+
+  this.selectedRegionId = 0;
+
+  this.permissionRegions = this.regions.filter(
+    (r: any) =>
+      Number(r.companyID) === Number(this.selectedCompanyId)
+  );
+
+  this.filteredRoles = [];
+}
+onPermissionRegionChange(): void {
+  this.filterRoles();
+}
   // Called when user clicks checkbox
   // called from (change) on checkbox; event gives the clicked checked value
   toggleModulePermissionsWithSelect(menu: MenuItem, event: Event): void {
@@ -186,45 +244,125 @@ isFullyChecked(menu: MenuItem): boolean {
       roleName: '',
       roleDescription: '',
       isActive: true,
+      companyId: 0,
+    regionId: 0,
+
       userId: Number(sessionStorage.getItem("UserId"))
     };
   }
+
+filterRoles(): void {
+
+  this.filteredRoles = this.roles.filter(
+    x =>
+      Number(x.companyId) === Number(this.selectedCompanyId) &&
+      Number(x.regionId) === Number(this.selectedRegionId)
+  );
+}
+
+
 
   getEmptyPermissions(): SubmodulePermissions {
     return { view: false, add: false, edit: false, delete: false, approve: false };
   }
 
   // ---------- CRUD Operations ----------
+  // loadRoles(): void {
+  //   this.roleService.getroles(Number(sessionStorage.getItem("UserId"))).subscribe({
+  //     next: (response: any) => {
+  //       this.roles = response.items || response; // handle both array or paginated format
+  //       this.totalCount = response.totalCount || this.roles.length;
+  //     },
+  //     error: () => Swal.fire('Error', 'Failed to load roles.', 'error')
+  //   });
+  // }
   loadRoles(): void {
-    this.roleService.getroles(Number(sessionStorage.getItem("UserId"))).subscribe({
-      next: (response: any) => {
-        this.roles = response.items || response; // handle both array or paginated format
-        this.totalCount = response.totalCount || this.roles.length;
-      },
-      error: () => Swal.fire('Error', 'Failed to load roles.', 'error')
-    });
-  }
+  this.roleService.getroles(Number(sessionStorage.getItem("UserId"))).subscribe({
+    next: (response: any) => {
+
+      this.roles = response.items || response;
+      this.totalCount = response.totalCount || this.roles.length;
+
+      // Refresh permission role dropdown
+      if (this.selectedCompanyId && this.selectedRegionId) {
+        this.filterRoles();
+      }
+    },
+    error: () => Swal.fire('Error', 'Failed to load roles.', 'error')
+  });
+}
 
 
-  onSubmit(): void {
-    const request = this.isEditMode
-      ? this.roleService.updateRoles(this.role.roleId!, this.role)
-      : this.roleService.createRoles(this.role);
+//   onSubmit(): void {
+//     const request = this.isEditMode
+//       ? this.roleService.updateRoles(this.role.roleId!, this.role)
+//       : this.roleService.createRoles(this.role);
+// this.role.companyId = this.selectedCompanyId;
+// this.role.regionId = this.selectedRegionId;
+//     request.subscribe({
+//       next: () => {
+//         Swal.fire(this.isEditMode ? 'Updated!' : 'Created!', `Role ${this.isEditMode ? 'updated' : 'created'} successfully.`, 'success');
+//         this.resetForm();
+//         this.loadRoles();
+//       },
+//       error: () => Swal.fire('Error', `Failed to ${this.isEditMode ? 'update' : 'create'} role.`, 'error')
+//     });
+//   }
+onSubmit(): void {
+if (!this.role.companyId) {
+  Swal.fire('Validation', 'Please select company', 'warning');
+  return;
+}
 
-    request.subscribe({
-      next: () => {
-        Swal.fire(this.isEditMode ? 'Updated!' : 'Created!', `Role ${this.isEditMode ? 'updated' : 'created'} successfully.`, 'success');
-        this.resetForm();
-        this.loadRoles();
-      },
-      error: () => Swal.fire('Error', `Failed to ${this.isEditMode ? 'update' : 'create'} role.`, 'error')
-    });
-  }
+if (!this.role.regionId) {
+  Swal.fire('Validation', 'Please select region', 'warning');
+  return;
+}
+  const request = this.isEditMode
+    ? this.roleService.updateRoles(this.role.roleId!, this.role)
+    : this.roleService.createRoles(this.role);
 
+  request.subscribe({
+next: () => {
+  Swal.fire(
+    this.isEditMode ? 'Updated!' : 'Created!',
+    `Role ${this.isEditMode ? 'updated' : 'created'} successfully.`,
+    'success'
+  );
+
+  this.loadRoles();
+
+  this.resetForm();
+
+  // Reset Permission Filters
+  this.selectedCompanyId = 0;
+  this.selectedRegionId = 0;
+  this.filteredRoles = [];
+},
+    error: () => {
+      Swal.fire(
+        'Error',
+        `Failed to ${this.isEditMode ? 'update' : 'create'} role.`,
+        'error'
+      );
+    }
+  });
+}
+
+  // editRole(role: RoleMaster): void {
+  //   this.role = { ...role };
+  //   this.isEditMode = true;
+  // }
   editRole(role: RoleMaster): void {
-    this.role = { ...role };
-    this.isEditMode = true;
-  }
+
+  this.role = { ...role };
+
+  this.roleRegions = this.regions.filter(
+    (r: any) => Number(r.companyID) === Number(this.role.companyId)
+  );
+
+  this.isEditMode = true;
+}
 
   deleteRole(role: RoleMaster): void {
     Swal.fire({
@@ -248,10 +386,24 @@ isFullyChecked(menu: MenuItem): boolean {
     });
   }
 
+  // resetForm(): void {
+  //   this.role = this.getEmptyRole();
+  //   this.isEditMode = false;
+  // }
   resetForm(): void {
-    this.role = this.getEmptyRole();
-    this.isEditMode = false;
-  }
+  this.role = this.getEmptyRole();
+
+  this.roleRegions = [];
+this.permissionRegions = [];
+  this.isEditMode = false;
+
+  // Permission section reset
+  this.selectedCompanyId = 0;
+  this.selectedRegionId = 0;
+  this.filteredRoles = [];
+
+  this.selectAll = false;
+}
 
   // ---------- Sorting & Pagination ----------
   toggleSort(column: string): void {
