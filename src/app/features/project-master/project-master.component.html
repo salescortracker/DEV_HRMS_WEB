@@ -128,12 +128,18 @@
               </span>
             </td>
             <td>
-              <button class="btn btn-sm btn-primary me-2"
+              <button class="btn btn-sm btn-outline-primary me-2"  (click)="editProject(p)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteProject(p)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+              <!-- <button class="btn btn-sm btn-primary me-2"
                 (click)="editProject(p)">Edit</button>
 
               <button class="btn btn-sm btn-danger"
                 (click)="deleteProject(p)">Delete</button>
-            </td>
+            </td> -->
           </tr>
         </tbody>
       </table>

@@ -12,7 +12,7 @@ canViewAssetRequests = false;
 canViewAssetApproval = false;
 canViewAssignAssetScreen = false;
 canViewMyAssets = false;
-canViewAssetReports = false;
+// canViewAssetReports = false;
 selectedTab: string = '';
 ngOnInit() {
   this.loadTabPermissions();
@@ -51,14 +51,14 @@ const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
   this.canViewAssetApproval = assetapproval?.canView ?? false;
   this.canViewAssignAssetScreen = assignasset?.canView ?? false;
   this.canViewMyAssets = myassets?.canView ?? false;
-  this.canViewAssetReports = assetreports?.canView ?? false;
+  //wAssetReports = assetreports?.canView ?? false;
 
   if (this.canViewAddAsset) this.selectedTab = 'tab1';
   else if (this.canViewAssetRequests) this.selectedTab = 'tab4';
   else if (this.canViewAssetApproval) this.selectedTab = 'tab3';
   else if (this.canViewAssignAssetScreen) this.selectedTab = 'tab5';
   else if (this.canViewMyAssets) this.selectedTab = 'tab2';
-  else if (this.canViewAssetReports) this.selectedTab = 'tab6';
+  //else if (this.canViewAssetReports) this.selectedTab = 'tab6';
 }
 
 }

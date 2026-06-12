@@ -17,7 +17,7 @@
   <input type="radio" id="tab3" name="tab" [checked]="selectedTab === 'tab3'">
   <input type="radio" id="tab4" name="tab" [checked]="selectedTab === 'tab4'">
   <input type="radio" id="tab5" name="tab" [checked]="selectedTab === 'tab5'">
-  <input type="radio" id="tab6" name="tab" [checked]="selectedTab === 'tab6'">
+  <!-- <input type="radio" id="tab6" name="tab" [checked]="selectedTab === 'tab6'"> -->
 
   <!-- Tab Header -->
   <div class="tab-header">
@@ -26,7 +26,7 @@
     <label class="tab-label" for="tab3" *ngIf="canViewAssetApproval">Asset Approval</label>
     <label class="tab-label" for="tab5" *ngIf="canViewAssignAssetScreen">Assign Asset Screen</label>
     <label class="tab-label" for="tab2" *ngIf="canViewMyAssets">My Assets</label>
-    <label class="tab-label" for="tab6" *ngIf="canViewAssetReports">Asset Reports</label>
+    <!-- <label class="tab-label" for="tab6" *ngIf="canViewAssetReports">Asset Reports</label> -->
 
 
   </div>
@@ -57,9 +57,9 @@
   </div>
 
   <!-- TAB 6: ASSET REPORTS -->
-  <div id="content6" class="tab-content" *ngIf="canViewAssetReports">
+  <!-- <div id="content6" class="tab-content" *ngIf="canViewAssetReports">
     <app-asset-report></app-asset-report>
-  </div>
+  </div> -->
 
 </div>
 
