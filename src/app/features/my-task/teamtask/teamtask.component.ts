@@ -183,28 +183,23 @@ export class TeamtaskComponent {
   }
 
   loadEmployees() {
-    const roleName = (sessionStorage.getItem('roleName') || '').trim().toLowerCase();
-    const reportingManagerId = Number(sessionStorage.getItem('reportingManagerId') || 0);
+  this.adminService
+    .getUsersByCompanyRegion(this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any[]) => {
 
-    if (roleName === 'manager' && reportingManagerId) {
-      this.helpdeskService.getEmployeesByManager(reportingManagerId)
-        .subscribe({
-          next: (res: any) => {
-            this.employees = Array.isArray(res) ? res : res?.data || [];
-          },
-          error: (err) => console.error(err)
-        });
-      return;
-    }
+        this.employees = res.map((u: any) => ({
+          userId: u.userId,
+          employeeName: u.fullName,
+          employeeCode: u.employeeCode
+        }));
 
-    this.adminService.getEmployees(this.companyId, this.regionId)
-      .subscribe({
-        next: (res: any) => {
-          this.employees = Array.isArray(res) ? res : res?.data || [];
-        },
-        error: (err) => console.error(err)
-      });
-  }
+      },
+      error: (err) => {
+        console.error('Error loading employees', err);
+      }
+    });
+}
   getStatusName(id: number) {
     const s = this.taskStatuses.find(x => x.taskStatusId == id);
     return s ? s.taskStatusName : '';

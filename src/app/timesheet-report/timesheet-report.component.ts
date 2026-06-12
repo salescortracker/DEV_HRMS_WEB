@@ -68,40 +68,54 @@ companyAddress: string = '';
   }
 
   loadEmployees(): void {
-    this.adminService.GetcmpregAllUsers().subscribe({
-      next: (res: any) => {
+
+  const companyId = Number(sessionStorage.getItem('CompanyId'));
+  const regionId = Number(sessionStorage.getItem('RegionId'));
+
+  this.adminService
+    .getUsersByCompanyRegion(companyId, regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
         this.employees = res.map((u: any) => ({
-          userId: u.userId || 0,
-          employeeCode: u.employeeCode || '',
-          fullName: u.fullName || ''
+          userId: u.userId,
+          employeeCode: u.employeeCode,
+          fullName: u.fullName
         }));
+
+        console.log('Employees', this.employees);
       },
       error: (err) => {
-        console.error('Error loading employees:', err);
+        console.error('Error loading employees', err);
       }
     });
-  }
+}
 
   onEmployeeChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const userId = select.value;
 
-    if (!userId) {
-      this.filtersForm.patchValue({
-        employeeName: '',
-        employeeCode: ''
-      });
-      return;
-    }
+  const userId = Number(
+    (event.target as HTMLSelectElement).value
+  );
 
-    const employee = this.employees.find(e => e.userId === +userId);
-    if (employee) {
-      this.filtersForm.patchValue({
-        employeeName: employee.userId,
-        employeeCode: employee.employeeCode
-      });
-    }
+  const employee = this.employees.find(
+    x => x.userId === userId
+  );
+
+  if (!employee) {
+
+    this.filtersForm.patchValue({
+      employeeName: '',
+      employeeCode: ''
+    });
+
+    return;
   }
+
+  this.filtersForm.patchValue({
+    employeeName: employee.userId,
+    employeeCode: employee.employeeCode
+  });
+}
 
   buildForm(): void {
     this.filtersForm = this.fb.group({
