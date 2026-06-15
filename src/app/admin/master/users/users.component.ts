@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AdminService, User, Company, Region, RoleMaster } from '../../servies/admin.service';
 import Swal from 'sweetalert2';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -16,33 +17,33 @@ export class UsersComponent {
   totalCount: number = 0;
   user: User = this.getEmptyUser();
   isEditMode = false;
-departments: any[] = [];
-userId: number = sessionStorage.getItem('UserId') ? Number(sessionStorage.getItem('UserId')) : 0;
-companyId: number = sessionStorage.getItem('CompanyId') ? Number(sessionStorage.getItem('CompanyId')) : 0;
-regionId: number = sessionStorage.getItem('RegionId') ? Number(sessionStorage.getItem('RegionId')) : 0;
-filteredRegions: any[] = [];
-filterRegions: Region[] = [];
-filteredRoles: RoleMaster[] = [];
-filteredDepartments: any[] = [];
-reportingManagers: User[] = [];
-filter = {
-  employeeName: '',
-  companyId: 0,
-  regionId: 0
-};
-hrUsers: any[] = [];
-filteredHrUsers: any[] = [];
-reportingToUsers: any[] = [];
+  departments: any[] = [];
+  userId: number = sessionStorage.getItem('UserId') ? Number(sessionStorage.getItem('UserId')) : 0;
+  companyId: number = sessionStorage.getItem('CompanyId') ? Number(sessionStorage.getItem('CompanyId')) : 0;
+  regionId: number = sessionStorage.getItem('RegionId') ? Number(sessionStorage.getItem('RegionId')) : 0;
+  filteredRegions: any[] = [];
+  filterRegions: Region[] = [];
+  filteredRoles: RoleMaster[] = [];
+  filteredDepartments: any[] = [];
+  reportingManagers: User[] = [];
+  filter = {
+    employeeName: '',
+    companyId: 0,
+    regionId: 0
+  };
+  hrUsers: any[] = [];
+  filteredHrUsers: any[] = [];
+  reportingToUsers: any[] = [];
 
-designations: any[] = [];
-filteredDesignations: any[] = [];
+  designations: any[] = [];
+  filteredDesignations: any[] = [];
 
-filteredUsers: User[] = [];
+  filteredUsers: User[] = [];
   constructor(private userService: AdminService) {}
 
   ngOnInit(): void {
     this.generateNextEmployeeCode();
-    this.loadUsers();
+    this.loadUsersForListing();
     this.loadCompanies();
     this.loadRegions();
     this.loadRoles();
@@ -72,32 +73,29 @@ loadDesignations(): void {
 }
 
 loadHrUsers(companyId: number, regionId: number): void {
-
-  console.log('Calling HR API', companyId, regionId);
-
   this.userService.getHrUsers(companyId, regionId)
-    .subscribe({
-      next: (res: any[]) => {
+    .subscribe(res => {
 
-        console.log('HR Users Response', res);
+      this.filteredHrUsers = res.filter(x =>
+        x.designationName?.toLowerCase().includes('hr') ||
+        x.designationName?.toLowerCase().includes('human resource')
+      );
 
-        this.filteredHrUsers = res.filter(x =>
-          x.designationName?.toLowerCase().includes('human resource') ||
-          x.designationName?.toLowerCase().includes('hr')
-        );
-      },
-      error: (err) => {
-        console.error('HR API Error', err);
+      // 🔥 SAME LIKE DESIGNATION BIND
+      if (this.isEditMode) {
+        this.user.reportingHr = Number(this.user.reportingHr);
       }
     });
 }
 loadReportingToUsers(companyId: number, regionId: number): void {
+  this.userService.getUsersByCompanyRegion(companyId, regionId)
+    .subscribe(res => {
 
-  this.userService
-    .getUsersByCompanyRegion(companyId, regionId)
-    .subscribe({
-      next: (res: any) => {
-        this.reportingToUsers = res;
+      this.reportingToUsers = res;
+
+      // 🔥 NOW bind like department/designation style
+      if (this.isEditMode) {
+        this.user.reportingTo = Number(this.user.reportingTo);
       }
     });
 }
@@ -171,6 +169,7 @@ getEmptyUser(): User {
 
   this.currentPage = 1;      // ✅ RESET PAGE
   this.setPagination();     // ✅ APPLY PAGINATION
+  this.loadUsersForListing();
 }
 onFilterCompanyChange(): void {
   this.filter.regionId = 0;
@@ -188,25 +187,49 @@ onStatusChange(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     this.user.status = input?.checked ? 'Active' : 'Inactive';
   }
+  loadUsersForEmployeeCode(): void {
 
-  loadUsers(): void {
-   this.userService.getAllUsers().subscribe({
-    next: (res: any) => {
-      this.users = res.map((u:any) => ({
-        ...u,
-        password: u.passwordHash || '',
-        roleId: u.roleId,
-        reportingTo: Number(u.reportingTo) || 0
-      }));
-      this.reportingManagers = [...this.users];
-      this.filteredUsers = [...this.users];
-
-      this.generateNextEmployeeCode();
-       this.setPagination(); // ✅ IMPORTANT
-    },
-    error: () => this.showError('Failed to load users.')
-  });
+  if (!this.user.companyId || !this.user.regionId) {
+    return;
   }
+
+  this.userService
+    .getUsersByCompanyRegion(this.user.companyId, this.user.regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
+        this.users = res.map(u => ({
+          ...u,
+          companyId: Number(u.companyID),
+          regionId: Number(u.regionID),
+          employeeCode: u.employeeCode
+        }));
+
+        console.log('Employee Count:', this.users.length);
+        console.log('Users:', this.users);
+
+        this.generateNextEmployeeCode();
+      }
+    });
+}
+loadUsersForListing(): void {
+  this.userService.getUsersByCompanyRegion(this.filter.companyId, this.filter.regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
+        this.filteredUsers = res.map(u => ({
+          ...u,
+          companyId: Number(u.companyID),   
+          regionId: Number(u.regionID),
+          reportingHr: Number(u.reportingHR ?? u.reportingHr ?? 0),
+          password: u.password || ''
+        }));
+
+        this.users = [...this.filteredUsers];
+        this.setPagination();
+      }
+    });
+}
 
   onCompanyChange(companyId: number): void {
     this.user.regionId = 0;
@@ -220,26 +243,6 @@ onStatusChange(event: Event): void {
     this.generateNextEmployeeCode();
     this.filteredDesignations = [];
   }
-
-//   onRegionChange(regionId: number): void {
-//   this.user.roleId = 0;
-//   this.user.departmentId = 0;
-//    this.user.designationId = 0;
-
-//   if (!this.user.companyId || !regionId) {
-//     this.filteredRoles = [];
-//     this.filteredDepartments = [];
-//     this.filteredDesignations = [];
-//     return;
-//   }
-//   this.filteredRoles = this.roles.filter(r =>
-//     Number(r.companyId) === Number(this.user.companyId) &&
-//     Number(r.regionId) === Number(regionId)
-//   );
-//   this.filterDepartments();
-//   this.generateNextEmployeeCode();
-//   this.filterDesignations();
-// }
 
 onRegionChange(regionId: number): void {
   this.user.roleId = 0;
@@ -263,6 +266,7 @@ onRegionChange(regionId: number): void {
   this.loadHrUsers(this.user.companyId, regionId);
 
   this.filteredDesignations = [];
+  this.loadUsersForEmployeeCode();
   this.generateNextEmployeeCode();
 }
 
@@ -411,7 +415,8 @@ filterDepartments(): void {
         next: () => {
           this.showSuccess('User updated successfully!');
           this.resetForm();
-          this.loadUsers();
+          this.loadUsersForListing();
+          this.loadUsersForEmployeeCode();
         },
         error: () => this.showError('Failed to update user.')
       });
@@ -421,7 +426,8 @@ filterDepartments(): void {
         next: () => {
           this.showSuccess('User created successfully. Welcome email sent!');
           this.resetForm();
-          this.loadUsers();
+          this.loadUsersForListing();
+          this.loadUsersForEmployeeCode();
         },
         error: () => this.showError('Failed to create user.')
       });
@@ -429,43 +435,51 @@ filterDepartments(): void {
   }
 
   editUser(u: User): void {
-   this.user = {
+
+  this.isEditMode = true;
+
+  this.user = {
     ...u,
-    roleId: Number(u.roleId)   // 🔥 important
+    reportingHr: Number(u.reportingHr || u.reportingHr || 0),
+    reportingTo: Number(u.reportingTo || 0),
+    password: u.password || ''
   };
-    this.isEditMode = true;
-   
+
+
+  this.user.companyId = u.companyId;
+  this.user.regionId = u.regionId;
+
+  forkJoin({
+  reporting: this.userService.getUsersByCompanyRegion(u.companyId, u.regionId),
+  hr: this.userService.getHrUsers(u.companyId, u.regionId)
+}).subscribe((res: any) => {
+
+  this.reportingToUsers = res.reporting;
+  this.filteredHrUsers = res.hr.filter((x: any) =>
+    x.designationName?.toLowerCase().includes('hr') ||
+    x.designationName?.toLowerCase().includes('human resource')
+  );
+  
+
+  // 🔥 CRITICAL FIX HERE
+  setTimeout(() => {
+    this.user.reportingTo = Number(u.reportingTo);
+    this.user.reportingHr = Number(u.reportingHr);
+  });
+});
+
+  // other dropdowns (already ready)
   this.filteredRegions = this.regions.filter(r =>
     Number(r.companyID) === Number(this.user.companyId)
   );
- 
-  if (this.user.regionId) {
-    this.filteredRoles = this.roles.filter(r =>
-      Number(r.companyId) === Number(this.user.companyId) &&
-      Number(r.regionId) === Number(this.user.regionId)
-    );
-  } else {
-    this.filteredRoles = [];
-  }
 
-   // ✅ Step 1: filter departments
+  this.filteredRoles = this.roles.filter(r =>
+    Number(r.companyId) === Number(this.user.companyId) &&
+    Number(r.regionId) === Number(this.user.regionId)
+  );
+
   this.filterDepartments();
-
-  // ✅ Step 2: filter designations (🔥 ADD HERE)
   this.filterDesignations();
-  this.loadHrUsers(this.user.companyId, this.user.regionId);
-  this.loadReportingToUsers(this.user.companyId, this.user.regionId);
-
-  this.user.roleId = u.roleId;
-  this.user.departmentId = u.departmentId;
-
-  // ✅ Step 3: set designation value (🔥 ADD HERE)
-  this.user.designationId = u.designationId;
-
-  this.user.loginType = u.loginType;
-  this.user.reportingHr = u.reportingHr;
-  this.user.reportingHr = u.reportingHr;
-this.user.joiningDate = u.joiningDate;
 }
 
   deleteUser(u: User): void {
@@ -481,7 +495,7 @@ this.user.joiningDate = u.joiningDate;
         this.userService.deleteUser(u.userId!).subscribe({
           next: () => {
             this.showSuccess('User deleted successfully.');
-            this.loadUsers();
+            this.loadUsersForListing();
           },
           error: () => this.showError('Failed to delete user.')
         });
@@ -508,13 +522,17 @@ this.user.joiningDate = u.joiningDate;
     this.isEditMode = false;
   }
 
-  getCompanyName(id: number): string {
-    return this.companies.find(c => c.companyId === id)?.companyName || '-';
-  }
+  getCompanyName(id: any): string {
+  return this.companies.find(c =>
+    Number(c.companyId) === Number(id)
+  )?.companyName || '-';
+}
 
-  getRegionName(id: number): string {
-    return this.regions.find(r => r.regionID === id)?.regionName || '-';
-  }
+getRegionName(id: any): string {
+  return this.regions.find(r =>
+    Number(r.regionID) === Number(id)
+  )?.regionName || '-';
+}
 
   getRoleName(id: number): string {
     return this.roles.find(r => r.roleId === id)?.roleName || '-';
