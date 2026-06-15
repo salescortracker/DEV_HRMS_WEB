@@ -418,7 +418,18 @@ filterDepartments(): void {
           this.loadUsersForListing();
           this.loadUsersForEmployeeCode();
         },
-        error: () => this.showError('Failed to update user.')
+        error: (err) => {
+          const message =
+            err?.error?.message ||
+            err?.error ||
+            'Failed to update user';
+
+          if (message.toLowerCase().includes('email')) {
+            this.showError('This email is already assigned to another user.');
+          } else {
+            this.showError(message);
+          }
+        }
       });
     } else {
 
@@ -429,7 +440,18 @@ filterDepartments(): void {
           this.loadUsersForListing();
           this.loadUsersForEmployeeCode();
         },
-        error: () => this.showError('Failed to create user.')
+        error: (err) => {
+          const message =
+            err?.error?.message ||
+            err?.error ||
+            'Failed to create user';
+
+          if (message.toLowerCase().includes('email')) {
+            this.showError('This email already exists.');
+          } else {
+            this.showError(message);
+          }
+        }
       });
     }
   }
