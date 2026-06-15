@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
 import { AdminService,User, Company, Region, RoleMaster } from '../admin/servies/admin.service';
 @Component({
@@ -7,7 +7,9 @@ import { AdminService,User, Company, Region, RoleMaster } from '../admin/servies
   templateUrl: './main-users.component.html',
   styleUrl: './main-users.component.css'
 })
-export class MainUsersComponent {
+export class MainUsersComponent implements OnInit {
+  @Input() candidateName: string = '';
+  @Input() joiningDate: string = '';
  users: User[] = [];
   companies: Company[] = [];
   regions: Region[] = [];
@@ -22,69 +24,133 @@ regionId: number = sessionStorage.getItem('RegionId') ? Number(sessionStorage.ge
 filteredRegions: any[] = [];
 filteredRoles: RoleMaster[] = [];
 filteredDepartments: any[] = [];
+hrUsers: any[] = [];
+filteredHrUsers: any[] = [];
+reportingToUsers: any[] = [];
+
+designations: any[] = [];
+filteredDesignations: any[] = [];
   constructor(private userService: AdminService) {}
 
   ngOnInit(): void {
+    if (this.candidateName) {
+    this.user.fullName = this.candidateName;
+  }
+
+  if (this.joiningDate) {
+    this.user.joiningDate = this.joiningDate;
+  }
     this.generateNextEmployeeCode();
-    this.loadUsers();
     this.loadCompanies();
     this.loadRegions();
     this.loadRoles();
     this.loadDepartments();
+    this.loadDesignations();
   }
 loadDepartments(): void {
-  debugger;
+
   this.userService.getDepartments(this.userId).subscribe({
     next: (res: any) => {
-      console.log(res);
-      debugger;
-      this.departments = res?.data?.data ?? [];
-      console.log("Departments Loaded:", this.departments);
+
+      this.departments =
+        (res?.data?.data ?? []).filter((d: any) => d.isActive);
+
+      this.filterDepartments();
     },
-    error: (err) => {
-      console.error(err);
+    error: () => {
       this.showError('Failed to load departments.');
     }
   });
+
+}
+loadDesignations(): void {
+  this.userService.getDesignations(this.userId).subscribe({
+    next: (res: any) => {
+      this.designations = res?.data?.data ?? [];
+      this.filterDesignations();
+    },
+    error: () => this.showError('Failed to load designations.')
+  });
+}
+
+filterDesignations(): void {
+
+  if (
+    !this.user.companyId ||
+    !this.user.regionId ||
+    !this.user.departmentId
+  ) {
+    this.filteredDesignations = [];
+    return;
+  }
+
+  this.filteredDesignations = this.designations.filter(d =>
+    Number(d.companyID) === Number(this.user.companyId) &&
+    Number(d.regionID) === Number(this.user.regionId) &&
+    Number(d.departmentID) === Number(this.user.departmentId)
+  );
+}
+
+onDepartmentChange(departmentId: number): void {
+
+  this.user.designationId = 0;
+  this.filterDesignations();
+
 }
   getEmptyUser(): User {
-    return {
-      userId: 0,
-      companyId: 0,
-      regionId: 0,
-      employeeCode: '',
-      fullName: '',
-      email: '',
-      roleId: 0,
-      departmentId:0,
-      reportingTo:0,
-      password: '',
-      status: 'Active',
-      userCompanyId:sessionStorage.getItem('UserId') ? Number(sessionStorage.getItem('UserId')) : 0
-     , loginType: '' 
-    };
-  }
-getreporting(id:any)
-{
-}  
+  return {
+    userId: 0,
+    companyId: 0,
+    regionId: 0,
+    employeeCode: '',
+    fullName: '',
+    email: '',
+    roleId: 0,
+    departmentId: 0,
+    designationId: 0,
+    reportingTo: 0,
+    reportingHr: 0,
+    joiningDate: '',
+    password: '',
+    status: 'Active',
+    userCompanyId: sessionStorage.getItem('UserId')
+      ? Number(sessionStorage.getItem('UserId'))
+      : 0,
+    loginType: ''
+  };
+}
+loadReportingToUsers(companyId: number, regionId: number): void {
+
+  this.userService
+    .getUsersByCompanyRegion(companyId, regionId)
+    .subscribe({
+      next: (res: any) => {
+        this.reportingToUsers = res;
+      }
+    });
+
+}
+
+loadHrUsers(companyId: number, regionId: number): void {
+
+  this.userService
+    .getHrUsers(companyId, regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
+        this.filteredHrUsers = res.filter(x =>
+          x.designationName?.toLowerCase().includes('human resource') ||
+          x.designationName?.toLowerCase().includes('hr')
+        );
+
+      }
+    });
+
+}
+
 onStatusChange(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     this.user.status = input?.checked ? 'Active' : 'Inactive';
-  }
-
-  loadUsers(): void {
-   this.userService.getAllUsers().subscribe({
-    next: (res: any) => {
-      this.users = res.map((u:any) => ({
-        ...u,
-        roleId: u.roleId,
-        reportingTo: u.ReportingTo ?? 0  // ✅ map correct API field to frontend field
-      }));
-
-      this.generateNextEmployeeCode();
-    },
-    error: () => this.showError('Failed to load users.')
-  });
   }
 
   onCompanyChange(companyId: number): void {
@@ -96,21 +162,38 @@ onStatusChange(event: Event): void {
     : [];
     this.filteredRoles = [];
     this.filteredDepartments = [];
+    this.generateNextEmployeeCode();
   }
-  onRegionChange(regionId: number): void {
+ onRegionChange(regionId: number): void {
+
   this.user.roleId = 0;
   this.user.departmentId = 0;
+  this.user.designationId = 0;
 
   if (!this.user.companyId || !regionId) {
     this.filteredRoles = [];
     this.filteredDepartments = [];
+    this.filteredDesignations = [];
     return;
   }
-  this.filteredRoles = this.roles.filter(r =>
-    Number(r.companyId) === Number(this.user.companyId) &&
-    Number(r.regionId) === Number(regionId)
-  );
+
+  this.userService
+    .getUsersByCompanyRegion(this.user.companyId, regionId)
+    .subscribe({
+      next: (res: any[]) => {
+
+        this.users = res; // 🔥 Employee Code generation kosam
+
+        this.generateNextEmployeeCode();
+
+        this.reportingToUsers = res;
+      }
+    });
+
   this.filterDepartments();
+  this.loadHrUsers(this.user.companyId, regionId);
+
+  this.filteredDesignations = [];
 }
 filterDepartments(): void {
   if (!this.user.companyId || !this.user.regionId) {
@@ -162,30 +245,39 @@ filterDepartments(): void {
   });
 }
 
- // 🔹 Auto-generate Employee Code (Frontend only)
  generateNextEmployeeCode(): void {
-  // If no users exist yet
-  if (!this.users || this.users.length === 0) {
+
+  if (!this.user.companyId || !this.user.regionId) {
+    this.user.employeeCode = '';
+    return;
+  }
+
+  const filteredUsers = this.users.filter(u =>
+    Number(u.companyId) === Number(this.user.companyId) &&
+    Number(u.regionId) === Number(this.user.regionId)
+  );
+
+  if (filteredUsers.length === 0) {
     this.user.employeeCode = 'EMP0001';
     return;
   }
 
-  // Get all numeric parts from employee codes
-  const numericCodes = this.users
+  const numericCodes = filteredUsers
     .map(u => {
       const match = u.employeeCode?.match(/\d+$/);
       return match ? parseInt(match[0], 10) : 0;
     })
     .filter(num => num > 0);
 
-  // Find max existing number
-  const maxCode = Math.max(...numericCodes);
+  const maxCode =
+    numericCodes.length > 0
+      ? Math.max(...numericCodes)
+      : 0;
 
-  // Increment by 1
   const nextCode = maxCode + 1;
 
-  // Format and assign
-  this.user.employeeCode = `EMP${nextCode.toString().padStart(4, '0')}`;
+  this.user.employeeCode =
+    `EMP${nextCode.toString().padStart(4, '0')}`;
 }
 
   onSubmit(): void {
@@ -194,7 +286,6 @@ filterDepartments(): void {
         next: () => {
           this.showSuccess('User updated successfully!');
           this.resetForm();
-          this.loadUsers();
         },
         error: () => this.showError('Failed to update user.')
       });
@@ -204,60 +295,10 @@ filterDepartments(): void {
         next: () => {
           this.showSuccess('User created successfully. Welcome email sent!');
           this.resetForm();
-          this.loadUsers();
         },
         error: () => this.showError('Failed to create user.')
       });
     }
-  }
-
-  editUser(u: User): void {
-    this.user = { ...u };
-    this.isEditMode = true;
-    
-  this.filteredRegions = this.regions.filter(r =>
-    Number(r.companyID) === Number(this.user.companyId)
-  );
-  
-  if (this.user.regionId) {
-    this.onRegionChange(this.user.regionId);
-  } 
-  debugger;
- this.roles = this.roles.filter(r =>
-   r.roleId === u.roleId
- );
-
- 
-
-  
-  }
-
-  deleteUser(u: User): void {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This will permanently delete the user.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.userService.deleteUser(u.userId!).subscribe({
-          next: () => {
-            this.showSuccess('User deleted successfully.');
-            this.loadUsers();
-          },
-          error: () => this.showError('Failed to delete user.')
-        });
-      }
-    });
-  }
-
-  sendPasswordEmail(u: User): void {
-    this.userService.sendWelcomeEmail(u).subscribe({
-      next: () => this.showSuccess('Welcome email sent successfully!'),
-      error: () => this.showError('Failed to send email.')
-    });
   }
 
   generateFormPassword(): void {
@@ -272,18 +313,7 @@ filterDepartments(): void {
     this.isEditMode = false;
   }
 
-  getCompanyName(id: number): string {
-    return this.companies.find(c => c.companyId === id)?.companyName || '-';
-  }
-
-  getRegionName(id: number): string {
-    return this.regions.find(r => r.regionID === id)?.regionName || '-';
-  }
-
-  getRoleName(id: number): string {
-    return this.roles.find(r => r.roleId === id)?.roleName || '-';
-  }
-
+ 
   showSuccess(msg: string): void {
     Swal.fire({
       icon: 'success',

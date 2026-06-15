@@ -199,35 +199,49 @@
 <h5>Onboarding Status</h5>
 <div class="table-responsive">
     <table class="table table-sm">
-        <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>Candidate</th>
-                <th>Joining</th>
-                <th>Docs</th>
-                <th>BG Check</th>
-                <th>Laptop</th>
-                <th>Buddy</th>
-                <th>Progress</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let c of viewCandidates(); let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ c.name }}</td>
-                <td>{{ c.onboarding.joiningDate || '-' }}</td>
-                <td>{{ c.onboarding.docsCollected ? 'Yes' : 'No' }}</td>
-                <td>{{ c.onboarding.bgCheck || '-' }}</td>
-                <td>{{ c.onboarding.laptop ? 'Yes' : 'No' }}</td>
-                <td>{{ c.onboarding.buddy || '-' }}</td>
-                <td>
-                    <div class="progress" style="height:8px;">
-                        <div class="progress-bar" [style.width.%]="calculateProgress(c)"
-                            [ngClass]="getProgressColor(c)"></div>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
+       <thead class="table-light">
+<tr>
+    <th>
+      <input type="checkbox"
+             (change)="selectAllOnboarding($event)">
+    </th>
+    <th>#</th>
+    <th>Candidate</th>
+    <th>Joining</th>
+    <th>Docs</th>
+    <th>BG Check</th>
+    <th>Laptop</th>
+    <th>Buddy</th>
+    <th>Progress</th>
+</tr>
+</thead>
+
+<tbody>
+<tr *ngFor="let c of viewCandidates(); let i=index">
+
+    <td>
+      <input type="checkbox"
+             [(ngModel)]="c.selected">
+    </td>
+
+    <td>{{i+1}}</td>
+    <td>{{c.name}}</td>
+    <td>{{c.onboarding.joiningDate}}</td>
+    <td>{{c.onboarding.docsCollected ? 'Yes':'No'}}</td>
+    <td>{{c.onboarding.bgCheck}}</td>
+    <td>{{c.onboarding.laptop ? 'Yes':'No'}}</td>
+    <td>{{c.onboarding.buddy}}</td>
+
+    <td>
+      <div class="progress" style="height:8px;">
+        <div class="progress-bar"
+             [style.width.%]="calculateProgress(c)">
+        </div>
+      </div>
+    </td>
+
+</tr>
+</tbody>
     </table>
 </div>
 <!-- Employee Modal -->
@@ -242,7 +256,10 @@
 
       <div class="modal-body">
 
- <app-main-users></app-main-users>
+ <app-main-users
+      [candidateName]="selectedEmployeeCandidate?.name"
+      [joiningDate]="selectedEmployeeCandidate?.onboarding?.joiningDate">
+  </app-main-users>
       </div>
 
       <div class="modal-footer">
