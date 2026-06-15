@@ -15,14 +15,13 @@ interface Policy {
 @Component({
   selector: 'app-employee-policy',
   standalone: false,
-  templateUrl: './employee-policy.component.html',
+  templateUrl:'./employee-policy.component.html',
   styleUrl: './employee-policy.component.css'
 })
 export class EmployeePolicyComponent {
   policies: Policy[] = []
   filteredPoliciesList: Policy[] = []
 
-  // categories: string[] = []
   categories: any[] = []
 
   selectedCategory  = '';
@@ -34,9 +33,7 @@ export class EmployeePolicyComponent {
   companyId: number = 0;
   regionId: number = 0;
 
-  categories: any[] = [];
 
-  constructor(private adminService: AdminService) { }
   constructor(private adminService: AdminService, private spinner: NgxSpinnerService) {}
 
   ngOnInit(): void {

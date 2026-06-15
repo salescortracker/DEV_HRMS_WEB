@@ -17,25 +17,16 @@
       <div class="col-md-4">
   <label class="form-label">Category</label>
 
-          <select class="form-select" [(ngModel)]="selectedCategory">
-
-            <option value="">All Categories</option>
-
-            <option *ngFor="let c of categories" [value]="c.policyCategoryName">
-
-              {{ c.policyCategoryName }}
-
-            </option>
   <select
     class="form-select"
     [(ngModel)]="selectedCategory"
     name="Category">
 
-    <option value="">Select Category</option>
+    <option value="">All Categories</option>
 
     <option *ngFor="let c of categories"
-            [value]="c.PolicyCategoryName">
-      {{ c.PolicyCategoryName }}
+            [value]="c.policyCategoryName">
+      {{ c.policyCategoryName }}
     </option>
 
   </select>
