@@ -294,7 +294,21 @@ toggleSort(column: string): void {
 }
 companyModel:any;
 openUploadPopup() {
-  this.companyModel = [ { companyName: 'ABC Technologies Pvt Ltd', companyCode: 'ABC001', industryType: 'IT Services', headquarters: 'Bangalore, India', isActive: true }, { companyName: 'Global Solutions Ltd', companyCode: 'GSL002', industryType: 'Manufacturing', headquarters: 'Mumbai, India', isActive: false } ];
+  this.companyModel = [
+     { companyName: 'ABC Technologies Pvt Ltd',
+       companyCode: 'ABC001', 
+       industryType: 'IT Services',
+        headquarters: 'Bangalore, India',
+        CompanyContact: '9876543210',
+        CompanyEmail: 'abc@gmail.com',
+        isActive: true },
+         { companyName: 'Global Solutions Ltd',
+           companyCode: 'GSL002',
+            industryType: 'Manufacturing',
+             headquarters: 'Mumbai, India',
+             CompanyContact: '9876543210',
+             CompanyEmail: 'abc@gmail.com',
+              isActive: false } ];
   this.showUploadPopup = false;
   setTimeout(() => {
     this.showUploadPopup = true;

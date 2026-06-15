@@ -6,8 +6,16 @@
   Company Management
 </h4>
     <!-- Header -->
-   <div class="d-flex gap-2">
-  </div>
+  <div class="d-flex gap-2">
+  <button
+    type="button"
+    class="btn btn-danger"
+    (click)="openUploadPopup()"
+  >
+    <i class="fa-solid fa-upload me-2"></i>
+    Bulk Upload
+  </button>
+</div>
 </div>
     <hr class="mb-4" />
 
@@ -327,6 +335,6 @@
   [visible]="showUploadPopup"
   [screenName]="'Company'"
   [model]="companyModel"    
-  (close)="closeUploadPopup()">
+  (close)="closeUploadPopup()"
   (uploadComplete)="onBulkUploadComplete($event)">
 </app-common-upload>

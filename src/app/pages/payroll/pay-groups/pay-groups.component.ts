@@ -16,6 +16,7 @@ export class PayGroupsComponent {
   salaries: any[] = [];
 
   employees: any[] = [];
+  filteredEmployees: any[] = [];
   structures: any[] = [];
 
   companies: any[] = [];
@@ -119,10 +120,13 @@ loadRegions() {
       });
 
       console.log("Region Map:", this.regionMap);
+
+      this.applyEmployeeFilter();
     });
 }
 onCompanyChange() {
   this.salary.regionId = null;
+  this.salary.employeeId = null;
 
   if (this.salary.companyId) {
     this.filteredRegions = this.regions.filter(r =>
@@ -131,11 +135,36 @@ onCompanyChange() {
   } else {
     this.filteredRegions = [];
   }
+
+  this.applyEmployeeFilter();
+}
+
+onRegionChange() {
+  this.salary.employeeId = null;
+  this.applyEmployeeFilter();
 }
 
   loadEmployees() {
     this.payrollService.getEmployees(this.userId)
-      .subscribe((res:any) => this.employees = res || []);
+      .subscribe((res:any) => {
+        const raw = Array.isArray(res) ? res : (res?.data ?? res?.data?.data ?? []);
+
+        this.employees = raw.map((e: any) => ({
+          ...e,
+          companyId: Number(e.companyId ?? e.companyID ?? e.CompanyId ?? e.CompanyID),
+          regionId: Number(e.regionId ?? e.regionID ?? e.RegionId ?? e.RegionID)
+        }));
+
+        this.applyEmployeeFilter();
+      });
+  }
+
+  private applyEmployeeFilter() {
+    this.filteredEmployees = this.employees.filter(e => {
+      const matchesCompany = !this.salary?.companyId || Number(e.companyId) === Number(this.salary.companyId);
+      const matchesRegion = !this.salary?.regionId || Number(e.regionId) === Number(this.salary.regionId);
+      return matchesCompany && matchesRegion;
+    });
   }
 
   loadStructures() {
@@ -209,6 +238,7 @@ onCompanyChange() {
 
   resetForm() {
     this.salary = this.getEmptySalary();
+    this.filteredEmployees = [...this.employees];
   }
 
   // ================= Search Filter =================

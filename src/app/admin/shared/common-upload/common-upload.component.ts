@@ -68,6 +68,11 @@ export class CommonUploadComponent {
       return;
     }
 
+    if (this.screenName === 'Company') {
+      this.validateCompanyUpload();
+      return;
+    }
+
     // Call backend API to insert data
   this.adminService.bulkInsertData('Company', this.fileData).subscribe({
   next: (res: any) => {
@@ -107,6 +112,156 @@ export class CommonUploadComponent {
 });
 
 
+  }
+
+  private validateCompanyUpload(): void {
+    // const uploadedRows = this.fileData.map((row: any) => ({
+    //   ...row,
+    //   companyCode: String(row.companyCode ?? row.CompanyCode ?? '').trim(),
+    //   companyName: String(row.companyName ?? row.CompanyName ?? '').trim()
+    // }));
+    const userId = Number(sessionStorage.getItem('UserId') || 0);
+
+    const uploadedRows = this.fileData.map((row: any) => ({
+  ...row,
+  companyCode: String(row.companyCode ?? row.CompanyCode ?? '').trim(),
+  email: String(row.email ?? row.Email ?? '').trim(),
+    userId: userId,
+    CompanyContact: row.CompanyContact  ?? '',
+  CompanyEmail: row.CompanyEmail  ?? '',
+
+}));
+
+    const duplicateInFile = uploadedRows.find((row, index, rows) =>
+      row.companyCode && rows.findIndex(other => other.companyCode.toLowerCase() === row.companyCode.toLowerCase()) !== index
+    );
+
+    if (duplicateInFile) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Duplicate Company Code in File',
+        text: `Company Code ${duplicateInFile.companyCode} appears more than once in the uploaded file.`
+      });
+      return;
+    }
+const duplicateCode = uploadedRows.find((row, index, rows) =>
+  row.companyCode &&
+  rows.findIndex(x =>
+    x.companyCode.toLowerCase() === row.companyCode.toLowerCase()
+  ) !== index
+);
+
+if (duplicateCode) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Duplicate Company Code',
+    text: `Company Code ${duplicateCode.companyCode} appears more than once in the uploaded file.`
+  });
+  return;
+}
+    // const userId = Number(sessionStorage.getItem('UserId') || 0);
+    this.adminService.getCompanies(null, userId).subscribe({
+      next: (res: any) => {
+        // const existingCompanies = (res?.data ?? res ?? []).map((c: any) => ({
+        //   companyCode: String(c.companyCode ?? c.CompanyCode ?? '').trim(),
+        //   companyName: String(c.companyName ?? c.CompanyName ?? '').trim()
+        // }));
+const existingCompanies = (res?.data ?? res ?? []).map((c: any) => ({
+  companyCode: String(c.companyCode ?? c.CompanyCode ?? '').trim(),
+   email: String(c.companyEmail ?? c.CompanyEmail ?? '').trim()
+}));
+        // const duplicateExisting = uploadedRows.find(row =>
+        //   row.companyCode && existingCompanies.some((existing: { companyCode: string }) =>
+        //     existing.companyCode.toLowerCase() === row.companyCode.toLowerCase()
+        //   )
+        // );
+
+        // if (duplicateExisting) {
+        //   Swal.fire({
+        //     icon: 'error',
+        //     title: 'Duplicate Company Code',
+        //     text: `Company Code ${duplicateExisting.companyCode} already exists. Please use a unique code.`
+        //   });
+        //   return;
+        // }
+
+        const duplicateExistingCode = uploadedRows.find(row =>
+  existingCompanies.some((existing: any) =>
+    existing.companyCode.toLowerCase() === row.companyCode.toLowerCase()
+  )
+);
+
+if (duplicateExistingCode) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Duplicate Company Code',
+    text: `Company Code ${duplicateExistingCode.companyCode} already exists.`
+  });
+  return;
+}
+const duplicateEmail = uploadedRows.find((row, index, rows) =>
+  row.email &&
+  rows.findIndex(x =>
+    x.email.toLowerCase() === row.email.toLowerCase()
+  ) !== index
+);
+
+if (duplicateEmail) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Duplicate Email',
+    text: `Email ${duplicateEmail.email} appears more than once in the uploaded file.`
+  });
+  return;
+}
+        this.adminService.bulkInsertData('Company', uploadedRows).subscribe({
+          next: (bulkRes: any) => {
+            if (bulkRes.success) {
+              
+              Swal.fire({
+                icon: 'success',
+                title: 'Upload Complete',
+                text: bulkRes.message,
+                confirmButtonColor: '#007bff'
+              });
+            } else {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Upload Completed with Warnings',
+                text: bulkRes.message || 'Some records could not be processed.',
+                confirmButtonColor: '#f39c12'
+              });
+            }
+
+            this.selectedFile = null;
+            this.fileData = [];
+            this.close();
+          },
+          error: (err) => {
+            console.error('Error while uploading:', err);
+            const message =
+              err?.error?.message ||
+              err?.message ||
+              'Upload failed. Please contact IT Administrator.';
+
+            Swal.fire({
+              icon: 'error',
+              title: 'Upload Failed',
+              text: message,
+              confirmButtonColor: '#dc3545'
+            });
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Failed to load existing companies for validation:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Upload Failed',
+          text: 'Could not validate existing company codes. Please try again.'
+        });
+      }
+    });
   }
 
   /** Download sample Excel template */

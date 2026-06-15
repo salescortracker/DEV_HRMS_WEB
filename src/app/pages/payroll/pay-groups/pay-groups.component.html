@@ -26,7 +26,7 @@
             <!-- Region -->
             <div class="col-md-4">
               <label class="form-label">Region</label>
-              <select class="form-select" [(ngModel)]="salary.regionId" name="regionId">
+              <select class="form-select" [(ngModel)]="salary.regionId" name="regionId" (change)="onRegionChange()">
                 <option value="null">Select Region</option>
                 <option *ngFor="let r of filteredRegions" [value]="r.regionId">
                   {{ r.regionName }}
@@ -43,8 +43,8 @@
 
                 <option [ngValue]="null">Select Employee</option>
 
-                <option *ngFor="let e of employees" [ngValue]="e.userId">
-                  {{ e.employeeCode }} - {{ e.fullName }}
+                <option *ngFor="let e of filteredEmployees" [ngValue]="e.userId">
+                  {{ e.employeeCode || e.employeeCodeNumber || e.employeeNo || e.userId }} - {{ e.fullName }}
                 </option>
 
               </select>
