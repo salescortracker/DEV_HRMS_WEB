@@ -3176,4 +3176,9 @@ getUsersByCompanyRegion(companyId: number, regionId: number) {
     `${this.baseUrl}/Employee/users-by-company-region?companyId=${companyId}&regionId=${regionId}`
   );
 }
+getManagerEmployees(loginUserId: number) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Employee/manager-employees?loginUserId=${loginUserId}`
+  );
+}
 }
