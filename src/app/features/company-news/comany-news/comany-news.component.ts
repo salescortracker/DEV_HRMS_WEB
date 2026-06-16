@@ -36,6 +36,7 @@ export class ComanyNewsComponent {
     this.userDepartmentId = Number(sessionStorage.getItem("DepartmentId"))
     this.userCompanyId = Number(sessionStorage.getItem("CompanyId"));
     this.userRegionId = Number(sessionStorage.getItem("RegionId"));
+  this.searchDate = new Date().toISOString().split('T')[0];
 
     this.getNews()
  this.loadUsers();
@@ -71,55 +72,109 @@ loadCategories(): void {
   // -----------------------------
   getNews() {
 
-    this.adminService.getTodayNews(this.userId).subscribe((res: any[]) => {
+    // this.adminService.getTodayNews(this.userId).subscribe((res: any[]) => {
 
-      console.log("API Response:", res)
+    //   console.log("API Response:", res)
 
-      this.newsList = res.map(n => ({
-        Title: n.title,
-        Category: n.category,
-        Description: n.description,
-        Date: new Date(n.postedDate),
-        departmentId: Number(n.departmentId)
-      }))
+    //   this.newsList = res.map(n => ({
+    //     Title: n.title,
+    //     Category: n.category,
+    //     Description: n.description,
+    //     Date: new Date(n.postedDate),
+    //     departmentId: Number(n.departmentId)
+    //   }))
 
-      // Show today's news automatically
-      this.filterTodayNews()
+    //   // Show today's news automatically
+    //   this.filterTodayNews()
 
-    })
+    // })
 
+
+    this.adminService.getTodayNews(this.userCompanyId, this.userRegionId).subscribe({
+  next: (res: any) => {
+
+    console.log("API Response:", res);
+
+    this.newsList = res.map((n: any) => ({
+      Title: n.title,
+      Category: n.category,
+      Description: n.description,
+      Date: new Date(n.postedDate),
+      departmentId: Number(n.departmentId)
+    }));
+
+    this.filterTodayNews();
+  },
+  error: (err) => {
+    console.error(err);
+  }
+});
   }
 
   // -----------------------------
   // Show Today's News
   // -----------------------------
-  filterTodayNews() {
+//   filterTodayNews() {
 
-  const today = new Date().toDateString();
+//   const today = new Date().toDateString();
 
-  this.filteredNewsList = this.newsList.filter(n => {
+//   this.filteredNewsList = this.newsList.filter(n => {
 
-    const newsDate = new Date(n.Date).toDateString();
+//     const newsDate = new Date(n.Date).toDateString();
 
-    return (
-      n.departmentId === this.userDepartmentId &&
-      newsDate === today
-    );
+//     return (
+//       n.departmentId === this.userDepartmentId &&
+//       newsDate === today
+//     );
 
-  });
+//   });
 
+// }
+
+
+filterTodayNews() {
+
+  if (!this.searchDate) {
+    this.filteredNewsList = [...this.newsList];
+    return;
+  }
+
+  this.filteredNewsList = this.newsList.filter(n =>
+    new Date(n.Date).toDateString() ===
+    new Date(this.searchDate).toDateString()
+  );
 }
-
   // -----------------------------
   // Apply Filter
   // -----------------------------
- applyFilter() {
+//  applyFilter() {
+
+//   this.filteredNewsList = this.newsList.filter(n => {
+
+//     const newsDate = new Date(n.Date).toDateString();
+
+//     // const matchDept = n.departmentId === this.userDepartmentId;
+
+//     const matchCategory = this.searchCategory
+//       ? n.Category === this.searchCategory
+//       : true;
+
+//     const matchDate = this.searchDate
+//       ? new Date(this.searchDate).toDateString() === newsDate
+//       : true;
+
+//     // return matchDept && matchCategory && matchDate;
+//     return matchCategory && matchDate;
+
+//   });
+
+// }
+
+applyFilter() {
 
   this.filteredNewsList = this.newsList.filter(n => {
 
     const newsDate = new Date(n.Date).toDateString();
-
-    const matchDept = n.departmentId === this.userDepartmentId;
 
     const matchCategory = this.searchCategory
       ? n.Category === this.searchCategory
@@ -129,7 +184,7 @@ loadCategories(): void {
       ? new Date(this.searchDate).toDateString() === newsDate
       : true;
 
-    return matchDept && matchCategory && matchDate;
+    return matchCategory && matchDate;
 
   });
 

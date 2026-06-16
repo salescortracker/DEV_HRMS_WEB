@@ -2336,12 +2336,16 @@ getallDepartments(): Observable<Department[]> {
   }
 
   // Get Today's News
-  getTodayNews(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(
-      `${this.baseUrl}/MasterData/GetTodayNews?userId=${userId}`
-    );
-  }
-
+  // getTodayNews(userId: number): Observable<any[]> {
+  //   return this.http.get<any[]>(
+  //     `${this.baseUrl}/MasterData/GetTodayNews?userId=${userId}`
+  //   );
+  // }
+getTodayNews(companyId: number, regionId: number) {
+  return this.http.get(
+    `${this.baseUrl}/MasterData/GetTodayNews?companyId=${companyId}&regionId=${regionId}`
+  );
+}
   // Get News By Id
   getNewsById(id: number, userId: number): Observable<any> {
     return this.http.get<any>(
