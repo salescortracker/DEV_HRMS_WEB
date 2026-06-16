@@ -33,9 +33,6 @@ export class EmployeePolicyComponent {
   companyId: number = 0;
   regionId: number = 0;
 
-  categories: any[] = [];
-
-  constructor(private adminService: AdminService) { }
   constructor(private adminService: AdminService, private spinner: NgxSpinnerService) {}
 
   ngOnInit(): void {
