@@ -20,40 +20,24 @@ interface Policy {
   styleUrl: './employee-policy.component.css'
 })
 export class EmployeePolicyComponent {
-    @ViewChild('fileInput') fileInput!: ElementRef;
- companies: any[] = []
-  regions: any[] = []
-  departments: Department[] = []
- categories: any[] = []; 
-  policies: any[] = []
-  paginatedPolicies: any[] = []
-filteredDepartments: any[] = [];
-  userId!: number
-  companyId!: number
-  regionId!: number
-  filteredRegions: any[] = []; 
+  policies: Policy[] = []
+  filteredPoliciesList: Policy[] = []
 
-  currentPage = 1
-  pageSize = 5
-  totalPages = 1
+  categories: any[] = []
 
-  isEditMode = false
-showDepartmentDropdown = false;
-  policy: any = this.resetPolicy()
+  selectedCategory  = '';
+  fromDate?: string
+  toDate?: string
 
-  // categories: string[] = [
-  //   "HR Policy",
-  //   "Leave Policy",
-  //   "Attendance Policy",
-  //   "IT Security Policy",
-  //   "Work From Home Policy",
-  //   "Travel Policy"
-  // ]
+  userId: number = 0
+  userDepartmentId: number = 0
+  companyId: number = 0;
+  regionId: number = 0;
 
-  constructor(
-    private adminService: AdminService,
-    private spinner: NgxSpinnerService
-  ) { }
+  categories: any[] = [];
+
+  constructor(private adminService: AdminService) { }
+  constructor(private adminService: AdminService, private spinner: NgxSpinnerService) {}
 
   ngOnInit() {
 

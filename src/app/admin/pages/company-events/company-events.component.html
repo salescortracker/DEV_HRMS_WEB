@@ -1,214 +1,295 @@
 <div class="card shadow-sm">
-  <div class="container-fluid p-4">
+<div class="container-fluid p-4">
 
-    <div class="d-flex justify-content-between mb-4">
-      <h4><i class="fa-solid fa-calendar-days me-2 text-danger"></i>Company Events</h4>
+<div class="d-flex justify-content-between mb-4">
+<h4><i class="fa-solid fa-calendar-days me-2 text-danger"></i>Company Events</h4>
+</div>
+
+<hr>
+
+<div class="card mb-4">
+<div class="card-body">
+
+<form (ngSubmit)="onSubmit()" #eventForm="ngForm">
+
+<div class="row g-3">
+<div class="col-md-6">
+  <label>Company</label>
+
+  <select class="form-select"
+          [(ngModel)]="event.CompanyId"
+          name="CompanyId"
+          (change)="onCompanyChange()">
+
+    <option [ngValue]="null">Select Company</option>
+
+    <option *ngFor="let c of companies"
+            [ngValue]="c.companyId">
+
+      {{ c.companyName }}
+
+    </option>
+
+  </select>
+</div>
+<!-- Region -->
+<div class="col-md-6">
+  <label>Region</label>
+
+  <select class="form-select"
+        [(ngModel)]="event.RegionId"
+        name="RegionId"
+        (change)="onRegionChange()">
+
+    <option [ngValue]="null">Select Region</option>
+
+    <option *ngFor="let r of filteredRegions"
+            [ngValue]="r.regionID">
+
+      {{ r.regionName }}
+
+    </option>
+
+  </select>
+</div>
+<div class="col-md-6">
+<label>Event Title</label>
+<input class="form-control" [(ngModel)]="event.EventTitle" name="EventTitle">
+</div>
+
+<div class="col-md-6 position-relative">
+
+  <label>Departments</label>
+
+  <div class="form-select"
+       style="cursor:pointer"
+       (click)="showDepartmentDropdown=!showDepartmentDropdown">
+
+    {{ getSelectedDepartmentNames() }}
+
+  </div>
+
+  <div *ngIf="showDepartmentDropdown"
+       class="border rounded bg-white shadow mt-1 p-2 position-absolute w-100"
+       style="z-index:1000;max-height:250px;overflow-y:auto;">
+
+    <div class="form-check mb-2">
+
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [checked]="isAllDepartmentsSelected()"
+        (change)="toggleAllDepartments($event)">
+
+      <label class="form-check-label fw-bold">
+        Select All
+      </label>
+
     </div>
 
     <hr>
 
-    <div class="card mb-4">
-      <div class="card-body">
+    <div *ngFor="let d of filteredDepartments"
+         class="form-check">
+
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [checked]="event.DepartmentIds.includes(d.departmentId)"
+        (change)="onDepartmentChange($event,d.departmentId)">
+
+      <label class="form-check-label">
+        {{ d.departmentName }}
+      </label>
 
-        <form (ngSubmit)="onSubmit()" #eventForm="ngForm">
-
-          <div class="row g-3">
-
-            <!-- Company -->
-            <div class="col-md-6">
-              <label>Company</label>
-
-              <select class="form-select" [(ngModel)]="event.CompanyId" name="CompanyId" (change)="onCompanyChange()">
-
-                <option [ngValue]="null">Select Company</option>
-
-                <option *ngFor="let c of companies" [ngValue]="c.companyId">
-
-                  {{ c.companyName }}
-
-                </option>
-
-              </select>
-            </div>
-
-            <!-- Region -->
-            <div class="col-md-6">
-              <label>Region</label>
-
-              <select class="form-select" [(ngModel)]="event.RegionId" name="RegionId">
-
-                <option [ngValue]="null">Select Region</option>
-
-                <option *ngFor="let r of filteredRegions" [ngValue]="r.regionID">
-
-                  {{ r.regionName }}
-
-                </option>
-
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label>Event Title</label>
-              <input class="form-control" [(ngModel)]="event.EventTitle" name="EventTitle">
-            </div>
-
-            <div class="col-md-6">
-              <label>Department</label>
-
-              <select class="form-select" [(ngModel)]="event.DepartmentId" name="DepartmentId">
-
-                <option value="">Select Department</option>
-
-                <option *ngFor="let d of departments" [value]="d.departmentId">
-
-                  {{d.departmentName}}
-
-                </option>
-
-              </select>
-            </div>
-
-
-            <div class="col-md-6">
-              <label>Event Date</label>
-              <input type="date" class="form-control" [(ngModel)]="event.EventDateString" name="EventDate">
-            </div>
-
-            <div class="col-md-3">
-              <label>Start Time</label>
-              <input type="time" class="form-control" [(ngModel)]="event.StartTime" name="StartTime">
-            </div>
-
-            <div class="col-md-3">
-              <label>End Time</label>
-              <input type="time" class="form-control" [(ngModel)]="event.EndTime" name="EndTime">
-            </div>
-
-            <div class="col-md-6">
-              <label>Event Location</label>
-              <input class="form-control" [(ngModel)]="event.EventLocation" name="EventLocation">
-            </div>
-
-            <div class="col-md-6">
-              <label>Event Type</label>
-              <select class="form-select" [(ngModel)]="event.EventType" name="EventType">
-
-                <option value="">
-                  Select Event Type
-                </option>
-
-                <option *ngFor="let e of eventTypes" [value]="e.eventTypeName">
-
-                  {{ e.eventTypeName }}
-
-                </option>
-
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label>Meeting Link</label>
-              <input class="form-control" [(ngModel)]="event.MeetingLink" name="MeetingLink">
-            </div>
-
-            <div class="col-md-12">
-              <label>Description</label>
-              <textarea class="form-control" [(ngModel)]="event.EventDescription" name="EventDescription"></textarea>
-            </div>
-
-            <div class="col-md-6">
-              <label>
-                <input type="checkbox" [(ngModel)]="event.IsMeeting" name="IsMeeting">
-                Is Meeting
-              </label>
-            </div>
-
-            <div class="col-md-6 d-flex align-items-end">
-
-              <button class="btn btn-dark w-100">
-                {{isEditMode?'Update':'Save'}}
-              </button>
-
-            </div>
-
-          </div>
-
-        </form>
-
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-body">
-
-        <input class="form-control mb-3" placeholder="Search Event" [(ngModel)]="searchText">
-
-        <table class="table table-bordered">
-
-          <thead>
-
-            <tr>
-              <th>#</th>
-              <th>Title</th>
-              <th>Date</th>
-              <th>Department</th>
-              <th>Type</th>
-              <th>Actions</th>
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            <tr *ngFor="let e of filteredEvents();let i=index">
-
-              <td>{{i+1}}</td>
-
-              <td>{{e.EventTitle}}</td>
-
-              <td>{{e.EventDate | date:'dd-MMM-yyyy'}}</td>
-
-              <td>{{getDepartmentName(e.DepartmentId)}}</td>
-
-              <td>{{e.EventType}}</td>
-
-              <!-- <td>
-
-                <button class="btn btn-sm btn-primary me-2" (click)="editEvent(e)">
-                  Edit
-                </button>
-
-                <button class="btn btn-sm btn-danger" (click)="confirmDelete(e)">
-                  Delete
-                </button>
-
-              </td> -->
-
-              <td class="text-center">
-
-                <button class="btn btn-sm btn-outline-primary me-2" (click)="editEvent(e)" title="Edit">
-
-                  <i class="fa-solid fa-pen-to-square"></i>
-
-                </button>
-
-                <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(e)" title="Delete">
-
-                  <i class="fa-solid fa-trash"></i>
-
-                </button>
-
-              </td>
-
-            </tr>
-
-          </tbody>
-
-        </table>
-
-      </div>
     </div>
 
   </div>
+
+</div>
+
+
+
+<!-- Company -->
+
+
+
+
+
+<div class="col-md-6">
+<label>Event Date</label>
+<input type="date"
+class="form-control"
+[(ngModel)]="event.EventDateString"
+name="EventDate">
+</div>
+
+<div class="col-md-3">
+<label>Start Time</label>
+<input type="time"
+class="form-control"
+[(ngModel)]="event.StartTime"
+name="StartTime">
+</div>
+
+<div class="col-md-3">
+<label>End Time</label>
+<input type="time"
+class="form-control"
+[(ngModel)]="event.EndTime"
+name="EndTime">
+</div>
+
+<div class="col-md-6">
+<label>Event Location</label>
+<input class="form-control"
+[(ngModel)]="event.EventLocation"
+name="EventLocation">
+</div>
+
+<div class="col-md-6">
+<label>Event Type</label>
+<select class="form-select"
+        [(ngModel)]="event.EventType"
+        name="EventType">
+
+  <option value="">
+    Select Event Type
+  </option>
+
+  <option *ngFor="let e of eventTypes"
+          [value]="e.eventTypeName">
+
+    {{ e.eventTypeName }}
+
+  </option>
+
+</select>
+</div>
+
+<div class="col-md-6">
+<label>Meeting Link</label>
+<input class="form-control"
+[(ngModel)]="event.MeetingLink"
+name="MeetingLink">
+</div>
+
+<div class="col-md-12">
+<label>Description</label>
+<textarea class="form-control"
+[(ngModel)]="event.EventDescription"
+name="EventDescription"></textarea>
+</div>
+
+<div class="col-md-6">
+<label>
+<input type="checkbox"
+[(ngModel)]="event.IsMeeting"
+name="IsMeeting">
+ Is Meeting
+</label>
+</div>
+
+<div class="col-md-6 d-flex align-items-end">
+
+<button class="btn btn-dark w-100">
+{{isEditMode?'Update':'Save'}}
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+</div>
+
+<div class="card">
+<div class="card-body">
+
+<input class="form-control mb-3"
+placeholder="Search Event"
+[(ngModel)]="searchText"
+(ngModelChange)="setPagination()">
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+<th>#</th>
+<th>Title</th>
+<th>Date</th>
+<th>Department</th>
+<th>Type</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr *ngFor="let e of paginatedEvents; let i=index">
+
+<td>{{i+1}}</td>
+
+<td>{{e.EventTitle}}</td>
+
+<td>{{e.EventDate | date:'dd-MMM-yyyy'}}</td>
+
+<td>{{ getDepartmentNames(e.DepartmentIds) }}</td>
+
+<td>{{e.EventType}}</td>
+
+<td>
+
+<button class="btn btn-sm btn-primary me-2"
+(click)="editEvent(e)">
+Edit
+</button>
+
+<button class="btn btn-sm btn-danger"
+(click)="confirmDelete(e)">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <div>
+    Showing {{ (currentPage - 1) * pageSize + 1 }}
+    to {{ (currentPage - 1) * pageSize + paginatedEvents.length }}
+    of {{ filteredEvents().length }} entries
+  </div>
+
+  <nav>
+    <ul class="pagination mb-0">
+
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" type="button" (click)="prevPage()">Previous</button>
+      </li>
+
+      <li class="page-item active">
+        <span class="page-link">{{ currentPage }}</span>
+      </li>
+
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" type="button" (click)="nextPage()">Next</button>
+      </li>
+
+    </ul>
+  </nav>
+</div>
+
+</div>
+</div>
+
+</div>
 </div>
