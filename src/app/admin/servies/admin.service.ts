@@ -442,11 +442,7 @@ export interface News {
 
   RegionId: number | null;
 
-  departmentId?: number | null;
-
-  departmentIds?: string;
-
-  DepartmentIds?: string;
+  departmentIds: number[];
 
   Title: string;
 
@@ -2354,6 +2350,7 @@ getallDepartments(): Observable<Department[]> {
 
   // Add News (Now JSON, not FormData)
   saveNews(data: any): Observable<any> {
+    debugger;
     return this.http.post(
       `${this.baseUrl}/MasterData/SaveNews`,
       data

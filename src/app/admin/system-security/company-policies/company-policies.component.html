@@ -17,10 +17,10 @@
 
             <!-- Company -->
             <div class="col-md-6">
-              <label class="form-label fw-semibold">Company</label>
+              <label class="form-label fw-semibold">Company<span class="text-danger">*</span></label>
              <select class="form-select"
         [(ngModel)]="policy.CompanyId" (change)="onCompanyChange()"
-        name="CompanyId">
+        name="CompanyId" required>
 
   <option [ngValue]="null">Select Company</option>
 
@@ -34,10 +34,10 @@
 
             <!-- Region -->
             <div class="col-md-6">
-              <label class="form-label fw-semibold">Region</label>
+              <label class="form-label fw-semibold">Region<span class="text-danger">*</span></label>
              <select class="form-select"
         [(ngModel)]="policy.RegionId"
-        name="RegionId"(change)="onRegionChange()">
+        name="RegionId"(change)="onRegionChange()" required>
 
   <option [ngValue]="null">Select Region</option>
 
@@ -52,7 +52,7 @@
             <!-- Department -->
         <div class="col-md-6 position-relative">
 
-  <label class="form-label fw-semibold">Departments</label>
+  <label class="form-label fw-semibold">Departments<span class="text-danger">*</span></label>
 
   <!-- Dropdown Field -->
   <div class="form-select"
@@ -106,14 +106,14 @@
 
             <!-- Title -->
             <div class="col-md-6">
-              <label class="form-label">Title</label>
-              <input type="text" class="form-control" [(ngModel)]="policy.Title" name="Title">
+              <label class="form-label">Title<span class="text-danger">*</span></label>
+              <input type="text" class="form-control" [(ngModel)]="policy.Title" name="Title" required>
             </div>
 
             <!-- Category -->
             <div class="col-md-6">
-              <label class="form-label">Category</label>
-              <select class="form-select" [(ngModel)]="policy.Category" name="Category">
+              <label class="form-label">Category<span class="text-danger">*</span></label>
+              <select class="form-select" [(ngModel)]="policy.Category" name="Category" required>
 
                 <option value="">Select Category</option>
 
@@ -129,14 +129,14 @@
 
             <!-- Effective Date -->
             <div class="col-md-6">
-              <label class="form-label">Effective Date</label>
-              <input type="date" class="form-control" [(ngModel)]="policy.EffectiveDate" name="EffectiveDate">
+              <label class="form-label">Effective Date<span class="text-danger">*</span></label>
+              <input type="date" class="form-control" [(ngModel)]="policy.EffectiveDate" name="EffectiveDate" required>
             </div>
 
             <!-- Description -->
             <div class="col-md-12">
-              <label class="form-label">Description</label>
-              <textarea class="form-control" rows="3" [(ngModel)]="policy.Description" name="Description">
+              <label class="form-label">Description<span class="text-danger">*</span></label>
+              <textarea class="form-control" rows="3" [(ngModel)]="policy.Description" name="Description" required>
 </textarea>
             </div>
 
