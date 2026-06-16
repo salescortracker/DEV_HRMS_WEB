@@ -32,7 +32,7 @@
             <!-- Region -->
             <div class="col-md-4">
               <label class="form-label">Region</label>
-              <select class="form-select" [(ngModel)]="structure.regionId" name="regionId">
+              <select class="form-select" [(ngModel)]="structure.regionId" name="regionId" (change)="onRegionChange()">
 
                 <option [ngValue]="null">Select Region</option>
 
@@ -52,11 +52,11 @@
             <!-- Department -->
             <div class="col-md-4">
               <label class="form-label">Department</label>
-              <select class="form-select" [(ngModel)]="structure.departmentId" name="departmentId">
+              <select class="form-select" [(ngModel)]="structure.departmentId" name="departmentId" (change)="onDepartmentChange()">
 
                 <option [ngValue]="null">Select Department</option>
 
-                <option *ngFor="let d of departments" [ngValue]="d.departmentId">
+                <option *ngFor="let d of filteredDepartments" [ngValue]="d.departmentId">
                   {{ d.departmentName }}
                 </option>
               </select>
@@ -70,7 +70,7 @@
 
                 <option [ngValue]="null">Select Designation</option>
 
-                <option *ngFor="let d of designations" [ngValue]="d.designationId">
+                <option *ngFor="let d of filteredDesignations" [ngValue]="d.designationId">
                   {{ d.designationName }}
                 </option>
               </select>

@@ -3,10 +3,21 @@
 <!-- ================= FILTERS ================= -->
 <form [formGroup]="filtersForm" class="row mb-3 g-2">
   <div class="col-md-3">
-    <input
+    <!-- <input
       formControlName="project"
       placeholder="Project"
-      class="form-control" />
+      class="form-control" /> -->
+      <select formControlName="project" class="form-select">
+  <option value="">All Projects</option>
+
+  <option
+    *ngFor="let p of projects"
+    [value]="p.projectName">
+
+    {{ p.projectName }}
+
+  </option>
+</select>
   </div>
 
   <div class="col-md-3">
@@ -37,8 +48,15 @@
       </option>
     </select>
   </div>
-
-  <div class="col-md-2">
+<div class="col-md-1">
+  <button
+    type="button"
+    class="btn btn-warning w-100"
+    (click)="resetFilters()">
+    Reset
+  </button>
+</div>
+  <div class="col-md-1">
     <button
       type="button"
       class="btn btn-secondary w-100"

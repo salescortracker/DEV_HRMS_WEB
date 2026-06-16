@@ -32,7 +32,7 @@ selectAll = false;
   searchName: string = '';
   fromDate: string = '';
   toDate: string = '';
-  statusFilter: string = 'Today';
+  statusFilter: string = 'All';
 
   constructor(private timesheetService: TimesheetService, private adminService: AdminService) {}
 
@@ -338,7 +338,7 @@ getPaginatedTimesheets() {
 
   // ================= STATUS FILTER =================
   if (this.statusFilter && this.statusFilter !== 'All') {
-    if (this.statusFilter === 'Today') {
+    if (this.statusFilter === 'All') {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -442,7 +442,7 @@ async downloadPDF() {
 
   if (this.fromDate && this.toDate) {
     filterText = `From: ${new Date(this.fromDate).toLocaleDateString()}  To: ${new Date(this.toDate).toLocaleDateString()}`;
-  } else if (this.statusFilter === 'Today') {
+  } else if (this.statusFilter === 'All') {
     filterText = `Date: ${new Date().toLocaleDateString()}`;
   } else {
     filterText = `Filter: ${this.statusFilter}`;

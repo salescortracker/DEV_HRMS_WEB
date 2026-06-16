@@ -34,6 +34,7 @@ export class OnboardingComponent {
   userId!: number;
   companyId!: number;
   regionId!: number;
+  selectedEmployeeCandidate: any = null;
  onDesignationChange() {
     const selected = this.designations.find(
       d => d.designationId == this.candidate.designationId
@@ -47,7 +48,30 @@ export class OnboardingComponent {
       this.candidate.designation = '';
     }
   }
+  selectAllOnboarding(event: any) {
+
+  const checked = event.target.checked;
+
+  this.candidates.forEach(c => {
+    c.selected = checked;
+  });
+
+}
 openEmployeeModal() {
+
+  const selected = this.candidates.filter(x => x.selected);
+
+  if (selected.length === 0) {
+    Swal.fire('Warning', 'Please select candidate', 'warning');
+    return;
+  }
+
+  if (selected.length > 1) {
+    Swal.fire('Warning', 'Please select only one candidate', 'warning');
+    return;
+  }
+
+  this.selectedEmployeeCandidate = selected[0];
   this.showEmployeeModal = true;
 }
 

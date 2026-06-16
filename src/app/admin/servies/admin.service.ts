@@ -1409,7 +1409,7 @@ getPolicyCategoriesByCompanyRegion(
   regionId: number
 ) {
   return this.http.get(
-    `${this.baseUrl}/MasterData/policy-category/company-region?companyId=${companyId}&regionId=${regionId}`
+    `${this.baseUrl}/MasterData/policy/company-region?companyId=${companyId}&regionId=${regionId}`
   );
 }
 // ===================== POLICIES =====================

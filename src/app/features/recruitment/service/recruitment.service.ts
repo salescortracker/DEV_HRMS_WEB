@@ -80,7 +80,7 @@ getResumeById(candidateId: number) {
 }
 assignCompanyRegion(data: any) {
   debugger;
-  return this.http.put(
+  return this.http.post(
     `${this.baseUrl}/Recruitment/assign-company-region`,
     data
   );

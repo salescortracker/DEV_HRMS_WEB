@@ -25,14 +25,16 @@
   </div>
 
   <div class="col-md-2">
-    <select class="form-select"
+        <select class="form-select"
             [(ngModel)]="statusFilter"
             (ngModelChange)="currentPage = 1">
+
+      <option value="All">All</option>
       <option value="Today">Today</option>
       <option value="Submitted">Submitted</option>
       <option value="Approved">Approved</option>
       <option value="Rejected">Rejected</option>
-      <option value="All">All</option>
+
     </select>
   </div>
 
