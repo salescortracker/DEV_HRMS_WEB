@@ -17,8 +17,9 @@ export class AccounttypeComponent {
   account: any = this.getEmptyAccount();
   isEditMode = false;
 
-  userId = Number(sessionStorage.getItem("UserId"));
-
+   userId = Number(sessionStorage.getItem('UserId'));
+companyId = Number(sessionStorage.getItem('CompanyId'));
+regionId = Number(sessionStorage.getItem('RegionId'));
   constructor(private service: AdminService) {}
 
   ngOnInit(): void {
@@ -26,22 +27,24 @@ export class AccounttypeComponent {
     this.loadCompanies();
     this.loadRegions();
   }
-   getEmptyAccount() {
-    return {
-      accountTypeId: 0,
-      accountType1: '',
-      description: '',
-      companyId: null,
-      regionId: null,
-      isActive: true,
-      userId: Number(sessionStorage.getItem("UserId"))
-    };
-  }
+    getEmptyAccount() {
+  return {
+    accountTypeId: 0,
+    accountType1: '',
+    description: '',
+    companyId: this.companyId,
+    regionId: this.regionId,
+    isActive: true,
+    userId: this.userId
+  };
+}
 
   // 🔹 Load Account Types
-  loadAccountTypes() {
-    this.service.getAccountTypeList(this.userId).subscribe((res: any) => {
-      this.accountTypes = res.data || res; 
+ loadAccountTypes() {
+  this.service
+    .getAccountTypeList( this.userId)
+    .subscribe((res: any) => {
+      this.accountTypes = res.data || res;
     });
   }
 
@@ -82,8 +85,18 @@ export class AccounttypeComponent {
 }
 
   // 🔹 Edit
-  editAccount(a: any) {
-    this.account = { ...a };
+   editAccount(a: any) {
+  
+    debugger;
+    //this.account = { ...a };
+     this.account = {
+    ...a,
+    companyId: Number(a.companyId),
+    regionId: Number(a.regionId)
+  };
+  console.log('Account:', this.account);
+  console.log('Companies:', this.companies);
+  console.log('Regions:', this.regions);
     this.isEditMode = true;
   }
 

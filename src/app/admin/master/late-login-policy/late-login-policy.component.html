@@ -96,8 +96,14 @@
                     <td>{{p.isActive ? 'Active' : 'Inactive'}}</td>
 
                     <td>
-                        <button class="btn btn-sm btn-primary" (click)="edit(p)">Edit</button>
-                        <button class="btn btn-sm btn-danger" (click)="delete(p)">Delete</button>
+                         <button class="btn btn-sm btn-outline-primary me-2"  (click)="edit(p)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger"  (click)="delete(p)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                        <!-- <button class="btn btn-sm btn-primary" (click)="edit(p)">Edit</button>
+                        <button class="btn btn-sm btn-danger" (click)="delete(p)">Delete</button> -->
                     </td>
                 </tr>
             </tbody>
