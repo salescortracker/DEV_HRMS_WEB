@@ -31,7 +31,7 @@ export class AppComponent {
   const publicRoutes = [
     '/login',
     '/Welcomedemo',
-    '/jobapply',
+    '/job-application',
     '/offer-documents'
   ];
 
