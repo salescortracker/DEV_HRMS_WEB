@@ -620,6 +620,7 @@ export interface Department {
   modifiedAt?: Date;
   isDeleted?: boolean;
 }
+
 export interface UserReadDto {
     userID: number;
   employeeCode: string;
