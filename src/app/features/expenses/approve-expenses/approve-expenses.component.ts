@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Expense, ExpenseApprovalDto, ExpensesService } from '../expenses.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { AdminService } from '../../../admin/servies/admin.service';
 @Component({
   selector: 'app-approve-expenses',
   standalone: false,
@@ -10,7 +11,9 @@ import Swal from 'sweetalert2';
 })
 export class ApproveExpensesComponent {
 filtersForm!: FormGroup;
-
+companyId!: number;
+regionId!: number;
+projects: any[] = [];
   expenses: any[] = [];
   categories: any[] = [];
   countries: string[] = [];
@@ -32,24 +35,52 @@ filtersForm!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
-    private expenseService: ExpensesService
+    private expenseService: ExpensesService,
+      private service: AdminService
   ) {}
 
   // ============================================================
   // 🔹 INIT
   // ============================================================
-  ngOnInit(): void {
-    const storedUserId = sessionStorage.getItem('UserId');
-    if (!storedUserId) {
-      Swal.fire('Error', 'Session expired', 'error');
-      return;
-    }
+ ngOnInit(): void {
+  const storedUserId = sessionStorage.getItem('UserId');
 
-    this.managerId = Number(storedUserId);
-    this.buildForm();
-    //this.loadCategories();
-    this.loadExpensesForApproval();
+  if (!storedUserId) {
+    Swal.fire('Error', 'Session expired', 'error');
+    return;
   }
+
+  this.managerId = Number(storedUserId);
+
+  this.companyId = Number(sessionStorage.getItem('CompanyId'));
+  this.regionId = Number(sessionStorage.getItem('RegionId'));
+
+  this.buildForm();
+
+  this.loadProjects();
+  this.loadCategories();
+
+  this.loadExpensesForApproval();
+}
+loadProjects(): void {
+  this.service
+    .getProjectNames(this.companyId, this.regionId)
+    .subscribe((res: any) => {
+      if (res.success) {
+        this.projects = res.data;
+      }
+    });
+}
+
+loadCategories(): void {
+  this.expenseService
+    .getExpenseCategories(this.companyId, this.regionId)
+    .subscribe((res: any) => {
+      if (res.success) {
+        this.categories = res.data;
+      }
+    });
+}
 
   // ============================================================
   // 🔹 BUILD FILTER FORM
@@ -101,30 +132,93 @@ filtersForm!: FormGroup;
   // ============================================================
   // 🔹 APPLY FILTERS (AND logic)
   // ============================================================
+  // applyFilters(): void {
+  //   const f = this.filtersForm.value;
+
+  //   const project = f.project?.trim().toLowerCase();
+  //   const categoryId = f.categoryId ? Number(f.categoryId) : null;
+  //   const country = f.country?.toLowerCase();
+  //   const status = f.status;
+
+  //   let visibleCount = 0;
+
+  //   this.expenses.forEach(e => {
+  //     e.visible =
+  //       (!project || e.projectNorm.includes(project)) &&
+  //       (!categoryId || e.expenseCategoryId === categoryId) &&
+  //       (!country || e.countryNorm === country) &&
+  //       (!status || e.status === status);
+
+  //     if (e.visible) visibleCount++;
+  //   });
+
+  //   this.noRecordsFound = visibleCount === 0;
+  //   this.currentPage = 1; // reset page after filter
+  // }
   applyFilters(): void {
-    const f = this.filtersForm.value;
 
-    const project = f.project?.trim().toLowerCase();
-    const categoryId = f.categoryId ? Number(f.categoryId) : null;
-    const country = f.country?.toLowerCase();
-    const status = f.status;
+  const project =
+    this.filtersForm.get('project')?.value;
 
-    let visibleCount = 0;
+  const categoryId =
+    this.filtersForm.get('categoryId')?.value;
 
-    this.expenses.forEach(e => {
-      e.visible =
-        (!project || e.projectNorm.includes(project)) &&
-        (!categoryId || e.expenseCategoryId === categoryId) &&
-        (!country || e.countryNorm === country) &&
-        (!status || e.status === status);
+  const country =
+    this.filtersForm.get('country')?.value;
 
-      if (e.visible) visibleCount++;
-    });
+  const status =
+    this.filtersForm.get('status')?.value;
 
-    this.noRecordsFound = visibleCount === 0;
-    this.currentPage = 1; // reset page after filter
-  }
+  let visibleCount = 0;
 
+  this.expenses.forEach(e => {
+
+    const matchProject =
+      !project ||
+      e.projectName === project;
+
+    const matchCategory =
+      !categoryId ||
+      Number(e.expenseCategoryId) === Number(categoryId);
+
+    const matchCountry =
+      !country ||
+      e.countryNorm === country.toLowerCase();
+
+    const matchStatus =
+      !status ||
+      e.status === status;
+
+    e.visible =
+      matchProject &&
+      matchCategory &&
+      matchCountry &&
+      matchStatus;
+
+    if (e.visible) {
+      visibleCount++;
+    }
+  });
+
+  this.noRecordsFound = visibleCount === 0;
+  this.currentPage = 1;
+}
+resetFilters(): void {
+
+  this.filtersForm.reset({
+    project: '',
+    categoryId: '',
+    country: '',
+    status: ''
+  });
+
+  this.expenses.forEach(e => {
+    e.visible = true;
+  });
+
+  this.noRecordsFound = false;
+  this.currentPage = 1;
+}
   // ============================================================
   // 🔹 SORT
   // ============================================================
