@@ -17,6 +17,7 @@ export class CompanyEventsComponent {
 
 filteredRegions: any[] = [];
   eventsList: any[] = [];
+  paginatedEvents: any[] = [];
   event: any = this.resetEvent();
 
   isEditMode = false;
@@ -24,10 +25,15 @@ filteredRegions: any[] = [];
   searchText = '';
   startDate = '';
   endDate = '';
+showDepartmentDropdown = false;
 
+filteredDepartments: any[] = [];
   userId!: number;
   companyId!: number;
   regionId!: number;
+  currentPage = 1;
+  pageSize = 5;
+  totalPages = 1;
 
   constructor(private cmpservice: AdminService, private adminService: CompanyEventsService, private spinner: NgxSpinnerService) { }
 
@@ -49,13 +55,13 @@ filteredRegions: any[] = [];
 onCompanyChange() {
 
   this.event.RegionId = null;
-
+ this.event.DepartmentIds = [];
   this.filteredRegions = this.event.CompanyId
     ? this.regions.filter(r =>
         Number(r.companyID) === Number(this.event.CompanyId)
       )
     : [];
-
+this.filterDepartments();
 }
   loadCompanies() {
     this.cmpservice.getCompanies(null, this.userId).subscribe((res: any) => {
@@ -128,33 +134,59 @@ eventTypes:any[]=[];
     return d ? d.departmentName : '-';
   }
 
+  // resetEvent() {
+
+  //   return {
+
+  //     Id: 0,
+  //     CompanyId: this.companyId,
+  //     RegionId: this.regionId,
+  //     DepartmentId: null,
+
+  //     EventTitle: '',
+  //     EventDescription: '',
+
+  //     EventDate: new Date(),
+  //     EventDateString: new Date().toISOString().split('T')[0],
+
+  //     StartTime: '',
+  //     EndTime: '',
+
+  //     MeetingLink: '',
+  //     EventLocation: '',
+  //     EventType: '',
+
+  //     IsMeeting: false
+  //     , userId: this.userId
+  //   }
+
+  // }
+
   resetEvent() {
+  return {
+    Id: 0,
+    CompanyId: this.companyId,
+    RegionId: this.regionId,
 
-    return {
+    DepartmentId: null,
+    DepartmentIds: [],
 
-      Id: 0,
-      CompanyId: this.companyId,
-      RegionId: this.regionId,
-      DepartmentId: null,
+    EventTitle: '',
+    EventDescription: '',
+    EventDate: new Date(),
+    EventDateString: new Date().toISOString().split('T')[0],
 
-      EventTitle: '',
-      EventDescription: '',
+    StartTime: '',
+    EndTime: '',
 
-      EventDate: new Date(),
-      EventDateString: new Date().toISOString().split('T')[0],
+    MeetingLink: '',
+    EventLocation: '',
+    EventType: '',
 
-      StartTime: '',
-      EndTime: '',
-
-      MeetingLink: '',
-      EventLocation: '',
-      EventType: '',
-
-      IsMeeting: false
-      , userId: this.userId
-    }
-
-  }
+    IsMeeting: false,
+    userId: this.userId
+  };
+}
 
   resetForm() {
 
@@ -174,8 +206,8 @@ eventTypes:any[]=[];
         Id: e.id,
         CompanyId: e.companyId,
         RegionId: e.regionId,
-        DepartmentId: e.departmentId,
-
+        // DepartmentId: e.departmentId,
+DepartmentIds: e.departmentIds || [],
         EventTitle: e.eventTitle,
         EventDescription: e.eventDescription,
 
@@ -193,6 +225,7 @@ eventTypes:any[]=[];
 
       }));
 
+      this.setPagination();
       this.spinner.hide();
 
     });
@@ -207,7 +240,8 @@ eventTypes:any[]=[];
 
       companyId: Number(this.event.CompanyId),
       regionId: Number(this.event.RegionId),
-      departmentId: Number(this.event.DepartmentId),
+      // departmentId: Number(this.event.DepartmentId),
+      departmentIds: this.event.DepartmentIds,
       userId: this.userId,
       eventTitle: this.event.EventTitle,
       eventDescription: this.event.EventDescription,
@@ -297,4 +331,137 @@ eventTypes:any[]=[];
     });
 
   }
+
+  setPagination(): void {
+
+    const filtered = this.filteredEvents();
+
+    this.totalPages = Math.ceil(filtered.length / this.pageSize) || 1;
+
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+
+    if (this.currentPage < 1) {
+      this.currentPage = 1;
+    }
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+
+    this.paginatedEvents = filtered.slice(start, end);
+  }
+
+  changePage(page: number): void {
+
+    if (page < 1 || page > this.totalPages) return;
+
+    this.currentPage = page;
+    this.setPagination();
+  }
+
+  nextPage(): void {
+
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.setPagination();
+    }
+  }
+
+  prevPage(): void {
+
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.setPagination();
+    }
+  }
+
+
+  filterDepartments() {
+
+  this.filteredDepartments = this.departments.filter((d: any) =>
+
+    Number(d.companyId) === Number(this.event.CompanyId) &&
+
+    Number(d.regionId) === Number(this.event.RegionId)
+
+  );
+
+}
+
+onRegionChange() {
+
+  this.event.DepartmentIds = [];
+
+  this.filterDepartments();
+
+}
+
+toggleAllDepartments(event: any) {
+
+  if (event.target.checked) {
+
+    this.event.DepartmentIds =
+      this.filteredDepartments.map(
+        (d: any) => d.departmentId
+      );
+
+  } else {
+
+    this.event.DepartmentIds = [];
+
+  }
+}
+onDepartmentChange(event: any, departmentId: number) {
+
+  if (!this.event.DepartmentIds) {
+    this.event.DepartmentIds = [];
+  }
+
+  if (event.target.checked) {
+
+    this.event.DepartmentIds.push(departmentId);
+
+  } else {
+
+    this.event.DepartmentIds =
+      this.event.DepartmentIds.filter(
+        (id: number) => id !== departmentId
+      );
+  }
+}
+
+isAllDepartmentsSelected(): boolean {
+
+  return this.filteredDepartments.length > 0 &&
+         this.event.DepartmentIds.length ===
+         this.filteredDepartments.length;
+}
+
+getSelectedDepartmentNames(): string {
+
+  if (!this.event.DepartmentIds?.length) {
+    return 'Select Departments';
+  }
+
+  const names = this.filteredDepartments
+    .filter(d =>
+      this.event.DepartmentIds.includes(d.departmentId)
+    )
+    .map(d => d.departmentName);
+
+  return names.join(', ');
+}
+
+getDepartmentNames(ids: number[]): string {
+debugger;
+  if (!ids || ids.length === 0) {
+    return '-';
+  }
+
+  return this.departments
+    .filter(d => ids.includes(d.departmentId))
+    .map(d => d.departmentName)
+    .join(', ');
+}
 }
