@@ -142,7 +142,6 @@ onCompanyChange() {
 
     this.adminService.getDepartments(this.userId)
       .subscribe((res: any) => {
-        debugger;
         this.departments = res.data.data.filter((x: any) => x.isActive);
         this.filterDepartments();
         
@@ -150,14 +149,14 @@ onCompanyChange() {
 
   }
 
-  getDepartmentName(ids: number[]): string {
+  getDepartmentName(ids: number[] | number): string {
 
-  if (!ids || ids.length === 0) {
-    return '-';
-  }
+  const arr = Array.isArray(ids) ? ids : [ids];
+
+  if (!arr || arr.length === 0) return '-';
 
   return this.departments
-    .filter(d => ids.includes(d.departmentId))
+    .filter(d => arr.includes(d.departmentId))
     .map(d => d.departmentName)
     .join(', ');
 }
@@ -174,19 +173,21 @@ this.policies = res.map((x: any) => ({
   PolicyId: x.policyId,
   CompanyId: x.companyId ?? x.companyID,
   RegionId: x.regionId ?? x.regionID,
-  DepartmentIds: x.departmentIds || [],
+
+  // ✅ IMPORTANT FIX
+  DepartmentIds: x.departmentIds?.length
+    ? x.departmentIds
+    : x.departmentId
+      ? [x.departmentId]
+      : [],
 
   Title: x.policyTitle,
   Category: x.category,
-
   EffectiveDate: x.effectiveDate,
-
-   Description: x.policyDescription,
-    // ✅ ADD THESE
+  Description: x.policyDescription,
   FileName: x.attachmentName,
   FileUrl: x.attachmentPath
-
-}))
+}));
 
         this.setPagination()
 
@@ -214,6 +215,18 @@ this.policies = res.map((x: any) => ({
   }
 
 onSubmit() {
+  if (
+    !this.policy.CompanyId ||
+    !this.policy.RegionId ||
+    !this.policy.DepartmentIds?.length ||
+    !this.policy.Title ||
+    !this.policy.Category ||
+    !this.policy.EffectiveDate ||
+    !this.policy.Description
+  ) {
+    Swal.fire('Validation', 'Please fill all required fields', 'warning');
+    return;
+  }
   const payload = {
 
     policyId: this.policy.PolicyId,

@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-company-news',
   standalone: false,
-  templateUrl: './company-news.component.html',
+  templateUrl:'./company-news.component.html',
   styleUrl: './company-news.component.css'
 })
 export class CompanyNewsComponent {
@@ -19,6 +19,8 @@ export class CompanyNewsComponent {
 
 
   departments: Department[] = [];
+  departmentIds: number[] = [];
+  showDeptDropdown: boolean = false;
 
   // News
   newsList: News[] = [];
@@ -31,6 +33,12 @@ export class CompanyNewsComponent {
   searchCategory: string = '';
   startDate: string = '';
   endDate: string = '';
+  paginatedNews: News[] = [];
+
+  currentPage = 1;
+  pageSize = 5;
+  totalPages = 1;
+  pageSizeOptions: number[] = [5, 10, 20];
 
   constructor(private adminService: AdminService, private spinner: NgxSpinnerService) { }
 
@@ -47,6 +55,9 @@ export class CompanyNewsComponent {
     this.getNewsList();
     this.loadCategories();
   }
+  ngOnChanges() {
+  this.setPagination();
+}
   loadCompanies(): void {
     this.adminService.getCompanies(null, this.userId).subscribe({
       next: (res: any) => {
@@ -96,12 +107,15 @@ loadRegions(): void {
       error: () => Swal.fire('Error', 'Failed to load categories', 'error')
     });
   }
-  getDepartmentName(departmentId?: number | null): string {
-    if (!departmentId) return '-';
+  getDepartmentName(departmentIds?: number[] | null): string {
+  if (!departmentIds || departmentIds.length === 0) return '-';
 
-    const dept = this.departments.find(d => d.departmentId === departmentId);
-    return dept ? dept.departmentName : '-';
-  }
+  const names = this.departments
+    .filter(d => departmentIds.includes(d.departmentId))
+    .map(d => d.departmentName);
+
+  return names.join(', ');
+}
   // -----------------------------
   // Load Departments
   // -----------------------------
@@ -109,7 +123,6 @@ loadRegions(): void {
     this.spinner.show();
     this.adminService.getDepartments(this.userId).subscribe({
       next: (data: any) => {
-        debugger;
         // Only active departments
         this.departments = data.data.data.filter((d: any) => d.isActive);
         this.spinner.hide();
@@ -121,6 +134,26 @@ loadRegions(): void {
       }
     });
   }
+  onDepartmentChange(event: any, id: number) {
+  if (!this.news.departmentIds) {
+    this.news.departmentIds = [];
+  }
+
+  if (event.target.checked) {
+    this.news.departmentIds.push(id);
+  } else {
+    this.news.departmentIds =
+      this.news.departmentIds.filter(x => x !== id);
+  }
+}
+
+toggleAllDepartments(event: any) {
+  if (event.target.checked) {
+    this.news.departmentIds = this.departments.map(d => d.departmentId);
+  } else {
+    this.news.departmentIds = [];
+  }
+}
 
   // -----------------------------
   // Load News
@@ -142,9 +175,11 @@ loadRegions(): void {
             ? Number(item.regionId)
             : null,
 
-          departmentId: item.departmentId
-            ? Number(item.departmentId)
-            : null,
+          departmentIds: item.departmentIds?.length
+            ? item.departmentIds
+            : item.departmentId
+              ? [item.departmentId]
+              : [],
 
           Title: item.title,
 
@@ -184,6 +219,10 @@ loadRegions(): void {
         this.spinner.hide();
       }
     });
+    this.currentPage = 1;   
+      this.setPagination();   
+
+      this.spinner.hide();
   }
 
   // -----------------------------
@@ -197,7 +236,7 @@ loadRegions(): void {
       CompanyId: this.companyId,
       RegionId: null,
 
-      departmentId: null,
+      departmentIds: [],
 
       Title: '',
       Category: '',
@@ -230,6 +269,22 @@ loadRegions(): void {
   // Add / Update News
   // -----------------------------
 onSubmit() {
+   if (
+    !this.news.CompanyId ||
+    !this.news.RegionId ||
+    !this.news.Title?.trim() ||
+    !this.news.departmentIds.length ||
+    !this.news.PublishedDate ||
+    !this.news.Category ||
+    !this.news.Description?.trim()
+  ) {
+    Swal.fire(
+      'Validation',
+      'Please fill all mandatory fields',
+      'warning'
+    );
+    return;
+  }
 
   const formData = new FormData();
 
@@ -253,10 +308,9 @@ onSubmit() {
 
   formData.append('Category', this.news.Category);
 
-  formData.append(
-    'departmentId',
-    String(this.news.departmentId ?? '')
-  );
+  this.news.departmentIds.forEach(id => {
+  formData.append('DepartmentIds', id.toString());
+});
 
   formData.append(
     'PostedDate',
@@ -326,6 +380,7 @@ onSubmit() {
   // Edit News
   // -----------------------------
 editNews(n: News) {
+  this.showDeptDropdown = false;
 
   this.isEditMode = true;
 
@@ -342,9 +397,9 @@ editNews(n: News) {
       ? Number(n.RegionId)
       : null,
 
-    departmentId: n.departmentId
-      ? Number(n.departmentId)
-      : null,
+    departmentIds: n.departmentIds?.length
+  ? [...n.departmentIds]
+  : [],
 
     AttachmentName: n.AttachmentName || '',
 
@@ -404,12 +459,91 @@ editNews(n: News) {
   // Filtered News
   // -----------------------------
   filteredNews(): News[] {
-    return this.newsList.filter(n => {
-      const matchesText = n.Title.toLowerCase().includes(this.searchText.toLowerCase());
-      const matchesCategory = this.searchCategory ? n.Category === this.searchCategory : true;
-      const matchesStart = this.startDate ? new Date(n.Date) >= new Date(this.startDate) : true;
-      const matchesEnd = this.endDate ? new Date(n.Date) <= new Date(this.endDate) : true;
-      return matchesText && matchesCategory && matchesStart && matchesEnd;
-    });
+
+  return this.newsList.filter(n => {
+
+    const matchesText =
+      (n.Title || '')
+      .toLowerCase()
+      .includes(this.searchText.toLowerCase());
+
+    const matchesCategory =
+      this.searchCategory
+        ? n.Category === this.searchCategory
+        : true;
+
+    const matchesStart =
+      this.startDate
+        ? new Date(n.Date) >= new Date(this.startDate)
+        : true;
+
+    const matchesEnd =
+      this.endDate
+        ? new Date(n.Date) <= new Date(this.endDate)
+        : true;
+
+    return matchesText &&
+           matchesCategory &&
+           matchesStart &&
+           matchesEnd;
+  });
+}
+onPageSizeChange(): void {
+  this.currentPage = 1;
+  this.setPagination();
+}
+onFilterChange() {
+  this.currentPage = 1;
+  this.setPagination();
+}
+setPagination(): void {
+
+  const filtered = this.filteredNews();
+
+  this.totalPages =
+    Math.ceil(filtered.length / this.pageSize) || 1;
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
   }
+
+  const start =
+    (this.currentPage - 1) * this.pageSize;
+
+  const end = start + this.pageSize;
+
+  this.paginatedNews =
+    filtered.slice(start, end);
+}
+
+changePage(page: number): void {
+
+  if (page < 1 || page > this.totalPages) {
+    return;
+  }
+
+  this.currentPage = page;
+
+  this.setPagination();
+}
+
+nextPage(): void {
+
+  if (this.currentPage < this.totalPages) {
+
+    this.currentPage++;
+
+    this.setPagination();
+  }
+}
+
+prevPage(): void {
+
+  if (this.currentPage > 1) {
+
+    this.currentPage--;
+
+    this.setPagination();
+  }
+}
 }

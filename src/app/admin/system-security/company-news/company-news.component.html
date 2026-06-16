@@ -19,8 +19,8 @@
 
     <!-- Company Dropdown -->
     <div class="col-md-6">
-      <label class="form-label fw-semibold">Company</label>
-      <select class="form-select" name="CompanyId" (change)="onCompanyChange()" [(ngModel)]="news.CompanyId">
+      <label class="form-label fw-semibold">Company<span class="text-danger">*</span></label>
+      <select class="form-select" name="CompanyId" (change)="onCompanyChange()" [(ngModel)]="news.CompanyId" required>
         <option [ngValue]="null">Select Company</option>
         <option *ngFor="let c of companies" [ngValue]="c.companyId">
           {{ c.companyName }}
@@ -30,8 +30,8 @@
 
     <!-- Region Dropdown -->
     <div class="col-md-6">
-      <label class="form-label fw-semibold">Region</label>
-      <select class="form-select" name="RegionId" [(ngModel)]="news.RegionId">
+      <label class="form-label fw-semibold">Region<span class="text-danger">*</span></label>
+      <select class="form-select" name="RegionId" [(ngModel)]="news.RegionId" required>
         <option [ngValue]="null">Select Region</option>
         <option *ngFor="let r of filteredRegions" [ngValue]="r.regionId">
           {{ r.regionName }}
@@ -41,45 +41,82 @@
 
     <!-- News Title -->
     <div class="col-md-6">
-      <label class="form-label">News Title</label>
+      <label class="form-label">News Title<span class="text-danger">*</span></label>
       <input type="text"
              [(ngModel)]="news.Title"
              name="Title"
              class="form-control"
-             placeholder="Enter news headline">
+             placeholder="Enter news headline"
+             required>
     </div>
 
     <!-- Department -->
-    <div class="col-md-6">
-      <label class="form-label">Department</label>
-    <select class="form-select"
-        [(ngModel)]="news.departmentId"
-        name="DepartmentId">
+    <!-- Department MULTI CHECKBOX DROPDOWN -->
+<div class="col-md-6 position-relative">
 
-  <option value="">Select Department</option>
+  <label class="form-label">Departments<span class="text-danger">*</span></label>
 
-  <option *ngFor="let d of departments" [value]="d.departmentId">
-    {{ d.departmentName }}
-  </option>
+  <!-- clickable box -->
+  <div class="form-select"
+       style="cursor:pointer"
+       (click)="showDeptDropdown = !showDeptDropdown">
 
-</select>
+    {{ news.departmentIds?.length
+    ? (news.departmentIds?.length + ' Selected')
+    : 'Select Departments' }}
+  </div>
+
+  <!-- dropdown -->
+  <div *ngIf="showDeptDropdown"
+       class="border bg-white shadow p-2 position-absolute w-100"
+       style="z-index:1000; max-height:250px; overflow:auto;">
+
+    <!-- Select All -->
+    <div class="form-check mb-2">
+      <input type="checkbox"
+             class="form-check-input"
+             [checked]="news.departmentIds?.length === departments.length"
+             (change)="toggleAllDepartments($event)">
+
+      <label class="form-check-label fw-bold">
+        Select All
+      </label>
     </div>
+
+    <hr>
+
+    <!-- Department list -->
+    <div *ngFor="let d of departments" class="form-check">
+
+      <input type="checkbox"
+             class="form-check-input"
+             [checked]="news.departmentIds.includes(d.departmentId)"
+             (change)="onDepartmentChange($event, d.departmentId)">
+
+      <label class="form-check-label">
+        {{ d.departmentName }}
+      </label>
+
+    </div>
+
+  </div>
+</div>
 
     <!-- Publish Date -->
     <div class="col-md-6">
-      <label class="form-label">Publish Date</label>
+      <label class="form-label">Publish Date<span class="text-danger">*</span></label>
       <input type="date"
              class="form-control"
              [(ngModel)]="news.PublishedDate"
-             name="PublishedDate">
+             name="PublishedDate" required>
     </div>
 
     <!-- Category -->
     <div class="col-md-6">
-      <label class="form-label">Category</label>
+      <label class="form-label">Category<span class="text-danger">*</span></label>
       <select class="form-select"
               [(ngModel)]="news.Category"
-              name="Category">
+              name="Category" required>
               <option value="">Select Category</option>
 
     <option *ngFor="let c of categories"
@@ -91,12 +128,13 @@
 
     <!-- Description -->
     <div class="col-md-12">
-      <label class="form-label">Description</label>
+      <label class="form-label">Description<span class="text-danger">*</span></label>
       <textarea class="form-control"
                 rows="3"
                 [(ngModel)]="news.Description"
                 name="Description"
-                placeholder="Enter news description">
+                placeholder="Enter news description"
+                required>
       </textarea>
     </div>
 
@@ -141,7 +179,7 @@
         <!-- Filters -->
         <div class="mb-3 row g-3 align-items-end">
           <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Search by Title" [(ngModel)]="searchText" />
+            <input type="text" class="form-control" placeholder="Search by Title" [(ngModel)]="searchText" (ngModelChange)="onFilterChange()" />
           </div>
           <div class="col-md-4">
             <!-- <select class="form-select" [(ngModel)]="searchCategory">
@@ -150,8 +188,8 @@
             </select> -->
           </div>
           <div class="col-md-4 d-flex">
-            <input type="date" class="form-control me-2" [(ngModel)]="startDate" placeholder="From" />
-            <input type="date" class="form-control" [(ngModel)]="endDate" placeholder="To" />
+            <input type="date" class="form-control me-2" [(ngModel)]="startDate" placeholder="From" (ngModelChange)="onFilterChange()" />
+            <input type="date" class="form-control" [(ngModel)]="endDate" placeholder="To" (ngModelChange)="onFilterChange()" />
           </div>
         </div>
 
@@ -169,14 +207,14 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let n of filteredNews(); let i = index">
+            <tr *ngFor="let n of paginatedNews; let i = index">
               <td>{{ i + 1 }}</td>
               <td>{{ n.Title }}</td>
               <td>{{ n.Category }}</td>
               <td>{{ n.Description | slice:0:50 }}...</td>
               <td>{{ n.Date | date:'dd-MMM-yyyy' }}</td>
               <td>
-               {{ getDepartmentName(n.departmentId) }}
+               {{ getDepartmentName(n.departmentIds) }}
               </td>
               <td class="text-center">
                 <button class="btn btn-sm btn-outline-primary me-2" (click)="editNews(n)">
@@ -192,6 +230,48 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+
+  <!-- SHOW DROPDOWN -->
+  <div class="d-flex align-items-center">
+    <span>Show</span>
+
+    <select class="form-select form-select-sm mx-2"
+            style="width: 80px;"
+            [(ngModel)]="pageSize"
+            (change)="onPageSizeChange()">
+
+      <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+        {{ size }}
+      </option>
+
+    </select>
+
+    <span>entries</span>
+  </div>
+
+  <!-- RIGHT: PAGINATION -->
+  <nav>
+    <ul class="pagination pagination-sm mb-0">
+
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="prevPage()">Prev</button>
+      </li>
+
+      <li class="page-item active">
+        <span class="page-link">
+          {{ currentPage }} / {{ totalPages }}
+        </span>
+      </li>
+
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="nextPage()">Next</button>
+      </li>
+
+    </ul>
+  </nav>
+
+</div>
 
       </div>
     </div>
