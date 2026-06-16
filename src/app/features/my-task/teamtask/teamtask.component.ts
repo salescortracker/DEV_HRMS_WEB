@@ -183,8 +183,14 @@ export class TeamtaskComponent {
   }
 
   loadEmployees() {
+
+  if (!this.userId) {
+    console.warn('UserId not found');
+    return;
+  }
+
   this.adminService
-    .getUsersByCompanyRegion(this.companyId, this.regionId)
+    .getManagerEmployees(this.userId)
     .subscribe({
       next: (res: any[]) => {
 
@@ -196,7 +202,7 @@ export class TeamtaskComponent {
 
       },
       error: (err) => {
-        console.error('Error loading employees', err);
+        console.error('Error loading manager employees', err);
       }
     });
 }
