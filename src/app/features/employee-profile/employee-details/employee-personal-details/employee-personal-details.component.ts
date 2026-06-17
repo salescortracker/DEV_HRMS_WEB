@@ -135,42 +135,84 @@ loadgender() {
     error: (err) => console.error(err)
   });
 }
-   createForm() {
-    this.personalForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      dateOfBirth: [''],
-      genderId: [''],
-      mobileNumber: [''],
-      personalEmail: [''],
-      permanentAddress: [''],
-      presentAddress: [''],
-      panNumber: [''],
-      aadhaarNumber: [''],
-      passportNumber: [''],
-      placeOfBirth: [''],
-      uan: [''],
-      bloodGroup: [''],
-      citizenship: [''],
-      religion: [''],
-      drivingLicence: [''],
-      maritalStatusId: [''],
-      marriageDate: [''],
-      workPhone: [''],
-      linkedInProfile: [''],
-      previousExperience: [''],
-      ProfilePicturePath: [''],
-      ProfilePictureName : [''],
-      brandGrade: [''],
-      esicNumber: [''],
-      pfNumber: [''],
-      employmentType: [''],
-      dateofJoining: [''],
-      companyId: sessionStorage.getItem('CompanyId') || 1,
-      regionId: sessionStorage.getItem('RegionId') || 1,
-      userId: sessionStorage.getItem('UserId') || 1
-    });
-  }
+  //  createForm() {
+  //   this.personalForm = this.fb.group({
+  //     firstName: ['', Validators.required],
+  //     lastName: [''],
+  //     dateOfBirth: [''],
+  //     genderId: [''],
+  //     mobileNumber: [''],
+  //     personalEmail: [''],
+  //     permanentAddress: [''],
+  //     presentAddress: [''],
+  //     panNumber: [''],
+  //     aadhaarNumber: [''],
+  //     passportNumber: [''],
+  //     placeOfBirth: [''],
+  //     uan: [''],
+  //     bloodGroup: [''],
+  //     citizenship: [''],
+  //     religion: [''],
+  //     drivingLicence: [''],
+  //     maritalStatusId: [''],
+  //     marriageDate: [''],
+  //     workPhone: [''],
+  //     linkedInProfile: [''],
+  //     previousExperience: [''],
+  //     ProfilePicturePath: [''],
+  //     ProfilePictureName : [''],
+  //     brandGrade: [''],
+  //     esicNumber: [''],
+  //     pfNumber: [''],
+  //     employmentType: [''],
+  //     dateofJoining: [''],
+  //     companyId: sessionStorage.getItem('CompanyId') || 1,
+  //     regionId: sessionStorage.getItem('RegionId') || 1,
+  //     userId: sessionStorage.getItem('UserId') || 1
+  //   });
+  // }
+  createForm() {
+  this.personalForm = this.fb.group({
+    firstName: ['', Validators.required],
+    lastName: [''],
+
+    dateOfBirth: ['', Validators.required],
+
+    genderId: [''],
+    mobileNumber: [''],
+    personalEmail: [''],
+    permanentAddress: [''],
+    presentAddress: [''],
+
+    panNumber: ['', Validators.required],
+
+    aadhaarNumber: ['', Validators.required],
+
+    passportNumber: [''],
+    placeOfBirth: [''],
+    uan: [''],
+    bloodGroup: [''],
+    citizenship: [''],
+    religion: [''],
+    drivingLicence: [''],
+    maritalStatusId: [''],
+    marriageDate: [''],
+    workPhone: [''],
+    linkedInProfile: [''],
+    previousExperience: [''],
+    ProfilePicturePath: [''],
+    ProfilePictureName: [''],
+    brandGrade: [''],
+    esicNumber: [''],
+    pfNumber: [''],
+    employmentType: [''],
+    dateofJoining: [''],
+
+    companyId: sessionStorage.getItem('CompanyId') || 1,
+    regionId: sessionStorage.getItem('RegionId') || 1,
+    userId: sessionStorage.getItem('UserId') || 1
+  });
+}
 
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
@@ -182,6 +224,16 @@ loadgender() {
     //   Swal.fire("Please fill required fields", '', 'warning');
     //   return;
     // }
+     if (this.personalForm.invalid) {
+    this.personalForm.markAllAsTouched();
+
+    Swal.fire(
+      'Validation Error',
+      'Please fill all mandatory fields',
+      'warning'
+    );
+    return;
+  }
     const formData = new FormData();
     Object.keys(this.personalForm.controls).forEach(key => {
   let value = this.personalForm.get(key)?.value;
@@ -205,7 +257,7 @@ loadgender() {
   next: () => {
     Swal.fire("Created successfully!", '', 'success');
     this.loadByUserId();
-    this.personalForm.reset();
+    // this.personalForm.reset();
   },
   error: (err) => {
    Swal.fire("Error", JSON.stringify(err.error.errors), "error");
@@ -221,7 +273,7 @@ loadgender() {
     Swal.fire("Updated successfully!", '', 'success');
     this.loadByUserId();
     this.editId = null;
-    this.personalForm.reset();
+    // this.personalForm.reset();
   },
   error: (err) => {
     Swal.fire("Error", JSON.stringify(err.error.errors), "error");
