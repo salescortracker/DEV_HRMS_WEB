@@ -51,7 +51,10 @@ export class CommonUploadComponent {
       const workbook = XLSX.read(data, { type: 'array' });
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-      this.fileData = XLSX.utils.sheet_to_json(sheet);
+      this.fileData = XLSX.utils.sheet_to_json(sheet, {
+  raw: false,
+  dateNF: 'dd-mm-yyyy'
+});
       console.log('Excel Data:', this.fileData);
     };
     reader.readAsArrayBuffer(file);
@@ -74,7 +77,9 @@ export class CommonUploadComponent {
     }
 
     // Call backend API to insert data
-  this.adminService.bulkInsertData('Company', this.fileData).subscribe({
+  // this.adminService.bulkInsertData('Company', this.fileData)
+  this.adminService.bulkInsertData(this.screenName, this.fileData)
+  .subscribe({
   next: (res: any) => {
     if (res.success) {
       Swal.fire({
@@ -266,18 +271,38 @@ if (duplicateEmail) {
 
   /** Download sample Excel template */
 downloadTemplate() {
-  if (!this.model || !Array.isArray(this.model) || this.model.length === 0) {
+  console.log('Model:', this.model);
+  
+  if (!this.model) {
     Swal.fire('Error', 'Model data missing or invalid!', 'error');
     return;
   }
 
   try {
-    // Convert model data directly to worksheet
-    const worksheet = XLSX.utils.json_to_sheet(this.model);
+    // Extract structure from model object or use directly if array
+    let templateData: any[] = [];
+    
+    if (Array.isArray(this.model)) {
+      templateData = this.model;
+    } else if (this.model.structure && typeof this.model.structure === 'object') {
+      // Model is an object with structure property - extract it
+      templateData = [this.model.structure];
+    } else if (typeof this.model === 'object') {
+      // Use model directly as single row
+      templateData = [this.model];
+    }
+
+    if (templateData.length === 0) {
+      Swal.fire('Error', 'Model data missing or invalid!', 'error');
+      return;
+    }
+
+    // Convert model data to worksheet
+    const worksheet = XLSX.utils.json_to_sheet(templateData);
 
     // Create workbook and append sheet
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Company Template');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Template');
 
     // File name based on screenName or fallback
     const fileName = this.screenName
@@ -291,7 +316,6 @@ downloadTemplate() {
     Swal.fire('Error', 'Failed to generate template file.', 'error');
   }
 }
-
 
   onFileChange(event: any) {
     const target: DataTransfer = <DataTransfer>event.target;
