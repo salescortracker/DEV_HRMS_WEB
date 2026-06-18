@@ -36,7 +36,7 @@ export class TimesheetReportComponent implements OnInit {
   sortDirection: 'asc' | 'desc' = 'desc';
 
   // Pagination
-  pageSize = 10;
+  pageSize = 5;
   currentPage = 1;
   pageSizeOptions = [5, 10, 20, 50];
   companyLogoBase64: string = '';
@@ -129,9 +129,9 @@ companyAddress: string = '';
 
     this.searchTermControl = this.filtersForm.get('searchTerm') as FormControl;
 
-    this.filtersForm.valueChanges.subscribe(() => {
-      this.applyFilters();
-    });
+    // this.filtersForm.valueChanges.subscribe(() => {
+    //   this.applyFilters();
+    // });
   }
 
   loadAllTimesheets(): void {
@@ -535,4 +535,13 @@ getBase64ImageFromURL(url: string): Promise<string> {
     XLSX.utils.book_append_sheet(wb, ws, 'Timesheet Report');
     XLSX.writeFile(wb, 'timesheet-report.xlsx');
   }
+
+  changePage(page: number): void {
+  this.goToPage(page);
+}
+
+changePageSize(size: number): void {
+  this.pageSize = size;
+  this.currentPage = 1;
+}
 }
