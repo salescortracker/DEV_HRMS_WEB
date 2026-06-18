@@ -47,7 +47,7 @@
     </button>
 
   </form>
-
+<hr>
   <!-- Table Section -->
   <table>
     <thead>
@@ -71,8 +71,8 @@
         <td>{{ ref.email }}</td>
         <td>{{ ref.mobileNumber }}</td>
         <td class="actions">
-            <i class="fa-solid fa-edit" title="Edit" *ngIf="canEdit"  (click)="editReference(ref)"></i>
-          <i class="fa-solid fa-trash" title="Delete"  *ngIf="canDelete" (click)="deleteReference(ref.referenceId!)"></i>
+            <i class="fa-solid fa-pen" title="Edit" *ngIf="canEdit" style="margin-right: 12px;" (click)="editReference(ref)"></i>
+          <i class="fa-solid fa-trash" title="Delete" style="color: #B02828;" *ngIf="canDelete" (click)="deleteReference(ref.referenceId!)"></i>
         </td>
       </tr>
     </tbody>

@@ -127,3 +127,22 @@ body {
       flex: 1 1 100%;
     }
   }
+
+  .submit-btn {
+  background-color: #B02828;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.submit-btn:hover {
+  background-color: #8F1F1F;
+}
+
+.submit-btn:disabled {
+  background-color: #D9A3A3;
+  cursor: not-allowed;
+}
