@@ -31,7 +31,7 @@
     <!-- Region Dropdown -->
     <div class="col-md-6">
       <label class="form-label fw-semibold">Region<span class="text-danger">*</span></label>
-      <select class="form-select" name="RegionId" [(ngModel)]="news.RegionId" required>
+      <select class="form-select" name="RegionId" [(ngModel)]="news.RegionId" (change)="onRegionChange()" required>
         <option [ngValue]="null">Select Region</option>
         <option *ngFor="let r of filteredRegions" [ngValue]="r.regionId">
           {{ r.regionName }}
@@ -61,9 +61,7 @@
        style="cursor:pointer"
        (click)="showDeptDropdown = !showDeptDropdown">
 
-    {{ news.departmentIds?.length
-    ? (news.departmentIds?.length + ' Selected')
-    : 'Select Departments' }}
+    {{ news.departmentIds.length + ' Selected' }}
   </div>
 
   <!-- dropdown -->
@@ -75,7 +73,7 @@
     <div class="form-check mb-2">
       <input type="checkbox"
              class="form-check-input"
-             [checked]="news.departmentIds?.length === departments.length"
+             [checked]="news.departmentIds.length === departments.length"
              (change)="toggleAllDepartments($event)">
 
       <label class="form-check-label fw-bold">
@@ -86,7 +84,7 @@
     <hr>
 
     <!-- Department list -->
-    <div *ngFor="let d of departments" class="form-check">
+    <div *ngFor="let d of filteredDepartments" class="form-check">
 
       <input type="checkbox"
              class="form-check-input"
