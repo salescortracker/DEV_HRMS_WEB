@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-help-desk-management',
@@ -6,45 +7,56 @@ import { Component } from '@angular/core';
   templateUrl: './help-desk-management.component.html',
   styleUrl: './help-desk-management.component.css'
 })
-export class HelpDeskManagementComponent {
-canViewRaiseTicket = false;
-canViewMyTickets = false;
-canViewTicketApproval = false;
-canViewTicketReports = false;
-selectedTab: string = '';
+export class HelpDeskManagementComponent implements OnInit {
 
-ngOnInit(): void {
-  this.LoadTabPermissions();
-}
-LoadTabPermissions() {
-  const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+  canViewRaiseTicket = false;
+  canViewMyTickets = false;
+  canViewTicketApproval = false;
+  canViewTicketReports = false;
 
-  const raise = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "raise ticket"
-  );
+  constructor(private router: Router) {}
 
-  const mytickets = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "my tickets"
-  );
+  ngOnInit(): void {
+    this.loadTabPermissions();
 
-  const ticketapproval = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "ticket approval"
-  );
+    // Optional default navigation
+    // if (this.canViewRaiseTicket) {
+    //   this.router.navigate(['/help-desk/raise-ticket']);
+    // }
+    // else if (this.canViewMyTickets) {
+    //   this.router.navigate(['/help-desk/my-tickets']);
+    // }
+    // else if (this.canViewTicketApproval) {
+    //   this.router.navigate(['/help-desk/ticket-approval']);
+    // }
+    // else if (this.canViewTicketReports) {
+    //   this.router.navigate(['/help-desk/ticket-reports']);
+    // }
+  }
 
- const ticketreports = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "ticket reports"
-  );
+  loadTabPermissions(): void {
 
-  this.canViewRaiseTicket = raise?.canView ?? false;
-  this.canViewMyTickets = mytickets?.canView ?? false;
-  this.canViewTicketApproval = ticketapproval?.canView ?? false;
-  this.canViewTicketReports = ticketreports?.canView ?? false;
+    const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
 
-  if (this.canViewRaiseTicket) this.selectedTab = 'tab1';
-  else if (this.canViewMyTickets) this.selectedTab = 'tab2';
-  else if (this.canViewTicketApproval) this.selectedTab = 'tab3';
-  else if (this.canViewTicketReports) this.selectedTab = 'tab4';
-}
+    const raiseTicket = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'raise ticket'
+    );
 
+    const myTickets = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'my tickets'
+    );
 
+    const ticketApproval = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'ticket approval'
+    );
+
+    const ticketReports = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'ticket reports'
+    );
+
+    this.canViewRaiseTicket = raiseTicket?.canView ?? false;
+    this.canViewMyTickets = myTickets?.canView ?? false;
+    this.canViewTicketApproval = ticketApproval?.canView ?? false;
+    this.canViewTicketReports = ticketReports?.canView ?? false;
+  }
 }

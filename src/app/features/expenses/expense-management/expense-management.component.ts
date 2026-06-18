@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../../admin/servies/admin.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-expense-management',
@@ -7,122 +8,50 @@ import { AdminService } from '../../../admin/servies/admin.service';
   templateUrl: './expense-management.component.html',
   styleUrl: './expense-management.component.css'
 })
-export class ExpenseManagementComponent {
-canCreateExpense: boolean = false;
-canViewAllExpense: boolean = false;
-canApproveExpense: boolean = false;
-selectedTab: string = '';
+export class ExpenseManagementComponent implements OnInit {
 
-//  constructor(private adminService: AdminService) { }
-ngOnInit() {
-  //this.loadExpensePermissions();
-  this.loadTabPermissions();
-}
-loadTabPermissions() {
+  canCreateExpense: boolean = false;
+  canViewAllExpense: boolean = false;
+  canApproveExpense: boolean = false;
 
-  const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+  constructor(private router: Router) { }
 
-  const createMenu = menus.find(
-    (m: any) => m.menuName?.trim().toLowerCase() === "create expense"
-  );
+  ngOnInit(): void {
+    this.loadTabPermissions();
+
+    // if (this.canCreateExpense) {
+    //   this.router.navigate(['/expenses/create-expense']);
+    // }
+    // else if (this.canViewAllExpense) {
+    //   this.router.navigate(['/expenses/all-expenses']);
+    // }
+    // else if (this.canApproveExpense) {
+    //   this.router.navigate(['/expenses/approve-expenses']);
+    // }
+  }
+
+  loadTabPermissions(): void {
+
+    const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
+
+    const createMenu = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'create expense'
+    );
 
     const allMenu = menus.find(
-    (m: any) => m.menuName?.trim().toLowerCase() === "all expense"
-  );
+      (m: any) => m.menuName?.trim().toLowerCase() === 'all expense'
+    );
 
-  // ✅ Approve Expenses
-  const approveMenu = menus.find(
-    (m: any) => m.menuName?.trim().toLowerCase() === "approve expense"
-  );
+    const approveMenu = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'approve expense'
+    );
 
+    this.canCreateExpense = createMenu?.canAdd ?? false;
+    this.canViewAllExpense = allMenu?.canView ?? false;
+    this.canApproveExpense = approveMenu?.canEdit ?? false;
 
-  this.canCreateExpense = createMenu?.canAdd ?? false;
-  this.canViewAllExpense = allMenu?.canView ?? false;
-  this.canApproveExpense = approveMenu?.canEdit ?? false;
-
-  if (this.canCreateExpense) this.selectedTab = 'tab1';
-  else if (this.canViewAllExpense) this.selectedTab = 'tab2';
-  else if (this.canApproveExpense) this.selectedTab = 'tab3';
-  
-
-}
-// loadPermission() {
-//   const userId = Number(sessionStorage.getItem("UserId"));
-//   const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
-
-//   // ✅ Create Expense
-//   const createMenu = menus.find(
-//     (m: any) => m.menuName?.trim().toLowerCase() === "create expense"
-//   );
-
-//   // ✅ All Expenses
-//   const allMenu = menus.find(
-//     (m: any) => m.menuName?.trim().toLowerCase() === "all expenses"
-//   );
-
-//   // ✅ Approve Expenses
-//   const approveMenu = menus.find(
-//     (m: any) => m.menuName?.trim().toLowerCase() === "approve expenses"
-//   );
-
-//   this.canCreateExpense = createMenu?.canAdd ?? false;
-//   this.canViewAllExpense = allMenu?.canView ?? false;
-//   this.canApproveExpense = approveMenu?.canEdit ?? false;
-
-//   // 🔥 Optional API calls (same pattern)
-//   if (createMenu) {
-//     this.adminService.getPermission(userId, createMenu.menuId, 'create')
-//       .subscribe(res => this.canCreateExpense = this.canCreateExpense && res);
-//   }
-
-//   if (allMenu) {
-//     this.adminService.getPermission(userId, allMenu.menuId, 'view')
-//       .subscribe(res => this.canViewAllExpense = this.canViewAllExpense && res);
-//   }
-
-//   if (approveMenu) {
-//     this.adminService.getPermission(userId, approveMenu.menuId, 'edit')
-//       .subscribe(res => this.canApproveExpense = this.canApproveExpense && res);
-//   }
-
-//   console.log("Expense Permissions:", {
-//     create: this.canCreateExpense,
-//     view: this.canViewAllExpense,
-//     approve: this.canApproveExpense
-//   });
-// }
-
-// loadExpensePermissions() {
-
-//   const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
-
-//   // 👉 Parent
-//   const parentMenu = menus.find((m: any) =>
-//     m.menuName?.trim().toLowerCase() === "expenses"
-//   );
-
-//   const parentId = parentMenu?.menuId;
-
-//   // ❗ Safety check
-//   if (!parentId) {
-//     console.warn("Expenses parent not found");
-//     return;
-//   }
-
-//   // 👉 Children
-//   const expenseMenus = menus.filter((m: any) => m.parentId === parentId);
-
-//   console.log("Expense Child Menus:", expenseMenus);
-
-//   // 👉 Permission function
-//   const getPermission = (name: string) =>
-//     expenseMenus.find((m: any) =>
-//       m.menuName?.trim().toLowerCase() === name.toLowerCase()
-//     )?.canView ?? false;
-
-//   // 👉 Assign
-//   this.canCreateExpense = getPermission("Create Expense");
-//   this.canViewAllExpense = getPermission("All Expenses");
-//   this.canApproveExpense = getPermission("Approve Expenses");
-// }
+    console.log('Create Expense:', this.canCreateExpense);
+    console.log('All Expenses:', this.canViewAllExpense);
+    console.log('Approve Expense:', this.canApproveExpense);
+  }
 }
