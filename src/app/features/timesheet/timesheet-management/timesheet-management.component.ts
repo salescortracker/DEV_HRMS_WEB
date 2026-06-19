@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-timesheet-management',
@@ -6,42 +7,50 @@ import { Component } from '@angular/core';
   templateUrl: './timesheet-management.component.html',
   styleUrl: './timesheet-management.component.css'
 })
-export class TimesheetManagementComponent {
-canViewSubmitTimesheet = false;
-canViewApproveTimesheet = false;
-canViewTimesheetReport = false;
-selectedTab: string = '';
+export class TimesheetManagementComponent implements OnInit {
 
-ngOnInit() {
-  this.loadTabPermissions();
-}
+  canViewSubmitTimesheet = false;
+  canViewApproveTimesheet = false;
+  canViewTimesheetReport = false;
 
-loadTabPermissions() {
+  constructor(private router: Router) { }
 
-  const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+  ngOnInit(): void {
+    this.loadTabPermissions();
 
-  const submit = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "submit timesheet"
-  );
+    // if (this.canViewSubmitTimesheet) {
+    //   this.router.navigate(['/timesheet/submit-timesheet']);
+    // }
+    // else if (this.canViewApproveTimesheet) {
+    //   this.router.navigate(['/timesheet/approve-timesheet']);
+    // }
+    // else if (this.canViewTimesheetReport) {
+    //   this.router.navigate(['/timesheet/timesheet-report']);
+    // }
+  }
 
-  const approve = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "approve timesheet"
-  );
+  loadTabPermissions(): void {
 
-  const report = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "timesheet report"
-  );
+    const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
 
-  this.canViewSubmitTimesheet = submit?.canView ?? false;
-  this.canViewApproveTimesheet = approve?.canView ?? false;
-  this.canViewTimesheetReport = report?.canView ?? false;
-  
+    const submit = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === "submit timesheet"
+    );
 
-  if (this.canViewSubmitTimesheet) this.selectedTab = 'tab1';
-  else if (this.canViewApproveTimesheet) this.selectedTab = 'tab2';
-  else if (this.canViewTimesheetReport) this.selectedTab = 'tab3';
-  
+    const approve = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === "approve timesheet"
+    );
 
-}
+    const report = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === "timesheet report"
+    );
 
+    this.canViewSubmitTimesheet = submit?.canView ?? false;
+    this.canViewApproveTimesheet = approve?.canView ?? false;
+    this.canViewTimesheetReport = report?.canView ?? false;
+
+    console.log("Submit Timesheet:", this.canViewSubmitTimesheet);
+    console.log("Approve Timesheet:", this.canViewApproveTimesheet);
+    console.log("Timesheet Report:", this.canViewTimesheetReport);
+  }
 }

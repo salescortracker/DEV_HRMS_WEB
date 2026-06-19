@@ -11,37 +11,51 @@
 </div>
 
 <div class="tab-container">
-  <input type="radio" id="tab1" name="tab" [checked]="selectedTab === 'tab1'">
-  <input type="radio" id="tab2" name="tab" [checked]="selectedTab === 'tab2'">
-  <input type="radio" id="tab3" name="tab" [checked]="selectedTab === 'tab3'">
-  <input type="radio" id="tab4" name="tab" [checked]="selectedTab === 'tab4'">
 
   <div class="tab-header">
-    <label class="tab-label" for="tab1" *ngIf="canViewRaiseTicket">Raise Ticket</label>
-    <label class="tab-label" for="tab2" *ngIf="canViewMyTickets">My Tickets</label>
-    <label class="tab-label" for="tab3" *ngIf="canViewTicketApproval">Ticket Approval</label>
-    <label class="tab-label" for="tab4" *ngIf="canViewTicketReports">Ticket Reports</label>
+
+    <button
+      *ngIf="canViewRaiseTicket"
+      type="button"
+      class="tab-label"
+      routerLink="/help-desk/raise-ticket"
+      routerLinkActive="active">
+      Raise Ticket
+    </button>
+
+    <button
+      *ngIf="canViewMyTickets"
+      type="button"
+      class="tab-label"
+      routerLink="/help-desk/my-tickets"
+      routerLinkActive="active">
+      My Tickets
+    </button>
+
+    <button
+      *ngIf="canViewTicketApproval"
+      type="button"
+      class="tab-label"
+      routerLink="/help-desk/ticket-approval"
+      routerLinkActive="active">
+      Ticket Approval
+    </button>
+
+    <button
+      *ngIf="canViewTicketReports"
+      type="button"
+      class="tab-label"
+      routerLink="/help-desk/ticket-reports"
+      routerLinkActive="active">
+      Ticket Reports
+    </button>
+
   </div>
 
-  <!-- TAB 1: Raise Ticket -->
-  <div id="content1" class="tab-content" *ngIf="canViewRaiseTicket">
-    <app-raise-ticket></app-raise-ticket>
+  <div class="tab-content">
+    <router-outlet></router-outlet>
   </div>
 
-  <!-- TAB 2: My Tickets -->
-  <!-- MY TICKETS TAB -->
-  <div id="content2" class="tab-content" *ngIf="canViewMyTickets">
-      <app-my-tickets></app-my-tickets>
-  </div>
-
-  <!-- TAB 3: Ticket Approval -->
-  <!-- APPROVE TICKETS TAB -->
-  <div id="content3" class="tab-content" *ngIf="canViewTicketApproval">
-      <app-approve-tickets></app-approve-tickets>
-  </div>
-  <div id="content4" class="tab-content" *ngIf="canViewTicketReports">
-    <app-ticket-reports></app-ticket-reports>
-  </div>
 </div>
 
 <app-footer></app-footer>

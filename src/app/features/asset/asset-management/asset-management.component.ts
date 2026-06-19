@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-asset-management',
@@ -6,59 +7,73 @@ import { Component } from '@angular/core';
   templateUrl: './asset-management.component.html',
   styleUrl: './asset-management.component.css'
 })
-export class AssetManagementComponent {
-canViewAddAsset = false;
-canViewAssetRequests = false;
-canViewAssetApproval = false;
-canViewAssignAssetScreen = false;
-canViewMyAssets = false;
-canViewAssetReports = false;
-selectedTab: string = '';
-ngOnInit() {
-  this.loadTabPermissions();
-}
+export class AssetManagementComponent implements OnInit {
 
-loadTabPermissions() {
-const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+  canViewAddAsset = false;
+  canViewAssetRequests = false;
+  canViewAssetApproval = false;
+  canViewAssignAssetScreen = false;
+  canViewMyAssets = false;
+  canViewAssetReports = false;
 
-  const addasset = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "add asset"
-  );
+  constructor(private router: Router) { }
 
-  const assignasset = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "assign asset"
-  );
+  ngOnInit(): void {
+    this.loadTabPermissions();
 
-  const assetrequests = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "asset request"
-  );
+    // if (this.canViewAddAsset) {
+    //   this.router.navigate(['/asset/add-asset']);
+    // }
+    // else if (this.canViewAssetRequests) {
+    //   this.router.navigate(['/asset/asset-request']);
+    // }
+    // else if (this.canViewAssetApproval) {
+    //   this.router.navigate(['/asset/asset-approval']);
+    // }
+    // else if (this.canViewAssignAssetScreen) {
+    //   this.router.navigate(['/asset/assign-asset']);
+    // }
+    // else if (this.canViewMyAssets) {
+    //   this.router.navigate(['/asset/my-assets']);
+    // }
+    // else if (this.canViewAssetReports) {
+    //   this.router.navigate(['/asset/asset-reports']);
+    // }
+  }
 
-  const assetapproval = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "asset approval"
-  );
+  loadTabPermissions(): void {
 
-   const myassets = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "my asset"
-  );
+    const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
 
-  const assetreports = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "asset reports"
-  );
+    const addasset = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'add asset'
+    );
 
+    const assignasset = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'assign asset'
+    );
 
-  this.canViewAddAsset = addasset?.canView ?? false;
-  this.canViewAssetRequests = assetrequests?.canView ?? false;
-  this.canViewAssetApproval = assetapproval?.canView ?? false;
-  this.canViewAssignAssetScreen = assignasset?.canView ?? false;
-  this.canViewMyAssets = myassets?.canView ?? false;
-  this.canViewAssetReports = assetreports?.canView ?? false;
+    const assetrequests = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'asset request'
+    );
 
-  if (this.canViewAddAsset) this.selectedTab = 'tab1';
-  else if (this.canViewAssetRequests) this.selectedTab = 'tab4';
-  else if (this.canViewAssetApproval) this.selectedTab = 'tab3';
-  else if (this.canViewAssignAssetScreen) this.selectedTab = 'tab5';
-  else if (this.canViewMyAssets) this.selectedTab = 'tab2';
-  else if (this.canViewAssetReports) this.selectedTab = 'tab6';
-}
+    const assetapproval = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'asset approval'
+    );
 
+    const myassets = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'my asset'
+    );
+
+    const assetreports = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'asset reports'
+    );
+
+    this.canViewAddAsset = addasset?.canView ?? false;
+    this.canViewAssetRequests = assetrequests?.canView ?? false;
+    this.canViewAssetApproval = assetapproval?.canView ?? false;
+    this.canViewAssignAssetScreen = assignasset?.canView ?? false;
+    this.canViewMyAssets = myassets?.canView ?? false;
+    this.canViewAssetReports = assetreports?.canView ?? false;
+  }
 }
