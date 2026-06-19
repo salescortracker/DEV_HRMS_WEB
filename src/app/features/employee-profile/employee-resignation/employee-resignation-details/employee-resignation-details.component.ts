@@ -4,6 +4,7 @@ import { EmployeeResignation } from '../../employee-models/EmployeeResignation';
 import { commonConstants } from '../../../../core/common';
 import { NgForm } from '@angular/forms';
 import { AdminService,ResignationModel } from '../../../../admin/servies/admin.service';
+import Swal from 'sweetalert2';
 type ColumnKey =
   | 'showIndex'
   | 'type'
@@ -379,13 +380,21 @@ canSubmitResignation(): boolean {
   apiCall.subscribe({
     next: () => {
 
-      this.message = this.isEditMode
-        ? 'Resignation updated successfully!'
-        : 'Resignation submitted successfully!';
+  const actionType =
+    this.resignationModel.resignationType || 'Request';
 
-      this.resetForm(form);
-      this.loadResignations();
-    },
+      Swal.fire({
+        icon: 'success',
+        title: this.isEditMode ? 'Updated Successfully' : 'Submitted Successfully',
+        text: this.isEditMode
+          ? `${actionType} request updated successfully.`
+          : `${actionType} request submitted successfully.`,
+        confirmButtonText: 'OK'
+      });
+
+  this.resetForm(form);
+  this.loadResignations();
+},
     error: (err) => {
 
       console.error('Error saving resignation:', err);

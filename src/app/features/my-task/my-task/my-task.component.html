@@ -12,39 +12,39 @@
 
 <div class="tab-container">
 
-  <!-- Radios -->
-   <input type="radio" id="tab1" name="tab" [checked]="selectedTab === 'tab1'" *ngIf="canViewMyTask"> 
-
-  <input type="radio" id="tab2" name="tab" [checked]="selectedTab === 'tab2'" *ngIf="canViewTeamTask">
-  <input type="radio" id="tab3" name="tab" [checked]="selectedTab === 'tab3'" *ngIf="canViewTaskReport">
-  
-
-  <!-- Tab Headers -->
   <div class="tab-header">
-    <label for="tab1" class="tab-label" *ngIf="canViewMyTask">
+
+    <button
+      *ngIf="canViewMyTask"
+      type="button"
+      class="tab-label"
+      routerLink="/my-task/my-tasks"
+      routerLinkActive="active">
       My Task
-    </label>
+    </button>
 
-    <label for="tab2" class="tab-label" *ngIf="canViewTeamTask">
+    <button
+      *ngIf="canViewTeamTask"
+      type="button"
+      class="tab-label"
+      routerLink="/my-task/team-task"
+      routerLinkActive="active">
       Team Task
-    </label>
+    </button>
 
-    <label for="tab3" class="tab-label" *ngIf="canViewTaskReport">
+    <button
+      *ngIf="canViewTaskReport"
+      type="button"
+      class="tab-label"
+      routerLink="/my-task/task-report"
+      routerLinkActive="active">
       Task Report
-    </label>
+    </button>
+
   </div>
 
-  <!-- Tab Content -->
-  <div id="content1" class="tab-content" *ngIf="canViewMyTask">
-    <app-mytask></app-mytask>
-  </div>
-
-  <div id="content2" class="tab-content" *ngIf="canViewTeamTask">
-    <app-teamtask></app-teamtask>
-  </div>
-
-  <div id="content3" class="tab-content" *ngIf="canViewTaskReport">
-    <app-taskreport></app-taskreport>
+  <div class="tab-content">
+    <router-outlet></router-outlet>
   </div>
 
 </div>

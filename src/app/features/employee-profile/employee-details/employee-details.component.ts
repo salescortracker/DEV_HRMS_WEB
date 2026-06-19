@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-employee-details',
@@ -6,46 +6,59 @@ import { Router } from '@angular/router';
   templateUrl: './employee-details.component.html',
   styleUrl: './employee-details.component.css'
 })
-export class EmployeeDetailsComponent {
-canViewPersonal = false;
-canViewFamily = false;
-canViewEmergency = false;
-canViewReference = false;
-selectedTab: string = '';
-constructor(public router: Router) {}
-ngOnInit(): void {
+export class EmployeeDetailsComponent implements OnInit {
 
-  this.loadTabPermissions();   }
+  canViewPersonal = false;
+  canViewFamily = false;
+  canViewEmergency = false;
+  canViewReference = false;
 
-loadTabPermissions() {
+  constructor(private router: Router) {}
 
-  const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+  ngOnInit(): void {
+    this.loadTabPermissions();
+  }
 
-  const personal = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "personal details"
-  );
+  loadTabPermissions(): void {
 
-  const family = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "family details"
-  );
+    const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
 
-  const emergency = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "emergency contact"
-  );
+    const personal = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'personal details'
+    );
 
-  const reference = menus.find(
-    (m:any) => m.menuName?.trim().toLowerCase() === "references"
-  );
+    const family = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'family details'
+    );
 
-  this.canViewPersonal = personal?.canView ?? false;
-  this.canViewFamily = family?.canView ?? false;
-  this.canViewEmergency = emergency?.canView ?? false;
-  this.canViewReference = reference?.canView ?? false;
+    const emergency = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'emergency contact'
+    );
 
-  if (this.canViewPersonal) this.selectedTab = 'tab1';
-  else if (this.canViewFamily) this.selectedTab = 'tab2';
-  else if (this.canViewEmergency) this.selectedTab = 'tab3';
-  else if (this.canViewReference) this.selectedTab = 'tab4';
+    const reference = menus.find(
+      (m: any) => m.menuName?.trim().toLowerCase() === 'references'
+    );
 
-}
+    this.canViewPersonal = personal?.canView ?? false;
+    this.canViewFamily = family?.canView ?? false;
+    this.canViewEmergency = emergency?.canView ?? false;
+    this.canViewReference = reference?.canView ?? false;
+
+    const currentUrl = this.router.url;
+
+    if (
+      currentUrl === '/details' ||
+      currentUrl === '/employee'
+    ) {
+      if (this.canViewPersonal) {
+        this.router.navigate(['/employee/personal']);
+      } else if (this.canViewFamily) {
+        this.router.navigate(['/employee/family']);
+      } else if (this.canViewEmergency) {
+        this.router.navigate(['/employee/emergency']);
+      } else if (this.canViewReference) {
+        this.router.navigate(['/employee/reference']);
+      }
+    }
+  }
 }

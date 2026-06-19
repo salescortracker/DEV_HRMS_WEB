@@ -88,8 +88,8 @@
         <td>{{ f.address }}</td>
         <td>{{ f.isDependent ? 'Yes' : 'No' }}</td>
         <td class="action-icons">
-          <i class="fa-solid fa-pen" *ngIf="canEdit" (click)="edit(f)"></i>
-          <i class="fa-solid fa-trash" *ngIf="canDelete" (click)="delete(f.familyId)"></i>
+          <i class="fa-solid fa-pen" *ngIf="canEdit" style="margin-right: 12px;" (click)="edit(f)"></i>
+          <i class="fa-solid fa-trash" *ngIf="canDelete" style="color: #B02828;"(click)="delete(f.familyId)"></i>
         </td>
       </tr>
     </tbody>

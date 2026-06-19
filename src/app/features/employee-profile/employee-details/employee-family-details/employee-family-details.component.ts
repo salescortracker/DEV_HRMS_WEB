@@ -195,11 +195,29 @@ this.loadgender();
     }
   }
 
+  // resetForm() {
+  //   this.familyForm.reset();
+  //   this.isEdit = false;
+  //   this.editId = null;
+  // }
   resetForm() {
-    this.familyForm.reset();
-    this.isEdit = false;
-    this.editId = null;
-  }
+  this.familyForm.reset({
+    name: '',
+    relationship: '',
+    dateofbirth: '',
+    gender: '',
+    occupation: '',
+    phone: '',
+    address: '',
+    isDependent: false,
+    companyId: this.companyId,
+    regionId: this.regionId,
+    userId: this.userId
+  });
+
+  this.isEdit = false;
+  this.editId = null;
+}
   relationList: any[] = [];
 
 loadrelationship() {

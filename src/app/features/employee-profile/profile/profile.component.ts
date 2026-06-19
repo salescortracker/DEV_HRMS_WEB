@@ -10,22 +10,31 @@ import Swal from 'sweetalert2';
   styleUrl: './profile.component.css'
 })
 export class ProfileComponent {
-profile!: employeeprofile;
+  profile!: employeeprofile;
   userId: number | null = null;
   profileImage: string | ArrayBuffer | null = null;
   isMobile = false;
-companyName: string = sessionStorage.getItem('CompanyName') || '';
-regionName: string = sessionStorage.getItem('RegionName') || '';
+  // companyName: string = sessionStorage.getItem('CompanyName') || '';
+  // regionName: string = sessionStorage.getItem('RegionName') || '';
+
+  companyName: string = '';
+regionName: string = '';
   @ViewChild('cameraInput') cameraInput!: ElementRef<HTMLInputElement>;
   @ViewChild('galleryInput') galleryInput!: ElementRef<HTMLInputElement>;
- constructor(private profileService: EmployeeResignationService) {}
- ngOnInit(): void {
+  constructor(private profileService: EmployeeResignationService) { }
+  ngOnInit(): void {
+       console.log('CompanyName =>', sessionStorage.getItem('CompanyName'));
+  console.log('RegionName =>', sessionStorage.getItem('RegionName'));
+
+  this.companyName = sessionStorage.getItem('CompanyName') || '';
+  this.regionName = sessionStorage.getItem('RegionName') || '';
+
     const storedUserId = sessionStorage.getItem('UserId');
-this.getshiftallocationName();
+    this.getshiftallocationName();
     if (storedUserId) {
       this.userId = +storedUserId;
       this.loadProfile();
-       // Load stored profile image from sessionStorage
+      // Load stored profile image from sessionStorage
       const savedImage = sessionStorage.getItem(`profileImage_${this.userId}`);
       if (savedImage) {
         this.profileImage = savedImage;
@@ -34,16 +43,16 @@ this.getshiftallocationName();
       console.error('No user logged in');
     }
 
-        this.isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    this.isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   }
   employeeCode: number = 0;
   shiftAllocationName: string = '';
-ShiftstartTime: string = '';
-ShiftendTime: string = '';
-getshiftallocationName() {
-  debugger;
-    this.employeeCode=sessionStorage.getItem('EmployeeCode') as unknown as number;
+  ShiftstartTime: string = '';
+  ShiftendTime: string = '';
+  getshiftallocationName() {
+    debugger;
+    this.employeeCode = sessionStorage.getItem('EmployeeCode') as unknown as number;
     this.profileService.getShiftallocationName(this.employeeCode).subscribe(res => {
       console.log('Shift Allocation Name:', res);
       this.shiftAllocationName = res.shiftName;
@@ -55,11 +64,14 @@ getshiftallocationName() {
 
   loadProfile() {
     if (!this.userId) return;
-    debugger;
+    
     this.profileService.GetempProfile(this.userId).subscribe({
       next: (res: any) => {
+          console.log('Profile Response:', res);
         if (res && res.data) {
           this.profile = res.data;
+           this.companyName = res.data.companyName;
+        this.regionName = res.data.regionName;
         }
       },
       error: (err) => {
@@ -68,28 +80,28 @@ getshiftallocationName() {
     });
   }
 
-openImageOptions() {
-  Swal.fire({
-    title: "Select Option",
-    showCancelButton: true,
-    confirmButtonText: "Open Camera",
-    cancelButtonText: "Choose File"
-  }).then((result) => {
-    if (result.isConfirmed) {
-      if (this.isMobile) {
-        this.cameraInput.nativeElement.click();
-      } else {
-        Swal.fire('Camera not supported on desktop');
+  openImageOptions() {
+    Swal.fire({
+      title: "Select Option",
+      showCancelButton: true,
+      confirmButtonText: "Open Camera",
+      cancelButtonText: "Choose File"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (this.isMobile) {
+          this.cameraInput.nativeElement.click();
+        } else {
+          Swal.fire('Camera not supported on desktop');
+        }
+      } else if (result.isDismissed && result.dismiss === Swal.DismissReason.cancel) {
+        this.galleryInput.nativeElement.click();
       }
-    } else if (result.isDismissed && result.dismiss === Swal.DismissReason.cancel) {
-      this.galleryInput.nativeElement.click();
-    }
-  });
-}
+    });
+  }
 
 
 
- onPhotoSelected(event: any) {
+  onPhotoSelected(event: any) {
     const file = event.target.files[0];
     if (!file || !this.userId) return;
 

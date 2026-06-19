@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-my-task',
@@ -6,17 +7,31 @@ import { Component } from '@angular/core';
   templateUrl: './my-task.component.html',
   styleUrl: './my-task.component.css'
 })
-export class MyTaskComponent {
- canViewMyTask = false;
+export class MyTaskComponent implements OnInit {
+
+  canViewMyTask = false;
   canViewTeamTask = false;
   canViewTaskReport = false;
-  selectedTab: string = '';
+
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.loadTabPermissions();
+
+    // Default navigation
+    // if (this.canViewMyTask) {
+    //   this.router.navigate(['/my-task/my-tasks']);
+    // }
+    // else if (this.canViewTeamTask) {
+    //   this.router.navigate(['/my-task/team-task']);
+    // }
+    // else if (this.canViewTaskReport) {
+    //   this.router.navigate(['/my-task/task-report']);
+    // }
   }
 
   loadTabPermissions(): void {
+
     const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
 
     const mytask = menus.find(
@@ -34,13 +49,5 @@ export class MyTaskComponent {
     this.canViewMyTask = mytask?.canView ?? false;
     this.canViewTeamTask = teamtask?.canView ?? false;
     this.canViewTaskReport = taskreport?.canView ?? false;
-
-    if (this.canViewMyTask) {
-      this.selectedTab = 'tab1';
-    } else if (this.canViewTeamTask) {
-      this.selectedTab = 'tab2';
-    } else if (this.canViewTaskReport) {
-      this.selectedTab = 'tab3';
-    }
   }
 }

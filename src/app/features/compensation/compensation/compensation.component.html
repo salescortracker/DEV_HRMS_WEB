@@ -12,94 +12,31 @@
 
 <div class="tab-container">
 
-  <input type="radio" id="tab1" name="tab" [checked]="selectedTab === 'tab1'">
-  <input type="radio" id="tab2" name="tab" [checked]="selectedTab === 'tab2'">
-
-
   <div class="tab-header">
-    <label class="tab-label" for="tab1" *ngIf="canViewPayslip">Employee Payslip</label>
-    <label class="tab-label" for="tab2" *ngIf="canViewHRDashboard">HR Payslip Dashboard</label>
-  </div>
 
-  <div id="content1" class="tab-content" *ngIf="canViewPayslip">
-    <app-employee-payslip></app-employee-payslip>
-  </div>
-
-
-  <!-- TAB 2: MY EXPENSES WITH FILTERS -->
-  <div id="content2" class="tab-content" *ngIf="canViewHRDashboard">
-    <app-hr-payslip></app-hr-payslip>
-  </div>
-
-  <!-- Tabs -->
-  <!-- <div class="tab-container">
-
-    <a routerLink="employee-payslip" routerLinkActive="active-tab" class="tab-label">
+    <button
+      *ngIf="canViewPayslip"
+      type="button"
+      class="tab-label"
+      routerLink="/compensation/employee-payslip"
+      routerLinkActive="active">
       Employee Payslip
-    </a>
+    </button>
 
-    <a routerLink="hr-payslip" routerLinkActive="active-tab" class="tab-label">
+    <button
+      *ngIf="canViewHRDashboard"
+      type="button"
+      class="tab-label"
+      routerLink="/compensation/hr-payslip"
+      routerLinkActive="active">
       HR Payslip Dashboard
-    </a>
+    </button>
 
-  </div> -->
-
-
-  <!-- Routed Components Render Here -->
-  <!-- <router-outlet></router-outlet> -->
-
-  <!-- Local Tab Content -->
-  <!-- <div *ngIf="activeTab === 'benefits'" class="mt-4">
-    <div class="card p-3">
-      <h4>Benefits & Perks</h4>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Benefit</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let b of benefits">
-            <td>{{ b.name }}</td>
-            <td>{{ b.details }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   </div>
 
-  <div *ngIf="activeTab === 'deductions'" class="mt-4">
-    <div class="card p-3">
-      <h4>Deductions</h4>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Amount</th>
-            <th>Reason</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let d of deductions">
-            <td>{{ d.type }}</td>
-            <td>{{ d.amount | currency }}</td>
-            <td>{{ d.reason }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="tab-content">
+    <router-outlet></router-outlet>
   </div>
-
-  <div *ngIf="activeTab === 'summary'" class="mt-4">
-    <div class="card p-3">
-      <h4>Yearly Compensation Summary</h4>
-      <p>Total Gross: {{ totalGross | currency }}</p>
-      <p>Total Net: {{ totalNet | currency }}</p>
-      <p>Total Bonuses: {{ totalBonus | currency }}</p>
-      <p>Total Deductions: {{ totalDeduction | currency }}</p>
-    </div>
-  </div> -->
 
 </div>
 

@@ -1,5 +1,5 @@
 <div class="card shadow-sm">
-  <div class="container-fluid p-4">
+  <div class="container-fluid p-4 priority-master">
 
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -21,10 +21,12 @@
 
 
             <!-- Company -->
-            <div class="col-md-6">
-              <label>Company</label>
-              <select class="form-select" [(ngModel)]="account.companyId" name="companyId">
-                <option [ngValue]="null">Select</option>
+             <div class="col-md-6">
+              <label class="form-label fw-semibold">Company *</label>
+              <select class="form-select" name="company" [(ngModel)]="account.companyId" (change)="onCompanyChange()"
+                required>
+
+                <option [ngValue]="0">-- Select Company --</option>
                 <option *ngFor="let c of companies" [ngValue]="c.companyId">
                   {{ c.companyName }}
                 </option>
@@ -33,9 +35,10 @@
 
             <!-- Region -->
             <div class="col-md-6">
-              <label>Region</label>
-              <select class="form-select" [(ngModel)]="account.regionId" name="regionId">
-                <option [ngValue]="null">Select</option>
+              <label class="form-label fw-semibold">Region *</label>
+              <select class="form-select" name="region" [(ngModel)]="account.regionId" required>
+
+                <option [ngValue]="0">-- Select Region --</option>
                 <option *ngFor="let r of regions" [ngValue]="r.regionID">
                   {{ r.regionName }}
                 </option>
@@ -51,7 +54,7 @@
 
             <!-- Description -->
             <div class="col-md-6">
-              <label>Description</label>
+              <label class="form-label fw-semibold">Description </label>
               <input type="text" class="form-control" [(ngModel)]="account.description" name="description">
             </div>
 
@@ -60,7 +63,7 @@
               <div class="form-check form-switch mt-3">
                 <input class="form-check-input" type="checkbox" [(ngModel)]="account.isActive" name="isActive">
                 <label class="ms-2">
-                  {{ account.isActive ? 'Active' : 'Inactive' }}
+                  {{ account.isActive ? 'Is Active' : 'Inactive' }}
                 </label>
               </div>
             </div>
@@ -82,7 +85,19 @@
     </div>
 
     <!-- TABLE -->
+     <div class="card shadow-sm mb-4">
     <div class="table-responsive">
+
+    <div class="mb-3 d-flex justify-content-end">
+      <input
+        type="text"
+        class="form-control"
+        style="width:250px"
+        placeholder="Search Account Type"
+        [(ngModel)]="searchText"
+        name="searchText">
+    </div>
+  
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -97,12 +112,12 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let a of accountTypes; let i=index">
+          <tr *ngFor="let a of filteredAccountTypes; let i=index">
             <td>{{ i+1 }}</td>
             <td>{{ a.accountType1 }}</td>
             <td>{{ a.description }}</td>
-            <td>{{ a.companyName }}</td>
-            <td>{{ a.regionName }}</td>
+            <td>{{ getCompanyName(a.companyId || a.CompanyId) }}</td>
+            <td>{{ getRegionName(a.regionId || a.RegionId) }}</td>
 
             <td>
               <span class="badge" [ngClass]="a.isActive ? 'bg-success':'bg-secondary'">
@@ -111,18 +126,18 @@
             </td>
 
             <td>
-              <button class="btn btn-sm btn-primary" (click)="editAccount(a)">
-                Edit
+              <button class="btn btn-sm btn-outline-primary me-2" (click)="editAccount(a)">
+                <i class="fa-solid fa-pen-to-square"></i>
               </button>
 
-              <button class="btn btn-sm btn-danger" (click)="deleteAccount(a)">
-                Delete
+              <button class="btn btn-sm btn-outline-danger" (click)="deleteAccount(a)">
+                <i class="fa-solid fa-trash"></i>
               </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
+</div>
   </div>
 </div>

@@ -39,6 +39,7 @@ export class CompanyNewsComponent {
   pageSize = 5;
   totalPages = 1;
   pageSizeOptions: number[] = [5, 10, 20];
+  filteredDepartments: Department[] = [];
 
   constructor(private adminService: AdminService, private spinner: NgxSpinnerService) { }
 
@@ -97,7 +98,20 @@ loadRegions(): void {
     this.filteredRegions = this.news.CompanyId
       ? this.regions.filter(r => Number(r.companyID) === Number(this.news.CompanyId))
       : [];
+      this.filteredDepartments = [];
   }
+  onRegionChange(): void {
+
+  this.news.departmentIds = [];
+
+  this.filteredDepartments = this.departments.filter(
+    (d: any) =>
+      Number(d.companyId) === Number(this.news.CompanyId) &&
+      Number(d.regionId) === Number(this.news.RegionId)
+  );
+
+  console.log('Filtered Departments', this.filteredDepartments);
+}
   loadCategories(): void {
     this.adminService.getCompanyNewsCategoryList(this.userId).subscribe({
       next: (res: any) => {
@@ -149,7 +163,7 @@ loadRegions(): void {
 
 toggleAllDepartments(event: any) {
   if (event.target.checked) {
-    this.news.departmentIds = this.departments.map(d => d.departmentId);
+    this.news.departmentIds = this.filteredDepartments.map(d => d.departmentId);
   } else {
     this.news.departmentIds = [];
   }
@@ -345,9 +359,9 @@ onSubmit() {
         'success'
       );
 
-      this.getNewsList();
-
       this.resetForm();
+      
+      this.getNewsList();
 
       this.spinner.hide();
     },
@@ -416,8 +430,15 @@ editNews(n: News) {
 
   // ✅ IMPORTANT FIX
   setTimeout(() => {
-    this.news.RegionId = Number(n.RegionId);
-  });
+  this.news.RegionId = Number(n.RegionId);
+
+  // 🔥 IMPORTANT FIX
+  this.filteredDepartments = this.departments.filter(
+    (d: any) =>
+      Number(d.companyId) === Number(this.news.CompanyId) &&
+      Number(d.regionId) === Number(this.news.RegionId)
+  );
+}, 0);
 
   console.log("EDIT NEWS:", this.news);
 
@@ -453,6 +474,7 @@ editNews(n: News) {
         });
       }
     });
+    this.getNewsList();
   }
 
   // -----------------------------

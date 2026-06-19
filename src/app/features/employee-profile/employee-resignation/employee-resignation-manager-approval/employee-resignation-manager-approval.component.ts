@@ -62,59 +62,83 @@ loadForManager(): void {
   }
 
   approveResignation(res: EmployeeResignation): void {
-    Swal.fire({
-      title: 'Approve Resignation?',
-      text: 'Are you sure you want to approve this resignation?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Approve'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.resignationService.updateStatus({
-          resignationId: res.resignationId!,
-          status: 'Approved',
-          managerReason: res.managerReason,
-          isManagerApprove: true,
-          isManagerReject: false
-        }).subscribe(() => {
-  res.status = 'Approved'; // or Rejected
-  res.approveChecked = false; // disable checkbox
-  Swal.fire('Approved!', 'Resignation approved successfully.', 'success');
-});
-      }
-    });
-  }
+
+  const actionType = res.resignationType || 'Request';
+
+  Swal.fire({
+    title: `Approve ${actionType}?`,
+    text: `Are you sure you want to approve this ${actionType.toLowerCase()} request?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Approve'
+  }).then(result => {
+
+    if (result.isConfirmed) {
+
+      this.resignationService.updateStatus({
+        resignationId: res.resignationId!,
+        status: 'Approved',
+        managerReason: res.managerReason,
+        isManagerApprove: true,
+        isManagerReject: false
+      }).subscribe(() => {
+
+        res.status = 'Approved';
+        res.approveChecked = false;
+
+        Swal.fire(
+          'Approved!',
+          `${actionType} approved successfully.`,
+          'success'
+        );
+      });
+    }
+  });
+}
 
   rejectResignation(res: EmployeeResignation): void {
 
-    if (!res.managerReason || res.managerReason.trim() === '') {
-      Swal.fire('Required', 'Please enter manager comments before rejecting.', 'info');
-      return;
-    }
+  const actionType = res.resignationType || 'Request';
 
-    Swal.fire({
-      title: 'Reject Resignation?',
-      text: 'Are you sure you want to reject this resignation?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Reject'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.resignationService.updateStatus({
-          resignationId: res.resignationId!,
-          status: 'Rejected',
-          managerReason: res.managerReason,
-          isManagerApprove: false,
-          isManagerReject: true
-        }).subscribe(() => {
-
-          res.status = 'Rejected';
-          res.approveChecked = false;   // ✅ lock checkbox
-          this.updateSelectAllState();  // ✅ update header checkbox
-
-          Swal.fire('Rejected!', 'Resignation rejected successfully.', 'success');
-        });
-      }
-    });
+  if (!res.managerReason || res.managerReason.trim() === '') {
+    Swal.fire(
+      'Required',
+      'Please enter manager comments before rejecting.',
+      'info'
+    );
+    return;
   }
+
+  Swal.fire({
+    title: `Reject ${actionType}?`,
+    text: `Are you sure you want to reject this ${actionType.toLowerCase()} request?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Reject'
+  }).then(result => {
+
+    if (result.isConfirmed) {
+
+      this.resignationService.updateStatus({
+        resignationId: res.resignationId!,
+        status: 'Rejected',
+        managerReason: res.managerReason,
+        isManagerApprove: false,
+        isManagerReject: true
+      }).subscribe(() => {
+
+        res.status = 'Rejected';
+        res.approveChecked = false;
+
+        this.updateSelectAllState();
+
+        Swal.fire(
+          'Rejected!',
+          `${actionType} rejected successfully.`,
+          'success'
+        );
+      });
+    }
+  });
+}
 }

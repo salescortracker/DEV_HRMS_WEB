@@ -20,7 +20,7 @@ interface Policy {
   styleUrl: './employee-policy.component.css'
 })
 export class EmployeePolicyComponent {
-   @ViewChild('fileInput') fileInput!: ElementRef;
+    @ViewChild('fileInput') fileInput!: ElementRef;
  companies: any[] = []
   regions: any[] = []
   departments: Department[] = []
