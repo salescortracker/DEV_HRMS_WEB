@@ -60,44 +60,42 @@
       <input type="date" class="form-control" formControlName="toDate">
     </div>
 
-    <div class="col-md-4 d-flex align-items-end">
-      <button type="button" class="btn  btn-sm w-100" style="color: white; background-color: #b02828;" (click)="clearFilters()">
-        Clear Filters
-      </button>
-    </div>
+    <div class="col-md-4 d-flex align-items-end gap-2">
+
+  <button
+    type="button"
+    class="btn btn-sm flex-fill"
+    style="color: white; background-color: #b02828;"
+    (click)="applyFilters()">
+    Filter
+  </button>
+
+  <button
+    type="button"
+    class="btn   btn-sm flex-fill"
+    style="color: white; background-color: #b02828;"
+    (click)="clearFilters()">
+    Clear Filters
+  </button>
+
+</div>
 
   </form>
 
 </div>
 
-  <!-- ================= RESULTS INFO ================= -->
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <div class="d-flex align-items-center gap-2 flex-wrap">
-      <span>Showing {{ paginatedTimesheets.length }} of {{ filteredTimesheets.length }} records</span>
-
-      <div class="d-flex align-items-center gap-2 ms-2">
-        <label class="mb-0 small text-muted">Search</label>
-        <input class="form-control form-control-sm" type="text"
-               [formControl]="searchTermControl"
-               placeholder="Search employee, code, project, or status">
-      </div>
-    </div>
-
-    <div>
-      <label>
-        Show
-        <select class="form-select d-inline w-auto ms-2"
-                [(ngModel)]="pageSize"
-                (change)="onPageSizeChange()">
-          <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
-            {{ size }}
-          </option>
-        </select>
-        entries
-      </label>
-    </div>
+  
+       <div class="d-flex justify-content-end mb-3">
+  <div class="d-flex align-items-center gap-2">
+    <label class="mb-0 small text-muted">Search</label>
+    <input
+      class="form-control form-control-sm"
+      type="text"
+      [formControl]="searchTermControl"
+      placeholder="Search employee, code, project, or status"
+      style="width: 300px;">
   </div>
-
+</div>
   <!-- ================= TABLE ================= -->
   <div class="table-responsive">
     <table class="table table-bordered table-hover  align-middle" *ngIf="!noRecordsFound">
@@ -174,27 +172,31 @@
   </div>
 
   <!-- ================= PAGINATION ================= -->
-  <div class="d-flex justify-content-between align-items-center mt-3"
-       *ngIf="!noRecordsFound && totalPages > 1">
-
-    <div>
-      <button class="btn btn-outline-secondary btn-sm me-2"
-              (click)="goToPage(currentPage-1)"
-              [disabled]="currentPage===1">
-        Previous
-      </button>
-
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-
-      <button class="btn btn-outline-secondary btn-sm ms-2"
-              (click)="goToPage(currentPage+1)"
-              [disabled]="currentPage===totalPages">
-        Next
-      </button>
+<div class="d-flex justify-content-between align-items-center mt-2">
+      <div>
+        <label>Show:
+          <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+          </select> entries
+        </label>
+      </div>
+      <div>
+        <button
+  class="btn btn-outline-secondary btn-sm me-2"
+  style="background:#b02828;color:#fff;border-color:#b02828"
+  (click)="changePage(currentPage-1)">
+  Previous
+</button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+         <button
+  class="btn btn-outline-secondary btn-sm ms-2"
+  style="background:#b02828;color:#fff;border-color:#b02828;"
+  (click)="changePage(currentPage+1)"
+  [disabled]="currentPage===totalPages">
+  Next
+</button>
+      </div>
     </div>
-
-  </div>
-
 </div>
 
 <!-- <app-footer></app-footer> -->
