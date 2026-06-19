@@ -106,7 +106,7 @@
         <td>{{ e.status }}</td>
       </tr>
  
-      <tr ngIf="noRecordsFound">
+      <tr *ngIf="noRecordsFound">
         <td colspan="6" class="text-center text-muted">
           No expenses found
         </td>
