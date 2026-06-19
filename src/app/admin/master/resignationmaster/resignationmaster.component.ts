@@ -258,9 +258,14 @@ export class ResignationmasterComponent {
         this.loadResignations();
         this.clearForm();
       },
-      error: () => {
+     error: (err: any) => {
         this.spinner.hide();
-        Swal.fire('Error', 'Operation failed.', 'error');
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err?.error?.message || 'Operation failed.'
+        });
       }
     });
   }
