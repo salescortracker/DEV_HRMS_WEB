@@ -7,9 +7,32 @@
         <i class="fa-solid fa-user-gear me-2 text-danger"></i>
         User Management
       </h4>
-      <!-- <button class="btn btn-danger" (click)="resetForm()">
-        <i class="fa-solid fa-plus me-2"></i> Add New User
-      </button> -->
+      <div class="d-flex gap-2">
+        <div class="dropdown">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="fa-solid fa-download me-2"></i>
+            Export
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end animate__animated animate__fadeIn">
+            <li><a class="dropdown-item" (click)="exportAs('pdf')">Download PDF</a></li>
+            <li><a class="dropdown-item" (click)="exportAs('excel')">Download Excel</a></li>
+          </ul>
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="openUploadPopup()"
+        >
+          <i class="fa-solid fa-upload me-2"></i>
+          Bulk Upload
+        </button>
+      </div>
     </div>
 
     <hr />
@@ -259,7 +282,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let u of paginatedUsers; let i = index">
-                <td>{{ i + 1 }}</td>
+                <td>{{ ((currentPage - 1) * pageSize) + i + 1 }}</td>
                 <td>{{ u.employeeCode }}</td>
                 <td>{{ u.fullName }}</td>
                 <td>{{ u.email }}</td>
@@ -325,3 +348,10 @@
 
   </div>
 </div>
+
+<!-- Bulk Upload Component -->
+<app-common-upload
+  [visible]="showUploadPopup"
+  [screenName]="'User'"
+  [model]="userModel">
+</app-common-upload>

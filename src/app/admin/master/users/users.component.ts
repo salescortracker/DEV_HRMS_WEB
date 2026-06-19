@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { AdminService, User, Company, Region, RoleMaster } from '../../servies/admin.service';
 import Swal from 'sweetalert2';
 import { forkJoin } from 'rxjs';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-users',
@@ -39,6 +42,29 @@ export class UsersComponent {
   filteredDesignations: any[] = [];
 
   filteredUsers: User[] = [];
+  
+  // Bulk Upload Properties
+  showUploadPopup: boolean = false;
+  userModel: any = {
+    name: 'User',
+    structure: {
+      FullName: 'John Doe',
+      Email: 'john@example.com',
+      // EmployeeCode: 'EMP0001',
+      CompanyName: 'Company A',
+      RegionName: 'Region 1',
+      RoleName: 'Role 1',
+      DepartmentName: 'Department 1',
+      DesignationName: 'Designation 1',
+      // JoiningDate: '17-04-2026',
+      ReportingToName: 'Sai Kishore',
+      ReportingHRName: 'Priya HR',
+      LoginType: 'User',
+      Password: 'Password@123',
+      Status: 'Active'
+    }
+  };
+
   constructor(private userService: AdminService) {}
 
   ngOnInit(): void {
@@ -198,12 +224,12 @@ onStatusChange(event: Event): void {
     .subscribe({
       next: (res: any[]) => {
 
-        this.users = res.map(u => ({
+        this.users = this.sortUsersByEmployeeCode(res.map(u => ({
           ...u,
           companyId: Number(u.companyID),
           regionId: Number(u.regionID),
           employeeCode: u.employeeCode
-        }));
+        })));
 
         console.log('Employee Count:', this.users.length);
         console.log('Users:', this.users);
@@ -217,7 +243,7 @@ loadUsersForListing(): void {
     .subscribe({
       next: (res: any[]) => {
 
-        this.filteredUsers = res.map(u => ({
+        const mappedUsers = res.map(u => ({
           ...u,
           companyId: Number(u.companyID),   
           regionId: Number(u.regionID),
@@ -225,6 +251,7 @@ loadUsersForListing(): void {
           password: u.password || ''
         }));
 
+        this.filteredUsers = this.sortUsersByEmployeeCode(mappedUsers);
         this.users = [...this.filteredUsers];
         this.setPagination();
       }
@@ -333,10 +360,12 @@ filterDepartments(): void {
     return;
   }
 
-  // ✅ Filter users by Company + Region
-  const filteredUsers = this.users.filter(u =>
-    Number(u.companyId) === Number(this.user.companyId) &&
-    Number(u.regionId) === Number(this.user.regionId)
+  // ✅ Filter users by Company + Region and sort in sequence
+  const filteredUsers = this.sortUsersByEmployeeCode(
+    this.users.filter(u =>
+      Number(u.companyId) === Number(this.user.companyId) &&
+      Number(u.regionId) === Number(this.user.regionId)
+    )
   );
 
   // ✅ No Employees
@@ -347,10 +376,7 @@ filterDepartments(): void {
 
   // ✅ Extract numeric values
   const numericCodes = filteredUsers
-    .map(u => {
-      const match = u.employeeCode?.match(/\d+$/);
-      return match ? parseInt(match[0], 10) : 0;
-    })
+    .map(u => this.extractEmployeeNumber(u.employeeCode))
     .filter(num => num > 0);
 
   // ✅ Safety check
@@ -364,25 +390,44 @@ filterDepartments(): void {
     `EMP${nextCode.toString().padStart(4, '0')}`;
 }
 
+  private extractEmployeeNumber(code: string | undefined): number {
+    const match = String(code || '').match(/\d+/);
+    return match ? Number(match[0]) : 0;
+  }
+
+  private sortUsersByEmployeeCode(users: User[]): User[] {
+    return [...users].sort((a, b) => {
+      const codeA = this.extractEmployeeNumber(a.employeeCode);
+      const codeB = this.extractEmployeeNumber(b.employeeCode);
+
+      if (codeA !== codeB) {
+        return codeA - codeB;
+      }
+
+      return (a.fullName || '').localeCompare(b.fullName || '');
+    });
+  }
+
   onSubmit(): void {
     if (!this.user.companyId || this.user.companyId === 0) {
-    Swal.fire('Validation', 'Please select company', 'warning');
-    return;
-  }
+      Swal.fire('Validation', 'Please select company', 'warning');
+      return;
+    }
 
-  if (!this.user.regionId || this.user.regionId === 0) {
-    Swal.fire('Validation', 'Please select region', 'warning');
-    return;
-  }
+    if (!this.user.regionId || this.user.regionId === 0) {
+      Swal.fire('Validation', 'Please select region', 'warning');
+      return;
+    }
 
-  if (!this.user.fullName || this.user.fullName.trim() === '') {
-    Swal.fire('Validation', 'Please enter full name', 'warning');
-    return;
-  }
- if (!this.user.email || this.user.email.trim() === '') {
-    Swal.fire('Validation', 'Please enter email', 'warning');
-    return;
-  }
+    if (!this.user.fullName || this.user.fullName.trim() === '') {
+      Swal.fire('Validation', 'Please enter full name', 'warning');
+      return;
+    }
+
+    if (!this.user.email || this.user.email.trim() === '') {
+      Swal.fire('Validation', 'Please enter email', 'warning');
+      return;
+    }
 
   if (!this.user.roleId || this.user.roleId === 0) {
     Swal.fire('Validation', 'Please select role', 'warning');
@@ -539,6 +584,59 @@ filterDepartments(): void {
     ).join('');
   }
 
+  exportAs(type: 'pdf' | 'excel'): void {
+    if (type === 'excel') {
+      this.exportExcel();
+    } else {
+      this.exportPDF();
+    }
+  }
+
+  exportExcel(): void {
+    const exportData = (this.filteredUsers.length ? this.filteredUsers : this.users).map((u, index) => ({
+      'S.No': index + 1,
+      'Employee Code': u.employeeCode,
+      'Full Name': u.fullName,
+      'Email': u.email,
+      'Company': this.getCompanyName(u.companyId),
+      'Region': this.getRegionName(u.regionId),
+      'Role': this.getRoleName(u.roleId),
+      'Status': u.status
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
+    XLSX.writeFile(workbook, 'UserList.xlsx');
+  }
+
+  exportPDF(): void {
+    const exportData = (this.filteredUsers.length ? this.filteredUsers : this.users);
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+
+    doc.setFontSize(14);
+    doc.text('User List', 40, 40);
+
+    autoTable(doc, {
+      startY: 60,
+      head: [['S.No', 'Employee Code', 'Full Name', 'Email', 'Company', 'Region', 'Role', 'Status']],
+      body: exportData.map((u, index) => [
+        index + 1,
+        u.employeeCode,
+        u.fullName,
+        u.email,
+        this.getCompanyName(u.companyId),
+        this.getRegionName(u.regionId),
+        this.getRoleName(u.roleId),
+        u.status
+      ]),
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [220, 53, 69] }
+    });
+
+    doc.save('UserList.pdf');
+  }
+
   resetForm(): void {
     this.user = this.getEmptyUser();
     this.isEditMode = false;
@@ -611,4 +709,21 @@ prevPage(): void {
     this.setPagination();
   }
 }
+
+  // Bulk Upload Methods
+  openUploadPopup(): void {
+    this.showUploadPopup = true;
+  }
+
+  closeUploadPopup(): void {
+    this.showUploadPopup = false;
+  }
+
+  onBulkUploadComplete(event: any): void {
+    console.log('Bulk upload completed:', event);
+    this.showUploadPopup = false;
+    // Reload the user list after successful upload
+    this.loadUsersForListing();
+    this.showSuccess('Users imported successfully!');
+  }
 }
