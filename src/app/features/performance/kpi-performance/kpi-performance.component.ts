@@ -12,7 +12,8 @@ import { KpiPerformanceService } from '../kpi-performance.service';
 export class KpiPerformanceComponent {
  reviewForm!: FormGroup;
   managerReviews: any[] = [];
-
+departmentName: string = '';
+designationName: string = '';
   userId!: number;
   roleId!: number;
   reportingManagerId!: number;
@@ -43,16 +44,20 @@ export class KpiPerformanceComponent {
     this.userId = Number(sessionStorage.getItem('UserId') || 0);
     this.roleId = Number(sessionStorage.getItem('roleId') || 0);
     this.reportingManagerId = Number(sessionStorage.getItem('reportingManagerId') || 0);
-    const departmentName = sessionStorage.getItem('DepartmentName') || '';
     this.designation = sessionStorage.getItem('Designation') || '';
     this.roleName = sessionStorage.getItem('roleName') || '';
+    this.departmentId = Number(sessionStorage.getItem('DepartmentId') || 0);
+       this.departmentName = sessionStorage.getItem('DepartmentName') || '';
+  this.designationName = sessionStorage.getItem('DesignationName') || '';
+     console.log('DepartmentId =', this.departmentId);
+     console.log('DepartmentName =', this.  departmentName);
 
 
     this.departmentId = 0; // no longer needed if using name
     // this.designation = designation;
 
 
-
+    
     this.initializeForm();
     this.patchUserValues();
     this.loadManagerReviews();
@@ -63,23 +68,45 @@ export class KpiPerformanceComponent {
 
   const userId = Number(sessionStorage.getItem('UserId'));
 
-  this.service.getEmployeeSubmissions(userId)
-    .subscribe({
+  // this.service.getEmployeeSubmissions(userId)
+  //   .subscribe({
 
-      next: (res: any) => {
+  //     next: (res: any) => {
 
-        console.log("Employee Submission List", res);
+  //       console.log("Employee Submission List", res);
 
-        this.employeeSubmissions = res?.data || res || [];
-      },
+  //       this.employeeSubmissions = res?.data || res || [];
+  //     },
 
-      error: (err:any) => {
+  //     error: (err:any) => {
 
-        console.log(err);
-        this.employeeSubmissions = [];
-      }
+  //       console.log(err);
+  //       this.employeeSubmissions = [];
+  //     }
 
-    });
+  //   });
+
+  this.service.getEmployeeSubmissions(userId).subscribe({
+  next: (res: any) => {
+    this.employeeSubmissions = res?.data || [];
+    if (this.employeeSubmissions.length > 0) {
+      this.reviewForm.patchValue({
+        designation: this.employeeSubmissions[0].designation || '',
+        department: this.employeeSubmissions[0].department || ''
+      });
+//       this.reviewForm.patchValue({
+//   designation: this.employeeSubmissions[0]?.designation 
+//                || sessionStorage.getItem('DesignationName') 
+//                || '',
+//   department: this.employeeSubmissions[0]?.department 
+//               || sessionStorage.getItem('DepartmentName') 
+//               || ''
+// });
+
+    }
+  }
+});
+
 }
   LoadTabPermissions() {
     const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
@@ -153,10 +180,12 @@ export class KpiPerformanceComponent {
       department: sessionStorage.getItem('DepartmentName') || '',
       designation: sessionStorage.getItem('DesignationName') || '',
       reportingManagerName: sessionStorage.getItem('ReportingManagerName') || '',
+
     });
 
     console.log("Patched Form:", this.reviewForm.value);
-  }
+    
+   }
 
 
 
@@ -212,6 +241,9 @@ allowOnlyInteger(event: KeyboardEvent) {
           this.initializeForm();
           this.patchUserValues();
 
+          // ✅ Reload submitted records instantly without refreshing the page
+          this.loadEmployeeSubmissions();
+
         },
         error: (err:any) => {
           Swal.fire({
@@ -233,6 +265,9 @@ allowOnlyInteger(event: KeyboardEvent) {
           title: 'Draft Saved Successfully',
           confirmButtonColor: '#ffc107'
         });
+
+        // ✅ Refresh submitted/draft records immediately
+        this.loadEmployeeSubmissions();
 
       });
   }
@@ -482,6 +517,7 @@ viewReport(item: any) {
         <p><b>Status:</b> ${item.status}</p>
 
         <p><b>Summary:</b> ${item.selfReviewSummary || '-'}</p>
+        
 
       </div>
     `,
