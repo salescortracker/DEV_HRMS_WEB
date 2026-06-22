@@ -353,5 +353,7 @@
 <app-common-upload
   [visible]="showUploadPopup"
   [screenName]="'User'"
-  [model]="userModel">
+  [model]="userModel"
+  (close)="closeUploadPopup()"
+  (uploadCompleted)="onBulkUploadComplete($event)">
 </app-common-upload>

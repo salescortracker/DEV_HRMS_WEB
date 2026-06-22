@@ -166,7 +166,9 @@ getEmptyUser(): User {
       userCompanyId:sessionStorage.getItem('UserId') ? Number(sessionStorage.getItem('UserId')) : 0
      , loginType: ''
     };
-  }applyFilters(): void {
+  }
+  
+  applyFilters(): void {
 
   if (
     !this.filter.employeeName &&
@@ -712,7 +714,10 @@ prevPage(): void {
 
   // Bulk Upload Methods
   openUploadPopup(): void {
-    this.showUploadPopup = true;
+    this.showUploadPopup = false;
+    setTimeout(() => {
+      this.showUploadPopup = true;
+    }, 0);
   }
 
   closeUploadPopup(): void {
@@ -724,6 +729,12 @@ prevPage(): void {
     this.showUploadPopup = false;
     // Reload the user list after successful upload
     this.loadUsersForListing();
+      if (this.filter.companyId && this.filter.regionId) {
+    this.loadReportingToUsers(
+      this.filter.companyId,
+      this.filter.regionId
+    );
+  }
     this.showSuccess('Users imported successfully!');
   }
 }

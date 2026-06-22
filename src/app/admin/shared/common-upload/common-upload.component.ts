@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { AdminService } from '../../servies/admin.service';
+
 @Component({
   selector: 'app-common-upload',
   standalone: false,
@@ -10,15 +11,20 @@ import { AdminService } from '../../servies/admin.service';
 })
 export class CommonUploadComponent {
   @Input() model: { name: string; structure: any } | null = null;
-   @Input() visible = false;
+  @Input() visible = false;
   @Input() screenName = 'Master Data';
   selectedFile: File | null = null;
   fileData: any[] = [];
+  @Output() uploadCompleted = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
 
   constructor(private adminService: AdminService) {}
 
-  close() {
+  closeDialog() {
+    this.selectedFile = null;
+    this.fileData = [];
     this.visible = false;
+    this.close.emit();
   }
 
   onFileSelect(event: any) {
@@ -87,7 +93,7 @@ export class CommonUploadComponent {
         title: 'Upload Complete',
         text: res.message,
         confirmButtonColor: '#007bff'
-      });
+      })
     } else {
       Swal.fire({
         icon: 'warning',
@@ -97,11 +103,28 @@ export class CommonUploadComponent {
       });
     }
 
-    this.selectedFile = null;
-    this.close();
+      
+
+      this.selectedFile = null;
+      this.fileData = [];
+      this.visible = false;
+      this.uploadCompleted.emit();
+      this.close.emit();
   },
-  error: (err) => {
-    console.error('Error while uploading:', err);
+error: (err) => {
+  console.error('Error while uploading:', err);
+
+  if (err?.error?.failedRows?.length > 0) {
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Errors',
+      html: err.error.failedRows.join('<br>'),
+      confirmButtonColor: '#dc3545'
+    });
+
+  } else {
+
     const message =
       err?.error?.message ||
       err?.message ||
@@ -113,7 +136,9 @@ export class CommonUploadComponent {
       text: message,
       confirmButtonColor: '#dc3545'
     });
+
   }
+}
 });
 
 
@@ -228,6 +253,8 @@ if (duplicateEmail) {
                 title: 'Upload Complete',
                 text: bulkRes.message,
                 confirmButtonColor: '#007bff'
+
+                
               });
             } else {
               Swal.fire({
@@ -240,7 +267,9 @@ if (duplicateEmail) {
 
             this.selectedFile = null;
             this.fileData = [];
-            this.close();
+            this.visible = false;
+            this.uploadCompleted.emit();
+            this.close.emit();
           },
           error: (err) => {
             console.error('Error while uploading:', err);
