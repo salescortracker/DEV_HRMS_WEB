@@ -162,6 +162,7 @@ private mapToMenuItems(menuDtos: MenuRoleDto[]): MenuItem[] {
         { label: 'Late Arrivals',link:'/late-arrivals' },
         { label: 'Early Departures',link:'/early-departures' },
         { label: 'WFH/Remote Requests',link:'/wfh-remote-request' },
+        { label: 'Early Logout Requests',link:'/early-logout-request' },
         { label: 'Geo Fencing' },
         { label: 'Missed Punched Requests',link:'/missed-punch-request' },
         { label: 'Biometric Integration' }

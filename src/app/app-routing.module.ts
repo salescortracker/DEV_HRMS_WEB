@@ -27,6 +27,7 @@ import { LateArrivalsComponent } from './features/attendance/late-arrivals/late-
 import { EarlyDeparturesComponent } from './features/attendance/early-departures/early-departures.component';
 import { WfoRemoteRequestComponent } from './features/attendance/wfo-remote-request/wfo-remote-request.component';
 import { MissedPunchRequestComponent } from './features/attendance/missed-punch-request/missed-punch-request.component';
+import { EarlyLogoutRequestComponent } from './features/attendance/early-logout-request/early-logout-request.component';
 import { LeaveManagementComponent } from './features/leave/leave-management/leave-management.component';
 import { ExpenseManagementComponent } from './features/expenses/expense-management/expense-management.component';
 import { AssetManagementComponent } from './features/asset/asset-management/asset-management.component';
@@ -234,6 +235,7 @@ const routes: Routes = [
 { path: 'early-departures', component: EarlyDeparturesComponent },
 { path: 'wfh-remote-request', component: WfoRemoteRequestComponent },
 { path: 'missed-punch-request', component: MissedPunchRequestComponent },
+{ path: 'early-logout-request', component: EarlyLogoutRequestComponent },
 // { path: 'leave-management', component: LeaveManagementComponent },
 {
   path: 'leave-management',

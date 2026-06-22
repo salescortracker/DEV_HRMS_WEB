@@ -1,0 +1,276 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Early Logout Requests</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Attendance</a> &gt;
+    <span>Early Logout Requests</span>
+  </nav>
+</div>
+
+<div class="tab-container mt-4">
+
+  <!-- Tabs -->
+  <input type="radio" id="tab1" name="tab" [checked]="selectedTab === 'tab1'">
+  <input type="radio" id="tab2" name="tab" [checked]="selectedTab === 'tab2'">
+  <input type="radio" id="tab3" name="tab" [checked]="selectedTab === 'tab3'">
+
+  <div class="tab-header">
+    <label class="tab-label" for="tab1" *ngIf="canViewPersonal">My request</label>
+    <label class="tab-label" for="tab2" *ngIf="canViewManager">Manager Approvel</label>
+     <!-- <label class="tab-label" for="tab3" *ngIf="canViewHR || canViewManager">HR+Manager</label> -->
+  </div>
+
+  <!-- ================= MY REQUESTS ================= -->
+  <div id="content1" class="tab-content">
+    <div class="card p-4 shadow-sm mb-4">
+      <h5 class="mb-3">
+        {{ isEditMode ? 'Update Early Logout Request' : 'Submit Early Logout Request' }}
+      </h5>
+
+      <form [formGroup]="earlyLogoutForm" (ngSubmit)="submitEarlyLogout()">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" formControlName="requestDate">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Requested Logout Time <span class="text-danger">*</span></label>
+            <input type="time" class="form-control" formControlName="requestedLogoutTime">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Reason <span class="text-danger">*</span></label>
+          <textarea rows="3" class="form-control" formControlName="reason"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">HR Email (CC)<span class="text-danger">*</span></label>
+          <input type="email" class="form-control" formControlName="hrEmail">
+        </div>
+
+        <button class="btn" style="background-color: #b02828; color: white; border-color: #b02828;">
+          {{ isEditMode ? 'Update' : 'Submit' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- MY REQUESTS LIST -->
+    <div class="card p-4 shadow-sm">
+      <h5 class="mb-3">My Early Logout Requests</h5>
+
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Logout Time</th>
+            <th>Reason</th>
+            <th>Manager Remarks</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of myRequests">
+            <td>{{ item.requestDate | date }}</td>
+            <td>{{ item.requestedLogoutTime }}</td>
+            <td>{{ item.reason }}</td>
+            <td>{{ item.managerRemarks }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                  'bg-warning text-dark': item.status === 'Pending',
+                  'bg-success': item.status === 'Approved',
+                  'bg-danger': item.status === 'Rejected'
+                }">
+                {{ item.status }}
+              </span>
+            </td>
+            <td>
+              <i class="fa fa-edit text-primary" (click)="editEarlyLogout(item)" *ngIf="item.status === 'Pending'"></i>
+            </td>
+          </tr>
+
+          <tr *ngIf="myRequests.length === 0">
+            <td colspan="6" class="text-center text-muted">No records found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================= MANAGER APPROVAL ================= -->
+  <div id="content2" class="tab-content" *ngIf="canViewManager">
+    <div class="card p-4 shadow-sm">
+      <h5 class="mb-3">Pending Approvals</h5>
+
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>
+              <input type="checkbox" (change)="selectAll($event)">
+            </th>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Logout Time</th>
+            <th>Reason</th>
+            <th>Remarks</th>
+            <!-- <th>Action</th> -->
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of pendingRequests">
+            <td>
+              <input type="checkbox" [(ngModel)]="item.selected">
+            </td>
+            <td>{{ item.employeeName }}</td>
+            <td>{{ item.requestDate | date }}</td>
+            <td>{{ item.requestedLogoutTime }}</td>
+            <td>{{ item.reason }}</td>
+            <td>
+              <input class="form-control form-control-sm" [(ngModel)]="item.managerRemarks">
+            </td>
+            <!-- <td>
+              <button class="btn btn-sm btn-outline-success me-2" (click)="approve(item)">
+                <i class="fa fa-check"></i>
+              </button>
+
+              <button class="btn btn-sm btn-outline-danger" (click)="reject(item)">
+                <i class="fa fa-times"></i>
+              </button>
+            </td> -->
+          </tr>
+
+          <tr *ngIf="pendingRequests.length === 0">
+            <td colspan="7" class="text-center text-muted">
+              No pending approvals
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="text-end mt-3">
+        <button class="btn btn-success btn-sm me-2" style="background-color: #b02828; color: white; border-color: #b02828;" (click)="bulkApproveReject('Approved')">
+          Approve Selected
+        </button>
+        <button class="btn btn-danger btn-sm" style="background-color: #b02828; color: white; border-color: #b02828;" (click)="bulkApproveReject('Rejected')">
+          Reject Selected
+        </button>
+      </div>
+    </div>
+
+    <div class="card p-4 shadow-sm mt-4">
+      <h5 class="mb-3 text-success">Approved Requests</h5>
+
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Logout Time</th>
+            <th>Reason</th>
+            <th>Remarks</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of approvedRequests">
+            <td>{{ item.employeeName }}</td>
+            <td>{{ item.requestDate | date }}</td>
+            <td>{{ item.requestedLogoutTime }}</td>
+            <td>{{ item.reason }}</td>
+            <td>{{ item.managerRemarks }}</td>
+            <td><span class="badge bg-success">Approved</span></td>
+          </tr>
+
+          <tr *ngIf="approvedRequests.length === 0">
+            <td colspan="6" class="text-center text-muted">No approved records</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card p-4 shadow-sm mt-4">
+      <h5 class="mb-3 text-danger">Rejected Requests</h5>
+
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Logout Time</th>
+            <th>Reason</th>
+            <th>Remarks</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of rejectedRequests">
+            <td>{{ item.employeeName }}</td>
+            <td>{{ item.requestDate | date }}</td>
+            <td>{{ item.requestedLogoutTime }}</td>
+            <td>{{ item.reason }}</td>
+            <td>{{ item.managerRemarks }}</td>
+            <td><span class="badge bg-danger">Rejected</span></td>
+          </tr>
+
+          <tr *ngIf="rejectedRequests.length === 0">
+            <td colspan="6" class="text-center text-muted">No rejected records</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================= HR+MANAGER VIEW ================= -->
+  <div id="content3" class="tab-content" *ngIf="canViewHR || canViewManager">
+    <div class="card p-4 shadow-sm">
+      <h5 class="mb-3">HR + Manager Overview</h5>
+
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Logout Time</th>
+            <th>Reason</th>
+            <th>HR Email</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of combinedRequests">
+            <td>{{ item.employeeName || item.employeeCode || 'N/A' }}</td>
+            <td>{{ item.requestDate | date }}</td>
+            <td>{{ item.requestedLogoutTime }}</td>
+            <td>{{ item.reason }}</td>
+            <td>{{ item.hrEmail }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'bg-warning text-dark': item.status === 'Pending',
+                'bg-success': item.status === 'Approved',
+                'bg-danger': item.status === 'Rejected'
+              }">
+                {{ item.status }}
+              </span>
+            </td>
+          </tr>
+
+          <tr *ngIf="combinedRequests.length === 0">
+            <td colspan="6" class="text-center text-muted">No records found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>
