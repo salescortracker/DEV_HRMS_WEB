@@ -247,37 +247,29 @@ filterDepartments(): void {
 
  generateNextEmployeeCode(): void {
 
-  if (!this.user.companyId || !this.user.regionId) {
-    this.user.employeeCode = '';
-    return;
-  }
-
-  const filteredUsers = this.users.filter(u =>
-    Number(u.companyId) === Number(this.user.companyId) &&
-    Number(u.regionId) === Number(this.user.regionId)
-  );
-
-  if (filteredUsers.length === 0) {
+  if (!this.users || this.users.length === 0) {
     this.user.employeeCode = 'EMP0001';
     return;
   }
 
-  const numericCodes = filteredUsers
+  const numericCodes = this.users
     .map(u => {
-      const match = u.employeeCode?.match(/\d+$/);
-      return match ? parseInt(match[0], 10) : 0;
-    })
-    .filter(num => num > 0);
+      const match = u.employeeCode?.match(/^EMP(\d+)$/i);
 
-  const maxCode =
-    numericCodes.length > 0
-      ? Math.max(...numericCodes)
-      : 0;
+      return match ? parseInt(match[1], 10) : 0;
+    })
+    .filter(x => x > 0);
+
+  const maxCode = numericCodes.length
+    ? Math.max(...numericCodes)
+    : 0;
 
   const nextCode = maxCode + 1;
 
   this.user.employeeCode =
     `EMP${nextCode.toString().padStart(4, '0')}`;
+
+  console.log('Generated Code:', this.user.employeeCode);
 }
 
   onSubmit(): void {
