@@ -98,17 +98,6 @@
     <!-- Blood Group -->
     <div class="form-group">
       <label>Blood Group</label>
-     <!-- <select formControlName="bloodGroup">
-        <option value="">Select blood group</option>
-        <option>A+</option>
-        <option>A-</option>
-        <option>B+</option>
-        <option>B-</option>
-        <option>AB+</option>
-        <option>AB-</option>
-        <option>O+</option>
-        <option>O-</option>
-      </select> -->
       <select formControlName="bloodGroup">
   <option value="">Select blood group</option>
   <option *ngFor="let bg of bloodGroupList"
@@ -181,7 +170,7 @@
 
         <option 
           *ngFor="let type of employmentTypes" 
-          [value]="type.EmploymenttypeID">
+          [value]="type.employmenttypeID">
           {{ type.employmenttypeName }}
         </option>
 

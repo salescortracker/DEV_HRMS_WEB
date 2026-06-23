@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-import { PersonalDetails } from '../../../../admin/layout/models/PersonalDetails';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EmployeeResignation } from '../../employee-models/EmployeeResignation';
 import { EmployeeResignationService } from '../../employee-services/employee-resignation.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
@@ -125,8 +123,7 @@ loadgender() {
           brandGrade: res.brandGrade,
           esicNumber: res.esicNumber,
           pfNumber: res.pfNumber,
-          employmentType: res.employmentType,
-          dateofJoining: res.dateofJoining
+          employmentType: res.employmentType
   ? res.dateofJoining.split('T')[0]
   : ''
         });
@@ -134,43 +131,15 @@ loadgender() {
     },
     error: (err) => console.error(err)
   });
+  this.adminService.getUserById(this.userId).subscribe(user => {
+
+  this.personalForm.patchValue({
+    dateofJoining: user.joiningDate?.split('T')[0] || ''
+  });
+
+});
 }
-  //  createForm() {
-  //   this.personalForm = this.fb.group({
-  //     firstName: ['', Validators.required],
-  //     lastName: [''],
-  //     dateOfBirth: [''],
-  //     genderId: [''],
-  //     mobileNumber: [''],
-  //     personalEmail: [''],
-  //     permanentAddress: [''],
-  //     presentAddress: [''],
-  //     panNumber: [''],
-  //     aadhaarNumber: [''],
-  //     passportNumber: [''],
-  //     placeOfBirth: [''],
-  //     uan: [''],
-  //     bloodGroup: [''],
-  //     citizenship: [''],
-  //     religion: [''],
-  //     drivingLicence: [''],
-  //     maritalStatusId: [''],
-  //     marriageDate: [''],
-  //     workPhone: [''],
-  //     linkedInProfile: [''],
-  //     previousExperience: [''],
-  //     ProfilePicturePath: [''],
-  //     ProfilePictureName : [''],
-  //     brandGrade: [''],
-  //     esicNumber: [''],
-  //     pfNumber: [''],
-  //     employmentType: [''],
-  //     dateofJoining: [''],
-  //     companyId: sessionStorage.getItem('CompanyId') || 1,
-  //     regionId: sessionStorage.getItem('RegionId') || 1,
-  //     userId: sessionStorage.getItem('UserId') || 1
-  //   });
-  // }
+  
   createForm() {
   this.personalForm = this.fb.group({
     firstName: ['', Validators.required],
@@ -206,7 +175,7 @@ loadgender() {
     esicNumber: [''],
     pfNumber: [''],
     employmentType: [''],
-    dateofJoining: [''],
+    dateofJoining: [{ value: '', disabled: true }],
 
     companyId: sessionStorage.getItem('CompanyId') || 1,
     regionId: sessionStorage.getItem('RegionId') || 1,
@@ -220,10 +189,7 @@ loadgender() {
 
   // CREATE OR UPDATE
   onSubmit() {
-    // if (this.personalForm.invalid) {
-    //   Swal.fire("Please fill required fields", '', 'warning');
-    //   return;
-    // }
+    
      if (this.personalForm.invalid) {
     this.personalForm.markAllAsTouched();
 
@@ -354,7 +320,6 @@ loadMaritalStatuses() {
   });
 }
 loadEmploymentTypes() {
-  debugger;
   this.adminService
     .getEmploymentTypesByFilter(this.companyId, this.regionId)
     .subscribe({
