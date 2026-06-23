@@ -262,27 +262,48 @@ this.filterDepartments();
   // 🔹 Delete (Soft Delete)
   // ------------------------------------------------------------
   deleteDesignation(d: Designation): void {
-    Swal.fire({
-      title: `Are you sure you want to delete ${d.designationName}?`,
-      showDenyButton: true,
-      confirmButtonText: 'Confirm'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.spinner.show();
-        this.adminservice.deleteDesignation(d.designationID).subscribe({
-          next: () => {
-            this.spinner.hide();
-            Swal.fire('Deleted!', `${d.designationName} deleted successfully.`, 'success');
-            this.loadDesignations();
-          },
-          error: () => {
-            this.spinner.hide();
-            Swal.fire('Error', 'Delete failed! Please contact IT Administrator.', 'error');
+  Swal.fire({
+    title: `Are you sure you want to delete ${d.designationName}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Delete'
+  }).then((result) => {
+
+    if (result.isConfirmed) {
+
+      this.spinner.show();
+
+      this.adminservice.deleteDesignation(d.designationID).subscribe({
+        next: (res: any) => {
+
+          this.spinner.hide();
+
+          // ✅ BLOCK DELETE IF ASSIGNED
+          if (res?.success === false || res?.message?.toLowerCase().includes('assigned')) {
+            Swal.fire(
+              'Not Allowed',
+              'This designation is assigned to users and cannot be deleted.',
+              'error'
+            );
+            return;
           }
-        });
-      }
-    });
-  }
+
+          Swal.fire('Deleted!', `${d.designationName} deleted successfully.`, 'success');
+          this.loadDesignations();
+        },
+
+        error: () => {
+          this.spinner.hide();
+          Swal.fire(
+            'Not Allowed',
+            'This designation is assigned to users and cannot be deleted.',
+            'error'
+          );
+        }
+      });
+    }
+  });
+}
 
   // ------------------------------------------------------------
   // 🔹 Reset Form

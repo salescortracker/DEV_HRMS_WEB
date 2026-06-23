@@ -151,7 +151,14 @@
 
      <div class="form-group">
       <label>Band/Grade</label>
-      <input type="text" formControlName="brandGrade" placeholder="Enter band/grade">
+      <select formControlName="brandGrade">
+    <option value="">Select Grade</option>
+
+    <option *ngFor="let grade of grades"
+            [value]="grade.gradeID">
+      {{ grade.gradeName }}
+    </option>
+  </select>
     </div>
     <div class="form-group">
       <label>ESIC Number</label>
