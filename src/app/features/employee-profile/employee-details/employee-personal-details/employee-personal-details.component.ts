@@ -29,6 +29,7 @@ username: any=sessionStorage.getItem('Name');
 maritalStatusList: any[] = [];
 showMarriageDate: boolean = false;
 marriedStatusId: number | null = null;
+grades: any[] = [];
    constructor(
     private fb: FormBuilder,
     private service: EmployeeResignationService
@@ -56,12 +57,25 @@ marriedStatusId: number | null = null;
   });
     this.loadAll();
     this.loadgender();
+    this.loadGradesMaster();
      if (this.userId > 0) {
       this.loadByUserId();
       this.loadEmploymentTypes();
     }
      
   }
+  loadGradesMaster() {
+  this.adminService
+    .getGradesByCompanyRegion(this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any[]) => {
+        this.grades = res;
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load grades', 'error');
+      }
+    });
+}
 genderList: any[] = [];
 genderMap: { [key: number]: string } = {};
 

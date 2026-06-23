@@ -2934,6 +2934,11 @@ updateGrade(data: Grade) {
 deleteGrade(id: number) {
   return this.http.post(`${this.baseUrl}/MasterData/DeleteGrade?id=${id}`, {});
 }
+getGradesByCompanyRegion(companyId: number, regionId: number) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/MasterData/GetGradesByCompanyRegion?companyId=${companyId}&regionId=${regionId}`
+  );
+}
  getRegionsByCompany(companyId: number) {
   return this.getAll(`MasterData/GetRegionsByCompany?companyId=${companyId}`);
 }

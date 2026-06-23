@@ -237,29 +237,41 @@ delete(item: any): void {
   Swal.fire({
     title: `Delete "${item.gradeName}"?`,
     icon: 'warning',
-    showCancelButton: true
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete'
   }).then(result => {
 
-    if (result.isConfirmed) {
+    if (!result.isConfirmed) return;
 
-      this.service.deleteGrade(item.gradeID).subscribe({
-        next: (res: any) => {
+    this.service.deleteGrade(item.gradeID).subscribe({
+      next: (res: any) => {
 
-          // ✅ DELETE has no success flag
-          if (res?.message) {
-            Swal.fire('Deleted', res.message, 'success');
-            this.loadGrades();
-          } else {
-            Swal.fire('Error', 'Delete failed', 'error');
-          }
-
-        },
-        error: () => {
-          Swal.fire('Error', 'Delete failed', 'error');
+        // 🔴 IMPORTANT FIX
+        if (res?.success === false) {
+          Swal.fire('Cannot Delete', res.message, 'warning');
+          return;
         }
-      });
 
-    }
+        if (res?.success === true) {
+          Swal.fire('Deleted', res.message, 'success');
+          this.loadGrades();
+          return;
+        }
+
+        // fallback
+        Swal.fire('Error', 'Unexpected response from server', 'error');
+      },
+
+      error: (err) => {
+        console.log(err);
+
+        Swal.fire(
+          'Error',
+          err?.error?.message || 'Delete failed (server error)',
+          'error'
+        );
+      }
+    });
 
   });
 }
