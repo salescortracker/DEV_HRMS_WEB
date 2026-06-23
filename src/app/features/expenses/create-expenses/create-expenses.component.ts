@@ -35,7 +35,7 @@ countries: any[] = [];
   projects: any[] = [];
   currencies: any[] = [];
 
-
+canCreateExpense: boolean = false;
   constructor(
     private fb: FormBuilder,
     private expenseService: ExpensesService,
@@ -47,14 +47,27 @@ countries: any[] = [];
     this.companyId = Number(sessionStorage.getItem('CompanyId'));
     this.regionId = Number(sessionStorage.getItem('RegionId'));
     this.departmentName = sessionStorage.getItem('DepartmentName');
-
+this.loadPermissions();
     this.buildForm();
     this.loadCategories();
     this.loadMyExpenses();
     this.loadProjects();
     this.loadCurrencies();
     this.loadCountries();
+    
   }
+  loadPermissions(): void {
+  const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
+
+  const createExpenseMenu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'create expense'
+  );
+
+  this.canCreateExpense = createExpenseMenu?.canAdd ?? false;
+
+  console.log('Create Expense Permission:', this.canCreateExpense);
+}
   loadCountries(): void {
 
   this.service

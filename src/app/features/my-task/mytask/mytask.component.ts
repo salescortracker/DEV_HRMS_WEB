@@ -32,7 +32,8 @@ export class MytaskComponent {
   fromDate: string = '';
   toDate: string = '';
   searchText: string = '';
-  
+  canView = false;
+canEdit = false;
 
   constructor(
     private taskService: TaskService,
@@ -41,6 +42,7 @@ export class MytaskComponent {
   ) { }
 
   ngOnInit() {
+    this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));
@@ -50,7 +52,23 @@ export class MytaskComponent {
     this.loadPriorities();
     this.loadProjects();
   }
+loadPermissions() {
 
+  const menus = JSON.parse(
+    sessionStorage.getItem('Menus') || '[]'
+  );
+
+  const menu = menus.find(
+    (x: any) =>
+      x.menuName?.trim().toLowerCase() === 'my task'
+  );
+
+  this.canView = menu?.canView ?? false;
+  this.canEdit = menu?.canEdit ?? false;
+
+  console.log('My Task View:', this.canView);
+  console.log('My Task Edit:', this.canEdit);
+}
   // ✅ LOAD TASKS
   loadTasks() {
     this.taskService.getMyTasks(this.userId)

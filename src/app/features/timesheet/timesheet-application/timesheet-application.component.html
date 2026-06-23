@@ -1,308 +1,302 @@
-<div class="card shadow-sm p-4">
+<div *ngIf="canViewTimesheet">
+  <div class="card shadow-sm p-4">
 
-  <form #form="ngForm" (ngSubmit)="saveTimesheet(form)">
+    <form #form="ngForm" (ngSubmit)="saveTimesheet(form)">
 
-    <div class="row g-3 mb-3">
+      <div class="row g-3 mb-3">
 
-      <div class="col-md-4">
-        <label class="form-label">Employee Name</label>
-        <input class="form-control" [(ngModel)]="model.employeeName" name="employeeName" readonly>
+        <div class="col-md-4">
+          <label class="form-label">Employee Name</label>
+          <input class="form-control" [(ngModel)]="model.employeeName" name="employeeName" readonly>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Employee Code</label>
+          <input class="form-control" [(ngModel)]="model.employeeCode" name="employeeCode" readonly>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-control" [(ngModel)]="model.date" name="date" [max]="todayDate" required>
+        </div>
+
+        <div class="col-md-8">
+          <label class="form-label">Comments</label>
+          <textarea class="form-control" [(ngModel)]="model.comments" name="comments"></textarea>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Attachment</label>
+          <input type="file" class="form-control" (change)="onFileSelect($event)">
+        </div>
+
+
+        <div class="mb-3">
+          <label class="form-label">HR Email (CC)</label>
+          <input type="email" class="form-control" [(ngModel)]="model.hrEmail" name="hrEmail">
+        </div>
+
+
       </div>
 
-      <div class="col-md-4">
-        <label class="form-label">Employee Code</label>
-        <input class="form-control" [(ngModel)]="model.employeeCode" name="employeeCode" readonly>
+      <h6 class="mt-2">Tasks</h6>
+
+      <div *ngFor="let p of model.projects; let i = index" class="row g-2 align-items-end mb-2">
+
+        <div class="col-md-2">
+          <label>Task {{ i + 1 }}</label>
+          <input class="form-control" [(ngModel)]="p.projectName" name="project{{i}}" required>
+        </div>
+
+        <div class="col-md-5">
+          <label>Description</label>
+          <textarea class="form-control w-100" [(ngModel)]="p.description" name="desc{{i}}" rows="1"
+            placeholder="Enter description" style="min-width: 250px;"></textarea>
+        </div>
+
+        <div class="col-md-1">
+          <label>Start Time</label>
+          <input type="time" class="form-control" [(ngModel)]="p.startTime" name="start{{i}}"
+            (change)="calculateProjectHours(p)">
+        </div>
+
+        <div class="col-md-1">
+          <label>End Time</label>
+          <input type="time" class="form-control" [(ngModel)]="p.endTime" name="end{{i}}"
+            (change)="calculateProjectHours(p)">
+        </div>
+
+        <div class="col-md-1">
+          <label>Total Hours</label>
+          <input class="form-control" [value]="p.totalHoursText" readonly>
+        </div>
+
+        <div class="col-md-1">
+          <label>OT Hours</label>
+          <input class="form-control" [(ngModel)]="p.overtimeHours" name="ot{{i}}" placeholder="HH:MM or 1.5"
+            (change)="calculateProjectHours(p)">
+        </div>
+
+        <div class="col-md-1 text-center">
+          <button type="button" class="btn btn-danger btn-sm" (click)="removeProject(i)">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+
       </div>
 
-      <div class="col-md-4">
-        <label class="form-label">Date</label>
-        <input type="date" class="form-control" [(ngModel)]="model.date" name="date" [max]="todayDate" required>
-      </div>
+      <button type="button" class="btn btn-secondary btn-sm mt-2" (click)="addProject()">
+        <i class="fa-solid fa-plus me-2"></i> Add Tasks
+      </button>
 
-      <div class="col-md-8">
-        <label class="form-label">Comments</label>
-        <textarea class="form-control" [(ngModel)]="model.comments" name="comments"></textarea>
-      </div>
+      <div class="text-end mt-4">
+        <!-- <button class="btn btn-success" type="submit" [disabled]="!isFormValid()">
+        Save Timesheet
+      </button> -->
+        <button *ngIf="canCreateTimesheet" class="btn btn-success" type="submit" [disabled]="!isFormValid()">
 
-      <div class="col-md-4">
-        <label class="form-label">Attachment</label>
-        <input type="file" class="form-control" (change)="onFileSelect($event)">
-      </div>
+          {{ isEditMode ? 'Update Timesheet' : 'Save Timesheet' }}
 
-
-      <div class="mb-3">
-        <label class="form-label">HR Email (CC)</label>
-        <input type="email" class="form-control" [(ngModel)]="model.hrEmail" name="hrEmail">
-      </div>
-
-
-    </div>
-
-    <h6 class="mt-2">Tasks</h6>
-
-    <div *ngFor="let p of model.projects; let i = index" class="row g-2 align-items-end mb-2">
-
-      <div class="col-md-2">
-        <label>Task {{ i + 1 }}</label>
-        <input class="form-control" [(ngModel)]="p.projectName" name="project{{i}}" required>
-      </div>
-
-     <div class="col-md-5">
-  <label>Description</label>
-  <textarea class="form-control w-100"
-            [(ngModel)]="p.description"
-            name="desc{{i}}"
-            rows="1"
-            placeholder="Enter description"
-            style="min-width: 250px;"></textarea>
-</div>
-
-      <div class="col-md-1">
-        <label>Start Time</label>
-        <input type="time" class="form-control" [(ngModel)]="p.startTime" name="start{{i}}"
-          (change)="calculateProjectHours(p)">
-      </div>
-
-      <div class="col-md-1">
-        <label>End Time</label>
-        <input type="time" class="form-control" [(ngModel)]="p.endTime" name="end{{i}}"
-          (change)="calculateProjectHours(p)">
-      </div>
-
-      <div class="col-md-1">
-        <label>Total Hours</label>
-        <input class="form-control" [value]="p.totalHoursText" readonly>
-      </div>
-
-      <div class="col-md-1">
-        <label>OT Hours</label>
-        <input class="form-control" [(ngModel)]="p.overtimeHours" name="ot{{i}}" placeholder="HH:MM or 1.5"
-          (change)="calculateProjectHours(p)">
-      </div>
-      
-      <div class="col-md-1 text-center">
-        <button type="button" class="btn btn-danger btn-sm" (click)="removeProject(i)">
-          <i class="fa-solid fa-trash"></i>
         </button>
       </div>
 
-    </div>
+    </form>
+  </div>
 
-    <button type="button" class="btn btn-secondary btn-sm mt-2" (click)="addProject()">
-      <i class="fa-solid fa-plus me-2"></i> Add Tasks
-    </button>
+  <!-- ================= SUBMITTED LIST ================= -->
 
-    <div class="text-end mt-4">
-      <!-- <button class="btn btn-success" type="submit" [disabled]="!isFormValid()">
-        Save Timesheet
-      </button> -->
-      <button class="btn btn-success"
-        type="submit"
-        [disabled]="!isFormValid()">
+  <!-- ================= SUBMITTED LIST ================= -->
+  <div class="dashboard-tables full-row mt-4">
+    <div class="table-card">
+      <h3>Submitted Timesheets</h3>
+      <button class="btn btn-primary mb-2" (click)="sendSelectedTimesheets()">
+        <i class="fa-solid fa-paper-plane me-2"></i> Send Selected
+      </button>
 
-  {{ isEditMode ? 'Update Timesheet' : 'Save Timesheet' }}
-
-</button>
-    </div>
-
-  </form>
-</div>
-
-<!-- ================= SUBMITTED LIST ================= -->
-
-<!-- ================= SUBMITTED LIST ================= -->
-<div class="dashboard-tables full-row mt-4">
-  <div class="table-card">
-    <h3>Submitted Timesheets</h3>
-    <button class="btn btn-primary mb-2" (click)="sendSelectedTimesheets()">
-      <i class="fa-solid fa-paper-plane me-2"></i> Send Selected
-    </button>
-
-    <table class="table table-bordered table-hover">
-      <thead class="table-light">
-        <tr>
-          <th><input type="checkbox" (change)="toggleSelectAll($event)"></th>
-          <th (click)="sortBy('employeeName')" style="cursor:pointer">
-            Employee Name
-            <span *ngIf="sortColumn==='employeeName'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
-          </th>
-          <th (click)="sortBy('employeeCode')" style="cursor:pointer">
-            Employee ID
-            <span *ngIf="sortColumn==='employeeCode'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
-          </th>
-          <th (click)="sortBy('timesheetDate')" style="cursor:pointer">
-            Date
-            <span *ngIf="sortColumn==='timesheetDate'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
-          </th>
-          <th>Tasks</th>
-          <th (click)="sortBy('totalHoursText')" style="cursor:pointer">
-            Total Hours
-            <span *ngIf="sortColumn==='totalHoursText'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
-          </th>
-          <th (click)="sortBy('otHoursText')" style="cursor:pointer">
-            OT Hours
-            <span *ngIf="sortColumn==='otHoursText'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
-          </th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of filteredTimesheets(); let i = index">
-          <td><input type="checkbox" [(ngModel)]="row.selected" [disabled]="row.status !== 'Pending'"></td>
-          <td>{{ row.employeeName }}</td>
-          <td>{{ row.employeeCode }}</td>
-          <td>{{ row.timesheetDate | date:'dd-MMM-yyyy' }}</td>
-          <td>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item py-1" *ngFor="let p of row.projects; let pi = index">
-                Task {{ pi + 1 }}: {{ p.projectName }}
-                <br>
-               <small class="text-muted">{{ p.description }}</small>
-              </li>
-            </ul>
-          </td>
-          <td>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item py-1" *ngFor="let p of row.projects">
-                {{ p.totalHoursText }}
-              </li>
-            </ul>
-          </td>
-          <td>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item py-1" *ngFor="let p of row.projects">
-                {{ p.otHoursText || '0 Hours' }}
-              </li>
-            </ul>
-          </td>
-          <td>
-            <span class="badge" [ngClass]="{
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th><input type="checkbox" (change)="toggleSelectAll($event)"></th>
+            <th (click)="sortBy('employeeName')" style="cursor:pointer">
+              Employee Name
+              <span *ngIf="sortColumn==='employeeName'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
+            </th>
+            <th (click)="sortBy('employeeCode')" style="cursor:pointer">
+              Employee ID
+              <span *ngIf="sortColumn==='employeeCode'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
+            </th>
+            <th (click)="sortBy('timesheetDate')" style="cursor:pointer">
+              Date
+              <span *ngIf="sortColumn==='timesheetDate'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
+            </th>
+            <th>Tasks</th>
+            <th (click)="sortBy('totalHoursText')" style="cursor:pointer">
+              Total Hours
+              <span *ngIf="sortColumn==='totalHoursText'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
+            </th>
+            <th (click)="sortBy('otHoursText')" style="cursor:pointer">
+              OT Hours
+              <span *ngIf="sortColumn==='otHoursText'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
+            </th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of filteredTimesheets(); let i = index">
+            <td><input type="checkbox" [(ngModel)]="row.selected" [disabled]="row.status !== 'Pending'"></td>
+            <td>{{ row.employeeName }}</td>
+            <td>{{ row.employeeCode }}</td>
+            <td>{{ row.timesheetDate | date:'dd-MMM-yyyy' }}</td>
+            <td>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1" *ngFor="let p of row.projects; let pi = index">
+                  Task {{ pi + 1 }}: {{ p.projectName }}
+                  <br>
+                  <small class="text-muted">{{ p.description }}</small>
+                </li>
+              </ul>
+            </td>
+            <td>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1" *ngFor="let p of row.projects">
+                  {{ p.totalHoursText }}
+                </li>
+              </ul>
+            </td>
+            <td>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item py-1" *ngFor="let p of row.projects">
+                  {{ p.otHoursText || '0 Hours' }}
+                </li>
+              </ul>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
               'bg-warning': row.status==='Pending',
               'bg-primary': row.status==='Submitted',
               'bg-success': row.status==='Approved',
               'bg-danger': row.status==='Rejected'
             }">{{ row.status }}</span>
-          </td>
-          <!-- <td class="text-center">
+            </td>
+            <!-- <td class="text-center">
             <a href="javascript:void(0)" (click)="openViewModal(row)">
               <i class="fa-solid fa-eye text-primary fs-5"></i>
             </a>
           </td> -->
-          <td class="text-center">
+            <td class="text-center">
 
-  <!-- View -->
-  <a href="javascript:void(0)"
-     class="me-2"
-     (click)="openViewModal(row)">
-    <i class="fa-solid fa-eye text-primary fs-5"></i>
-  </a>
+              <!-- View -->
+              <a href="javascript:void(0)" class="me-2" (click)="openViewModal(row)">
+                <i class="fa-solid fa-eye text-primary fs-5"></i>
+              </a>
 
-  <!-- Edit -->
-  <a href="javascript:void(0)"
-     *ngIf="row.status === 'Pending'"
-     (click)="editTimesheet(row)">
-    <i class="fa-solid fa-pen-to-square text-success fs-5"></i>
-  </a>
+              <!-- Edit -->
+              <a href="javascript:void(0)" *ngIf="row.status === 'Pending' && canEditTimesheet" (click)="editTimesheet(row)">
+                <i class="fa-solid fa-pen-to-square text-success fs-5"></i>
+              </a>
 
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <!-- VIEW TIMESHEET MODAL -->
-<div class="modal fade show"
-     tabindex="-1"
-     *ngIf="selectedTimesheet"
-     [ngClass]="{'d-block': selectedTimesheet}"
-     style="background: rgba(0,0,0,0.5);">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- VIEW TIMESHEET MODAL -->
+      <div class="modal fade show" tabindex="-1" *ngIf="selectedTimesheet" [ngClass]="{'d-block': selectedTimesheet}"
+        style="background: rgba(0,0,0,0.5);">
 
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
 
-      <div class="modal-header">
-        <h5 class="modal-title">Timesheet Details</h5>
-        <button type="button" class="btn-close" (click)="closeViewModal()"></button>
-      </div>
+            <div class="modal-header">
+              <h5 class="modal-title">Timesheet Details</h5>
+              <button type="button" class="btn-close" (click)="closeViewModal()"></button>
+            </div>
 
-      <div class="modal-body">
+            <div class="modal-body">
 
-        <p><strong>Employee:</strong> {{ selectedTimesheet.employeeName }}</p>
-        <p><strong>Employee Code:</strong> {{ selectedTimesheet.employeeCode }}</p>
-        <p><strong>Date:</strong> {{ selectedTimesheet.timesheetDate | date:'dd-MMM-yyyy' }}</p>
+              <p><strong>Employee:</strong> {{ selectedTimesheet.employeeName }}</p>
+              <p><strong>Employee Code:</strong> {{ selectedTimesheet.employeeCode }}</p>
+              <p><strong>Date:</strong> {{ selectedTimesheet.timesheetDate | date:'dd-MMM-yyyy' }}</p>
 
-        <p><strong>Status:</strong>
-          <span class="badge"
-                [ngClass]="{
+              <p><strong>Status:</strong>
+                <span class="badge" [ngClass]="{
                   'bg-warning text-dark': selectedTimesheet.status === 'Pending',
                   'bg-primary': selectedTimesheet.status === 'Submitted',
                   'bg-success': selectedTimesheet.status === 'Approved',
                   'bg-danger': selectedTimesheet.status === 'Rejected'
                 }">
-            {{ selectedTimesheet.status }}
-          </span>
-        </p>
+                  {{ selectedTimesheet.status }}
+                </span>
+              </p>
 
-        <!-- PROJECT TABLE -->
-        <table class="table table-bordered mt-2">
-          <thead>
-            <tr>
-              <th>Task</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Total Hours</th>
-              <th>OT Hours</th>
-            </tr>
-          </thead>
+              <!-- PROJECT TABLE -->
+              <table class="table table-bordered mt-2">
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Total Hours</th>
+                    <th>OT Hours</th>
+                  </tr>
+                </thead>
 
-          <tbody>
-            <tr *ngFor="let p of selectedTimesheet.projects">
-              <td>
-                <div class="fw-bold mb-1">
-                  {{ p.projectName }}
-                </div>
-                <div class="text-muted">
-                  {{ p.description || 'No description available' }}
-                </div>
-              </td>
-              <td>{{ p.startTime }}</td>
-              <td>{{ p.endTime }}</td>
-              <td>{{ p.totalHoursText }}</td>
-              <td>{{ p.otHoursText }}</td>
-            </tr>
-          </tbody>
-        </table>
+                <tbody>
+                  <tr *ngFor="let p of selectedTimesheet.projects">
+                    <td>
+                      <div class="fw-bold mb-1">
+                        {{ p.projectName }}
+                      </div>
+                      <div class="text-muted">
+                        {{ p.description || 'No description available' }}
+                      </div>
+                    </td>
+                    <td>{{ p.startTime }}</td>
+                    <td>{{ p.endTime }}</td>
+                    <td>{{ p.totalHoursText }}</td>
+                    <td>{{ p.otHoursText }}</td>
+                  </tr>
+                </tbody>
+              </table>
 
-        <p><strong>Comments:</strong></p>
-        <textarea class="form-control" rows="3" readonly>
+              <p><strong>Comments:</strong></p>
+              <textarea class="form-control" rows="3" readonly>
           {{ selectedTimesheet.comments }}
         </textarea>
 
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-secondary" (click)="closeViewModal()">Close</button>
+            </div>
+
+          </div>
+        </div>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closeViewModal()">Close</button>
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-2">
+        <div>
+          <label>Show:
+            <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+            </select> entries
+          </label>
+        </div>
+        <div>
+          <button class="btn btn-outline-secondary btn-sm me-2" (click)="changePage(currentPage-1)"
+            [disabled]="currentPage===1">Previous</button>
+          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+          <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changePage(currentPage+1)"
+            [disabled]="currentPage===totalPages">Next</button>
+        </div>
       </div>
-
     </div>
   </div>
 </div>
 
-    <!-- Pagination -->
-    <div class="d-flex justify-content-between align-items-center mt-2">
-      <div>
-        <label>Show:
-          <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
-            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
-          </select> entries
-        </label>
-      </div>
-      <div>
-        <button class="btn btn-outline-secondary btn-sm me-2" (click)="changePage(currentPage-1)"
-          [disabled]="currentPage===1">Previous</button>
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-        <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changePage(currentPage+1)"
-          [disabled]="currentPage===totalPages">Next</button>
-      </div>
-    </div>
-  </div>
+<div *ngIf="!canViewTimesheet" class="alert alert-danger">
+
+  You do not have permission to view this page.
+
 </div>

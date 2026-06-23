@@ -23,8 +23,10 @@
 
       <div class="col-md-4">
         <label class="form-label">Account Holder Name</label>
-        <input type="text" class="form-control" placeholder="Enter account holder name" formControlName="accountHolderName" />
-        <div *ngIf="bankForm.get('accountHolderName')?.touched && bankForm.get('accountHolderName')?.invalid" class="text-danger">
+        <input type="text" class="form-control" placeholder="Enter account holder name"
+          formControlName="accountHolderName" />
+        <div *ngIf="bankForm.get('accountHolderName')?.touched && bankForm.get('accountHolderName')?.invalid"
+          class="text-danger">
           Account Holder Name is required (letters and spaces only)
         </div>
       </div>
@@ -35,7 +37,8 @@
       <div class="col-md-4">
         <label class="form-label">Account Number</label>
         <input type="text" class="form-control" placeholder="Enter account number" formControlName="accountNumber" />
-        <div *ngIf="bankForm.get('accountNumber')?.touched && bankForm.get('accountNumber')?.invalid" class="text-danger">
+        <div *ngIf="bankForm.get('accountNumber')?.touched && bankForm.get('accountNumber')?.invalid"
+          class="text-danger">
           Account Number is required (9–20 digits)
         </div>
       </div>
@@ -46,7 +49,8 @@
           <option value="">Select account type</option>
           <option *ngFor="let type of accountTypes" [value]="type.id">{{ type.name }}</option>
         </select>
-        <div *ngIf="bankForm.get('accountTypeId')?.touched && bankForm.get('accountTypeId')?.invalid" class="text-danger">
+        <div *ngIf="bankForm.get('accountTypeId')?.touched && bankForm.get('accountTypeId')?.invalid"
+          class="text-danger">
           Account Type is required
         </div>
       </div>
@@ -76,8 +80,17 @@
     <!-- Buttons -->
     <div class="row">
       <div class="col-md-12 text-end">
-        <button type="submit" class="btn-save" >
+        <!-- <button type="submit" class="btn-save"  *ngIf="canAdd">
           {{ bankForm.value.bankDetailsId ? 'Update' : 'Save' }} Bank Details
+        </button> -->
+        <!-- Create Button -->
+        <button *ngIf="canAdd && !bankForm.value.bankDetailsId" type="submit" class="btn-save">
+          Save Bank Details
+        </button>
+
+        <!-- Update Button -->
+        <button *ngIf="canEdit && bankForm.value.bankDetailsId" type="submit" class="btn-save">
+          Update Bank Details
         </button>
         <button type="button" class="btn btn-secondary ms-2" (click)="resetForm()">Reset</button>
       </div>
@@ -87,12 +100,7 @@
   <!-- ---------------- FILTERS / SEARCH ---------------- -->
   <div class="mb-3 row g-3 align-items-end mt-4">
     <div class="col-md-4">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Search by Bank, Branch or Holder"
-        [(ngModel)]="searchText"
-      />
+      <input type="text" class="form-control" placeholder="Search by Bank, Branch or Holder" [(ngModel)]="searchText" />
     </div>
     <div class="col-md-4">
       <select class="form-select" [(ngModel)]="statusFilter">
@@ -119,14 +127,15 @@
                 Branch <span *ngIf="sortColumn === 'branchName'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
               </th>
               <th (click)="sortBy('accountHolderName')" style="cursor:pointer">
-                Account Holder <span *ngIf="sortColumn === 'accountHolderName'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                Account Holder <span *ngIf="sortColumn === 'accountHolderName'">{{ sortDirection === 'asc' ? '▲' : '▼'
+                  }}</span>
               </th>
               <th>Account Number</th>
               <th>Account Type</th>
               <th>IFSC</th>
               <th>MICR</th>
               <th>UPI</th>
-              <th *ngIf="isAdmin">Actions</th>
+              <th *ngIf="canEdit || canDelete">Actions</th>
             </tr>
           </thead>
 
@@ -141,9 +150,9 @@
               <td>{{ bank.ifsccode }}</td>
               <td>{{ bank.micrcode }}</td>
               <td>{{ bank.upiid }}</td>
-              <td *ngIf="isAdmin" class="action-icons">
-                <i class="fa-solid fa-pen" (click)="editBank(i)"></i>
-                <i class="fa-solid fa-trash" (click)="deleteBank(i)"></i>
+              <td *ngIf="canEdit || canDelete" class="action-icons">
+                <i *ngIf="canEdit" class="fa-solid fa-pen" (click)="editBank(i)"></i>
+                <i *ngIf="canDelete" class="fa-solid fa-trash" (click)="deleteBank(i)"></i>
               </td>
             </tr>
 
@@ -167,11 +176,15 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-outline-primary btn-sm" (click)="changePage(1)" [disabled]="currentPage === 1">First</button>
-          <button class="btn btn-outline-primary btn-sm" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="changePage(1)"
+            [disabled]="currentPage === 1">First</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="changePage(currentPage - 1)"
+            [disabled]="currentPage === 1">Previous</button>
           <span class="btn btn-outline-secondary btn-sm disabled">Page {{ currentPage }} of {{ totalPages }}</span>
-          <button class="btn btn-outline-primary btn-sm" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
-          <button class="btn btn-outline-primary btn-sm" (click)="changePage(totalPages)" [disabled]="currentPage === totalPages">Last</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="changePage(currentPage + 1)"
+            [disabled]="currentPage === totalPages">Next</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="changePage(totalPages)"
+            [disabled]="currentPage === totalPages">Last</button>
         </div>
       </div>
     </div>

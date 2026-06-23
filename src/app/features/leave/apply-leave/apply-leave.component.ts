@@ -85,7 +85,7 @@ export class ApplyLeaveComponent {
   availableLeaves: number = 0;
   usedLeaves: number = 0;
   weekoffLoaded: boolean = false;
-
+canCreate: boolean = false;
 
   ngOnInit(): void {
     this.today = this.formatDate(new Date());
@@ -110,8 +110,21 @@ export class ApplyLeaveComponent {
     this.loadReportingManager();
     this.loadWeekoffs();
      this.loadPermission();
+     this.loadPermissions();
 
   }
+  loadPermissions() {
+  const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+
+  const applyLeaveMenu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === "leave apply"
+  );
+
+  this.canCreate = applyLeaveMenu?.canCreate ?? false;
+
+  console.log("Leave Apply Create Permission:", this.canCreate);
+}
 
   constructor(private leaveService: EmployeeResignationService, private userService: AdminService) { }
 

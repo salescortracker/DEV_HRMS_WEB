@@ -30,15 +30,48 @@ export class EmployeeW4DetailsComponent {
   pageSize: number = 10;
   currentPage: number = 1;
   totalPages: number = 1;
+  canView = false;
+canAdd = false;
+canEdit = false;
+canDelete = false;
 
   constructor(private fb: FormBuilder, private adminService: AdminService) {}
 
   ngOnInit(): void {
+    this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.initForm();
+    //this.loadW4List();
+      if (this.canView) {
     this.loadW4List();
   }
 
+  if (!this.canAdd && !this.canEdit) {
+    this.w4Form.disable();
+  }
+  }
+loadPermissions() {
+
+  const menus = JSON.parse(
+    sessionStorage.getItem('Menus') || '[]'
+  );
+
+  const permission = menus.find(
+    (x: any) =>
+      x.menuName?.trim().toLowerCase() === 'w4'
+  );
+
+  if (permission) {
+
+    this.canView = permission.canView;
+
+    this.canAdd = permission.canAdd;
+
+    this.canEdit = permission.canEdit;
+
+    this.canDelete = permission.canDelete;
+  }
+}
   initForm() {
     const eid = Number(localStorage.getItem('employeeId')) || 1;
     this.w4Form = this.fb.group({
@@ -94,6 +127,33 @@ export class EmployeeW4DetailsComponent {
 
   // ------------------- Save / Update W4 -------------------
   saveW4() {
+     const w4Id = Number(
+    this.w4Form.get('w4Id')?.value
+  );
+
+  // Edit Permission
+  if (w4Id > 0 && !this.canEdit) {
+
+    Swal.fire(
+      'Access Denied',
+      'Edit permission required',
+      'error'
+    );
+
+    return;
+  }
+
+  // Create Permission
+  if (w4Id === 0 && !this.canAdd) {
+
+    Swal.fire(
+      'Access Denied',
+      'Create permission required',
+      'error'
+    );
+
+    return;
+  }
     Object.keys(this.w4Form.controls).forEach(key => {
       const control = this.w4Form.get(key);
       if (control && typeof control.value === 'string') control.setValue(control.value.trim(), { emitEvent: false });
@@ -130,11 +190,31 @@ export class EmployeeW4DetailsComponent {
 
   // ------------------- Edit / Delete -------------------
   editW4(w4: W4Details) {
+      if (!this.canEdit) {
+
+    Swal.fire(
+      'Access Denied',
+      'Edit permission required',
+      'error'
+    );
+
+    return;
+  }
     this.isEditMode = true;
     this.w4Form.patchValue({ ...w4, formDate: w4.formDate ? new Date(w4.formDate).toISOString().split('T')[0] : '' });
   }
 
   deleteW4(w4Id: number) {
+    if (!this.canDelete) {
+
+  Swal.fire(
+    'Access Denied',
+    'Delete permission required',
+    'error'
+  );
+
+  return;
+}
     Swal.fire({
       title: 'Are you sure?',
       text: 'Do you want to delete this W4? This action cannot be undone.',

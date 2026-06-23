@@ -57,7 +57,7 @@
       <button type="button" class="btn btn-secondary me-2" (click)="resetForm(ticketForm)">
         Reset
       </button>
-      <button type="submit" class="btn btn-primary" [disabled]="ticketForm.invalid">
+      <button *ngIf="canCreateTicket" type="submit" class="btn btn-primary" [disabled]="ticketForm.invalid">
         Submit Ticket
       </button>
     </div>

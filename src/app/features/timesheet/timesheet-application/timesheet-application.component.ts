@@ -61,9 +61,34 @@ editingTimesheetId = 0;
   currentPage = 1;
   pageSizeOptions = [5, 10, 20, 50];
  todayDate: string = '';
+ canViewTimesheet = false;
+canCreateTimesheet = false;
+canEditTimesheet = false;
   constructor(private timesheetService: TimesheetService) {}
 
   ngOnInit(): void {
+     const menus = JSON.parse(
+    sessionStorage.getItem('Menus') || '[]'
+  );
+
+  const timesheetMenu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() ===
+      'submit timesheet'
+  );
+
+  this.canViewTimesheet =
+    timesheetMenu?.canView ?? false;
+
+  this.canCreateTimesheet =
+    timesheetMenu?.canAdd ?? false;
+
+  this.canEditTimesheet =
+    timesheetMenu?.canEdit ?? false;
+
+  console.log('View:', this.canViewTimesheet);
+  console.log('Create:', this.canCreateTimesheet);
+  console.log('Edit:', this.canEditTimesheet);
     const today = new Date();
   this.todayDate = today.toISOString().split('T')[0];
     this.userId = Number(sessionStorage.getItem("UserId"));
@@ -221,6 +246,10 @@ editingTimesheetId = 0;
 //     });
 //   }
 saveTimesheet(form: any) {
+  if (!this.canCreateTimesheet) {
+  alert('You do not have permission to create timesheets');
+  return;
+}
 
   if (!form.valid || this.model.projects.length === 0) {
     alert('Please complete the form');
@@ -363,6 +392,10 @@ saveTimesheet(form: any) {
     });
 }
 editTimesheet(row: any) {
+  if (!this.canEditTimesheet) {
+  alert('You do not have permission to edit timesheets');
+  return;
+}
 
   this.isEditMode = true;
   this.editingTimesheetId = row.timesheetId;
