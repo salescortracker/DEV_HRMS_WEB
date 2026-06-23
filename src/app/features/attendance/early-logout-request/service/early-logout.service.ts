@@ -44,7 +44,7 @@ export class EarlyLogoutService {
   }
 
   updateEarlyLogout(payload: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}/updateearlylogout`, payload);
+    return this.http.post(`${this.baseUrl}/updateearlylogout`, payload);
   }
 
   bulkApproveRejectEarlyLogout(payload: any): Observable<any> {

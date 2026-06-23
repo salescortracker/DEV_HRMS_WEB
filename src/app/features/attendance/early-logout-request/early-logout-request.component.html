@@ -20,7 +20,7 @@
   <div class="tab-header">
     <label class="tab-label" for="tab1" *ngIf="canViewPersonal">My request</label>
     <label class="tab-label" for="tab2" *ngIf="canViewManager">Manager Approvel</label>
-     <!-- <label class="tab-label" for="tab3" *ngIf="canViewHR || canViewManager">HR+Manager</label> -->
+     <label class="tab-label" for="tab3" *ngIf="canViewHR || canViewManager">HR+Manager</label>
   </div>
 
   <!-- ================= MY REQUESTS ================= -->
@@ -154,7 +154,7 @@
         </tbody>
       </table>
 
-      <div class="text-end mt-3">
+      <div class="text-right-end mt-3">
         <button class="btn btn-success btn-sm me-2" style="background-color: #b02828; color: white; border-color: #b02828;" (click)="bulkApproveReject('Approved')">
           Approve Selected
         </button>
