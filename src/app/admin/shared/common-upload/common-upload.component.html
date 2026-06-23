@@ -3,7 +3,7 @@
 
     <!-- Close button -->
     <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
-            aria-label="Close" (click)="close()"></button>
+            aria-label="Close" (click)="closeDialog()"></button>
 
     <!-- Header -->
     <div class="text-center mb-4">
@@ -49,7 +49,7 @@
         <i class="fa-solid fa-download me-2"></i> Download Template
       </button>
       <div class="d-flex gap-2">
-        <button class="btn btn-dark" (click)="close()">
+        <button class="btn btn-dark" (click)="closeDialog()">
           <i class="fa-solid fa-xmark me-2"></i> Cancel
         </button>
         <button class="btn btn-danger" (click)="upload()" [disabled]="!selectedFile">
