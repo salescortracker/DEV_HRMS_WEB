@@ -127,7 +127,10 @@
   <!-- Submit & Reset -->
   <div class="row">
     <div class="col-md-12 text-end">
-      <button type="submit" class="btn btn-primary me-2">
+      <button  *ngIf="
+    (canAdd && !w4Form.value.w4Id) ||
+    (canEdit && w4Form.value.w4Id)
+  " type="submit" class="btn btn-primary me-2">
         {{ isEditMode ? 'Update W4(USA)' : 'Save W4(USA)' }}
       </button>
       <button type="button" class="btn btn-secondary" (click)="resetForm()">
@@ -181,7 +184,7 @@
             Filing Status
             <span *ngIf="sortColumn==='filingStatus'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
           </th>
-          <th>Actions</th>
+          <th *ngIf="canEdit || canDelete">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -193,9 +196,9 @@
           <td>{{ w4.state }}</td>
           <td>{{ w4.zipCode }}</td>
           <td>{{ w4.filingStatus }}</td>
-          <td class="action-icons">
-            <i class="fa-solid fa-pen" (click)="editW4(w4)"></i>
-            <i class="fa-solid fa-trash" (click)="deleteW4(w4.w4Id)"></i>
+          <td  *ngIf="canEdit || canDelete" class="action-icons">
+            <i *ngIf="canEdit" class="fa-solid fa-pen" (click)="editW4(w4)"></i>
+            <i *ngIf="canDelete" class="fa-solid fa-trash" (click)="deleteW4(w4.w4Id)"></i>
           </td>
         </tr>
 
