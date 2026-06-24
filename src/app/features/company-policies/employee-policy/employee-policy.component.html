@@ -1,272 +1,125 @@
-<div class="card shadow-sm">
-  <div class="container-fluid p-4 news-management">
+<app-header></app-header>
+<app-sidebar></app-sidebar>
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="fw-semibold">Company Policies</h4>
-    </div>
-    <hr />
-
-    <!-- Form -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-
-        <form (ngSubmit)="onSubmit()" #policyForm="ngForm">
-
-          <div class="row g-3">
-
-            <!-- Company -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Company<span class="text-danger">*</span></label>
-             <select class="form-select"
-        [(ngModel)]="policy.CompanyId" (change)="onCompanyChange()"
-        name="CompanyId" required>
-
-  <option [ngValue]="null">Select Company</option>
-
-  <option *ngFor="let c of companies"
-          [ngValue]="c.companyId">
-    {{c.companyName}}
-  </option>
-
-</select>
-            </div>
-
-            <!-- Region -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Region<span class="text-danger">*</span></label>
-             <select class="form-select"
-        [(ngModel)]="policy.RegionId"
-        name="RegionId"(change)="onRegionChange()" required>
-
-  <option [ngValue]="null">Select Region</option>
-
-  <option *ngFor="let r of filteredRegions"
-          [ngValue]="r.regionID">
-    {{r.regionName}}
-  </option>
-
-</select>
-            </div>
-
-            <!-- Department -->
-        <div class="col-md-6 position-relative">
-
-  <label class="form-label fw-semibold">Departments<span class="text-danger">*</span></label>
-
-  <!-- Dropdown Field -->
-  <div class="form-select"
-       style="cursor:pointer"
-       (click)="showDepartmentDropdown = !showDepartmentDropdown">
-
-    {{ getSelectedDepartmentNames() }}
-
-  </div>
-
-  <!-- Dropdown Content -->
-  <div *ngIf="showDepartmentDropdown"
-       class="border rounded bg-white shadow mt-1 p-2 position-absolute w-100"
-       style="z-index:1000; max-height:250px; overflow-y:auto;">
-
-    <!-- Select All -->
-    <div class="form-check mb-2">
-
-      <input
-        class="form-check-input"
-        type="checkbox"
-        [checked]="isAllDepartmentsSelected()"
-        (change)="toggleAllDepartments($event)">
-
-      <label class="form-check-label fw-bold">
-        Select All
-      </label>
-
-    </div>
-
-    <hr>
-
-    <!-- Department List -->
-    <div *ngFor="let d of filteredDepartments" class="form-check">
-
-      <input
-        class="form-check-input"
-        type="checkbox"
-        [checked]="policy.DepartmentIds?.includes(d.departmentId)"
-        (change)="onDepartmentChange($event, d.departmentId)">
-
-      <label class="form-check-label">
-        {{ d.departmentName }}
-      </label>
-
-    </div>
-
-  </div>
-
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Employee Policies</h2>
 </div>
 
-            <!-- Title -->
-            <div class="col-md-6">
-              <label class="form-label">Title<span class="text-danger">*</span></label>
-              <input type="text" class="form-control" [(ngModel)]="policy.Title" name="Title" required>
-            </div>
+<div class="container mt-4">
 
-            <!-- Category -->
-            <div class="col-md-6">
-              <label class="form-label">Category<span class="text-danger">*</span></label>
-              <select class="form-select" [(ngModel)]="policy.Category" name="Category" required>
+  <!-- FILTER SECTION -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
 
-                <option value="">Select Category</option>
+      <div class="row g-3">
 
-                <option *ngFor="let c of categories"
-                          [value]="c.PolicyCategoryName">
+        <!-- Category -->
+        <div class="col-md-4">
+          <label class="form-label">Category</label>
 
-                    {{ c.PolicyCategoryName }}
+          <!-- <select class="form-select" [(ngModel)]="selectedCategory">
 
-                  </option>
+            <option value="">All Categories</option>
 
-              </select>
-            </div>
+            <option *ngFor="let c of categories" [value]="c.policyCategoryName">
 
-            <!-- Effective Date -->
-            <div class="col-md-6">
-              <label class="form-label">Effective Date<span class="text-danger">*</span></label>
-              <input type="date" class="form-control" [(ngModel)]="policy.EffectiveDate" name="EffectiveDate" required>
-            </div>
+              {{ c.policyCategoryName }}
 
-            <!-- Description -->
-            <div class="col-md-12">
-              <label class="form-label">Description<span class="text-danger">*</span></label>
-              <textarea class="form-control" rows="3" [(ngModel)]="policy.Description" name="Description" required>
-</textarea>
-            </div>
+            </option> -->
+            <select class="form-select" [(ngModel)]="selectedCategory" name="Category">
 
-            <!-- File -->
-            <div class="col-md-6">
-               <div class="col-md-6">
+              <option value="">Select Category</option>
 
-                <label class="form-label">Attachment</label>
+              <option *ngFor="let c of categories" [value]="c.PolicyCategoryName">
+                {{ c.policyCategoryName }}
+              </option>
 
-                <input type="file"
-                      class="form-control"
-                       #fileInput
-                      (change)="onFileSelected($event)">
+            </select>
+        </div>
 
-                <!-- ✅ SHOW EXISTING FILE IN EDIT -->
-                <div *ngIf="policy.FileName" class="mt-2">
+        <!-- From Date -->
+        <div class="col-md-4">
+          <label class="form-label">From Date</label>
 
-                  <strong>Existing File:</strong>
+          <!-- <input type="date" class="form-control" [(ngModel)]="fromDate"> -->
+          <input type="date" class="form-control" [(ngModel)]="fromDate" (change)="applyFilter()">
 
-                  <a [href]="policy.FileUrl"
-                    target="_blank">
+        </div>
 
-                    {{ policy.FileName }}
-
-                  </a>
-
-                </div>
-
-              </div>
-
-            <!-- Button -->
-            <div class="col-md-6 d-flex align-items-end">
-              <button type="submit" class="btn btn-dark w-100">
-
-                {{isEditMode ? 'Update' : 'Save Policy'}}
-
-              </button>
-            </div>
-
-          </div>
-</div>
-        </form>
-
-      </div>
-    </div>
-
-
-    <!-- TABLE -->
-
-    <div class="card shadow-sm">
-      <div class="card-body">
-
-        <table class="table table-bordered table-hover">
-
-          <thead class="table-light">
-
-            <tr>
-              <th>S.No</th>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Effective Date</th>
-              <th>Description</th>
-              <th>Department</th>
-              <th class="text-center">Actions</th>
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            <tr *ngFor="let p of paginatedPolicies; let i=index">
-
-              <td>{{((currentPage - 1) * pageSize) + i + 1}}</td>
-
-              <td>{{p.Title}}</td>
-
-              <td>{{p.Category}}</td>
-
-              <td>{{p.EffectiveDate | date:'dd-MMM-yyyy'}}</td>
-
-              <td>{{p.Description}}</td>
-
-              <td>{{getDepartmentName(p.DepartmentIds)}}</td>
-
-              <td class="text-center">
-
-                <button class="btn btn-sm btn-outline-primary me-2" (click)="editPolicy(p)">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-
-                <button class="btn btn-sm btn-outline-danger" (click)="deletePolicy(p)">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-
-              </td>
-
-            </tr>
-
-          </tbody>
-
-        </table>
-
-        <div class="d-flex justify-content-between align-items-center mt-3">
-          <div>
-            Showing {{ (currentPage - 1) * pageSize + 1 }}
-            to {{ (currentPage - 1) * pageSize + paginatedPolicies.length }}
-            of {{ policies.length }} entries
-          </div>
-
-          <nav>
-            <ul class="pagination mb-0">
-
-              <li class="page-item" [class.disabled]="currentPage === 1">
-                <button class="page-link" type="button" (click)="prevPage()">Previous</button>
-              </li>
-
-              <li class="page-item active">
-                <span class="page-link">{{ currentPage }}</span>
-              </li>
-
-              <li class="page-item" [class.disabled]="currentPage === totalPages">
-                <button class="page-link" type="button" (click)="nextPage()">Next</button>
-              </li>
-
-            </ul>
-          </nav>
+        <!-- Filter Button -->
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-primary w-100" (click)="applyFilter()">
+            Filter Policies
+          </button>
         </div>
 
       </div>
+
+    </div>
+  </div>
+
+
+  <!-- POLICY CARDS -->
+  <div class="row g-4 justify-content-center" *ngIf="filteredPoliciesList.length > 0">
+
+    <div class="col-md-6 col-lg-4" *ngFor="let p of filteredPoliciesList">
+
+      <div class="card policy-card shadow-sm h-100">
+
+        <div class="card-body">
+
+          <!-- Category + Date -->
+          <div class="d-flex justify-content-between mb-2">
+
+            <span class="badge bg-primary">
+              {{p.Category}}
+            </span>
+
+            <small class="text-muted">
+              {{p.EffectiveDate | date:'dd-MMM-yyyy'}}
+            </small>
+
+          </div>
+
+          <!-- Title -->
+          <h5 class="card-title">
+            {{p.Title}}
+          </h5>
+
+          <!-- Description -->
+          <p class="card-text text-muted">
+            {{p.Description}}
+          </p>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="card-footer bg-white border-0 text-end">
+
+          <a *ngIf="p.FileUrl" [href]="p.FileUrl" target="_blank" class="btn btn-sm btn-success">
+
+            Download Policy
+
+          </a>
+
+        </div>
+
+      </div>
+
     </div>
 
   </div>
+
+
+  <!-- NO DATA -->
+  <div *ngIf="filteredPoliciesList.length == 0" class="text-center mt-5">
+
+    <h5 class="text-muted">
+      No Policies Available
+    </h5>
+
+  </div>
+
 </div>
+
+<app-footer></app-footer>
