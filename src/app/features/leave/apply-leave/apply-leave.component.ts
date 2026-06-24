@@ -226,25 +226,62 @@ private normalizeDay(day: string): string {
 }
 
   // Load the company/region weekoff configuration (e.g., Mon/Wed, Sat/Sun, etc.)
- private loadWeekoffs() {
+//  private loadWeekoffs() {
+//   if (!this.companyId || !this.regionId) return;
+
+//   this.userService.getWeekoffs(this.companyId, this.regionId).subscribe({
+//     next: (res: any) => {
+
+//       const data: Weekoff[] = res?.data || [];
+
+//       this.weekoffDays = new Set(
+//         data
+//           .filter(x => x.isActive)
+//           .map(x => this.normalizeDay(x.weekoffDate))
+//       );
+//       this.weekoffLoaded = true;
+
+//       console.log("Weekoff Set READY:", Array.from(this.weekoffDays));
+//     },
+//     error: () => {
+//       this.weekoffDays = new Set();
+//     }
+//   });
+// }
+private loadWeekoffs() {
   if (!this.companyId || !this.regionId) return;
+
+  this.weekoffDays = new Set();
 
   this.userService.getWeekoffs(this.companyId, this.regionId).subscribe({
     next: (res: any) => {
 
       const data: Weekoff[] = res?.data || [];
 
-      this.weekoffDays = new Set(
-        data
-          .filter(x => x.isActive)
-          .map(x => this.normalizeDay(x.weekoffDate))
-      );
+      const normalized: string[] = [];
+
+      data
+        .filter(x => x.isActive)
+        .forEach(x => {
+
+          const day = this.normalizeDay(x.weekoffDate);
+
+          normalized.push(day);
+
+          if (day.length >= 3) {
+            normalized.push(day.substring(0, 3));
+          }
+        });
+
+      this.weekoffDays = new Set(normalized);
+
       this.weekoffLoaded = true;
 
-      console.log("Weekoff Set READY:", Array.from(this.weekoffDays));
+      console.log("Weekoffs:", Array.from(this.weekoffDays));
     },
     error: () => {
       this.weekoffDays = new Set();
+      this.weekoffLoaded = true;
     }
   });
 }
@@ -254,10 +291,25 @@ private getDayName(date: Date): string {
   );
 }
  
- private isWeekoffDate(date: Date): boolean {
-  const dayName = this.getDayName(date);
+//  private isWeekoffDate(date: Date): boolean {
+//   const dayName = this.getDayName(date);
 
-  return this.weekoffDays.has(dayName);
+//   return this.weekoffDays.has(dayName);
+// }
+private isWeekoffDate(date: Date): boolean {
+
+  const longDay = date
+    .toLocaleDateString('en-US', { weekday: 'long' })
+    .toLowerCase();
+
+  const shortDay = date
+    .toLocaleDateString('en-US', { weekday: 'short' })
+    .toLowerCase();
+
+  return (
+    this.weekoffDays.has(longDay) ||
+    this.weekoffDays.has(shortDay)
+  );
 }
 checkLOP() {
 
@@ -559,7 +611,9 @@ onStartDateChange() {
   const date = new Date(this.startDate);
 
   if (this.isWeekoffDate(date)) {
-    this.startDateError = "Weekoff day not allowed (" + this.getDayName(date) + ")";
+    //this.startDateError = "Weekoff day not allowed (" + this.getDayName(date) + ")";
+    this.startDateError =
+  `Leave cannot be applied on ${this.getDayName(date)} because it is configured as a Week Off.`;
     this.startDate = "";
     return;
   }
@@ -580,8 +634,10 @@ onEndDateChange() {
 
   if (this.weekoffDays.has(dayName)) {
 
+    // this.endDateError =
+    //   `You cannot apply leave on weekoff day (${dayName})`;
     this.endDateError =
-      `You cannot apply leave on weekoff day (${dayName})`;
+  `Leave cannot be applied on ${dayName} because it is configured as a Week Off.`;
 
     this.endDate = "";
     return;
@@ -639,6 +695,20 @@ onEndDateChange() {
 
   // --------------------- CREATE (SUBMIT LEAVE) ---------------------
   onSubmit() {
+const start = new Date(this.startDate);
+const end = new Date(this.endDate);
+
+// if (this.isDateRangeHasWeekoff(start, end)) {
+
+//   Swal.fire(
+//     'Weekoff Selected',
+//     'Leave cannot be applied on weekoff days.',
+//     'warning'
+//   );
+
+//   return;
+// }
+
     let finalReason = this.reason;
 
   if (this.usePreviousBalance) {
