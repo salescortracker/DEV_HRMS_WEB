@@ -34,6 +34,10 @@ export class TeamtaskComponent {
   existingFiles: any[] = [];
   projects: any[] = [];
   deletedFileIds: number[] = [];
+  // Pagination
+pageSize = 5;
+currentPage = 1;
+pageSizeOptions = [5, 10, 20, 50, 100];
   removeExistingFile(index: number) {
 
     const file = this.existingFiles[index];
@@ -54,7 +58,7 @@ export class TeamtaskComponent {
   // ADD THESE METHODS INSIDE TeamtaskComponent
 
   getTotalTasks(): number {
-    return this.tasks.length;
+    return this.allTasks.length;
   }
 
   getTaskCountByStatus(statusName: string): number {
@@ -343,66 +347,66 @@ export class TeamtaskComponent {
       this.tasks = [...this.allTasks];
     });
   }
-  applyFilters() {
-    this.tasks = this.allTasks.filter(task => {
+  // applyFilters() {
+  //   this.tasks = this.allTasks.filter(task => {
 
-      // Employee Filter
-      const matchEmployee =
-        !this.selectedEmployee ||
-        task.assignedTo === this.selectedEmployee;
+  //     // Employee Filter
+  //     const matchEmployee =
+  //       !this.selectedEmployee ||
+  //       task.assignedTo === this.selectedEmployee;
 
-      // Status Filter
-      const matchStatus =
-        !this.selectedStatus ||
-        task.statusId == this.selectedStatus;
+  //     // Status Filter
+  //     const matchStatus =
+  //       !this.selectedStatus ||
+  //       task.statusId == this.selectedStatus;
 
-      // Priority Filter
-      const matchPriority =
-        !this.selectedPriority ||
-        task.priorityId == this.selectedPriority;
+  //     // Priority Filter
+  //     const matchPriority =
+  //       !this.selectedPriority ||
+  //       task.priorityId == this.selectedPriority;
 
-      // Search Filter
-      const search = this.searchText.toLowerCase();
-      const matchSearch =
-        !search ||
-        task.taskName?.toLowerCase().includes(search) ||
-        task.assignedTo?.toLowerCase().includes(search) ||
-        this.getProjectName(task.projectId)?.toLowerCase().includes(search);
+  //     // Search Filter
+  //     const search = this.searchText.toLowerCase();
+  //     const matchSearch =
+  //       !search ||
+  //       task.taskName?.toLowerCase().includes(search) ||
+  //       task.assignedTo?.toLowerCase().includes(search) ||
+  //       this.getProjectName(task.projectId)?.toLowerCase().includes(search);
 
-      // Date Filter
-      let matchDate = true;
+  //     // Date Filter
+  //     let matchDate = true;
 
-      if (this.fromDate) {
-        matchDate =
-          matchDate &&
-          new Date(task.startDate) >= new Date(this.fromDate);
-      }
+  //     if (this.fromDate) {
+  //       matchDate =
+  //         matchDate &&
+  //         new Date(task.startDate) >= new Date(this.fromDate);
+  //     }
 
-      if (this.toDate) {
-        matchDate =
-          matchDate &&
-          new Date(task.dueDate) <= new Date(this.toDate);
-      }
+  //     if (this.toDate) {
+  //       matchDate =
+  //         matchDate &&
+  //         new Date(task.dueDate) <= new Date(this.toDate);
+  //     }
 
-      return (
-        matchEmployee &&
-        matchStatus &&
-        matchPriority &&
-        matchSearch &&
-        matchDate
-      );
-    });
-  }
-  resetFilters() {
-    this.selectedEmployee = '';
-    this.selectedStatus = '';
-    this.selectedPriority = '';
-    this.fromDate = '';
-    this.toDate = '';
-    this.searchText = '';
+  //     return (
+  //       matchEmployee &&
+  //       matchStatus &&
+  //       matchPriority &&
+  //       matchSearch &&
+  //       matchDate
+  //     );
+  //   });
+  // }
+  // resetFilters() {
+  //   this.selectedEmployee = '';
+  //   this.selectedStatus = '';
+  //   this.selectedPriority = '';
+  //   this.fromDate = '';
+  //   this.toDate = '';
+  //   this.searchText = '';
 
-    this.tasks = [...this.allTasks];
-  }
+  //   this.tasks = [...this.allTasks];
+  // }
 
 
   deleteTask(task: any) {
@@ -488,5 +492,196 @@ export class TeamtaskComponent {
     return `${this.taskService.getFileBaseUrl()}/${path}`;
 
   }
+  getStatusCardClass(status: string): string {
+
+  switch (status.toLowerCase()) {
+
+    case 'pending':
+      return 'bg-warning-subtle';
+
+    case 'in progress':
+      return 'bg-info-subtle';
+
+    case 'completed':
+      return 'bg-success-subtle';
+
+    case 'overdue':
+      return 'bg-danger-subtle';
+
+    default:
+      return 'bg-light';
+  }
+}
+
+getStatusIconClass(status: string): string {
+
+  switch (status.toLowerCase()) {
+
+    case 'pending':
+      return 'bg-warning';
+
+    case 'in progress':
+      return 'bg-info';
+
+    case 'completed':
+      return 'bg-success';
+
+    case 'overdue':
+      return 'bg-danger';
+
+    default:
+      return 'bg-secondary';
+  }
+}
+
+getStatusIcon(status: string): string {
+
+  switch (status.toLowerCase()) {
+
+    case 'pending':
+      return 'fa fa-clock';
+
+    case 'in progress':
+      return 'fa fa-spinner';
+
+    case 'completed':
+      return 'fa fa-check';
+
+    case 'overdue':
+      return 'fa fa-exclamation-circle';
+
+    default:
+      return 'fa fa-circle';
+  }
+}
+getFilteredTasks(): any[] {
+
+  let data = this.allTasks.filter(task => {
+
+    const matchEmployee =
+      !this.selectedEmployee ||
+      task.assignedTo === this.selectedEmployee;
+
+    const matchStatus =
+      !this.selectedStatus ||
+      task.statusId == this.selectedStatus;
+
+    const matchPriority =
+      !this.selectedPriority ||
+      task.priorityId == this.selectedPriority;
+
+    const search = this.searchText.toLowerCase();
+
+    const matchSearch =
+      !search ||
+      task.taskName?.toLowerCase().includes(search) ||
+      task.assignedTo?.toLowerCase().includes(search) ||
+      this.getProjectName(task.projectId)?.toLowerCase().includes(search);
+
+    let matchDate = true;
+
+    if (this.fromDate) {
+      matchDate =
+        matchDate &&
+        new Date(task.startDate) >= new Date(this.fromDate);
+    }
+
+    if (this.toDate) {
+      matchDate =
+        matchDate &&
+        new Date(task.dueDate) <= new Date(this.toDate);
+    }
+
+    return (
+      matchEmployee &&
+      matchStatus &&
+      matchPriority &&
+      matchSearch &&
+      matchDate
+    );
+  });
+
+  const startIndex = (this.currentPage - 1) * this.pageSize;
+
+  return data.slice(startIndex, startIndex + this.pageSize);
+}
+get totalPages(): number {
+
+  const totalRecords = this.allTasks.filter(task => {
+
+    const matchEmployee =
+      !this.selectedEmployee ||
+      task.assignedTo === this.selectedEmployee;
+
+    const matchStatus =
+      !this.selectedStatus ||
+      task.statusId == this.selectedStatus;
+
+    const matchPriority =
+      !this.selectedPriority ||
+      task.priorityId == this.selectedPriority;
+
+    const search = this.searchText.toLowerCase();
+
+    const matchSearch =
+      !search ||
+      task.taskName?.toLowerCase().includes(search) ||
+      task.assignedTo?.toLowerCase().includes(search) ||
+      this.getProjectName(task.projectId)?.toLowerCase().includes(search);
+
+    let matchDate = true;
+
+    if (this.fromDate) {
+      matchDate =
+        matchDate &&
+        new Date(task.startDate) >= new Date(this.fromDate);
+    }
+
+    if (this.toDate) {
+      matchDate =
+        matchDate &&
+        new Date(task.dueDate) <= new Date(this.toDate);
+    }
+
+    return (
+      matchEmployee &&
+      matchStatus &&
+      matchPriority &&
+      matchSearch &&
+      matchDate
+    );
+
+  }).length;
+
+  return Math.ceil(totalRecords / this.pageSize) || 1;
+}
+changePage(page: number): void {
+
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+  }
+
+}
+
+changePageSize(size: number): void {
+
+  this.pageSize = size;
+  this.currentPage = 1;
+
+}
+applyFilters() {
+  this.currentPage = 1;
+}
+resetFilters() {
+
+  this.selectedEmployee = '';
+  this.selectedStatus = '';
+  this.selectedPriority = '';
+  this.fromDate = '';
+  this.toDate = '';
+  this.searchText = '';
+
+  this.currentPage = 1;
+}
 
 }

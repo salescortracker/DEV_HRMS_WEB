@@ -8,82 +8,51 @@
     </h4>
     <div class="row g-3 mb-4">
 
-      <!-- Total Tasks -->
-      <div class="col-md-2">
-        <div class="card border-0 shadow-sm bg-light h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="icon-box bg-primary-subtle text-primary me-3">
-              <i class="fa fa-list-check"></i>
-            </div>
-            <div>
-              <small class="text-muted">Total Tasks</small>
-              <h5 class="mb-0 fw-bold">{{ getTotalTasks() }}</h5>
-            </div>
-          </div>
+  <!-- Total Tasks -->
+  <div class="col-md-2">
+    <div class="card border-0 shadow-sm bg-light h-100">
+      <div class="card-body d-flex align-items-center">
+        <div class="icon-box bg-primary-subtle text-primary me-3">
+          <i class="fa fa-list-check"></i>
+        </div>
+        <div>
+          <small class="text-muted">Total Tasks</small>
+          <h5 class="mb-0 fw-bold">{{ getTotalTasks() }}</h5>
         </div>
       </div>
-
-      <!-- Pending -->
-      <div class="col-md-2">
-        <div class="card border-0 shadow-sm bg-warning-subtle h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="icon-box bg-warning text-white me-3">
-              <i class="fa fa-clock"></i>
-            </div>
-            <div>
-              <small class="text-muted">Pending Tasks</small>
-              <h5 class="mb-0 fw-bold">{{ getTaskCountByStatus('Pending') }}</h5>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- In Progress -->
-      <div class="col-md-2">
-        <div class="card border-0 shadow-sm bg-info-subtle h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="icon-box bg-info text-white me-3">
-              <i class="fa fa-spinner"></i>
-            </div>
-            <div>
-              <small class="text-muted">In Progress</small>
-              <h5 class="mb-0 fw-bold">{{ getTaskCountByStatus('In Progress') }}</h5>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Completed -->
-      <div class="col-md-2">
-        <div class="card border-0 shadow-sm bg-success-subtle h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="icon-box bg-success text-white me-3">
-              <i class="fa fa-check"></i>
-            </div>
-            <div>
-              <small class="text-muted">Completed</small>
-              <h5 class="mb-0 fw-bold">{{ getTaskCountByStatus('Completed') }}</h5>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ✅ Overdue (NEW - same as manager) -->
-      <!-- <div class="col-md-2">
-        <div class="card border-0 shadow-sm bg-danger-subtle h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="icon-box bg-danger text-white me-3">
-              <i class="fa fa-exclamation-circle"></i>
-            </div>
-            <div>
-              <small class="text-muted">Overdue Tasks</small>
-              <h5 class="mb-0 fw-bold">{{ getOverdueTasks() }}</h5>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
     </div>
+  </div>
+
+  <!-- Dynamic Status Cards -->
+  <div class="col-md-2" *ngFor="let status of taskStatuses">
+    <div class="card border-0 shadow-sm h-100"
+         [ngClass]="getStatusCardClass(status.taskStatusName)">
+
+      <div class="card-body d-flex align-items-center">
+
+        <div class="icon-box text-white me-3"
+             [ngClass]="getStatusIconClass(status.taskStatusName)">
+
+          <i [class]="getStatusIcon(status.taskStatusName)"></i>
+
+        </div>
+
+        <div>
+          <small class="text-muted">
+            {{ status.taskStatusName }}
+          </small>
+
+          <h5 class="mb-0 fw-bold">
+            {{ getTaskCountByStatus(status.taskStatusName) }}
+          </h5>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+  
     <div class="row g-2 p-3 border-bottom bg-white">
 
       <!-- Status -->
@@ -152,8 +121,8 @@
 
           <tbody>
 
-            <tr *ngFor="let task of tasks; let i = index">
-              <td>{{ i + 1 }}</td>
+            <tr *ngFor="let task of getFilteredTasks(); let i = index">
+              <td>{{ ((currentPage - 1) * pageSize) + i + 1 }}</td>
 
               <td>{{ task.taskName }}</td>
 
@@ -194,6 +163,57 @@
           </tbody>
 
         </table>
+        <div class="d-flex justify-content-between align-items-center mt-3 p-3">
+
+  <div>
+    <label>
+      Show:
+
+      <select
+        class="form-select d-inline w-auto ms-2"
+        [(ngModel)]="pageSize"
+        (change)="changePageSize(pageSize)">
+
+        <option *ngFor="let size of pageSizeOptions"
+                [ngValue]="size">
+
+          {{ size }}
+
+        </option>
+
+      </select>
+
+      entries
+    </label>
+  </div>
+
+  <div>
+
+    <button
+      class="btn btn-outline-secondary btn-sm me-2"
+      (click)="changePage(currentPage - 1)"
+      [disabled]="currentPage === 1">
+
+      Previous
+
+    </button>
+
+    <span>
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+
+    <button
+      class="btn btn-outline-secondary btn-sm ms-2"
+      (click)="changePage(currentPage + 1)"
+      [disabled]="currentPage === totalPages">
+
+      Next
+
+    </button>
+
+  </div>
+
+</div>
 
       </div>
     </div>
