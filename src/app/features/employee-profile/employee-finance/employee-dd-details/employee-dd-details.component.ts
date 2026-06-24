@@ -31,14 +31,48 @@ ddForm!: FormGroup;
   regionId = Number(sessionStorage.getItem("RegionId"));
   employeeId = 123; // Replace with actual employee ID
   baseUrl = 'https://localhost:44370/DDCopies/'; // Folder serving files
+  canView = false;
+canAdd = false;
+canEdit = false;
+canDelete = false;
 
   constructor(private fb: FormBuilder, private adminService: AdminService) {}
 
   ngOnInit() {
+      this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.initializeForm();
+      if (this.canView) {
     this.loadDDList();
   }
+
+  if (!this.canAdd && !this.canEdit) {
+    this.ddForm.disable();
+  }
+    this.loadDDList();
+  }
+  loadPermissions() {
+
+  const menus = JSON.parse(
+    sessionStorage.getItem('Menus') || '[]'
+  );
+
+  const permission = menus.find(
+    (x: any) =>
+      x.menuName?.trim().toLowerCase() === 'dd'
+  );
+
+  if (permission) {
+
+    this.canView = permission.canView;
+
+    this.canAdd = permission.canAdd;
+
+    this.canEdit = permission.canEdit;
+
+    this.canDelete = permission.canDelete;
+  }
+}
 
   /** Initialize Form */
   private initializeForm() {
@@ -104,6 +138,33 @@ ddForm!: FormGroup;
 
   /** Save or Update DD */
   async saveDD() {
+      const ddId = Number(
+    this.ddForm.get('ddlistId')?.value
+  );
+
+  // Edit Permission
+  if (ddId > 0 && !this.canEdit) {
+
+    Swal.fire(
+      'Access Denied',
+      'Edit permission required',
+      'error'
+    );
+
+    return;
+  }
+
+  // Create Permission
+  if (ddId === 0 && !this.canAdd) {
+
+    Swal.fire(
+      'Access Denied',
+      'Create permission required',
+      'error'
+    );
+
+    return;
+  }
     if (this.ddForm.invalid || this.fileError) {
       this.ddForm.markAllAsTouched();
       Swal.fire('Invalid', 'Please fill all required fields correctly', 'warning');
@@ -167,6 +228,16 @@ ddForm!: FormGroup;
 
   /** Edit DD */
   editDD(dd: EmployeeDdlist) {
+      if (!this.canEdit) {
+
+    Swal.fire(
+      'Access Denied',
+      'Edit permission required',
+      'error'
+    );
+
+    return;
+  }
     const dddateStr = dd.dddate ? new Date(dd.dddate).toISOString().split('T')[0] : '';
     this.ddForm.patchValue({ ...dd, dddate: dddateStr });
     this.selectedFile = null;
@@ -177,6 +248,16 @@ ddForm!: FormGroup;
 
   /** Delete DD */
   deleteDD(dd: EmployeeDdlist, index: number) {
+    if (!this.canDelete) {
+
+  Swal.fire(
+    'Access Denied',
+    'Delete permission required',
+    'error'
+  );
+
+  return;
+}
     Swal.fire({
       title: 'Are you sure?',
       text: `Do you want to delete DD: ${dd.ddnumber}?`,

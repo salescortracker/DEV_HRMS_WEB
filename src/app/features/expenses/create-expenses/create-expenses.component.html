@@ -115,7 +115,7 @@
 
   <!-- SUBMIT -->
   <div class="text-end mt-3">
-    <button type="submit" class="btn btn-primary">
+    <button *ngIf="canCreateExpense" type="submit" class="btn btn-primary">
       Create Expense
     </button>
   </div>

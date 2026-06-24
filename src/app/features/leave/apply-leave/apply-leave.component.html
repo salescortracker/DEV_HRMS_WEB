@@ -266,7 +266,7 @@
 
 
     <div class="text-start mt-3 d-flex gap-2">
-      <button type="submit" class="btn btn-primary">
+      <button *ngIf="canCreate" type="submit" class="btn btn-primary">
         Submit Leave Request
       </button>
 

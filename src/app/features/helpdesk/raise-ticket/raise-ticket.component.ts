@@ -55,12 +55,14 @@ pageSize = 5;
 currentPage = 1;
 pageSizeOptions = [5, 10, 20, 50];
 
-
+canViewRaiseTicket = false;
+canCreateTicket = false;
 
 
   constructor(private helpdeskService: HelpdeskService) {}
 
   ngOnInit(): void {
+    this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));
@@ -74,6 +76,26 @@ pageSizeOptions = [5, 10, 20, 50];
     this.loadPriorities();
       this.loadMyTickets();
   }
+  loadPermissions(): void {
+
+  const menus = JSON.parse(
+    sessionStorage.getItem('Menus') || '[]'
+  );
+
+  const ticketMenu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'raise ticket'
+  );
+
+  this.canViewRaiseTicket =
+    ticketMenu?.canView ?? false;
+
+  this.canCreateTicket =
+    ticketMenu?.canAdd ?? false;
+
+  console.log('Raise Ticket View:', this.canViewRaiseTicket);
+  console.log('Raise Ticket Create:', this.canCreateTicket);
+}
    loadUserProfile() {
     this.helpdeskService.getUserProfile(this.userId).subscribe({
       next: res => {
@@ -115,7 +137,16 @@ pageSizeOptions = [5, 10, 20, 50];
   }
 
  submitTicket() {
+  if (!this.canCreateTicket) {
 
+    Swal.fire(
+      'Access Denied',
+      'You do not have permission to create tickets.',
+      'warning'
+    );
+
+    return;
+  }
   if (!this.model.categoryId || !this.model.subject || 
       !this.model.priorityId || !this.model.description) {
 

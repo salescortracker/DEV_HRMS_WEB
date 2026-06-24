@@ -66,7 +66,10 @@
 
     <div class="row">
       <div class="col-md-12 text-end">
-        <button type="submit" class="btn btn-danger">
+        <button   *ngIf="
+    (canAdd && !ddForm.value.ddlistId) ||
+    (canEdit && ddForm.value.ddlistId)
+  " type="submit" class="btn btn-danger">
           {{ ddForm.value.ddlistId ? 'Update' : 'Save' }} DD Details
         </button>
         <button type="button" class="btn btn-secondary ms-2" (click)="resetForm()">
@@ -117,7 +120,7 @@
               <span *ngIf="sortColumn==='payeeName'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
             </th>
             <th>Document</th>
-            <th>Actions</th>
+            <th *ngIf="canEdit || canDelete">Actions</th>
           </tr>
         </thead>
 
@@ -140,9 +143,9 @@
               <span *ngIf="!dd.ddcopyFilePath">—</span>
             </td>
 
-            <td class="action-icons">
-              <i class="fa-solid fa-pen text-primary cursor-pointer me-2" (click)="editDD(dd)"></i>
-              <i class="fa-solid fa-trash text-danger cursor-pointer" (click)="deleteDD(dd, i)"></i>
+            <td  *ngIf="canEdit || canDelete" class="action-icons">
+              <i *ngIf="canEdit" class="fa-solid fa-pen text-primary cursor-pointer me-2" (click)="editDD(dd)"></i>
+              <i  *ngIf="canDelete" class="fa-solid fa-trash text-danger cursor-pointer" (click)="deleteDD(dd, i)"></i>
             </td>
           </tr>
 

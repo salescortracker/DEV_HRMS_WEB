@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
   styleUrl: './employee-bank-details.component.css'
 })
 export class EmployeeBankDetailsComponent {
- bankForm!: FormGroup;
+  bankForm!: FormGroup;
   bankList: BankDetails[] = [];
   userId!: number;
   companyId = Number(sessionStorage.getItem("CompanyId"));
@@ -33,16 +33,50 @@ export class EmployeeBankDetailsComponent {
   searchText: string = '';
   statusFilter: any = ''; // accountTypeId filter
 
-  constructor(private fb: FormBuilder, private adminService: AdminService) {}
+  canView = false;
+  canAdd = false;
+  canEdit = false;
+  canDelete = false;
+
+  constructor(private fb: FormBuilder, private adminService: AdminService) { }
 
   ngOnInit(): void {
+    this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     if (!this.userId) {
       console.error("UserId missing in sessionStorage");
     }
     this.initForm();
-    this.loadBankDetails();
+    // this.loadBankDetails();
+    if (this.canView) {
+      this.loadBankDetails();
+    }
+    if (!this.canAdd && !this.canEdit) {
+      this.bankForm.disable();
+    }
     this.loadAccountTypes();
+  }
+  loadPermissions() {
+
+    const menus = JSON.parse(
+      sessionStorage.getItem('Menus') || '[]'
+    );
+
+    const permission = menus.find(
+      (x: any) =>
+        x.menuName?.trim().toLowerCase() === 'bank details'
+    );
+
+    if (permission) {
+
+      this.canView = permission.canView;
+
+      this.canAdd = permission.canAdd;
+
+      this.canEdit = permission.canEdit;
+
+      this.canDelete = permission.canDelete;
+    }
   }
 
   /** Initialize Bank Form */
@@ -62,39 +96,39 @@ export class EmployeeBankDetailsComponent {
       upiid: ['', [Validators.maxLength(100)]]
     });
   }
-loadAccountTypes() {
-  this.adminService.getAccountTypes(this.companyId, this.regionId)
-    .subscribe({
-      next: (res) => {
-        console.log("API Response:", res);
+  loadAccountTypes() {
+    this.adminService.getAccountTypes(this.companyId, this.regionId)
+      .subscribe({
+        next: (res) => {
+          console.log("API Response:", res);
 
-        // 🔥 MAP API → UI FORMAT
-        this.accountTypes = res.map((x: any) => ({
-          id: x.accountTypeId,
-          name: x.accountType1
-        }));
-      },
-      error: () => {
-        Swal.fire('Error', 'Failed to load account types', 'error');
-      }
-    });
-}
+          // 🔥 MAP API → UI FORMAT
+          this.accountTypes = res.map((x: any) => ({
+            id: x.accountTypeId,
+            name: x.accountType1
+          }));
+        },
+        error: () => {
+          Swal.fire('Error', 'Failed to load account types', 'error');
+        }
+      });
+  }
   /** Load Bank Details */
   loadBankDetails() {
     if (!this.userId) {
-    console.error("UserId missing");
-    return;
-  }
-
-  this.adminService.getBankDetails(this.userId).subscribe({
-    next: (res) => {
-      console.log("My Bank Data:", res);
-      this.bankList = res;
-    },
-    error: () => {
-      Swal.fire('Error', 'Failed to load bank details', 'error');
+      console.error("UserId missing");
+      return;
     }
-  });
+
+    this.adminService.getBankDetails(this.userId).subscribe({
+      next: (res) => {
+        console.log("My Bank Data:", res);
+        this.bankList = res;
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load bank details', 'error');
+      }
+    });
 
   }
 
@@ -105,6 +139,27 @@ loadAccountTypes() {
     //   Swal.fire('Invalid', 'Please fill all required fields correctly', 'warning');
     //   return;
     // }
+    const id = Number(
+      this.bankForm.get('bankDetailsId')?.value
+    );
+
+    if (id > 0 && !this.canEdit) {
+      Swal.fire(
+        'Access Denied',
+        'Edit permission required',
+        'error'
+      );
+      return;
+    }
+
+    if (id === 0 && !this.canAdd) {
+      Swal.fire(
+        'Access Denied',
+        'Create permission required',
+        'error'
+      );
+      return;
+    }
 
     const payload = {
       ...this.bankForm.value,
@@ -113,7 +168,7 @@ loadAccountTypes() {
       userId: this.userId
     };
 
-    const id = Number(this.bankForm.get("bankDetailsId")?.value);
+  //  const id = Number(this.bankForm.get("bankDetailsId")?.value);
 
     if (id > 0) {
       // UPDATE
@@ -126,14 +181,14 @@ loadAccountTypes() {
         // error: (err) => Swal.fire('Error', 'Failed to update bank details', 'error')
         error: (err) => {
 
-  Swal.fire(
-    'Error',
-    err?.error?.message ||
-    err?.error ||
-    'Something went wrong',
-    'error'
-  );
-}
+          Swal.fire(
+            'Error',
+            err?.error?.message ||
+            err?.error ||
+            'Something went wrong',
+            'error'
+          );
+        }
       });
     } else {
       // CREATE
@@ -174,6 +229,16 @@ loadAccountTypes() {
 
   /** Delete Bank Record with confirmation */
   deleteBank(index: number) {
+    if (!this.canDelete) {
+
+      Swal.fire(
+        'Access Denied',
+        'Delete permission required',
+        'error'
+      );
+
+      return;
+    }
     const bank = this.bankList[index];
     Swal.fire({
       title: `Delete ${bank.bankName}?`,
@@ -225,7 +290,7 @@ loadAccountTypes() {
     // Search filter
     if (this.searchText) {
       const s = this.searchText.toLowerCase();
-      data = data.filter(b => 
+      data = data.filter(b =>
         (b.bankName?.toLowerCase().includes(s)) ||
         (b.branchName?.toLowerCase().includes(s)) ||
         (b.accountHolderName?.toLowerCase().includes(s))
