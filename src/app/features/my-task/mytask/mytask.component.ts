@@ -32,6 +32,11 @@ export class MytaskComponent {
   fromDate: string = '';
   toDate: string = '';
   searchText: string = '';
+  
+// Pagination
+pageSize = 5;
+currentPage = 1;
+pageSizeOptions = [5, 10, 20, 50, 100];
   canView = false;
 canEdit = false;
 
@@ -201,57 +206,234 @@ loadPermissions() {
     const s = this.taskStatuses.find(x => x.taskStatusId == id);
     return s ? s.taskStatusName : '';
   }
+  // applyFilters() {
+  //   this.tasks = this.allTasks.filter(task => {
+
+  //     const matchStatus =
+  //       !this.selectedStatus ||
+  //       task.statusId == this.selectedStatus;
+
+  //     const matchPriority =
+  //       !this.selectedPriority ||
+  //       task.priorityId == this.selectedPriority;
+
+  //     const search = this.searchText.toLowerCase();
+
+  //     const matchSearch =
+  //       !search ||
+  //       task.taskName?.toLowerCase().includes(search) ||
+  //       this.getProjectName(task.projectId)?.toLowerCase().includes(search);
+
+  //     let matchDate = true;
+
+  //     if (this.fromDate) {
+  //       matchDate =
+  //         matchDate &&
+  //         new Date(task.startDate) >= new Date(this.fromDate);
+  //     }
+
+  //     if (this.toDate) {
+  //       matchDate =
+  //         matchDate &&
+  //         new Date(task.dueDate) <= new Date(this.toDate);
+  //     }
+
+  //     return (
+  //       matchStatus &&
+  //       matchPriority &&
+  //       matchSearch &&
+  //       matchDate
+  //     );
+  //   });
+  // }
   applyFilters() {
-    this.tasks = this.allTasks.filter(task => {
+  this.currentPage = 1;
+}
+  getFilteredTasks(): any[] {
 
-      const matchStatus =
-        !this.selectedStatus ||
-        task.statusId == this.selectedStatus;
+  let data = this.allTasks.filter(task => {
 
-      const matchPriority =
-        !this.selectedPriority ||
-        task.priorityId == this.selectedPriority;
+    const matchStatus =
+      !this.selectedStatus ||
+      task.statusId == this.selectedStatus;
 
-      const search = this.searchText.toLowerCase();
+    const matchPriority =
+      !this.selectedPriority ||
+      task.priorityId == this.selectedPriority;
 
-      const matchSearch =
-        !search ||
-        task.taskName?.toLowerCase().includes(search) ||
-        this.getProjectName(task.projectId)?.toLowerCase().includes(search);
+    const search = this.searchText.toLowerCase();
 
-      let matchDate = true;
+    const matchSearch =
+      !search ||
+      task.taskName?.toLowerCase().includes(search) ||
+      this.getProjectName(task.projectId)?.toLowerCase().includes(search);
 
-      if (this.fromDate) {
-        matchDate =
-          matchDate &&
-          new Date(task.startDate) >= new Date(this.fromDate);
-      }
+    let matchDate = true;
 
-      if (this.toDate) {
-        matchDate =
-          matchDate &&
-          new Date(task.dueDate) <= new Date(this.toDate);
-      }
+    if (this.fromDate) {
+      matchDate =
+        matchDate &&
+        new Date(task.startDate) >= new Date(this.fromDate);
+    }
 
-      return (
-        matchStatus &&
-        matchPriority &&
-        matchSearch &&
-        matchDate
-      );
-    });
-  }
+    if (this.toDate) {
+      matchDate =
+        matchDate &&
+        new Date(task.dueDate) <= new Date(this.toDate);
+    }
+
+    return (
+      matchStatus &&
+      matchPriority &&
+      matchSearch &&
+      matchDate
+    );
+  });
+
+  const startIndex = (this.currentPage - 1) * this.pageSize;
+
+  return data.slice(startIndex, startIndex + this.pageSize);
+}
+  // resetFilters() {
+  //   this.selectedStatus = '';
+  //   this.selectedPriority = '';
+  //   this.fromDate = '';
+  //   this.toDate = '';
+  //   this.searchText = '';
+
+  //   this.tasks = [...this.allTasks];
+  // }
   resetFilters() {
-    this.selectedStatus = '';
-    this.selectedPriority = '';
-    this.fromDate = '';
-    this.toDate = '';
-    this.searchText = '';
 
-    this.tasks = [...this.allTasks];
-  }
+  this.selectedStatus = '';
+  this.selectedPriority = '';
+  this.fromDate = '';
+  this.toDate = '';
+  this.searchText = '';
+
+  this.currentPage = 1;
+}
 getFileUrl(path: string): string {
   return `${this.taskService.getFileBaseUrl()}/${path}`;
 }
+getStatusCardClass(status: string): string {
 
+  switch (status?.toLowerCase()) {
+
+    case 'pending':
+      return 'bg-warning-subtle';
+
+    case 'in progress':
+      return 'bg-info-subtle';
+
+    case 'completed':
+      return 'bg-success-subtle';
+
+    case 'overdue':
+      return 'bg-danger-subtle';
+
+    default:
+      return 'bg-light';
+  }
+}
+
+getStatusIconClass(status: string): string {
+
+  switch (status?.toLowerCase()) {
+
+    case 'pending':
+      return 'bg-warning';
+
+    case 'in progress':
+      return 'bg-info';
+
+    case 'completed':
+      return 'bg-success';
+
+    case 'overdue':
+      return 'bg-danger';
+
+    default:
+      return 'bg-secondary';
+  }
+}
+
+getStatusIcon(status: string): string {
+
+  switch (status?.toLowerCase()) {
+
+    case 'pending':
+      return 'fa fa-clock';
+
+    case 'in progress':
+      return 'fa fa-spinner';
+
+    case 'completed':
+      return 'fa fa-check';
+
+    case 'overdue':
+      return 'fa fa-exclamation-circle';
+
+    default:
+      return 'fa fa-circle';
+  }
+}
+
+get totalPages(): number {
+
+  const totalRecords = this.allTasks.filter(task => {
+
+    const matchStatus =
+      !this.selectedStatus ||
+      task.statusId == this.selectedStatus;
+
+    const matchPriority =
+      !this.selectedPriority ||
+      task.priorityId == this.selectedPriority;
+
+    const search = this.searchText.toLowerCase();
+
+    const matchSearch =
+      !search ||
+      task.taskName?.toLowerCase().includes(search) ||
+      this.getProjectName(task.projectId)?.toLowerCase().includes(search);
+
+    let matchDate = true;
+
+    if (this.fromDate) {
+      matchDate =
+        matchDate &&
+        new Date(task.startDate) >= new Date(this.fromDate);
+    }
+
+    if (this.toDate) {
+      matchDate =
+        matchDate &&
+        new Date(task.dueDate) <= new Date(this.toDate);
+    }
+
+    return (
+      matchStatus &&
+      matchPriority &&
+      matchSearch &&
+      matchDate
+    );
+  }).length;
+
+  return Math.ceil(totalRecords / this.pageSize) || 1;
+}
+changePage(page: number): void {
+
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+  }
+
+}
+
+changePageSize(size: number): void {
+
+  this.pageSize = size;
+  this.currentPage = 1;
+
+}
 }

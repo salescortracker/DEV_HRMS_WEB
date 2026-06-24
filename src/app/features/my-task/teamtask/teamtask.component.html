@@ -14,6 +14,67 @@
           </small>
         </div>
 
+    <!-- TABLE CARD -->
+    <div class="card shadow-sm border-0">
+      <!-- STATUS SUMMARY CARDS (Add above filter section) -->
+     <div class="row g-3 mb-4">
+
+  <!-- Total Tasks -->
+  <div class="col-md-2">
+    <div class="card border-0 shadow-sm bg-light h-100">
+      <div class="card-body d-flex align-items-center">
+        <div class="icon-box bg-primary-subtle text-primary me-3">
+          <i class="fa fa-list-check"></i>
+        </div>
+        <div>
+          <small class="text-muted">Total Tasks</small>
+          <h5 class="mb-0 fw-bold">{{ getTotalTasks() }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Status Cards -->
+  <div class="col-md-2" *ngFor="let status of taskStatuses">
+    <div class="card border-0 shadow-sm h-100"
+         [ngClass]="getStatusCardClass(status.taskStatusName)">
+
+      <div class="card-body d-flex align-items-center">
+
+        <div class="icon-box text-white me-3"
+             [ngClass]="getStatusIconClass(status.taskStatusName)">
+
+          <i [class]="getStatusIcon(status.taskStatusName)"></i>
+
+        </div>
+
+        <div>
+          <small class="text-muted">
+            {{ status.taskStatusName }}
+          </small>
+
+          <h5 class="mb-0 fw-bold">
+            {{ getTaskCountByStatus(status.taskStatusName) }}
+          </h5>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+      <div class="row g-2 p-3 border-bottom bg-white">
+
+        <!-- Employee Filter -->
+        <div class="col-md-2">
+          <select class="form-select" [(ngModel)]="selectedEmployee" (change)="applyFilters()">
+            <option value="">All Employees</option>
+            <option *ngFor="let e of employees" [value]="e.employeeName">
+              {{ e.employeeName }}
+            </option>
+          </select>
         <button *ngIf="canAdd" class="btn btn-danger" (click)="openModal()">
           <i class="fa fa-plus me-2"></i>Create Task
         </button>
@@ -144,6 +205,55 @@
             <input type="date" class="form-control" [(ngModel)]="toDate" (change)="applyFilters()">
           </div>
 
+      <div class="card-body p-0">
+        <table class="table table-hover table-bordered align-middle mb-0">
+
+          <thead class="table-secondary">
+            <tr>
+              <th>#</th>
+              <th>Task Name</th>
+              <th>Project</th>
+              <!-- <th>Start Date</th> -->
+              <th>Assigned To</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Start Date</th>
+              <th>Due Date</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let task of getFilteredTasks(); let i = index">
+              <td>{{ ((currentPage - 1) * pageSize) + i + 1 }}</td>
+              <td>{{ task.taskName }}</td>
+              <td>{{ getProjectName(task.projectId) }}</td>
+
+              <!-- <td>{{ task.startDate }}</td> -->
+              <td>{{ task.assignedTo }}</td>
+
+              <!-- Priority -->
+              <td>
+                <span class="badge bg-secondary">
+                  {{ getPriorityName(task.priorityId) }}
+                </span>
+              </td>
+
+              <!-- Status -->
+              <td>
+                <span class="badge bg-primary">
+                  {{ getStatusName(task.statusId) }}
+                </span>
+              </td>
+              <td>{{ task.startDate }}</td>
+
+              <td>{{ task.dueDate }}</td>
+
+              <!-- ACTIONS -->
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editTask(task)">
+                  <i class="fa fa-edit"></i>
+                </button>
           <!-- Search -->
           <div class="col-md-2">
             <input type="text" class="form-control" placeholder="Search task..." [(ngModel)]="searchText"
@@ -156,6 +266,57 @@
           Task List
         </div>
 
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center mt-3 p-3">
+
+  <div>
+    <label>
+      Show:
+
+      <select
+        class="form-select d-inline w-auto ms-2"
+        [(ngModel)]="pageSize"
+        (change)="changePageSize(pageSize)">
+
+        <option *ngFor="let size of pageSizeOptions"
+                [ngValue]="size">
+          {{ size }}
+        </option>
+
+      </select>
+
+      entries
+    </label>
+  </div>
+
+  <div>
+
+    <button
+      class="btn btn-outline-secondary btn-sm me-2"
+      (click)="changePage(currentPage - 1)"
+      [disabled]="currentPage === 1">
+
+      Previous
+
+    </button>
+
+    <span>
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+
+    <button
+      class="btn btn-outline-secondary btn-sm ms-2"
+      (click)="changePage(currentPage + 1)"
+      [disabled]="currentPage === totalPages">
+
+      Next
+
+    </button>
+
+  </div>
+
+</div>
         <div class="card-body p-0">
           <table class="table table-hover table-bordered align-middle mb-0">
 
