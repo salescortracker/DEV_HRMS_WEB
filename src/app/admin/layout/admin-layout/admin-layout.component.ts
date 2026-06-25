@@ -51,7 +51,7 @@ export class AdminLayoutComponent {
          { title: 'Holiday List', route: '/admin/holiday-list' },
       { title: 'Week-Off', route: '/admin/week-off' },
       { title: 'Shifts', route: '/admin/shifts' },
-       { title: 'Resignation Master', route: '/admin/resignationmaster' },
+       { title: 'Employee Separation Type', route: '/admin/resignationmaster' },
        { title: 'My Team Configuration', route: '/admin/hierarchy-config' },
          { title: 'Recruitment Notice Period', route: '/admin/recruitment-notice-period' }, 
      //  { title: 'Screnning Result', route: '/admin/screening-result' },
