@@ -278,7 +278,7 @@
         </td>
 
         <td>
-          <button class="btn btn-sm btn-danger" (click)="editInterview(c)">
+          <button class="btn btn-sm btn-danger" [disabled]="c.result === 'Rejected'" (click)="editInterview(c)">
             Edit
           </button>
         </td>

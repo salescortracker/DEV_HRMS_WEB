@@ -370,6 +370,9 @@ loadDesignations() {
   }
 
   getProgressColor(c: any) {
+    if (c.result === 'Rejected') {
+    return 'bg-danger';
+  }
     const pct = this.calculateProgress(c);
     if (pct >= 80) return 'bg-success';
     if (pct >= 40) return 'bg-warning';
