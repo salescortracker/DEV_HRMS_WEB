@@ -114,23 +114,25 @@ lastClockOut: string | null = null;
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
+loadProfilePicture() {
+  debugger;
+  this.employeeResignationService.GetByUserIdempProfile(this.userId)
+    .subscribe({
+      next: (res: any) => {
 
+        console.log("PROFILE RESPONSE 👉", res);
 
-  loadProfilePicture() {
-    this.employeeResignationService.getProfilePicture(this.userId)
-      .subscribe({
-        next: (res: string) => {
-          if (res && res.trim() !== '') {
-            //const cleanedPath = res.replace(/\\/g, '/').replace(/^Uploads\//, '').trim();
-            this.profilePicture = `${environment.baseurl}/${res.replace(/\\/g, '/')}`;
-          } else {
-            this.profilePicture = 'assets/images/default-profile.png';
-          }
-        },
-        error: () => {
-          this.profilePicture = 'assets/images/default-profile.png';
-        }
-      });
+        const path = res?.profilePictureName;
+
+        this.profilePicture = path
+          ? `${environment.baseurl}/${path}`
+          : 'assets/images/default-profile.png';
+
+      },
+      error: () => {
+        this.profilePicture = 'assets/images/default-profile.png';
+      }
+    });
     this.loadMenus();
 
     // this.messages.push({
