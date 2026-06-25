@@ -723,5 +723,37 @@ this.permissionRegions = [];
       error: () => Swal.fire('Error', 'Failed to load menu permissions for this role.', 'error')
     });
   }
+  onPermissionChange(
+  menu: MenuItem,
+  action: PermissionAction
+): void {
+
+  // If Create/Edit/Delete/Approve checked
+  // automatically enable View
+  if (
+    action !== 'view' &&
+    menu.permissions[action]
+  ) {
+    menu.permissions.view = true;
+  }
+
+  // If View unchecked,
+  // remove all dependent permissions
+  if (
+    action === 'view' &&
+    !menu.permissions.view
+  ) {
+    menu.permissions.create = false;
+    menu.permissions.edit = false;
+    menu.permissions.delete = false;
+    menu.permissions.approve = false;
+  }
+
+  // Update module checkbox state
+  menu.selected = this.hasAnyPermission(menu);
+
+  this.updateParentStatus(menu);
+  this.updateSelectAllState();
+}
 
 }

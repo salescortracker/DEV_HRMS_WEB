@@ -109,7 +109,7 @@
 
             <th>Document</th>
 
-            <th>Actions</th>
+            <th *ngIf="canEdit || canDelete">Actions</th>
           </tr>
         </thead>
 
@@ -125,7 +125,7 @@
               </a>
             </td>
 
-            <td>
+            <td *ngIf="canEdit || canDelete">
               <i class="fa-solid fa-pen" style="cursor:pointer" *ngIf="canEdit" (click)="edit(item)"></i>
               <i class="fa-solid fa-trash ms-2" style="cursor:pointer" *ngIf="canDelete"
                 (click)="delete(item.certificationId)"></i>
