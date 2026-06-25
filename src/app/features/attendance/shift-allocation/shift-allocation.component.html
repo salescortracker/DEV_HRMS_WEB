@@ -76,7 +76,8 @@
         </div>
       </div>
 
-      <button class="btn btn-primary">
+      <button  *ngIf="(!editMode && canAddShiftAllocation) ||
+         (editMode && canEditShiftAllocation)" class="btn btn-primary">
         {{ editMode ? 'Update Shift' : 'Assign Shift' }}
       </button>
 
@@ -96,7 +97,7 @@
           <th>Start Date</th>
           <th>End Date</th>
           <th>Status</th>
-          <th>Actions</th>
+          <th *ngIf="canEditShiftAllocation || canDeleteShiftAllocation">Actions</th>
         </tr>
       </thead>
 
@@ -108,9 +109,9 @@
           <td>{{ a.startDate | date:'dd-MM-yyyy' }}</td>
           <td>{{ a.endDate ? (a.endDate | date:'dd-MM-yyyy') : '—' }}</td>
           <td>{{ getStatus(a) }}</td>
-          <td class="action-icons">
-            <i class="fa-solid fa-pen" (click)="onEdit(a)"></i>
-            <i class="fa-solid fa-trash" (click)="onDelete(a.shiftAllocationId)"></i>
+          <td *ngIf="canEditShiftAllocation || canDeleteShiftAllocation" class="action-icons">
+            <i *ngIf="canEditShiftAllocation" class="fa-solid fa-pen" (click)="onEdit(a)"></i>
+            <i *ngIf="canDeleteShiftAllocation" class="fa-solid fa-trash" (click)="onDelete(a.shiftAllocationId)"></i>
           </td>
         </tr>
       </tbody>

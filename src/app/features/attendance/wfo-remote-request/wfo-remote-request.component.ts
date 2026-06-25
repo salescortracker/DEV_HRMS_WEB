@@ -149,6 +149,7 @@ rejectedRequests: any[] = [];
   }
   canViewPersonal = false;
   canViewManager = false;
+  canCreateMyRequest = false;
   loadPermissions() {
     const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
 
@@ -162,6 +163,7 @@ rejectedRequests: any[] = [];
 
 
     this.canViewPersonal = personal?.canView ?? false;
+    this.canCreateMyRequest = personal?.canAdd ?? false;
     this.canViewManager = managerapproval?.canView ?? false;
 
 
