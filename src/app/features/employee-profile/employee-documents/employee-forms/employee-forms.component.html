@@ -127,7 +127,7 @@
     </div>
 
     <div class="col-md-8 text-end">
-      <button type="submit" class="btn btn-primary me-2">
+      <button  *ngIf="(!isEdit && canAddForms) || (isEdit && canEditForms)" type="submit" class="btn btn-primary me-2">
         {{ isEdit ? 'Update Form' : 'Upload Form' }}
       </button>
       <button type="button" class="btn btn-secondary" (click)="onReset()">Reset</button>
@@ -158,7 +158,7 @@
           </th>
           <th>File</th>
           <th>Employee Uploads</th>
-          <th>Actions</th>
+          <th *ngIf="canEditForms || canDeleteForms">Actions</th>
         </tr>
       </thead>
 
@@ -234,11 +234,11 @@
               <span class="text-muted">No Uploads</span>
             </ng-template>
           </td>
-          <td class="action-icons">
+          <td *ngIf="canEditForms || canDeleteForms" class="action-icons">
             <!-- <i class="fa-solid fa-eye me-2" style="color: green; cursor:pointer" (click)="viewDetails(f)"
               title="View Details"></i> -->
-            <!-- <i class="fa-solid fa-pen me-2" style="color: black;" (click)="editRecord(f)" title="Edit"></i> -->
-            <i class="fa-solid fa-trash" style="color: black;" (click)="deleteRecord(f.id)" title="Delete"></i>
+            <!-- <i   *ngIf="canEditForms" class="fa-solid fa-pen me-2" style="color: black;" (click)="editRecord(f)" title="Edit"></i> -->
+            <i *ngIf="canDeleteForms" class="fa-solid fa-trash" style="color: black;" (click)="deleteRecord(f.id)" title="Delete"></i>
           </td>
         </tr>
 

@@ -287,7 +287,7 @@
                 <input class="form-check-input" type="checkbox" id="selectAll" [(ngModel)]="selectAll"
                   (change)="toggleSelectAll($event)" />
                 <label class="form-check-label fw-semibold" for="selectAll">
-                  All Permissions
+                  <b>Select All Permissions</b>
                 </label>
               </div>
             </div>
@@ -332,7 +332,7 @@
                     <td *ngFor="let action of actions">
                       <ng-container *ngIf="module.allowedActions.includes(action); else emptyCell">
                         <input type="checkbox" [(ngModel)]="module.permissions[action]"
-                          (change)="updateParentStatus(module)" />
+                          (change)="onPermissionChange(module, action)" />
                       </ng-container>
 
                       <ng-template #emptyCell>
@@ -396,7 +396,7 @@
               <!-- If no children: show checkboxes -->
               <td *ngFor="let action of actions">
                 <ng-container *ngIf="menu.allowedActions.includes(action); else emptyCell">
-                  <input type="checkbox" [(ngModel)]="menu.permissions[action]" (change)="updateParentStatus(menu)" />
+                  <input type="checkbox" [(ngModel)]="menu.permissions[action]" (change)="onPermissionChange(menu, action)" />
                 </ng-container>
 
                 <ng-template #emptyCell></ng-template>

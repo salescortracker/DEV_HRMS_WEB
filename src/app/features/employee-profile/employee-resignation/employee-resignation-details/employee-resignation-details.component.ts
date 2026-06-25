@@ -56,7 +56,7 @@ export class EmployeeResignationDetailsComponent {
   constructor(private resignationService: EmployeeResignationService,private adminService: AdminService) {}
 
   ngOnInit(): void {
-
+   this.loadPermissions();
   this.loadResignations();
   this.loadResignationTypes();
   this.roleName = (sessionStorage.getItem('roleName') || '').trim().toLowerCase();
@@ -460,4 +460,30 @@ deleteResignation(item: EmployeeResignation) {
     this.dateError = '';
     this.formSubmitted = false;
   }
+  canAddResignation = false;
+canEditResignation = false;
+canDeleteResignation = false;
+canViewResignation = false;
+loadPermissions(): void {
+
+  const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
+
+  const menu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'resignation/exit'
+  );
+  
+  this.canViewResignation = menu?.canView ?? false;
+  this.canAddResignation = menu?.canAdd ?? false;
+  this.canEditResignation = menu?.canEdit ?? false;
+  this.canDeleteResignation = menu?.canDelete ?? false;
+
+  console.log('Resignation Permissions', {
+    view: this.canViewResignation,
+    add: this.canAddResignation,
+    edit: this.canEditResignation,
+    delete: this.canDeleteResignation
+  });
+}
+
 }

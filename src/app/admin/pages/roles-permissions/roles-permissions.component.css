@@ -121,3 +121,7 @@
   left: 4px;
   font-weight: bold;
 }
+.form-check-input:checked {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}

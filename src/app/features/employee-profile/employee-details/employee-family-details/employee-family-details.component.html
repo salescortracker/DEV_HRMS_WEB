@@ -73,7 +73,7 @@
         <th>Phone</th>
         <th>Address</th>
         <th>Dependent</th>
-        <th>Actions</th>
+        <th *ngIf="canEdit || canDelete">Actions</th>
       </tr>
     </thead>
 
@@ -87,7 +87,7 @@
         <td>{{ f.phone }}</td>
         <td>{{ f.address }}</td>
         <td>{{ f.isDependent ? 'Yes' : 'No' }}</td>
-        <td class="action-icons">
+        <td *ngIf="canEdit || canDelete" class="action-icons">
           <i class="fa-solid fa-pen" *ngIf="canEdit" style="margin-right: 12px;" (click)="edit(f)"></i>
           <i class="fa-solid fa-trash" *ngIf="canDelete" style="color: #B02828;"(click)="delete(f.familyId)"></i>
         </td>

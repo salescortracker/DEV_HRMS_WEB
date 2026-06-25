@@ -66,7 +66,7 @@ existingFiles: string[] = [];
 //removeExistingFile: string[] = [];
   constructor(private adminService: AdminService) {}
  ngOnInit() {
-   
+     this.loadPermissions();
    this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));
@@ -653,4 +653,30 @@ private resetFormInternal() {
       this.dateError = 'Issued date cannot be a future date.';
     }
   }
+  canAddForms = false;
+canEditForms = false;
+canDeleteForms = false;
+canViewForms = false;
+loadPermissions(): void {
+
+  const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
+
+  const menu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'forms'
+  );
+
+
+  this.canViewForms = menu?.canView ?? false;
+  this.canAddForms = menu?.canAdd ?? false;
+  this.canEditForms = menu?.canEdit ?? false;
+  this.canDeleteForms = menu?.canDelete ?? false;
+
+  console.log('Forms Permissions', {
+    view: this.canViewForms,
+    add: this.canAddForms,
+    edit: this.canEditForms,
+    delete: this.canDeleteForms
+  });
+}
 }
