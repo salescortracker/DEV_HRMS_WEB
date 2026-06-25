@@ -37,6 +37,7 @@ companyId :any;
     , private profileService: EmployeeResignationService, private assetService: AssetService) { }
 
   ngOnInit() {
+    this.loadPermissions();
      this.departmentName = sessionStorage.getItem('DepartmentName');
         console.log('Department Name from session:', this.departmentName);
     this.companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
@@ -260,5 +261,20 @@ this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
   getAssetCategoryName(id?: number): string {
     return this.assetCategories.find(x => x.assetCategoryId === id)?.assetCategoryName ?? '-';
   }
+  canAddAssignRequest = false;
+  loadPermissions(): void {
+
+  const menus = JSON.parse(
+    sessionStorage.getItem('Menus') || '[]'
+  );
+
+  const assignAsset = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'asset request'
+  );
+
+  this.canAddAssignRequest =
+    assignAsset?.canAdd ?? false;
+}
 
 }

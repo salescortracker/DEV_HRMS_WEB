@@ -66,7 +66,7 @@ companyName: string = '';
 //     this.loadEmployeesAndStatuses(); // load employees & statuses first
 //   }
 ngOnInit(): void {
-
+  this.loadPermissions();
   this.loadSessionData();
 
   this.companyName =
@@ -781,4 +781,33 @@ getAssetCategoryName(id?: number): string {
   changePage(page: number): void {
     if (page >= 1 && page <= this.totalPages) this.currentPage = page;
   }
+  canView = false;
+canAdd = false;
+canEdit = false;
+canDelete = false;
+canExport = false;
+loadPermissions(): void {
+
+  const menus = JSON.parse(
+    sessionStorage.getItem('Menus') || '[]'
+  );
+
+  const addAssetMenu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'add asset'
+  );
+
+  if (addAssetMenu) {
+
+    this.canView = addAssetMenu.canView ?? false;
+
+    this.canAdd = addAssetMenu.canAdd ?? false;
+
+    this.canEdit = addAssetMenu.canEdit ?? false;
+
+    this.canDelete = addAssetMenu.canDelete ?? false;
+
+    this.canExport = addAssetMenu.canExport ?? false;
+  }
+}
 }
