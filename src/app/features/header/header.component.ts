@@ -1486,21 +1486,21 @@ calculateStatus() {
     );
 
     this.earlyLateStatus =
-      `Clocked In Early by ${mins} min`;
+      ` Early by ${mins} min`;
   }
 
   // ON TIME (0-5 mins)
   else if (time <= onTimeEnd) {
 
     this.earlyLateStatus =
-      `Clocked In On Time`;
+      ` On Time`;
   }
 
   // GRACE
   else if (time <= graceEnd) {
 
     this.earlyLateStatus =
-      `Clocked In Grace`;
+      ` Grace`;
   }
 
   // LATE
@@ -1511,7 +1511,7 @@ calculateStatus() {
     );
 
     this.earlyLateStatus =
-      `Clocked In Late by ${mins} min`;
+      `Late by ${mins} min`;
   }
 }
 
