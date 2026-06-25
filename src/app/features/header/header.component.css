@@ -442,6 +442,29 @@
   align-items: center;
   gap: 20px; /* Space between logo and clock status */
 }
+/* On Time */
+.status-ontime {
+  background: #28a745 !important;
+  color: #fff !important;
+}
+
+/* Early */
+.status-early {
+  background: #28a745 !important;
+  color: #fff !important;
+}
+
+/* Grace */
+.status-grace {
+  background: #ffc107 !important;
+  color: #212529 !important;
+}
+
+/* Late */
+.status-late {
+  background: #dc3545 !important;
+  color: #fff !important;
+}
 
 .clock-status {
   display: flex;
