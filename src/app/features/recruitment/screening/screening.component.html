@@ -263,7 +263,7 @@
         </td>
 
         <td>
-          <button *ngIf="canEdit(c)" class="btn btn-sm btn-warning" (click)="editScreening(c)">
+          <button *ngIf="canEdit(c) && canEditScreening" class="btn btn-sm btn-warning" (click)="editScreening(c)">
             Edit
           </button>
         </td>

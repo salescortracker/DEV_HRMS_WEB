@@ -16,6 +16,7 @@ appointments: any[] = [];
   regionId!: number;
   constructor(private service: RecruitmentService) {}
 ngOnInit() {
+    this.loadPermissions(); 
   this.userId = Number(sessionStorage.getItem("UserId"));
   this.companyId = Number(sessionStorage.getItem("CompanyId"));
   this.regionId = Number(sessionStorage.getItem("RegionId"));
@@ -106,6 +107,18 @@ save() {
       Swal.fire("Error", "Unable to save appointment", "error");
     }
   });
+}
+canAddAppointment = false;
+canEditAppointment = false;
+loadPermissions() {
+  const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+
+  const appointment = menus.find(
+    (m: any) => m.menuName?.trim().toLowerCase() === "appointment"
+  );
+
+  this.canAddAppointment = appointment?.canAdd ?? false;
+  this.canEditAppointment = appointment?.canEdit ?? false;
 }
 
 }
