@@ -14,7 +14,8 @@ import { HelpdeskService } from '../../helpdesk/service/helpdesk.service';
   styleUrl: './mytask.component.css'
 })
 export class MytaskComponent {
- tasks: any[] = [];
+ 
+  tasks: any[] = [];
   taskStatuses: any[] = [];
   priorities: any[] = [];
   projects: any[] = [];
@@ -44,6 +45,7 @@ pageSizeOptions = [5, 10, 20, 50, 100];
   ) { }
 
   ngOnInit() {
+    this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));

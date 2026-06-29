@@ -134,58 +134,9 @@
                 </span>
               </td>
 
-                <!-- ✅ STATUS DROPDOWN -->
-                <td>
-                  <select *ngIf="canEdit" class="form-select form-select-sm" [(ngModel)]="task.statusId" (change)="updateStatus(task)">
-                    <option *ngFor="let s of taskStatuses" [value]="s.taskStatusId">
-                      {{ s.taskStatusName }}
-                    </option>
-                  </select>
-                </td>
-
-                <td>{{ task.startDate }}</td>
-                <td>{{ task.dueDate }}</td>
-
-                <!-- ACTION -->
-                <td class="text-end">
-                  <button *ngIf="canEdit" class="btn btn-sm btn-outline-primary" (click)="openModal(task)">
-                    <i class="fa fa-edit"></i>
-                  </button>
-                </td>
-              </tr>
-
-              <tr *ngIf="tasks.length === 0">
-                <td colspan="8" class="text-center text-muted py-3">
-                  No tasks assigned
-                </td>
-              </tr>
-
-            </tbody>
-
-          </table>
-
-        </div>
-      </div>
-
-            <tr *ngFor="let task of getFilteredTasks(); let i = index">
-              <td>{{ ((currentPage - 1) * pageSize) + i + 1 }}</td>
-      <!-- MODAL -->
-      <div class="modal fade show d-block" *ngIf="showModal">
-        <div class="modal-dialog">
-          <div class="modal-content">
-
-            <div class="modal-header bg-primary text-white">
-              <h5>Edit Task</h5>
-              <button class="btn-close btn-close-white" (click)="closeModal()"></button>
-            </div>
-
-            <div class="modal-body">
-
-              <p><b>Task:</b> {{ selectedTask?.taskName }}</p>
-
-              <div class="mb-2">
-                <label>Status</label>
-                <select class="form-select" [(ngModel)]="selectedTask.statusId">
+              <!-- ✅ STATUS DROPDOWN -->
+              <td>
+                <select *ngIf="canEdit" class="form-select form-select-sm" [(ngModel)]="task.statusId" (change)="updateStatus(task)">
                   <option *ngFor="let s of taskStatuses" [value]="s.taskStatusId">
                     {{ s.taskStatusName }}
                   </option>
@@ -197,7 +148,7 @@
 
               <!-- ACTION -->
               <td class="text-end">
-                <button class="btn btn-sm btn-outline-primary" (click)="openModal(task)">
+                <button *ngIf="canEdit" class="btn btn-sm btn-outline-primary" (click)="openModal(task)">
                   <i class="fa fa-edit"></i>
                 </button>
               </td>
@@ -328,6 +279,5 @@
 
     <div class="modal-backdrop fade show" *ngIf="showModal"></div>
 
-    </div>
   </div>
 </div>

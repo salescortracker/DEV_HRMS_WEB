@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
   styleUrl: './teamtask.component.css'
 })
 export class TeamtaskComponent {
- allTasks: any[] = [];
+  allTasks: any[] = [];
 
   selectedEmployee: string = '';
   selectedStatus: string = '';
@@ -153,6 +153,7 @@ pageSizeOptions = [5, 10, 20, 50, 100];
   ) { }
 
   ngOnInit() {
+    this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));
@@ -688,5 +689,20 @@ resetFilters() {
 
   this.currentPage = 1;
 }
+canAdd = false;
+canEdit = false;
+canDelete = false;
+loadPermissions() {
 
+  const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
+
+  const menu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'team task'
+  );
+
+  this.canAdd = menu?.canAdd ?? false;
+  this.canEdit = menu?.canEdit ?? false;
+  this.canDelete = menu?.canDelete ?? false;
+}
 }
