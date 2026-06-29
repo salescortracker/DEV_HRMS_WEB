@@ -122,7 +122,7 @@
               CTC <span *ngIf="sortColumn === 'lastCTC'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
             </th>
             <th>Documents</th>
-            <th>Actions</th>
+            <th *ngIf="canEdit || canDelete">Actions</th>
           </tr>
         </thead>
 
@@ -141,7 +141,7 @@
               
              </td>
 
-            <td>
+            <td *ngIf="canEdit || canDelete">
               <i class="fa-solid fa-pen" style="cursor:pointer" *ngIf="canEdit" (click)="edit(item)"></i>
               <i class="fa-solid fa-trash" style="cursor:pointer; margin-left: 8px;" *ngIf="canDelete" (click)="delete(item.id)"></i>
             </td>

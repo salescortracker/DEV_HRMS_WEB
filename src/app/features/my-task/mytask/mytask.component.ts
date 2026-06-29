@@ -1,3 +1,5 @@
+
+
 import { Component } from '@angular/core';
 import Swal from 'sweetalert2';
 import { TaskService } from '../service/task.service';
@@ -413,5 +415,16 @@ changePageSize(size: number): void {
   this.pageSize = size;
   this.currentPage = 1;
 
+}
+canEdit = false;
+loadPermissions() {
+  const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
+
+  const menu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'my task'
+  );
+
+  this.canEdit = menu?.canEdit ?? false;
 }
 }

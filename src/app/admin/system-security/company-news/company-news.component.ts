@@ -173,71 +173,84 @@ toggleAllDepartments(event: any) {
   // Load News
   // -----------------------------
   getNewsList() {
-    this.spinner.show();
-    this.adminService.getAllNews(this.userId).subscribe({
-      next: (res) => {
-        console.log("API Response:", res);
-        this.newsList = res.map((item: any) => ({
 
-          NewsId: Number(item.newsId),
+  this.spinner.show();
 
-          CompanyId: item.companyId
-            ? Number(item.companyId)
-            : null,
+  this.adminService.getAllNews(this.userId).subscribe({
 
-          RegionId: item.regionId
-            ? Number(item.regionId)
-            : null,
+    next: (res) => {
 
-          departmentIds: item.departmentIds?.length
-            ? item.departmentIds
-            : item.departmentId
-              ? [item.departmentId]
-              : [],
+      console.log("API Response:", res);
 
-          Title: item.title,
+      this.newsList = res.map((item: any) => ({
 
-          userId: item.userId,
+        NewsId: Number(item.newsId),
 
-          Category: item.category ?? '',
+        CompanyId: item.companyId
+          ? Number(item.companyId)
+          : null,
 
-          Description: item.description,
+        RegionId: item.regionId
+          ? Number(item.regionId)
+          : null,
 
-          Date: item.postedDate
-            ? new Date(item.postedDate)
-            : new Date(),
+        departmentIds: item.departmentIds?.length
+          ? item.departmentIds
+          : item.departmentId
+            ? [item.departmentId]
+            : [],
 
-          PublishedDate: item.postedDate
-            ? new Date(item.postedDate).toISOString().split('T')[0]
-            : '',
+        Title: item.title,
 
-          Attachment: null,
+        userId: item.userId,
 
-          // ✅ IMPORTANT
-          AttachmentName:
-            item.attachmentName ||
-            item.AttachmentName ||
-            '',
+        Category: item.category ?? '',
 
-          AttachmentUrl:
-            item.attachmentUrl ||
-            item.AttachmentUrl ||
-            ''
+        Description: item.description,
 
-        }));
-        this.spinner.hide();
-      },
-      error: (err) => {
-        console.error('Error fetching news list', err);
-        Swal.fire('Error', 'Failed to load news', 'error');
-        this.spinner.hide();
-      }
-    });
-    this.currentPage = 1;   
-      this.setPagination();   
+        Date: item.postedDate
+          ? new Date(item.postedDate)
+          : new Date(),
+
+        PublishedDate: item.postedDate
+          ? new Date(item.postedDate).toISOString().split('T')[0]
+          : '',
+
+        Attachment: null,
+
+        AttachmentName:
+          item.attachmentName ||
+          item.AttachmentName ||
+          '',
+
+        AttachmentUrl:
+          item.attachmentUrl ||
+          item.AttachmentUrl ||
+          ''
+
+      }));
+
+      // ✅ AFTER data loaded
+      this.currentPage = 1;
+      this.setPagination();
 
       this.spinner.hide();
-  }
+    },
+
+    error: (err) => {
+
+      console.error(err);
+
+      this.spinner.hide();
+
+      Swal.fire(
+        'Error',
+        'Failed to load news',
+        'error'
+      );
+    }
+  });
+}
 
   // -----------------------------
   // Reset form

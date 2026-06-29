@@ -1,3 +1,5 @@
+
+
 import { Component } from '@angular/core';
 import { AdminService } from '../../../admin/servies/admin.service';
 import { HelpdeskService } from '../../helpdesk/service/helpdesk.service';
@@ -188,13 +190,9 @@ pageSizeOptions = [5, 10, 20, 50, 100];
 
   loadEmployees() {
 
-  if (!this.userId) {
-    console.warn('UserId not found');
-    return;
-  }
+  if (!this.userId) return;
 
-  this.adminService
-    .getManagerEmployees(this.userId)
+  this.adminService.getManagerEmployees(this.userId)
     .subscribe({
       next: (res: any[]) => {
 
@@ -204,9 +202,16 @@ pageSizeOptions = [5, 10, 20, 50, 100];
           employeeCode: u.employeeCode
         }));
 
-      },
-      error: (err) => {
-        console.error('Error loading manager employees', err);
+        // ✅ Add logged in manager also
+        const managerName = sessionStorage.getItem('Name');
+        const managerCode = sessionStorage.getItem('EmployeeCode');
+
+        this.employees.unshift({
+          userId: this.userId,
+          employeeName: managerName,
+          employeeCode: managerCode
+        });
+
       }
     });
 }
@@ -683,4 +688,5 @@ resetFilters() {
 
   this.currentPage = 1;
 }
+
 }

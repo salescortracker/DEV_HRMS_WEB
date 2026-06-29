@@ -433,7 +433,7 @@
   <!-- ================= SAVE SECTION ================= -->
   <!-- <div class="card mb-4"> -->
   <div class="card-body text-end">
-    <button class="btn btn-success px-4" [disabled]="!candidate.firstName || !candidate.email" (click)="saveCandidate()">
+    <button  *ngIf="canAddResumeUpload || (isEditMode && canEditResumeUpload)" class="btn btn-success px-4" [disabled]="!candidate.firstName || !candidate.email" (click)="saveCandidate()">
       {{ isEditMode ? 'Update Candidate' : 'Save Candidate' }}
     </button>
     <button class="btn btn-success px-4" type="button" (click)="onReset()">
@@ -562,12 +562,12 @@
             [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)">
             Shortlist
           </button>
-          <button class="btn btn-sm btn-outline-danger"
+          <button *ngIf="canDeleteResumeUpload" class="btn btn-sm btn-outline-danger"
             [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)"
             (click)="removeCandidate(c)">
             Delete
           </button>
-          <button class="btn btn-sm btn-outline-primary me-1"
+          <button *ngIf="canEditResumeUpload" class="btn btn-sm btn-outline-primary me-1"
             [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)"
             (click)="editCandidate(c)">
             Edit

@@ -64,7 +64,7 @@
       <tbody>
         <tr *ngFor="let c of screeningCandidates; let i = index">
           <td>
-            <input type="checkbox" class="form-check-input" [checked]="isSelected(c)"
+            <input type="checkbox" class="form-check-input" [checked]="isSelected(c)" 
               (change)="toggleCandidate(c, $event)">
           </td>
 
@@ -117,7 +117,7 @@
 
 
   <div class="col-md-2 d-flex align-items-end">
-    <button class="btn btn-success w-100" (click)="applyOffer()">Save Offer</button>
+    <button *ngIf="canAdd" class="btn btn-success w-100" (click)="applyOffer()">Save Offer</button>
   </div>
 </div>
 

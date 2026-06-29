@@ -60,6 +60,7 @@ interviewForm: any = {
 
   constructor(private recruitmentService: RecruitmentService) { }
   ngOnInit() {
+      this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));
@@ -370,6 +371,9 @@ loadDesignations() {
   }
 
   getProgressColor(c: any) {
+    if (c.result === 'Rejected') {
+    return 'bg-danger';
+  }
     const pct = this.calculateProgress(c);
     if (pct >= 80) return 'bg-success';
     if (pct >= 40) return 'bg-warning';
@@ -507,5 +511,17 @@ loadDesignations() {
 
   toggleDropdown() {
   this.showDropdown = !this.showDropdown;
+}
+canAddInterview = false;
+canEditInterview = false;
+loadPermissions() {
+  const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+
+  const interview = menus.find(
+    (m: any) => m.menuName?.trim().toLowerCase() === "interview"
+  );
+
+  this.canAddInterview = interview?.canAdd ?? false;
+  this.canEditInterview = interview?.canEdit ?? false;
 }
 }

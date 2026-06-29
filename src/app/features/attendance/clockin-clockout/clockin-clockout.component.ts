@@ -39,6 +39,9 @@ export class ClockinClockoutComponent {
   employeeCode = sessionStorage.getItem('EmployeeCode');
   companyId = sessionStorage.getItem('CompanyId') as unknown as number;
   regionId = sessionStorage.getItem('RegionId') as unknown as number;
+  clockInRecords: any[] = [];
+clockOutRecords: any[] = [];
+firstClockIn: any;
   constructor(private fb: FormBuilder, private adminService: AdminService, private employeeResignationService: EmployeeResignationService) { }
 
   ngOnInit(): void {
@@ -71,8 +74,15 @@ export class ClockinClockoutComponent {
     const today = new Date().toISOString().split('T')[0];
 
     const todayRecords = this.attendanceRecords
-      .filter(r => r.attendanceDate.startsWith(today))
-      .sort((a, b) => a.actionTime.localeCompare(b.actionTime));
+  .filter(r => {
+
+    const recDate = new Date(r.attendanceDate)
+      .toISOString()
+      .split('T')[0];
+
+    return recDate === today;
+  })
+  .sort((a, b) => a.actionTime.localeCompare(b.actionTime));
 
     // FIRST record of the day
     if (todayRecords.length === 0) {
@@ -137,7 +147,7 @@ export class ClockinClockoutComponent {
       this.attendanceRecords = res;
 
       this.setTodaySummary();
-      this.setAvailableActions();
+      //this.setAvailableActions();
 
       // ✅ call here
       this.calculateLateLogin();
@@ -159,38 +169,51 @@ export class ClockinClockoutComponent {
       .filter(r => r.attendanceDate.startsWith(today))
       .sort((a, b) => a.actionTime.localeCompare(b.actionTime));
 
-    const clockIns = todayRecords.filter(r => r.actionType === 'ClockIn');
-    const clockOuts = todayRecords.filter(r => r.actionType === 'ClockOut');
+    this.clockInRecords = todayRecords.filter(r => r.actionType === 'ClockIn');
+this.clockOutRecords = todayRecords.filter(r => r.actionType === 'ClockOut');
 
     // First ClockIn
-    this.todayClockIn = clockIns.length
-      ? clockIns[0].actionTime
-      : '--:--';
+    const sortedClockIns = this.clockInRecords
+  .sort((a, b) => a.actionTime.localeCompare(b.actionTime));
 
-    // Last ClockOut
-    this.todayClockOut = clockOuts.length
-      ? clockOuts[clockOuts.length - 1].actionTime
-      : '--:--';
+this.firstClockIn = sortedClockIns.length ? sortedClockIns[0] : null;
+this.todayClockIn = this.firstClockIn ? this.firstClockIn.actionTime : '--:--';
+const lastClockOut = this.clockOutRecords.length
+  ? this.clockOutRecords[this.clockOutRecords.length - 1]
+  : null;
+
+this.todayClockOut = lastClockOut ? lastClockOut.actionTime : '--:--';
 
     // 🟢 Calculate duration
-    if (this.todayClockIn !== '--:--' && this.todayClockOut !== '--:--') {
-      const start = this.parseTime(this.todayClockIn);
-      const end = this.parseTime(this.todayClockOut);
+    let totalMs = 0;
+let lastIn: Date | null = null;
 
-      const diffMs = end.getTime() - start.getTime();
+for (let r of todayRecords) {
 
-      if (diffMs > 0) {
-        const hours = Math.floor(diffMs / (1000 * 60 * 60));
-        const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  const time = this.parseTime(r.actionTime);
 
-        this.todayDuration =
-          `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-      } else {
-        this.todayDuration = '--:--';
-      }
-    } else {
-      this.todayDuration = '--:--';
-    }
+  if (r.actionType === 'ClockIn') {
+    lastIn = time;
+  }
+
+  else if (r.actionType === 'ClockOut' && lastIn) {
+    totalMs += (time.getTime() - lastIn.getTime());
+    lastIn = null;
+  }
+}
+
+// 🔥 if still clocked in (no final logout)
+if (lastIn) {
+  totalMs += (new Date().getTime() - lastIn.getTime());
+}
+
+// convert to HH:mm
+const hours = Math.floor(totalMs / 3600000);
+const minutes = Math.floor((totalMs % 3600000) / 60000);
+
+this.todayDuration =
+  `${hours.toString().padStart(2, '0')}:` +
+  `${minutes.toString().padStart(2, '0')}`;
     this.calculateLateLogin();
   }
 
@@ -260,9 +283,14 @@ export class ClockinClockoutComponent {
       regionId: this.regionId
     };
 
-    this.employeeResignationService.addClockInOut(payload).subscribe(() => {
-      this.loadTodayAttendance();
-    });
+    this.employeeResignationService.addClockInOut(payload)
+  .subscribe(() => {
+
+    this.loadAttendance(); 
+
+    this.loadTodayAttendance();
+
+  });
   }
 
   delete(id: number) {
@@ -270,93 +298,51 @@ export class ClockinClockoutComponent {
       this.loadAll();
     });
   }
+  
+calculateLateLogin() {
 
-  calculateLateLogin() {
-
-  const today = new Date().toISOString().split('T')[0];
-
-  const firstClockInRecord = this.attendanceRecords
-    .filter(r =>
-      r.attendanceDate.startsWith(today) &&
-      r.actionType === 'ClockIn'
-    )
-    .sort((a, b) => a.actionTime.localeCompare(b.actionTime))[0];
-
-  if (!firstClockInRecord) {
+  if (!this.firstClockIn || !this.ShiftstartTime || !this.graceTime) {
     this.lateLoginText = '';
     return;
   }
 
-  // Always use FIRST ClockIn of the day
-  this.todayClockIn = firstClockInRecord.actionTime;
+  const clockIn = this.parseTime(this.firstClockIn.actionTime);
 
-  if (!this.ShiftstartTime) {
-    this.lateLoginText = '';
-    return;
-  }
-
-  // SHIFT START
   const [sH, sM] = this.ShiftstartTime.split(':').map(Number);
   const shiftStart = new Date();
   shiftStart.setHours(sH, sM, 0, 0);
 
-  // CLOCK IN
-  const [cH, cM] = this.todayClockIn.split(':').map(Number);
-  const clockIn = new Date();
-  clockIn.setHours(cH, cM, 0, 0);
-
-  // +5 min window (ON TIME)
-  const onTimeEnd = new Date(shiftStart.getTime() + 5 * 60000);
-
-  // Grace end (you can use DB grace time if needed later)
-  const graceParts = this.graceTime.split(':').map(Number);
-
-  const graceMinutes =
-    (graceParts[0] * 60) +
-    graceParts[1];
-
+  const [gH, gM] = this.graceTime.split(':').map(Number);
   const graceEnd = new Date(
-    shiftStart.getTime() + (graceMinutes * 60000)
+    shiftStart.getTime() + ((gH * 60) + gM) * 60000
   );
 
-  // =========================
   // EARLY
-  // =========================
   if (clockIn < shiftStart) {
-    const diff = shiftStart.getTime() - clockIn.getTime();
-    const mins = Math.floor(diff / 60000);
+
+    const mins = Math.floor(
+      (shiftStart.getTime() - clockIn.getTime()) / 60000
+    );
+
     this.lateLoginText = `Early by ${mins} min`;
-    return;
   }
 
-  // =========================
-  // ON TIME (0–5 min)
-  // =========================
-  if (clockIn <= onTimeEnd) {
-    this.lateLoginText = `On Time`;
-    return;
+  // ON TIME (includes grace)
+  else if (clockIn <= graceEnd) {
+
+    this.lateLoginText = 'On Time';
   }
 
-  // =========================
-  // GRACE TIME (5–15 min)
-  // =========================
-  if (clockIn <= graceEnd) {
-    const diff = clockIn.getTime() - shiftStart.getTime();
-    const mins = Math.floor(diff / 60000);
-    this.lateLoginText = `Grace Time (${mins} min)`;
-    return;
-  }
-
-  // =========================
   // LATE
-  // =========================
-  const diff = clockIn.getTime() - graceEnd.getTime();
-  const mins = Math.floor(diff / 60000);
+  else {
 
-  this.lateLoginText = `Late by ${mins} min`;
+    const mins = Math.floor(
+      (clockIn.getTime() - graceEnd.getTime()) / 60000
+    );
+
+    this.lateLoginText = `Late by ${mins} min`;
+  }
 }
-
-
   getStatusClass(): string {
 
     if (!this.lateLoginText) return '';

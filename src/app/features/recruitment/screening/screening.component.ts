@@ -59,7 +59,7 @@ export class ScreeningComponent {
     
   }
   ngOnInit(): void {
-
+      this.loadPermissions(); 
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));
@@ -519,4 +519,18 @@ if (result === 'Rejected') msg = 'Candidate Rejected';
     this.isEditMode = false;
     this.editingRecord = null;
   }
+  canEditScreening = false;
+  loadPermissions() {
+
+  const permissions = JSON.parse(sessionStorage.getItem('RolePermissions') || '[]');
+
+  const screenPermission = permissions.find((x: any) =>
+    x.menuName === 'Screening'
+  );
+
+  if (screenPermission) {
+    this.canEditScreening = screenPermission.canEdit;
+  }
+
+}
 }

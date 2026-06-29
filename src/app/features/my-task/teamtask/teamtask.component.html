@@ -1,22 +1,17 @@
 <div class="card shadow-sm">
   <div class="container-fluid py-4">
 
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h4 class="fw-semibold mb-0">
-          <i class="fa-solid fa-list-check me-2 text-danger"></i>
-          Task Management
-        </h4>
-        <small class="text-muted ms-4">
-          Create, assign and track employee tasks.
-        </small>
-      </div>
-
-      <button class="btn btn-danger" (click)="openModal()">
-        <i class="fa fa-plus me-2"></i>Create Task
-      </button>
-    </div>
+      <!-- HEADER -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h4 class="fw-semibold mb-0">
+            <i class="fa-solid fa-list-check me-2 text-danger"></i>
+            Task Management
+          </h4>
+          <small class="text-muted ms-4">
+            Create, assign and track employee tasks.
+          </small>
+        </div>
 
     <!-- TABLE CARD -->
     <div class="card shadow-sm border-0">
@@ -137,7 +132,7 @@
               <th>Status</th>
               <th>Start Date</th>
               <th>Due Date</th>
-              <th class="text-end">Actions</th>
+              <th *ngIf="canEdit || canDelete" class="text-end">Actions</th>
             </tr>
           </thead>
 
@@ -168,22 +163,21 @@
               <td>{{ task.dueDate }}</td>
 
               <!-- ACTIONS -->
-              <td class="text-end">
-                <button class="btn btn-sm btn-outline-primary me-2" (click)="editTask(task)">
+              <td *ngIf="canEdit || canDelete" class="text-end">
+                <button *ngIf="canEdit" class="btn btn-sm btn-outline-primary me-2" (click)="editTask(task)">
                   <i class="fa fa-edit"></i>
                 </button>
+          <!-- Search -->
+          <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Search task..." [(ngModel)]="searchText"
+              (input)="applyFilters()">
+          </div>
 
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteTask(task)">
-                  <i class="fa fa-trash"></i>
-                </button>
-              </td>
-            </tr>
+        </div>
 
-            <tr *ngIf="tasks.length === 0">
-              <td colspan="7" class="text-center text-muted py-3">
-                No tasks found.
-              </td>
-            </tr>
+        <div class="card-header bg-light fw-semibold">
+          Task List
+        </div>
 
           </tbody>
         </table>
@@ -419,5 +413,6 @@
     <!-- MODAL BACKDROP -->
     <div class="modal-backdrop fade show" *ngIf="showModal"></div>
 
+    </div>
   </div>
 </div>

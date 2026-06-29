@@ -37,9 +37,14 @@ export class EmployeeLettersComponent {
   selectedEmployees: any[] = [];   // multiple employees
   selectedFiles: File[] = [];      // multiple files
   isSubmitted = false;
+  canAddLetter = false;
+canEditLetter = false;
+canDeleteLetter = false;
+canViewLetter = false;
 
   constructor(private adminService: AdminService) { }
   ngOnInit() {
+     this.loadPermissions();
     this.loadDocumentTypes();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
@@ -47,6 +52,27 @@ export class EmployeeLettersComponent {
     this.loadEmployeeLetters();
     this.loadEmployees();
   }
+  loadPermissions(): void {
+
+  const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
+
+  const menu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'hr letters'
+  );
+
+  this.canViewLetter = menu?.canView ?? false;
+  this.canAddLetter = menu?.canAdd ?? false;
+  this.canEditLetter = menu?.canEdit ?? false;
+  this.canDeleteLetter = menu?.canDelete ?? false;
+
+  console.log('HR Letters Permissions', {
+    view: this.canViewLetter,
+    add: this.canAddLetter,
+    edit: this.canEditLetter,
+    delete: this.canDeleteLetter
+  });
+}
   onEmployeeToggle(emp: any, event: any) {
     if (event.target.checked) {
       this.selectedEmployees.push(emp);

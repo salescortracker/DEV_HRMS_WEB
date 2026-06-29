@@ -383,6 +383,8 @@ loadApprovalRequests() {
 
   canViewPersonal = false;
   canViewManager = false;
+  canCreateMyRequest = false;
+  canEditMyRequest = false;
   loadPermissions() {
     const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
 
@@ -396,6 +398,10 @@ loadApprovalRequests() {
 
 
     this.canViewPersonal = personal?.canView ?? false;
+    this.canCreateMyRequest = personal?.canAdd ?? false;
+    this.canEditMyRequest = personal?.canEdit ?? false;
+
+
     this.canViewManager = managerapproval?.canView ?? false;
 
 

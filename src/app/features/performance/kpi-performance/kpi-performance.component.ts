@@ -108,6 +108,10 @@ designationName: string = '';
 });
 
 }
+
+canAddEmployeeSubmission = false;
+canEditEmployeeSubmission = false;
+canDeleteEmployeeSubmission = false;
   LoadTabPermissions() {
     const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
 
@@ -125,8 +129,13 @@ designationName: string = '';
 
  
 
-  this.canViewManagerkpiapproval = performancereports?.canView ?? false;
+ 
   this.canViewEmployeeSubmission = employeesubmission?.canView ?? false;
+    this.canAddEmployeeSubmission = employeesubmission?.canAdd ?? false;
+  this.canEditEmployeeSubmission = employeesubmission?.canEdit ?? false;
+  this.canDeleteEmployeeSubmission = employeesubmission?.canDelete ?? false;
+
+   this.canViewManagerkpiapproval = performancereports?.canView ?? false;
   this.canViewManagerReviewApproval = managerreview?.canView ?? false;
 
   if (this.canViewEmployeeSubmission) this.selectedTab = 'tab1';

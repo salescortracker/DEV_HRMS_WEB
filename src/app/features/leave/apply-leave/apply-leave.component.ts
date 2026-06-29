@@ -113,17 +113,22 @@ canCreate: boolean = false;
      this.loadPermissions();
 
   }
-  loadPermissions() {
+ loadPermissions() {
+
   const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+
+  console.log("Menus:", menus);
 
   const applyLeaveMenu = menus.find(
     (m: any) =>
       m.menuName?.trim().toLowerCase() === "leave apply"
   );
 
-  this.canCreate = applyLeaveMenu?.canCreate ?? false;
+  console.log("Apply Leave Menu:", applyLeaveMenu);
 
-  console.log("Leave Apply Create Permission:", this.canCreate);
+ this.canCreate = applyLeaveMenu?.canAdd ?? false;
+
+  console.log("canCreate:", this.canCreate);
 }
 
   constructor(private leaveService: EmployeeResignationService, private userService: AdminService) { }

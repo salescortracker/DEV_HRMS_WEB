@@ -168,7 +168,7 @@
   <!-- Buttons -->
   <div class="mt-2">
 
-    <button type="submit" class="btn btn-primary me-2">
+    <button  *ngIf="(!isEdit && canAddLetter) || (isEdit && canEditLetter)" type="submit" class="btn btn-primary me-2">
       {{ isEdit ? 'Update Letter' : 'Save Letter' }}
     </button>
 
@@ -225,7 +225,7 @@
           </th>
 
           <th>File</th>
-          <th>Actions</th>
+          <th *ngIf="canEditLetter || canDeleteLetter">Actions</th>
         </tr>
       </thead>
 
@@ -256,9 +256,9 @@
             </span>
           </td>
 
-          <td class="action-icons">
-            <i class="fa-solid fa-pen me-2" style="color: black;" (click)="editLetter(l)"></i>
-            <i class="fa-solid fa-trash" style="color: black;" (click)="deleteLetter(l.id)"></i>
+          <td *ngIf="canEditLetter || canDeleteLetter" class="action-icons">
+            <i *ngIf="canEditLetter" class="fa-solid fa-pen me-2" style="color: black;" (click)="editLetter(l)"></i>
+            <i *ngIf="canDeleteLetter" class="fa-solid fa-trash" style="color: black;" (click)="deleteLetter(l.id)"></i>
           </td>
         </tr>
       </tbody>

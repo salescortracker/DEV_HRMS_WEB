@@ -50,6 +50,7 @@ titleRegex = /^[A-Za-z0-9\s\-\/&]+$/;
   dateError: boolean = false;
   constructor(private adminService: AdminService) {}
 ngOnInit() {
+    this.loadPermissions();
   this.loadDocumentTypes();
       this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
@@ -426,4 +427,30 @@ if (!this.editId) {
   isNumberFieldRequired() {
     return this.isNumberRequired();
   }
+  canAddDocuments = false;
+canEditDocuments = false;
+canDeleteDocuments = false;
+canViewDocuments = false;
+loadPermissions(): void {
+
+  const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
+
+  const menu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'employee documents'
+  );
+  
+  this.canViewDocuments = menu?.canView ?? false;
+  this.canAddDocuments = menu?.canAdd ?? false;
+  this.canEditDocuments = menu?.canEdit ?? false;
+  this.canDeleteDocuments = menu?.canDelete ?? false;
+
+  console.log('My Documents Permissions', {
+    view: this.canViewDocuments,
+    add: this.canAddDocuments,
+    edit: this.canEditDocuments,
+    delete: this.canDeleteDocuments
+  });
+}
+
 }
