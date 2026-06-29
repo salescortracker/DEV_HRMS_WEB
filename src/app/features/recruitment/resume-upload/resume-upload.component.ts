@@ -123,6 +123,7 @@ maritalStatuses: any[] = [];
 
 
   ngOnInit(): void {
+      this.loadPermissions();
     this.generateYears();
     const d = new Date();
     this.today = d.toISOString().split('T')[0];
@@ -900,4 +901,22 @@ getResumeUrl(fileName: string): string {
   viewCandidates() {
     return this.candidates || [];
   }
+  canAddResumeUpload = false;
+canEditResumeUpload = false;
+canDeleteResumeUpload = false;
+loadPermissions(): void {
+
+  const menus = JSON.parse(
+    sessionStorage.getItem('Menus') || '[]'
+  );
+
+  const resumeUpload = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'resume upload'
+  );
+
+  this.canAddResumeUpload = resumeUpload?.canAdd ?? false;
+  this.canEditResumeUpload = resumeUpload?.canEdit ?? false;
+  this.canDeleteResumeUpload = resumeUpload?.canDelete ?? false;
+}
 }

@@ -201,7 +201,7 @@
   </div>
 
   <div class="col-md-1 d-flex align-items-end gap-2">
-    <button class="btn flex-fill" [ngClass]="isEditMode ? 'btn-warning' : 'btn-success'"
+    <button   *ngIf="(!isEditMode && canAddInterview) || (isEditMode && canEditInterview)" class="btn flex-fill" [ngClass]="isEditMode ? 'btn-warning' : 'btn-success'"
       (click)="isEditMode ? updateInterview() : scheduleInterview()">
       {{ isEditMode ? 'Update Interview' : 'Schedule Interview' }}
     </button>
@@ -278,7 +278,7 @@
         </td>
 
         <td>
-          <button class="btn btn-sm btn-danger" [disabled]="c.result === 'Rejected'" (click)="editInterview(c)">
+          <button *ngIf="canEditInterview" class="btn btn-sm btn-danger" [disabled]="c.result === 'Rejected'" (click)="editInterview(c)">
             Edit
           </button>
         </td>

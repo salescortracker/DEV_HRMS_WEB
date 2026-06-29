@@ -109,7 +109,7 @@ hrUsers: any[] = [];
 
   constructor(private recruitmentService: RecruitmentService) {}
     ngOnInit(): void {
-    
+      this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));
@@ -262,6 +262,17 @@ viewOffer(c: any) {
     a.click();
     window.URL.revokeObjectURL(url);
   });
+}
+canAdd = false;
+
+loadPermissions() {
+  const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
+
+  const menu = menus.find(
+    (m: any) => m.menuName?.trim().toLowerCase() === "offer"
+  );
+
+  this.canAdd = menu?.canAdd ?? false;
 }
 
 }
