@@ -30,7 +30,8 @@ export class EarlyLogoutRequestComponent implements OnInit {
   regionId = Number(sessionStorage.getItem('RegionId')) || 1;
   userId = Number(sessionStorage.getItem('UserId')) || 1;
   managerId = Number(sessionStorage.getItem('UserId')) || 0;
-
+canCreateMyRequest = false;
+canEditMyRequest = false;
   constructor(
     private fb: FormBuilder,
     private earlyLogoutService: EarlyLogoutService,
@@ -332,7 +333,7 @@ export class EarlyLogoutRequestComponent implements OnInit {
       roleName.includes('manager') ||
       designationName.includes('manager');
 
-    const personal = menus.find(
+    const personals = menus.find(
       (m: any) => m.menuName?.trim().toLowerCase() === 'my request'
     );
 
@@ -340,23 +341,26 @@ export class EarlyLogoutRequestComponent implements OnInit {
       m.menuName?.trim().toLowerCase() === 'manager approval'
     );
 
-    const hrMenu = menus.find((m: any) =>
-      ['hr', 'hr approval', 'hr view', 'hr management'].includes(
-        (m.menuName?.trim().toLowerCase() || '')
-      )
-    );
+    const hrMenu = menus.find(
+  (m: any) =>
+    m.menuName?.trim().toLowerCase() === 'hr and manager'
+);
 
-    this.canViewPersonal = personal?.canView ?? false;
-    this.canViewManager = (managerapproval?.canView ?? false) || isManagerRole;
-    this.canViewHR = (hrMenu?.canView ?? false) || this.isHR;
+    this.canViewPersonal = personals?.canView ?? false;
+    this.canCreateMyRequest = personals?.canAdd ?? false;
+    this.canEditMyRequest = personals?.canEdit ?? false;
+ this.canViewManager = managerapproval?.canView ?? false;
+this.canViewHR = hrMenu?.canView ?? false;
 
     // Force the combined section to be visible whenever either HR or Manager access exists.
-    const showCombined = this.canViewHR || this.canViewManager;
-
-    if (showCombined) {
-      this.selectedTab = 'tab3';
-    } else if (this.canViewPersonal) {
-      this.selectedTab = 'tab1';
-    }
+   if (this.canViewPersonal) {
+  this.selectedTab = 'tab1';
+}
+else if (this.canViewManager) {
+  this.selectedTab = 'tab2';
+}
+else if (this.canViewHR) {
+  this.selectedTab = 'tab3';
+}
   }
 }

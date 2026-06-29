@@ -48,6 +48,7 @@ export class ShiftAllocationComponent {
   }
 
 ngOnInit(): void {
+  this.loadPermissions();
 
   this.currentUserCompanyId = Number(sessionStorage.getItem('CompanyId') || 0);
 
@@ -549,4 +550,29 @@ resetForm() {
     const e = a.endDate ? new Date(a.endDate) : null;
     return (s && s <= today && (!e || e >= today)) ? 'Active' : 'Inactive';
   }
+  canViewShiftAllocation = false;
+canAddShiftAllocation = false;
+canEditShiftAllocation = false;
+canDeleteShiftAllocation = false;
+loadPermissions(): void {
+
+  const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
+
+  const menu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'shift allocation'
+  );
+
+  this.canViewShiftAllocation = menu?.canView ?? false;
+  this.canAddShiftAllocation = menu?.canAdd ?? false;
+  this.canEditShiftAllocation = menu?.canEdit ?? false;
+  this.canDeleteShiftAllocation = menu?.canDelete ?? false;
+
+  console.log('Shift Allocation Permissions', {
+    view: this.canViewShiftAllocation,
+    add: this.canAddShiftAllocation,
+    edit: this.canEditShiftAllocation,
+    delete: this.canDeleteShiftAllocation
+  });
+}
 }
