@@ -1,5 +1,3 @@
-MyTask Html file 
-
 <div class="card shadow-sm">
   <div class="container-fluid py-4">
 
@@ -138,7 +136,7 @@ MyTask Html file
 
               <!-- ✅ STATUS DROPDOWN -->
               <td>
-                <select class="form-select form-select-sm" [(ngModel)]="task.statusId" (change)="updateStatus(task)">
+                <select *ngIf="canEdit" class="form-select form-select-sm" [(ngModel)]="task.statusId" (change)="updateStatus(task)">
                   <option *ngFor="let s of taskStatuses" [value]="s.taskStatusId">
                     {{ s.taskStatusName }}
                   </option>
@@ -150,7 +148,7 @@ MyTask Html file
 
               <!-- ACTION -->
               <td class="text-end">
-                <button class="btn btn-sm btn-outline-primary" (click)="openModal(task)">
+                <button *ngIf="canEdit" class="btn btn-sm btn-outline-primary" (click)="openModal(task)">
                   <i class="fa fa-edit"></i>
                 </button>
               </td>

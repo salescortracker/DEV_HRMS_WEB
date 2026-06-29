@@ -190,7 +190,7 @@
 
     <!-- Submit -->
     <div class="col-md-4 d-flex align-items-end">
-      <button type="submit" class="btn btn-primary w-100" [disabled]="assetForm.invalid">
+      <button *ngIf="(isEditMode && canEdit) || (!isEditMode && canAdd)" type="submit" class="btn btn-primary w-100" [disabled]="assetForm.invalid">
         {{ isEditMode ? 'Update Asset' : 'Add Asset' }}
       </button>
     </div>
@@ -275,7 +275,7 @@
             <th>Warranty End</th>
             <th>Return Date</th>
             <th>Status</th>
-            <th width="120">Actions</th>
+            <th *ngIf="canEdit || canDelete" width="120">Actions</th>
           </tr>
         </thead>
 
@@ -299,9 +299,9 @@
             <td>{{ asset.assetReturnDate | date:'dd-MM-yyyy' }}</td>
             <td>{{ getStatusName(asset.assetStatusID) }}</td>
 
-            <td class="text-center">
-              <i class="fa-solid fa-pen me-3" (click)="edit(asset)"></i>
-              <i class="fa-solid fa-trash text-danger" (click)="delete(asset.assetID!)"></i>
+            <td *ngIf="canEdit || canDelete" class="text-center">
+              <i *ngIf="canEdit" class="fa-solid fa-pen me-3" (click)="edit(asset)"></i>
+              <i *ngIf="canDelete" class="fa-solid fa-trash text-danger" (click)="delete(asset.assetID!)"></i>
             </td>
           </tr>
 

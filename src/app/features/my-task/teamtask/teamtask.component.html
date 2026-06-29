@@ -13,7 +13,7 @@
         </small>
       </div>
 
-      <button class="btn btn-danger" (click)="openModal()">
+      <button *ngIf="canAdd" class="btn btn-danger" (click)="openModal()">
         <i class="fa fa-plus me-2"></i>Create Task
       </button>
     </div>
@@ -137,7 +137,7 @@
               <th>Status</th>
               <th>Start Date</th>
               <th>Due Date</th>
-              <th class="text-end">Actions</th>
+              <th *ngIf="canEdit || canDelete" class="text-end">Actions</th>
             </tr>
           </thead>
 
@@ -168,12 +168,12 @@
               <td>{{ task.dueDate }}</td>
 
               <!-- ACTIONS -->
-              <td class="text-end">
-                <button class="btn btn-sm btn-outline-primary me-2" (click)="editTask(task)">
+              <td *ngIf="canEdit || canDelete" class="text-end">
+                <button *ngIf="canEdit" class="btn btn-sm btn-outline-primary me-2" (click)="editTask(task)">
                   <i class="fa fa-edit"></i>
                 </button>
 
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteTask(task)">
+                <button *ngIf="canDelete" class="btn btn-sm btn-outline-danger" (click)="deleteTask(task)">
                   <i class="fa fa-trash"></i>
                 </button>
               </td>

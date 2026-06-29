@@ -46,6 +46,7 @@ pageSizeOptions = [5, 10, 20, 50, 100];
   ) { }
 
   ngOnInit() {
+    this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));
@@ -417,5 +418,16 @@ changePageSize(size: number): void {
   this.pageSize = size;
   this.currentPage = 1;
 
+}
+canEdit = false;
+loadPermissions() {
+  const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
+
+  const menu = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'my task'
+  );
+
+  this.canEdit = menu?.canEdit ?? false;
 }
 }

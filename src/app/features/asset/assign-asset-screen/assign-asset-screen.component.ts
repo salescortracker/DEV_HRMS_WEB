@@ -43,6 +43,7 @@ companyName: string = '';
   ) {}
 userId!: number;
   ngOnInit(): void {
+      this.loadPermissions();
     this.companyName =
     sessionStorage.getItem("CompanyName") || 'Company';
 
@@ -525,4 +526,19 @@ assignAsset() {
   resetForm() {
     this.form = {};
   }
+  canAddAssignAsset = false;
+  loadPermissions(): void {
+
+  const menus = JSON.parse(
+    sessionStorage.getItem('Menus') || '[]'
+  );
+
+  const assignAsset = menus.find(
+    (m: any) =>
+      m.menuName?.trim().toLowerCase() === 'assign asset'
+  );
+
+  this.canAddAssignAsset =
+    assignAsset?.canAdd ?? false;
+}
 }
