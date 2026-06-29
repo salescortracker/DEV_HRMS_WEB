@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
   styleUrl: './teamtask.component.css'
 })
 export class TeamtaskComponent {
-  allTasks: any[] = [];
+ allTasks: any[] = [];
 
   selectedEmployee: string = '';
   selectedStatus: string = '';
@@ -38,10 +38,6 @@ export class TeamtaskComponent {
 pageSize = 5;
 currentPage = 1;
 pageSizeOptions = [5, 10, 20, 50, 100];
-  canView = false;
-canAdd = false;
-canEdit = false;
-canDelete = false;
   removeExistingFile(index: number) {
 
     const file = this.existingFiles[index];
@@ -155,7 +151,6 @@ canDelete = false;
   ) { }
 
   ngOnInit() {
-    this.loadPermissions();
     this.userId = Number(sessionStorage.getItem("UserId"));
     this.companyId = Number(sessionStorage.getItem("CompanyId"));
     this.regionId = Number(sessionStorage.getItem("RegionId"));
@@ -165,29 +160,6 @@ canDelete = false;
     this.loadProjects();
     this.loadTasks();
   }
-  loadPermissions() {
-
-  const menus = JSON.parse(
-    sessionStorage.getItem('Menus') || '[]'
-  );
-
-  const menu = menus.find(
-    (x: any) =>
-      x.menuName?.trim().toLowerCase() === 'team task'
-  );
-
-  this.canView = menu?.canView ?? false;
-  this.canAdd = menu?.canAdd ?? false;
-  this.canEdit = menu?.canEdit ?? false;
-  this.canDelete = menu?.canDelete ?? false;
-
-  console.log('Team Task Permissions', {
-    view: this.canView,
-    add: this.canAdd,
-    edit: this.canEdit,
-    delete: this.canDelete
-  });
-}
   loadProjects(): void {
     this.service.getProjectNames(this.companyId, this.regionId)
       .subscribe(res => {
@@ -711,5 +683,4 @@ resetFilters() {
 
   this.currentPage = 1;
 }
-
 }

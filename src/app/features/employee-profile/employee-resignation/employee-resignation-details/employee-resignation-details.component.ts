@@ -103,6 +103,7 @@ loadEmployees() {
     });
 }
  loadResignationTypes() {
+  debugger;
   this.adminService.getResignations(this.companyId, this.regionId)
     .subscribe({
       next: (res: ResignationModel[]) => {
