@@ -70,6 +70,15 @@ export interface LeaveStatus {
   createdBy: number;
   userID: number;
 }
+
+export interface WorkAuthStatus {
+  StatusId: number;
+  CompanyId: number;
+  RegionId: number;
+  StatusName: string;
+  IsActive: boolean;
+  UserId?: number;
+}
  // ------------------------------DD LIST-----------------------------------//
  export interface EmployeeDdlist {
  ddlistId: number;
@@ -1706,8 +1715,37 @@ getVisaTypes(companyId: number, regionId: number): Observable<any[]> {
 }
 
 // Status Dropdown
-getStatuses(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.baseUrl}/Employee/GetStatuses`);
+getStatuses(companyId: number, regionId: number): Observable<any[]> {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Employee/GetStatusesByCompanyRegion?companyId=${companyId}&regionId=${regionId}`
+  );
+}
+
+getWorkAuthStatuses(companyId: number, regionId: number, userId: number): Observable<any> {
+  const params = new HttpParams()
+    .set('companyId', companyId)
+    .set('regionId', regionId)
+    .set('userId', userId);
+
+  return this.http.get(`${this.baseUrl}/Employee/GetStatuses`, { params });
+}
+
+createWorkAuthStatus(model: any): Observable<any> {
+  return this.http.post(`${this.baseUrl}/Employee/CreateWorkAuthStatus`, model);
+}
+
+updateWorkAuthStatus(model: any): Observable<any> {
+  return this.http.post(`${this.baseUrl}/Employee/UpdateWorkAuthStatus`, model);
+}
+
+deleteWorkAuthStatus(statusId: number, companyId: number, regionId: number, userId: number): Observable<any> {
+  const params = new HttpParams()
+    .set('statusId', statusId)
+    .set('companyId', companyId)
+    .set('regionId', regionId)
+    .set('userId', userId);
+
+  return this.http.post(`${this.baseUrl}/Employee/DeleteWorkAuthStatus`, null, { params });
 }
 
 DownloadImmigrationFile(id: number, fileType: string): Observable<Blob> {

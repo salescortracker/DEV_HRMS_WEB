@@ -80,6 +80,7 @@ import { GeoLocationComponent } from './master/geo-location/geo-location.compone
 import { TaskStatusComponent } from './pages/master/task-status/task-status.component';
 import { CountryComponent } from './pages/master/country/country.component';
 import { EventtypeComponent } from './pages/eventtype/eventtype.component';
+import { WorkAuthComponent } from '../work-auth/work-auth.component';
 const routes: Routes = [
   {
     path: '',
@@ -168,6 +169,7 @@ const routes: Routes = [
       {path: 'task-status', component: TaskStatusComponent },
       {path: 'country', component: CountryComponent },
       {path:'Event-type',component:EventtypeComponent},
+      {path: 'work-auth', component: WorkAuthComponent  }
     ]
   }
 ];

@@ -143,6 +143,7 @@ import { TicketReportsComponent } from './features/helpdesk/ticket-reports/ticke
 import { SuperadminUsersfulldetailsComponent } from './superAdmin/superadmin-usersfulldetails/superadmin-usersfulldetails.component';
 import { CandidateDocumentsComponent } from './features/recruitment/candidate-documents/candidate-documents.component';
 import { DocumentsVerificationComponent } from './features/recruitment/documents-verification/documents-verification.component';
+import { WorkAuthComponent } from './work-auth/work-auth.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -276,6 +277,7 @@ import { DocumentsVerificationComponent } from './features/recruitment/documents
           AssetReportComponent,
           TicketReportsComponent,
           SuperadminUsersfulldetailsComponent,
+          WorkAuthComponent,
           
           
           
