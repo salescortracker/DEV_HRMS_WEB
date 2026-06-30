@@ -178,7 +178,7 @@ mapNames(): void {
 }
 
   deleteBloodGroup(b: BloodGroup): void {
-    debugger
+    debugger;
     Swal.fire({
       title: `Delete ${b.bloodGroupName}?`,
       showCancelButton: true,

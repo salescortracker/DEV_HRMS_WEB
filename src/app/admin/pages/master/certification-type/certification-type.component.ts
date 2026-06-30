@@ -99,14 +99,20 @@ resetForm(): void {
   }
 
 editCertification(c: CertificationType): void {
+  debugger;
+  console.log(c);
+    this.filteredRegions = this.regions.filter(
+    (r: any) => Number(r.companyID) === Number(c.companyID)
+  );
   this.certification = {
     certificationTypeID: c.certificationTypeID ?? 0,
     certificationTypeName: c.certificationTypeName ?? '',
     isActive: c.isActive ?? true,
     companyID: c.companyID ?? this.companyId,
-    regionId: c.regionId ?? this.regionId,
+    regionId: c.regionId,
     userId: this.userId
   };
+    console.log(this.certification); 
 
   this.isEditMode = true;
 }
@@ -157,7 +163,7 @@ loadCertifications(): void {
         certificationTypeName: item.CertificationTypeName ?? item.certificationTypeName,
         isActive: item.IsActive ?? item.isActive,
         companyID: item.CompanyID ?? item.companyID,
-        regionId: item.RegionID ?? item.regionId,
+        regionId: item.regionID ?? item.regionId,
         userId: item.UserId ?? item.userId,
           companyName: item.CompanyName ?? item.companyName,
   regionName: item.RegionName ?? item.regionName
