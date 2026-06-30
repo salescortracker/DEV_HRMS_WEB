@@ -531,10 +531,15 @@ filteredRegions: any[] = [];
             Swal.fire('Deleted!', `${g.genderName} deleted successfully.`, 'success');
             this.loadGenders();
           },
-          error: () => {
-            this.spinner.hide();
-            Swal.fire('Error', 'Delete failed! Please contact IT Administrator.', 'error');
-          }
+          error: (err) => {
+  this.spinner.hide();
+
+  Swal.fire(
+    'Error',
+    err?.error?.message || err?.error || 'Delete failed! Please contact IT Administrator.',
+    'error'
+  );
+}
         });
       }
     });

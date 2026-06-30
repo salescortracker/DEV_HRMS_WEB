@@ -206,27 +206,41 @@ onCompanyChange(): void {
 
   // Delete
   deleteRelationship(r: Relationship): void {
-    Swal.fire({
-      title: `Are you sure you want to delete ${r.relationshipName}?`,
-      showDenyButton: true,
-      confirmButtonText: 'Confirm'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.spinner.show();
-        this.adminService.deleteRelationship(r.relationshipId).subscribe({
-          next: () => {
-            this.spinner.hide();
-            Swal.fire('Deleted', `${r.relationshipName} deleted successfully.`, 'success');
-            this.loadRelationships();
-          },
-          error: () => {
-            this.spinner.hide();
-            Swal.fire('Error', 'Delete failed. Please contact IT Administrator.', 'error');
-          }
-        });
-      }
-    });
-  }
+  Swal.fire({
+    title: `Are you sure you want to delete ${r.relationshipName}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Confirm',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.spinner.show();
+
+      this.adminService.deleteRelationship(r.relationshipId).subscribe({
+        next: (res: any) => {
+          this.spinner.hide();
+
+          Swal.fire(
+            'Deleted!',
+            res?.message || `${r.relationshipName} deleted successfully.`,
+            'success'
+          );
+
+          this.loadRelationships();
+        },
+        error: (err) => {
+          this.spinner.hide();
+
+          Swal.fire(
+            'Error',
+            err?.error?.message || 'Delete failed! Please contact IT Administrator.',
+            'error'
+          );
+        }
+      });
+    }
+  });
+}
 
   // Reset
   resetForm(): void {

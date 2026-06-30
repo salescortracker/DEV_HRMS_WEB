@@ -140,32 +140,36 @@ export class EmploymentTypeComponent {
 
   deleteEmployment(e: EmploymentType) {
 
-    Swal.fire({
-      title: `Delete "${e.EmploymenttypeName}"?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete'
-    }).then(result => {
+  Swal.fire({
+    title: `Delete "${e.EmploymenttypeName}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete'
+  }).then(result => {
 
-      if (result.isConfirmed) {
+    if (result.isConfirmed) {
 
-        this.spinner.show();
+      this.spinner.show();
 
-        this.adminService.deleteEmploymentType(e.EmploymenttypeID)
-          .subscribe({
-            next: () => {
-              this.spinner.hide();
-              Swal.fire('Deleted!', '', 'success');
-              this.loadEmploymentTypes();
-            },
-            error: () => {
-              this.spinner.hide();
-              Swal.fire('Error', 'Delete failed', 'error');
-            }
-          });
-      }
-    });
-  }
+      this.adminService.deleteEmploymentType(e.EmploymenttypeID)
+        .subscribe({
+          next: (res: any) => {
+            this.spinner.hide();
+            Swal.fire('Deleted!', res?.message || 'Employment Type deleted successfully.', 'success');
+            this.loadEmploymentTypes();
+          },
+          error: (err) => {
+            this.spinner.hide();
+            Swal.fire(
+              'Error',
+              err?.error?.message || 'Delete failed',
+              'error'
+            );
+          }
+        });
+    }
+  });
+}
 
   filteredEmploymentTypes(): EmploymentType[] {
     const search = this.searchText?.toLowerCase() || '';

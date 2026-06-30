@@ -457,16 +457,35 @@ updateStatus(): void {
   }
 
   deleteStatus(s: MaritalStatus): void {
-    Swal.fire({ title: 'Delete?', showCancelButton: true, confirmButtonText: 'Yes' })
-      .then(res => {
-        if (res.isConfirmed) {
-          this.adminService.deleteMaritalStatus(s.maritalStatusID).subscribe(() => {
-            Swal.fire('Deleted', 'Record deleted', 'success');
-            this.loadStatuses();
-          });
+  Swal.fire({
+    title: `Are you sure you want to delete ${s.maritalStatusID}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No'
+  }).then(res => {
+    if (res.isConfirmed) {
+      this.adminService.deleteMaritalStatus(s.maritalStatusID).subscribe({
+        next: (response: any) => {
+          Swal.fire(
+            'Deleted!',
+            response?.message || 'Marital Status deleted successfully.',
+            'success'
+          );
+
+          this.loadStatuses();
+        },
+        error: (err) => {
+          Swal.fire(
+            'Error',
+            err?.error?.message || 'Delete failed! Please contact IT Administrator.',
+            'error'
+          );
         }
       });
-  }
+    }
+  });
+}
 
   resetForm(): void {
     this.marital = this.getEmptyStatus();
