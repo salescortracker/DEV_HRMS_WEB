@@ -178,26 +178,41 @@ mapNames(): void {
 }
 
   deleteBloodGroup(b: BloodGroup): void {
-    debugger
-    Swal.fire({
-      title: `Delete ${b.bloodGroupName}?`,
-      showCancelButton: true,
-      confirmButtonText: 'Yes'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.spinner.show();
-        this.adminService.deleteBloodGroup(b.bloodGroupID).subscribe({
-          next: () => {
-             this.loadBloodGroups();
-            Swal.fire('Deleted!', '', 'success');
-           
-            this.spinner.hide();
-          },
-          error: () => this.spinner.hide()
-        });
-      }
-    });
-  }
+  Swal.fire({
+    title: `Are you sure you want to delete ${b.bloodGroupName}?`,
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No',
+    icon: 'warning'
+  }).then(result => {
+    if (result.isConfirmed) {
+      this.spinner.show();
+
+      this.adminService.deleteBloodGroup(b.bloodGroupID).subscribe({
+        next: (res: any) => {
+          this.spinner.hide();
+
+          Swal.fire(
+            'Deleted!',
+            res?.message || 'Blood Group deleted successfully.',
+            'success'
+          );
+
+          this.loadBloodGroups();
+        },
+        error: (err) => {
+          this.spinner.hide();
+
+          Swal.fire(
+            'Error',
+            err?.error?.message || 'Delete failed! Please contact IT Administrator.',
+            'error'
+          );
+        }
+      });
+    }
+  });
+}
 
   resetForm(): void {
     this.bloodGroup = this.getEmptyBloodGroup();
