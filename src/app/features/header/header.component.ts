@@ -830,15 +830,20 @@ this.clockInDisplay = this.firstClockIn ?? '--:--';
   // =========================
   this.totalHoursDisplay = this.formatDuration(totalMs);
 }
-formatDuration(ms: number): string {
+formatDuration(totalMinutes: number): string {
 
-  const hrs = Math.floor(ms / 3600000);
-  const mins = Math.floor((ms % 3600000) / 60000);
-  const secs = Math.floor((ms % 60000) / 1000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
 
-  return `${hrs.toString().padStart(2,'0')}:` +
-         `${mins.toString().padStart(2,'0')}:` +
-         `${secs.toString().padStart(2,'0')}`;
+  if (hours > 0 && minutes > 0) {
+    return `${hours} hr ${minutes} min`;
+  }
+
+  if (hours > 0) {
+    return `${hours} hr`;
+  }
+
+  return `${minutes} min`;
 }
   isOpen: boolean = false;
 
@@ -1468,12 +1473,12 @@ calculateStatus() {
   const shiftStart = new Date();
   shiftStart.setHours(sH, sM, 0, 0);
 
-  // ✅ OnTime Window = 5 mins
+  // On Time Window = 5 mins
   const onTimeEnd = new Date(
     shiftStart.getTime() + (5 * 60000)
   );
 
-  // ✅ Grace Window
+  // Grace Window
   const [gH, gM] = this.graceTime.split(':').map(Number);
 
   const graceEnd = new Date(
@@ -1487,22 +1492,23 @@ calculateStatus() {
       (shiftStart.getTime() - time.getTime()) / 60000
     );
 
-    this.earlyLateStatus =
-      ` Early by ${mins} min`;
+    this.earlyLateStatus = `Early by ${this.formatDuration(mins)}`;
   }
 
   // ON TIME (0-5 mins)
   else if (time <= onTimeEnd) {
 
-    this.earlyLateStatus =
-      ` On Time`;
+    this.earlyLateStatus = 'On Time';
   }
 
   // GRACE
   else if (time <= graceEnd) {
 
-    this.earlyLateStatus =
-      ` Grace`;
+    const mins = Math.floor(
+      (time.getTime() - shiftStart.getTime()) / 60000
+    );
+
+    this.earlyLateStatus = `Grace ${this.formatDuration(mins)}`;
   }
 
   // LATE
@@ -1512,8 +1518,7 @@ calculateStatus() {
       (time.getTime() - graceEnd.getTime()) / 60000
     );
 
-    this.earlyLateStatus =
-      `Late by ${mins} min`;
+    this.earlyLateStatus = `Late by ${this.formatDuration(mins)}`;
   }
 }
 
