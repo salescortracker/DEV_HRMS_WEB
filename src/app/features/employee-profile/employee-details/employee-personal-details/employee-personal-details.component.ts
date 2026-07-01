@@ -137,7 +137,8 @@ loadgender() {
           brandGrade: res.brandGrade,
           esicNumber: res.esicNumber,
           pfNumber: res.pfNumber,
-          employmentType: res.employmentType
+          employmentType: res.employmentType,
+          dateofJoining: res.dateofJoining
   ? res.dateofJoining.split('T')[0]
   : ''
         });
