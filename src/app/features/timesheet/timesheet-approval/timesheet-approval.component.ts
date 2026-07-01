@@ -120,6 +120,12 @@ getPaginatedTimesheets() {
           otHoursText,
         };
       });
+         // Newest record first
+      this.timesheetList.sort(
+        (a, b) =>
+          new Date(b.timesheetDate).getTime() -
+          new Date(a.timesheetDate).getTime()
+      );
     });
   }
 
@@ -391,6 +397,14 @@ getPaginatedTimesheets() {
         : valA < valB ? 1 : -1;
     });
   }
+      // Default sorting when no column is selected
+    if (!this.sortColumn) {
+      data.sort(
+        (a, b) =>
+          new Date(b.timesheetDate).getTime() -
+          new Date(a.timesheetDate).getTime()
+      );
+    }
 
   return data;
 }
