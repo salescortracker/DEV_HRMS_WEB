@@ -349,19 +349,36 @@ export class PriorityComponent {
     this.isEditMode = true;
   }
 
-  deletePriority(p: Priority) {
-    Swal.fire({
-      title: 'Delete this priority?',
-      icon: 'warning',
-      showCancelButton: true
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.adminService.deletePriority(p.priorityId).subscribe(() => {
+ deletePriority(p: Priority) {
+  Swal.fire({
+    title: `Delete "${p.priorityName}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Delete'
+  }).then(result => {
+    if (result.isConfirmed) {
+
+      this.spinner.show();
+
+      this.adminService.deletePriority(p.priorityId).subscribe({
+        next: (res: any) => {
+          this.spinner.hide();
+          Swal.fire('Deleted', res.message, 'success');
           this.loadPriorities();
-        });
-      }
-    });
-  }
+        },
+        error: (err) => {
+          this.spinner.hide();
+          Swal.fire(
+            'Error',
+            err?.error?.message ||
+            'You cannot delete this priority. It is assigned to one or more records.',
+            'error'
+          );
+        }
+      });
+    }
+  });
+}
 
   resetForm() {
     this.priority = this.getEmptyPriority();

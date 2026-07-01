@@ -103,18 +103,32 @@ getRegionName(id: number) {
   }
 
   delete(x: Currency) {
-    Swal.fire({
-      title: 'Delete this record?',
-      icon: 'warning',
-      showCancelButton: true
-    }).then(r => {
-      if (r.isConfirmed) {
-        this.service.deleteCurrency(x.currencyId).subscribe(() => {
+  Swal.fire({
+    title: `Delete "${x.currencyCode}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Delete'
+  }).then(r => {
+    if (r.isConfirmed) {
+
+      this.service.deleteCurrency(x.currencyId).subscribe({
+        next: (res: any) => {
+          Swal.fire('Deleted', res.message, 'success');
           this.load();
-        });
-      }
-    });
-  }
+        },
+        error: (err: any) => {
+          Swal.fire(
+            'Error',
+            err?.error?.message ||
+            'You cannot delete this currency. It is assigned to one or more assets.',
+            'error'
+          );
+        }
+      });
+
+    }
+  });
+}
 
   loadCompanies() {
     this.service.getCompanies(null, this.userId).subscribe((res: any) => {

@@ -404,31 +404,33 @@ export class ShiftsComponent {
   }
 
   deleteShift(s: ShiftMasterDto) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.userService.deleteShift(s.shiftID).subscribe({
-          next: (res: any) => {
-            if (res.success) {
-              Swal.fire('Deleted!', res.message, 'success');
-              this.loadShifts();
-            } else {
-              Swal.fire('Error', res.message, 'error');
-            }
-          },
-          error: (err: any) => {
-            console.error(err);
-            Swal.fire('Error', 'Failed to delete shift', 'error');
-          }
-        });
-      }
-    });
-  }
+  Swal.fire({
+    title: `Delete "${s.shiftName}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Delete'
+  }).then(result => {
+
+    if (result.isConfirmed) {
+
+      this.userService.deleteShift(s.shiftID).subscribe({
+        next: (res: any) => {
+          Swal.fire('Deleted', res.message, 'success');
+          this.loadShifts();
+        },
+        error: (err: any) => {
+          Swal.fire(
+            'Error',
+            err?.error?.message ||
+            'You cannot delete this shift. It is assigned to one or more employees.',
+            'error'
+          );
+        }
+      });
+
+    }
+  });
+}
 
 
   resetForm() {

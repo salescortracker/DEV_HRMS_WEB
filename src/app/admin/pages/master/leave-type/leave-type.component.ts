@@ -248,36 +248,35 @@ getGradeDays(gradeId: number): number {
 }
 
   deleteLeaveType(item: LeaveType): void {
-      console.log('Deleting ID:', item.leaveTypeID); 
+  Swal.fire({
+    title: `Delete "${item.leaveTypeName}"?`,
+    showCancelButton: true,
+    confirmButtonText: 'Delete'
+  }).then(result => {
+    if (result.isConfirmed) {
 
-    Swal.fire({
-      title: `Delete "${item.leaveTypeName}"?`,
-      showCancelButton: true,
-      confirmButtonText: 'Delete'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.spinner.show();
-   this.admin.deleteLeaveType(item.leaveTypeID).subscribe({
-          next: () => {
-            Swal.fire('Deleted', 'Leave Type deleted successfully', 'success');
-            this.loadLeaveType();
-                   this.spinner.hide();
+      this.spinner.show();
 
-          },
-          error: (err) => {
-            Swal.fire(
-              'Error',
-              err?.error ?? 'Leave Type already deleted or not found',
-              'error'
-            );
-          }
-        });
+      this.admin.deleteLeaveType(item.leaveTypeID).subscribe({
+        next: (res: any) => {
+          this.spinner.hide();
 
+          Swal.fire('Deleted', res.message, 'success');
+          this.loadLeaveType();
+        },
+        error: (err) => {
+          this.spinner.hide();
 
-      }
-    });
-  }
-
+          Swal.fire(
+            'Error',
+            err?.error?.message || 'You cannot delete this leave type. It is assigned to one or more leave requests.',
+            'error'
+          );
+        }
+      });
+    }
+  });
+}
   // resetForm(): void {
   // this.leave = {
   //     leaveTypeID: 0,

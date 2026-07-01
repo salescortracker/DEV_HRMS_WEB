@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../admin/servies/admin.service';
 import Swal from 'sweetalert2';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-master',
@@ -25,7 +27,7 @@ export class ProjectMasterComponent implements OnInit {
   userId = Number(sessionStorage.getItem("UserId"));
   filteredRegions: any[] = [];
 
-  constructor(private service: AdminService) { }
+  constructor(private service: AdminService, private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
     this.loadProjects();
@@ -110,6 +112,7 @@ export class ProjectMasterComponent implements OnInit {
   }
 
   deleteProject(p: any) {
+
   Swal.fire({
     title: `Delete "${p.projectName}"?`,
     text: 'This will deactivate the project.',
@@ -117,12 +120,36 @@ export class ProjectMasterComponent implements OnInit {
     showCancelButton: true,
     confirmButtonText: 'Yes, delete it'
   }).then((result) => {
+
     if (result.isConfirmed) {
-      this.service.deleteProject(p.ProjectMasterId) 
-        .subscribe(() => {
-          Swal.fire('Deleted!', 'Project deactivated.', 'success');
-          this.loadProjects();
+
+      this.spinner.show();
+
+      this.service.deleteProject(p.ProjectMasterId)
+        .pipe(
+          finalize(() => this.spinner.hide()) // 🔥 always stops spinner
+        )
+        .subscribe({
+          next: (res: any) => {
+
+            Swal.fire(
+              'Deleted!',
+              res?.message || 'Project deactivated.',
+              'success'
+            );
+
+            this.loadProjects();
+          },
+
+          error: () => {
+            Swal.fire(
+              'Error',
+              'Delete failed. Please try again.',
+              'error'
+            );
+          }
         });
+
     }
   });
 }
