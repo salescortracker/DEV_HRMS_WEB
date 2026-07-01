@@ -5,11 +5,14 @@
       <img [src]="companyLogo" width="150px" height="50px" alt="Company Logo">
     </div>
     <div class="clock-status compact">
-      <span *ngIf="earlyLateStatus" [ngClass]="getEarlyLateClass()" class="status-badge fancy-badge">
+      <span *ngIf="earlyLateStatus"
+      [ngClass]="getEarlyLateClass()"
+      class="status-badge fancy-badge">
 
         <i *ngIf="earlyLateStatus.includes('Late')" class="fa fa-clock"></i>
         <i *ngIf="earlyLateStatus.includes('Early')" class="fa fa-arrow-up"></i>
         <i *ngIf="earlyLateStatus.includes('On Time')" class="fa fa-check"></i>
+        <i *ngIf="earlyLateStatus.includes('Grace')" class="fa fa-hourglass-half"></i>
 
         Status: {{ clockStatus }} {{ earlyLateStatus }}
       </span>

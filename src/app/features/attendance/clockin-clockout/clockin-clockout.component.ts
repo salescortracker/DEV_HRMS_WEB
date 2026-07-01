@@ -298,6 +298,21 @@ this.todayDuration =
       this.loadAll();
     });
   }
+  formatDuration(totalMinutes: number): string {
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours > 0 && minutes > 0) {
+    return `${hours} hr ${minutes} min`;
+  }
+
+  if (hours > 0) {
+    return `${hours} hr`;
+  }
+
+  return `${minutes} min`;
+}
   
 calculateLateLogin() {
 
@@ -324,7 +339,7 @@ calculateLateLogin() {
       (shiftStart.getTime() - clockIn.getTime()) / 60000
     );
 
-    this.lateLoginText = `Early by ${mins} min`;
+    this.lateLoginText = `Early by ${this.formatDuration(mins)}`;
   }
 
   // ON TIME (includes grace)
@@ -334,14 +349,24 @@ calculateLateLogin() {
   }
 
   // LATE
-  else {
+  else if (clockIn <= graceEnd) {
 
-    const mins = Math.floor(
-      (clockIn.getTime() - graceEnd.getTime()) / 60000
-    );
+  const mins = Math.floor(
+    (clockIn.getTime() - shiftStart.getTime()) / 60000
+  );
 
-    this.lateLoginText = `Late by ${mins} min`;
-  }
+  this.lateLoginText = `Grace ${this.formatDuration(mins)}`;
+}
+
+// LATE
+else {
+
+  const mins = Math.floor(
+    (clockIn.getTime() - graceEnd.getTime()) / 60000
+  );
+
+  this.lateLoginText = `Late by ${this.formatDuration(mins)}`;
+}
 }
   getStatusClass(): string {
 
