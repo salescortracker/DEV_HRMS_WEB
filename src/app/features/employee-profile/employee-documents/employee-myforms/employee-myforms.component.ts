@@ -81,7 +81,8 @@ export class EmployeeMyformsComponent {
             name: x.documentName,
             issuedDate: x.issueDate,
             remarks: x.remarks,
-            filePaths: latestPath
+            // filePaths: latestPath
+            filePaths: x.filePaths || x.FilePaths || []   
           };
         });
       },
