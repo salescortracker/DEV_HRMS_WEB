@@ -28,7 +28,7 @@ export class AssetStatusComponent {
   searchText = '';
   userId = Number(sessionStorage.getItem('UserId')) || 0;
 
-  constructor(private service: AdminService) {}
+  constructor(private service: AdminService, private spinner: NgxSpinnerService) {}
 
   ngOnInit() {
     this.reset();
@@ -88,18 +88,39 @@ export class AssetStatusComponent {
   }
 
   delete(x: AssetStatus) {
-    Swal.fire({
-      title: 'Delete this record?',
-      icon: 'warning',
-      showCancelButton: true
-    }).then(r => {
-      if (r.isConfirmed) {
-        this.service.deleteAssetStatus(x.assetStatusId).subscribe(() => {
+  Swal.fire({
+    title: 'Delete this record?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes'
+  }).then(r => {
+    if (r.isConfirmed) {
+
+      this.spinner.show();
+
+      this.service.deleteAssetStatus(x.assetStatusId).subscribe({
+        next: (res: any) => {
+          this.spinner.hide();
+          Swal.fire(
+            'Deleted',
+            res.message || 'Asset Status deleted successfully.',
+            'success'
+          );
           this.load();
-        });
-      }
-    });
-  }
+        },
+        error: (err) => {
+          this.spinner.hide();
+          Swal.fire(
+            'Cannot Delete',
+            err.error?.message ||
+            'You cannot delete this asset status. It is assigned to one or more assets.',
+            'error'
+          );
+        }
+      });
+    }
+  });
+}
 
   loadCompanies() {
     this.service.getCompanies(null, this.userId).subscribe((res: any) => {

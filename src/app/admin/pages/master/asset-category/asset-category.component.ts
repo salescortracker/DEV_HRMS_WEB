@@ -124,26 +124,38 @@ export class AssetCategoryComponent implements OnInit {
 
   // ✅ DELETE
   delete(x: AssetCategory) {
-    Swal.fire({
-      title: 'Delete this record?',
-      text: 'This action cannot be undone',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!'
-    }).then(result => {
-      if (result.isConfirmed) {
-        this.service.deleteAssetCategory(x.assetCategoryId).subscribe({
-          next: () => {
-            Swal.fire('Deleted!', 'Record deleted successfully', 'success');
-            this.load();
-          },
-          error: () => {
-            Swal.fire('Error', 'Delete failed', 'error');
-          }
-        });
-      }
-    });
-  }
+  Swal.fire({
+    title: 'Delete this record?',
+    text: 'This action cannot be undone',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!'
+  }).then(result => {
+    if (result.isConfirmed) {
+
+      this.service.deleteAssetCategory(x.assetCategoryId).subscribe({
+        next: (res: any) => {
+          Swal.fire(
+            'Deleted!',
+            res.message || 'Asset Category deleted successfully.',
+            'success'
+          );
+
+          this.load();
+        },
+        error: (err) => {
+          Swal.fire(
+            'Cannot Delete',
+            err.error?.message ||
+            'You cannot delete this asset category. It is assigned to one or more assets.',
+            'error'
+          );
+        }
+      });
+
+    }
+  });
+}
 
   // ✅ LOAD COMPANIES
   loadCompanies() {

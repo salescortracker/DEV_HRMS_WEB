@@ -137,17 +137,37 @@ loadCategories() {
   }
 
   delete(x: AssetType) {
-    Swal.fire({
-      title: 'Delete this record?',
-      showCancelButton: true
-    }).then(res => {
-      if (res.isConfirmed) {
-        this.adminService.deleteAssetType(x.assetTypeId).subscribe(() => {
+  Swal.fire({
+    title: 'Delete this record?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes'
+  }).then(res => {
+    if (res.isConfirmed) {
+
+      this.adminService.deleteAssetType(x.assetTypeId).subscribe({
+        next: (response: any) => {
+          Swal.fire(
+            'Deleted!',
+            response.message || 'Asset Type deleted successfully.',
+            'success'
+          );
+
           this.loadData();
-        });
-      }
-    });
-  }
+        },
+        error: (err) => {
+          Swal.fire(
+            'Cannot Delete',
+            err.error?.message ||
+            'You cannot delete this asset type. It is assigned to one or more assets.',
+            'error'
+          );
+        }
+      });
+
+    }
+  });
+}
 
   resetForm() {
     this.assetType = this.getEmpty();
