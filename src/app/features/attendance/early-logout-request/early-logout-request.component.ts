@@ -19,7 +19,14 @@ export class EarlyLogoutRequestComponent implements OnInit {
   approvedRequests: any[] = [];
   rejectedRequests: any[] = [];
   hrRequests: any[] = [];
+currentPage = 1;
+pageSize = 5;
+pageSizeOptions = [5, 10, 25, 50];
 
+totalRecords = 0;
+totalPages = 0;
+pagedMyRequests: any[] = [];
+pagedCombinedRequests: any[] = [];
   selectedTab = '';
   canViewPersonal = false;
   canViewManager = false;
@@ -61,7 +68,9 @@ canEditMyRequest = false;
     }
 
    const payload = {
-  earlyLogoutRequestID: this.editId,
+  EarlyLogoutRequestID: this.editId,
+   reportingTo: this.managerId,
+   employeeID: this.userId,
   requestDate: this.earlyLogoutForm.value.requestDate,
   requestedLogoutTime: this.earlyLogoutForm.value.requestedLogoutTime,
   reason: this.earlyLogoutForm.value.reason,
@@ -103,13 +112,16 @@ canEditMyRequest = false;
         this.cdr.detectChanges();
       },
      error: (err) => {
-  console.log('Update Error:', err);
-  console.log('Response:', err.error);
+  console.log('FULL ERROR => ', err);
+  console.log('ERROR BODY => ', err.error);
 
   Swal.fire(
-    'Error',
-    JSON.stringify(err.error),
-    'error'
+    'Warning',
+    err.error?.message ||
+    err.error ||
+    err.message ||
+    'Something went wrong',
+    'warning'
   );
 }
 
@@ -165,7 +177,11 @@ canEditMyRequest = false;
       .getEarlyLogoutRequest(this.companyId, this.regionId, this.userId)
       .subscribe((res: any) => {
         this.myRequests = this.normalizeList(res);
+         this.currentPage = 1;
+      this.updatePagination();
         this.cdr.detectChanges();
+
+        
       });
   }
 
@@ -184,6 +200,8 @@ canEditMyRequest = false;
           selected: false,
           managerRemarks: x.managerRemarks || ''
         }));
+        this.currentPage = 1;
+        this.updatePagination();
         this.cdr.detectChanges();
       });
   }
@@ -363,4 +381,31 @@ else if (this.canViewHR) {
   this.selectedTab = 'tab3';
 }
   }
+
+updatePagination(): void {
+  this.totalRecords = this.combinedRequests.length;
+  this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.pagedCombinedRequests =
+    this.combinedRequests.slice(start, end);
+}
+
+
+changePage(page: number): void {
+  if (page < 1 || page > this.totalPages) {
+    return;
+  }
+
+  this.currentPage = page;
+  this.updatePagination();
+}
+
+changePageSize(size: number): void {
+  this.pageSize = size;
+  this.currentPage = 1;
+  this.updatePagination();
+}
 }

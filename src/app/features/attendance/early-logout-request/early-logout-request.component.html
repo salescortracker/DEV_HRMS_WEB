@@ -49,7 +49,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">HR Email (CC)<span class="text-danger">*</span></label>
+          <label class="form-label">HR Email (CC)</label>
           <input type="email" class="form-control" formControlName="hrEmail">
         </div>
 
@@ -248,7 +248,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let item of combinedRequests">
+          <tr *ngFor="let item of pagedCombinedRequests">
             <td>{{ item.employeeName || item.employeeCode || 'N/A' }}</td>
             <td>{{ item.requestDate | date }}</td>
             <td>{{ item.requestedLogoutTime }}</td>
@@ -270,8 +270,51 @@
           </tr>
         </tbody>
       </table>
+
+
+<!-- Pagination -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <div>
+    <label>
+      Show:
+      <select
+        class="form-select d-inline w-auto ms-2"
+        [(ngModel)]="pageSize"
+        (change)="changePageSize(pageSize)">
+        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+          {{ size }}
+        </option>
+      </select>
+      entries
+    </label>
+  </div>
+
+  <div>
+    <button
+      class="btn btn-sm me-2"
+      style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600"
+      (click)="changePage(currentPage - 1)"
+      [disabled]="currentPage === 1">
+      Previous
+    </button>
+
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+    <button
+      class="btn btn-sm ms-2"
+      style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600"
+      (click)="changePage(currentPage + 1)"
+      [disabled]="currentPage === totalPages">
+      Next
+    </button>
+  </div>
+</div>
+
+
+      
     </div>
   </div>
 </div>
+
 
 <app-footer></app-footer>
