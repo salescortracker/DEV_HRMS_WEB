@@ -3229,4 +3229,9 @@ getManagerEmployees(loginUserId: number) {
     `${this.baseUrl}/Employee/manager-employees?loginUserId=${loginUserId}`
   );
 }
+getTodayNotifications(companyId: number, regionId: number): Observable<any[]> {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Employee/GetTodayNotifications?companyId=${companyId}&regionId=${regionId}`
+  );
+}
 }

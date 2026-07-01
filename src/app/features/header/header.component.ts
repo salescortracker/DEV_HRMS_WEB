@@ -51,6 +51,8 @@ export class HeaderComponent {
   private accumulatedMs: number = 0;
   firstClockIn: string | null = null;
 lastClockOut: string | null = null;
+notifications: any[] = [];
+notificationCount: number = 0;
   constructor(private router: Router, private employeeResignationService: EmployeeResignationService,
     private adminService: AdminService, private ngZone: NgZone, private attendanceService: AttendanceService) { }
   ngOnInit() {
@@ -72,6 +74,7 @@ lastClockOut: string | null = null;
     this.loadUserShift();
 
     this.checkWFHStatus();
+    this.loadNotifications();
 
     // ⏱️ Check every minute (important)
     setInterval(() => {
@@ -80,6 +83,25 @@ lastClockOut: string | null = null;
 
 
   }
+  loadNotifications() {
+
+  const companyId = Number(sessionStorage.getItem('CompanyId'));
+  const regionId = Number(sessionStorage.getItem('RegionId'));
+
+  if (!companyId || !regionId) return;
+
+  this.adminService.getTodayNotifications(companyId, regionId)
+    .subscribe({
+      next: (res: any[]) => {
+        this.notifications = res ?? [];
+        this.notificationCount = this.notifications.length;
+      },
+      error: () => {
+        this.notifications = [];
+        this.notificationCount = 0;
+      }
+    });
+}
   loadEmployeeCompanyLogo() {
     const companyId = Number(sessionStorage.getItem('CompanyId'));
     if (!companyId) return;

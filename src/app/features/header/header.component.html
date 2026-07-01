@@ -59,19 +59,34 @@
     <!-- <button class="icon-btn" title="Quick Links"><i class="fas fa-link"></i></button> -->
 
     <!-- Notifications -->
-    <!-- <div class="top-right-icons"> -->
-    <!-- Notifications -->
-    <!-- <div class="icon-dropdown">
-        <i class="fas fa-bell"></i>
-        <span class="count">3</span>
-        <div class="dropdown-content">
-          <p><strong>Notifications</strong></p>
-          <a href="#">New leave request</a>
-          <a href="#">Policy update</a>
-          <a href="#">Timesheet pending</a>
-          <a href="#">Another notification</a>
-        </div>
-      </div> -->
+     <div class="top-right-icons"> 
+     Notifications 
+    <div class="icon-dropdown">
+  <i class="fas fa-bell"></i>
+
+  <span class="count" *ngIf="notificationCount > 0">
+    {{ notificationCount }}
+  </span>
+
+  <div class="dropdown-content">
+    <p><strong>Notifications</strong></p>
+
+    <div *ngIf="notifications.length === 0">
+      No notifications today
+    </div>
+
+    <a *ngFor="let n of notifications">
+      <i class="fa" 
+         [ngClass]="{
+           'fa-birthday-cake': n.type === 'Birthday',
+           'fa-gift': n.type === 'Anniversary'
+         }"></i>
+
+      {{ n.message }}
+    </a>
+
+  </div>
+</div>
 
     <!-- Messages -->
     <!-- <div class="icon-dropdown">
