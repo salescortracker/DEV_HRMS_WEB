@@ -157,21 +157,35 @@ onRegionChange(): void {
   deleteExpenseCategory(item: ExpenseCategory): void {
   Swal.fire({
     title: `Delete "${item.expenseCategoryName}"?`,
+    icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Delete'
   }).then(result => {
     if (result.isConfirmed) {
+
       this.spinner.show();
 
       this.admin.deleteexpenseCategory(item.expenseCategoryID).subscribe({
-        next: () => {
+        next: (res: any) => {
           this.spinner.hide();
-          Swal.fire('Deleted', 'Expense Category deleted successfully.', 'success');
+
+          Swal.fire(
+            'Deleted',
+            res.message || 'Expense Category deleted successfully.',
+            'success'
+          );
+
           this.loadExpenseCategory();
         },
-        error: () => {
+        error: (err) => {
           this.spinner.hide();
-          Swal.fire('Error', 'Delete failed.', 'error');
+
+          Swal.fire(
+            'Cannot Delete',
+            err.error?.message ||
+            'You cannot delete this expense category. It is assigned to one or more expenses.',
+            'error'
+          );
         }
       });
     }

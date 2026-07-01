@@ -179,19 +179,41 @@ export class AccounttypeComponent implements OnInit {
 
   // 🔹 Delete
   deleteAccount(a: any) {
-    Swal.fire({
-      title: `Delete "${a.accountType1}"?`,
-      icon: 'warning',
-      showCancelButton: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.service.deleteAccountType(a.accountTypeId).subscribe(() => {
-          Swal.fire('Deleted!', 'Account Type removed', 'success');
+  Swal.fire({
+    title: `Delete "${a.accountType1}"?`,
+    text: 'This will remove the account type if not assigned',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete'
+  }).then(result => {
+
+    if (result.isConfirmed) {
+
+      this.service.deleteAccountType(a.accountTypeId).subscribe({
+        next: (res: any) => {
+
+          Swal.fire(
+            'Deleted!',
+            res?.message || 'Account Type removed successfully',
+            'success'
+          );
+
           this.loadAccountTypes();
-        });
-      }
-    });
-  }
+        },
+
+        error: (err) => {
+
+          Swal.fire(
+            'Not Deleted',
+            err?.error?.message || 'Account Type is assigned to employee bank details',
+            'error'
+          );
+        }
+      });
+
+    }
+  });
+}
 
   // 🔹 Reset
   resetForm() {
