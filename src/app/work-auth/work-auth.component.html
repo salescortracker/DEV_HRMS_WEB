@@ -1,0 +1,146 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold mb-0">
+        <i class="fa-solid fa-id-badge me-2 text-primary"></i> Work Auth Status
+      </h4>
+    </div>
+
+    <hr />
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <form #workAuthForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Company *</label>
+              <select class="form-select" name="CompanyId" [(ngModel)]="companyId" (change)="onCompanyChange()" required>
+                <option value="">-- Select Company --</option>
+                <option *ngFor="let company of companies" [value]="company.companyId">
+                  {{ company.companyName }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Region *</label>
+              <select class="form-select" name="RegionId" [(ngModel)]="regionId" (change)="onRegionChange()" required>
+                <option value="">-- Select Region --</option>
+                <option *ngFor="let region of regions" [value]="region.regionID">
+                  {{ region.regionName }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Status Name *</label>
+              <input class="form-control" type="text" name="StatusName" [(ngModel)]="statusModel.StatusName" required>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-center mt-4">
+              <label class="me-2 fw-semibold">Is Active</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="IsActive" [(ngModel)]="statusModel.IsActive">
+              </div>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-end gap-2 mt-4">
+              <button type="button" class="btn btn-danger w-100" (click)="clearForm()">
+                <i class="fa-solid fa-xmark me-2"></i> Cancel
+              </button>
+
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!workAuthForm.valid">
+                <i class="fa-solid fa-save me-2"></i>
+                {{ isEditMode ? 'Update Status' : 'Save Status' }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="mb-3 d-flex justify-content-end">
+          <input class="form-control w-25" placeholder="Search Status" [(ngModel)]="searchText">
+        </div>
+
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width:80px;">S.No</th>
+              <th>Status Name</th>
+              <th>Company</th>
+              <th>Region</th>
+              <th class="text-center">Active</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of paginatedStatuses(); let i = index">
+              <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+              <td>{{ item.StatusName }}</td>
+              <td>{{ companyMap[item.CompanyId] || '—' }}</td>
+              <td>{{ regionMap[item.RegionId] || '—' }}</td>
+              <td class="text-center">
+                <i class="fa-solid" [ngClass]="item.IsActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'"></i>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editStatus(item)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteStatus(item)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="paginatedStatuses().length === 0">
+              <td colspan="6" class="text-center text-muted">No records found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+
+  <div>
+    <label>
+      Show
+      <select class="form-select d-inline w-auto ms-2"
+              [(ngModel)]="pageSize"
+              (change)="changePageSize()">
+        <option *ngFor="let size of pageSizeOptions"
+                [ngValue]="size">
+          {{ size }}
+        </option>
+      </select>
+      entries
+    </label>
+  </div>
+
+  <div>
+    <button class="btn btn-outline-secondary btn-sm me-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600"
+            (click)="changePage(page-1)"
+            [disabled]="page==1">
+      Previous
+    </button>
+
+    <span class="mx-2">
+      Page {{ page }} of {{ totalPages() || 1 }}
+    </span>
+
+    <button class="btn btn-outline-secondary btn-sm" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600"
+            (click)="changePage(page+1)"
+            [disabled]="page==totalPages()">
+      Next
+    </button>
+  </div>
+
+</div>
+
+
+  </div>
+</div>

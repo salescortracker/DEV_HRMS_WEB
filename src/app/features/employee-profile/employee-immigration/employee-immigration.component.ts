@@ -75,7 +75,7 @@ changePageSize(size: number): void {
   }
 
   loadStatuses(): void {
-    this.adminService.getStatuses().subscribe({
+    this.adminService.getStatuses(this.companyId, this.regionId).subscribe({
       next: (data) => {
         this.workStatuses = data;
         console.log("Statuses Loaded:", data);
