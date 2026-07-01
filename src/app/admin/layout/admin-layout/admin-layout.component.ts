@@ -39,7 +39,7 @@ export class AdminLayoutComponent {
       // { title: 'Policy Category', route: '/admin/policy-category' },
      // { title: 'KPI Category', route: '/admin/kpi-category' },
       { title: 'Document Type', route: '/admin/attachment-type' },
-      { title: 'Project Status', route: '/admin/project-status' },
+      //{ title: 'Project Status', route: '/admin/project-status' },
       { title: 'Asset Status', route: '/admin/asset-status' },
       { title: 'Help Desk Category', route: '/admin/helpdesk-category' },
       { title: 'Expense Category Type', route: '/admin/expense-category' },

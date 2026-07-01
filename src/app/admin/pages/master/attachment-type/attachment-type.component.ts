@@ -178,9 +178,13 @@ onCompanyChange() {
             Swal.fire('Deleted', `${a.attachmentTypeName} deleted successfully.`, 'success');
             this.loadAttachments();
           },
-          error: () => {
+          error: (err) => {
             this.spinner.hide();
-            Swal.fire('Error', 'Delete failed.', 'error');
+            Swal.fire(
+              'Cannot Delete',
+              err?.error?.message || 'This attachment type is in use.',
+              'error'
+            );
           }
         });
       }

@@ -113,33 +113,38 @@ editCertification(c: CertificationType): void {
 
   // ================= HARD DELETE =================
   deleteCertification(c: CertificationType): void {
-    Swal.fire({
-      title: 'Delete Certification?',
-      text: 'This will permanently delete the record',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete',
-      cancelButtonText: 'Cancel'
-    }).then(result => {
-      if (result.isConfirmed) {
-          const id = c.certificationTypeID;
-          console.log('Deleting CertificationType with ID:',c. certificationTypeID);
-                    console.log('Deleting CertificationType with ID:', c);
+  Swal.fire({
+    title: 'Delete Certification?',
+    text: 'This will permanently delete the record',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete',
+    cancelButtonText: 'Cancel'
+  }).then(result => {
+    if (result.isConfirmed) {
 
-        
-       this.adminService.deleteCertificationType(id)
-          .subscribe({
-            next: () => {
-              Swal.fire('Deleted', 'Record deleted successfully', 'success');
-              this.loadCertifications();
-            },
-            error: () => {
-              Swal.fire('Error', 'Delete failed', 'error');
-            }
-          });
-      }
-    });
-  }
+      this.adminService.deleteCertificationType(c.certificationTypeID)
+        .subscribe({
+          next: (res: any) => {
+            Swal.fire(
+              'Deleted',
+              res?.message || 'Record deleted successfully',
+              'success'
+            );
+
+            this.loadCertifications();
+          },
+          error: (err) => {
+            Swal.fire(
+              'Error',
+              err?.error?.message || 'Delete failed',
+              'error'
+            );
+          }
+        });
+    }
+  });
+}
 
   // ================= LIST =================
 loadCertifications(): void {
