@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-recruitment-process',
@@ -7,6 +8,7 @@ import { Component } from '@angular/core';
   styleUrl: './recruitment-process.component.css'
 })
 export class RecruitmentProcessComponent {
+  constructor(private router: Router) {}
 tabs = ['Resume Upload', 'Screening', 'Interview','Appointment','Offer','Documents Verification','Onboarding','Application Resumes'];
   totalStages = this.tabs.length;
   activeTab:Number = 1;

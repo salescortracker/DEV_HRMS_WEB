@@ -96,6 +96,14 @@ import { RaiseTicketComponent } from './features/helpdesk/raise-ticket/raise-tic
 import { TaskreportComponent } from './features/my-task/taskreport/taskreport.component';
 import { TeamtaskComponent } from './features/my-task/teamtask/teamtask.component';
 import { MytaskComponent } from './features/my-task/mytask/mytask.component';
+import { OnboardingComponent } from './features/recruitment/onboarding/onboarding.component';
+import { DocumentsVerificationComponent } from './features/recruitment/documents-verification/documents-verification.component';
+import { OfferComponent } from './features/recruitment/offer/offer.component';
+import { AppointmentComponent } from './features/recruitment/appointment/appointment.component';
+import { InterviewComponent } from './features/recruitment/interview/interview.component';
+import { ScreeningComponent } from './features/recruitment/screening/screening.component';
+import { ResumeUploadComponent } from './features/recruitment/resume-upload/resume-upload.component';
+import { ApplicationResumesComponent } from './features/recruitment/application-resumes/application-resumes.component';
 const routes: Routes = [
   { path: '', component: LoginComponent },
    { path: 'forgot-password', component: ForgotPasswordComponent },
@@ -439,7 +447,50 @@ const routes: Routes = [
   ]
 },
  { path: 'superadmin-template', component: SuperAdminLayoutComponent},
-{ path: 'recruitment', component: RecruitmentProcessComponent },
+// { path: 'recruitment', component: RecruitmentProcessComponent },
+{
+  path: 'recruitment',
+  component: RecruitmentProcessComponent,
+  children: [
+    {
+      path: '',
+      redirectTo: 'application-resumes',
+      pathMatch: 'full'
+    },
+    {
+      path: 'application-resumes',
+      component: ApplicationResumesComponent
+    },
+    {
+      path: 'resume-upload',
+      component: ResumeUploadComponent
+    },
+    {
+      path: 'screening',
+      component: ScreeningComponent
+    },
+    {
+      path: 'interview',
+      component: InterviewComponent
+    },
+    {
+      path: 'appointment',
+      component: AppointmentComponent
+    },
+    {
+      path: 'offer',
+      component: OfferComponent
+    },
+    {
+      path: 'documents-verification',
+      component: DocumentsVerificationComponent
+    },
+    {
+      path: 'onboarding',
+      component: OnboardingComponent
+    }
+  ]
+},
 {path:'superadmin-dashboard',component:SuperAdminLayoutComponent},
 { path: 'attendance-list', component: AttendanceListComponent },
 { path: 'my-calendar', component: MyCalendarComponent },

@@ -5,146 +5,92 @@
   <h2 class="dashboard-title">Recruitment</h2>
   <nav class="breadcrumb">
     <a href="#">Home</a> &gt;
-
     <span>Recruitment</span>
   </nav>
 </div>
 
-<div class="">
-  <div class="tab-container my-4 recruitment-container">
-    <h2 class="text-center mb-3">Recruitment Process</h2>
+<div class="tab-container recruitment-container">
 
-    <!-- Top row: global filters + overall progress for selected candidate -->
-    <!-- <div class="row mb-3">
-    <div class="col-md-6 d-flex gap-2">
-      <input type="text" class="form-control" placeholder="Search candidate / tech..." [(ngModel)]="globalFilter">
-      <select class="form-select w-auto" [(ngModel)]="filterStage">
-        <option value="">All stages</option>
-        <option *ngFor="let t of tabs; let idx = index" [value]="idx+1">{{ t }}</option>
-      </select>
-      <button class="btn btn-outline-secondary" (click)="applyFilter()">Apply</button>
-      <button class="btn btn-outline-secondary" (click)="clearFilter()">Clear</button>
-    </div>
+  <div class="tab-header">
 
-    <div class="col-md-6">
-      <div class="d-flex align-items-center justify-content-end gap-3">
-        <div class="text-end">
-          <small class="text-muted">Selected Candidate</small>
-          <div><strong>{{ selectedCandidate?.name || '— none —' }}</strong></div>
-        </div>
-        <div style="min-width:260px;">
-          <div class="progress mb-1" style="height:12px;">
-            <div
-              class="progress-bar"
-              role="progressbar"
-              [style.width.%]="selectedCandidate ? calculateProgress(selectedCandidate) : 0"
-              [ngClass]="getProgressColor(selectedCandidate)">
-            </div>
-          </div>
-          <small class="text-muted">{{ selectedCandidate ? calculateProgress(selectedCandidate) + '%' : '0%' }}</small>
-        </div>
-      </div>
-    </div>
-  </div> -->
+    <button
+      *ngIf="canViewApplicationResumes"
+      type="button"
+      class="tab-label"
+      routerLink="/recruitment/application-resumes"
+      routerLinkActive="active">
+      Application Resume
+    </button>
 
-    <!-- Tabs header -->
-    <div class="card mb-3">
-      <div class="card-body p-2">
-        <div class="d-flex">
-           <button *ngIf="canViewApplicationResumes" class="btn flex-fill me-1" [class.btn-primary]="activeTab === 7"
-            [class.btn-outline-primary]="activeTab !== 7" (click)="setActiveTab(7)">
-            Application Resumes
-          </button>
-          <button *ngIf="canViewResume" class="btn flex-fill me-1" [class.btn-primary]="activeTab === 1"
-            [class.btn-outline-primary]="activeTab !== 1" (click)="setActiveTab(1)">
-            Resume Upload
-          </button>
+    <button
+      *ngIf="canViewResume"
+      type="button"
+      class="tab-label"
+      routerLink="/recruitment/resume-upload"
+      routerLinkActive="active">
+      Resume Upload
+    </button>
 
-          <button *ngIf="canViewScreening" class="btn flex-fill me-1" [class.btn-primary]="activeTab === 2"
-            [class.btn-outline-primary]="activeTab !== 2" (click)="setActiveTab(2)">
-            Screening
-          </button>
+    <button
+      *ngIf="canViewScreening"
+      type="button"
+      class="tab-label"
+      routerLink="/recruitment/screening"
+      routerLinkActive="active">
+      Screening
+    </button>
 
-          <button *ngIf="canViewInterviews" class="btn flex-fill me-1" [class.btn-primary]="activeTab === 3"
-            [class.btn-outline-primary]="activeTab !== 3" (click)="setActiveTab(3)">
-            Interview
-          </button>
+    <button
+      *ngIf="canViewInterviews"
+      type="button"
+      class="tab-label"
+      routerLink="/recruitment/interview"
+      routerLinkActive="active">
+      Interview
+    </button>
 
-          <button *ngIf="canViewAppointment" class="btn flex-fill me-1" [class.btn-primary]="activeTab === 4"
-            [class.btn-outline-primary]="activeTab !== 4" (click)="setActiveTab(4)">
-            Appointment
-          </button>
+    <button
+      *ngIf="canViewAppointment"
+      type="button"
+      class="tab-label"
+      routerLink="/recruitment/appointment"
+      routerLinkActive="active">
+      Appointment
+    </button>
 
-          <button *ngIf="canViewOffer" class="btn flex-fill me-1" [class.btn-primary]="activeTab === 5"
-            [class.btn-outline-primary]="activeTab !== 5" (click)="setActiveTab(5)">
-            Offer
-          </button>
+    <button
+      *ngIf="canViewOffer"
+      type="button"
+      class="tab-label"
+      routerLink="/recruitment/offer"
+      routerLinkActive="active">
+      Offer
+    </button>
 
-          <button *ngIf="canViewDocumentsVerification" class="btn flex-fill me-1" [class.btn-primary]="activeTab === 8"
-            [class.btn-outline-primary]="activeTab !== 8" (click)="setActiveTab(8)">
-            Documents Verification
-          </button>
+    <button
+      *ngIf="canViewDocumentsVerification"
+      type="button"
+      class="tab-label"
+      routerLink="/recruitment/documents-verification"
+      routerLinkActive="active">
+      Documents Verification
+    </button>
 
-          <button *ngIf="canViewOnboarding" class="btn flex-fill me-1" [class.btn-primary]="activeTab === 6"
-            [class.btn-outline-primary]="activeTab !== 6" (click)="setActiveTab(6)">
-            Onboarding
-          </button>
-         
-          <!-- class="btn flex-fill me-1"
-          [class.btn-primary]="activeTab === i+1"
-          [class.btn-outline-primary]="activeTab !== i+1"
-          (click)="setActiveTab(i+1)">
-          {{ t }} -->
+    <button
+      *ngIf="canViewOnboarding"
+      type="button"
+      class="tab-label"
+      routerLink="/recruitment/onboarding"
+      routerLinkActive="active">
+      Onboarding
+    </button>
 
-        </div>
-      </div>
-    </div>
-
-    <!-- main content area -->
-    <div class="card">
-      <div class="card-body">
-         <div *ngIf="activeTab === 7 && canViewApplicationResumes">
-          <app-application-resumes></app-application-resumes>
-        </div>
-
-
-        <!-- TAB 1: Resume Upload / Candidate Intake -->
-        <div *ngIf="activeTab === 1 && canViewResume">
-          <app-resume-upload></app-resume-upload>
-        </div>
-
-        <!-- TAB 2: Screening / Shortlisting -->
-        <div *ngIf="activeTab === 2 && canViewScreening">
-          <app-screening></app-screening>
-        </div>
-
-        <!-- TAB 3: Interview Process (dynamic rounds) -->
-        <div *ngIf="activeTab === 3 && canViewInterviews">
-          <app-interview></app-interview>
-        </div>
-
-        <!-- TAB 4: Offer Management -->
-        <div *ngIf="activeTab === 4 && canViewAppointment">
-          <app-appointment></app-appointment>
-        </div>
-
-        <!-- TAB 5: Onboarding -->
-        <div *ngIf="activeTab === 5 && canViewOffer">
-          <app-offer></app-offer>
-        </div>
-
-         <!-- TAB 8: Documents Verification -->
-         <div *ngIf="activeTab === 8 && canViewDocumentsVerification">
-          <app-documents-verification></app-documents-verification>
-         </div>
-
-        <div *ngIf="activeTab === 6 && canViewOnboarding">
-          <app-onboarding></app-onboarding>
-
-        </div>
-       
-      </div>
-    </div>
   </div>
+
+  <div class="tab-content">
+    <router-outlet></router-outlet>
+  </div>
+
 </div>
+
 <app-footer></app-footer>
