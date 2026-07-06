@@ -1,0 +1,236 @@
+
+    <form [formGroup]="reviewForm">
+
+      <!-- Employee Details -->
+      <div class="row mb-3">
+
+        <div class="col-md-4">
+          <label>Employee Code</label>
+          <input type="text" formControlName="employeeCode" class="form-control" readonly>
+        </div>
+
+        <div class="col-md-4">
+          <label>Employee Name</label>
+          <input type="text" formControlName="employeeName" class="form-control" readonly>
+        </div>
+
+        <div class="col-md-4">
+          <label>Designation</label>
+          <input type="text" formControlName="designation" class="form-control" readonly>
+        </div>
+
+      </div>
+
+      <div class="row mb-3">
+
+        <div class="col-md-4">
+          <label>Department</label>
+          <input formControlName="department" class="form-control" readonly>
+        </div>
+
+        <div class="col-md-4">
+          <label>Reporting Manager</label>
+          <input type="text" formControlName="reportingManagerName" class="form-control" readonly>
+        </div>
+
+        <div class="col-md-4">
+          <label>Performance Cycle</label>
+          <select formControlName="performanceCycle" class="form-control">
+            <option value="Monthly">Monthly</option>
+            <option value="Quarterly">Quarterly</option>
+            <option value="Half-Yearly">Half-Yearly</option>
+            <option value="Yearly">Yearly</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="row mb-3">
+
+        <div class="col-md-6">
+          <label>Project</label>
+          <input type="text" formControlName="departmentProject" class="form-control">
+        </div>
+
+        <div class="col-md-6">
+          <label>Appraisal Year</label>
+          <input type="text" formControlName="appraisalYear" class="form-control" readonly>
+        </div>
+
+      </div>
+
+      <div class="row mb-3">
+
+
+
+
+        <div class="col-md-4">
+          <label>Applicable Start Date</label>
+          <input type="date" formControlName="applicableStartDate" class="form-control">
+        </div>
+
+        <div class="col-md-4">
+          <label>Applicable End Date</label>
+          <input type="date" formControlName="applicableEndDate" class="form-control">
+        </div>
+
+      </div>
+
+      <div class="mb-3">
+        <label>Self Review Summary</label>
+        <textarea formControlName="selfReviewSummary" class="form-control" rows="3"></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">HR Email (CC)</label>
+        <input type="email" class="form-control" formControlName="hrEmail">
+      </div>
+
+      <!-- ================= KPI SECTION ================= -->
+
+      <h5 class="mt-4">KPI List</h5>
+
+      <table class="table table-bordered table-striped mt-2">
+        <thead class="table-light">
+          <tr>
+            <th>KPI Name</th>
+            <th>Weightage</th>
+            <th>Target</th>
+            <th>Achieved</th>
+            <th>Self Rating</th>
+            <th>Remarks</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody formArrayName="kpis">
+
+          <tr *ngFor="let kpi of kpis.controls; let i=index" [formGroupName]="i">
+
+            <td>
+              <input type="text" formControlName="kpiName" class="form-control">
+            </td>
+
+            <td>
+              <input type="number" formControlName="weightage" (keydown)="allowOnlyInteger($event)" class="form-control">
+            </td>
+
+            <td>
+              <input type="text" formControlName="target" class="form-control">
+            </td>
+
+            <td>
+              <input type="text" formControlName="achieved" class="form-control">
+            </td>
+
+            <td>
+              <input type="number" formControlName="selfRating" (keydown)="allowOnlyInteger($event)" class="form-control">
+            </td>
+
+            <td>
+              <input type="text" formControlName="remarks" class="form-control">
+            </td>
+
+            <td>
+              <button *ngIf="canDeleteEmployeeSubmission" type="button" class="btn btn-danger btn-sm" (click)="removeKpi(i)">
+                Remove
+              </button>
+            </td>
+
+          </tr>
+
+        </tbody>
+      </table>
+
+      <button *ngIf="canAddEmployeeSubmission" type="button" class="btn btn-info mb-3" (click)="addKpi()">
+        + Add KPI
+      </button>
+
+      <div class="mt-3" *ngIf="canAddEmployeeSubmission || canEditEmployeeSubmission">
+        <button type="button" class="btn btn-warning me-2" (click)="saveDraft()">
+          Save Draft
+        </button>
+
+        <button type="button" class="btn btn-success" (click)="submit()">
+          Submit
+        </button>
+      </div>
+
+    </form>
+    <hr class="mt-4 mb-4">
+
+<h4 class="mb-3">My Submitted Requests</h4>
+
+<div class="table-responsive">
+
+  <table class="table table-bordered table-striped">
+
+    <thead class="table-dark">
+
+      <tr>
+        <th>S.No</th>
+        <th>Project</th>
+        <th>Performance Cycle</th>
+        <th>Appraisal Year</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Status</th>
+        <th>Summary</th>
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let item of employeeSubmissions; let i = index">
+
+        <td>{{ i + 1 }}</td>
+
+        <td>{{ item.departmentProject }}</td>
+
+        <td>{{ item.performanceCycle }}</td>
+
+        <td>{{ item.appraisalYear }}</td>
+
+        <td>
+          {{ item.applicableStartDate | date:'dd-MM-yyyy' }}
+        </td>
+
+        <td>
+          {{ item.applicableEndDate | date:'dd-MM-yyyy' }}
+        </td>
+
+        <td>
+
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-warning': item.status == 'Draft',
+              'bg-success': item.status == 'Approved',
+              'bg-danger': item.status == 'Rejected',
+              'bg-primary': item.status == 'Submitted'
+            }">
+
+            {{ item.status }}
+
+          </span>
+
+        </td>
+
+        <td>{{ item.selfReviewSummary }}</td>
+
+      </tr>
+
+      <tr *ngIf="employeeSubmissions.length == 0">
+
+        <td colspan="8" class="text-center">
+          No Records Found
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
+

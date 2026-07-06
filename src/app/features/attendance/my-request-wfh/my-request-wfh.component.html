@@ -1,0 +1,114 @@
+
+    <!-- SUBMIT FORM -->
+    <div class="card p-4 shadow-sm mb-4">
+      <h5>Submit WFH / Remote Request</h5>
+
+      <form (ngSubmit)="submitWfhRequest()">
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label>From Date</label>
+            <input type="date"
+                   class="form-control"
+                   [(ngModel)]="wfhForm.fromDate"
+                   name="fromDate"
+                   required>
+          </div>
+
+          <div class="col-md-6">
+            <label>To Date</label>
+            <input type="date"
+                   class="form-control"
+                   [(ngModel)]="wfhForm.toDate"
+                   name="toDate"
+                   required>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label>Request Type</label>
+            <select class="form-select"
+                    [(ngModel)]="wfhForm.requestType"
+                    name="requestType"
+                    required>
+              <option value="">Select</option>
+              <option>Work from Home</option>
+              <option>Remote Work</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label>Upload Document</label>
+            <input type="file"
+                   class="form-control"
+                   accept=".pdf,.jpg,.png,.docx">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label>Reason / Remarks</label>
+          <textarea class="form-control"
+                    rows="3"
+                    [(ngModel)]="wfhForm.reason"
+                    name="reason"
+                    required></textarea>
+        </div>
+         <div class="mb-3">
+          <label class="form-label">HR Email (CC)</label>
+          <input type="email" class="form-control" [(ngModel)]="wfhForm.hrEmail" name="hrEmail">
+        </div>
+
+        <button *ngIf="canCreateMyRequest" type="submit" class="btn btn-primary">
+          Submit Request
+        </button>
+      </form>
+    </div>
+
+    <!-- MY REQUESTS LIST -->
+    <div class="card p-4 shadow-sm">
+      <h5>My Requests</h5>
+
+      <table class="table table-bordered table-hover mt-3">
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Type</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <!-- <th>Action</th> -->
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let req of myRequests">
+            <td>{{ req.fromDate | date }}</td>
+            <td>{{ req.toDate | date }}</td>
+            <td>{{ req.requestType }}</td>
+            <td>{{ req.reason }}</td>
+            <td>
+              <span class="badge"
+                [ngClass]="{
+                  'bg-warning text-dark': req.status === 'Pending',
+                  'bg-success': req.status === 'Approved',
+                  'bg-danger': req.status === 'Rejected'
+                }">
+                {{ req.status }}
+              </span>
+            </td>
+            <!-- <td>
+              <i class="fa-solid fa-eye text-primary"></i>
+            </td> -->
+          </tr>
+
+          <tr *ngIf="myRequests.length === 0">
+            <td colspan="6" class="text-center text-muted">
+              No requests found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+

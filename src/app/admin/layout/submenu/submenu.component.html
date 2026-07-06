@@ -1,34 +1,33 @@
 <nav class="submenu-nav" aria-label="submenu">
-  <div #container class="submenu-container">
+  <div #container class="submenu-container row">
 
-    <!-- Visible Submenus -->
-    <ng-container *ngFor="let sub of visibleSubmenus">
-      <div
-        class="submenu-item"
-        [class.active]="isActive(sub.route)"
-        (click)="selectSubmenu(sub.route)">
-        <i *ngIf="sub.icon" [class]="sub.icon + ' me-1'"></i>
-        <span class="submenu-title">{{ sub.title }}</span>
-      </div>
-    </ng-container>
+    <div
+      *ngFor="let sub of visibleSubmenus"
+      class="submenu-item col-md-2 col-sm-3 col-10"
+      [class.active]="isActive(sub.route) "
+      (click)="selectSubmenu(sub.route)">
 
-    <!-- More Dropdown -->
-    <div *ngIf="hiddenSubmenus.length" class="more-dropdown">
+      <i *ngIf="sub.icon" [class]="sub.icon + ' me-1'"></i>
+      <span>{{ sub.title }}</span>
+    </div>
+
+    <div class="more-dropdown col-md-2 col-sm-3 col-2" *ngIf="hiddenSubmenus.length > 0">
       <button
-        class="more-btn"  
-        (click)="toggleDropdown($event)"
-        aria-haspopup="true"
-        [attr.aria-expanded]="isDropdownOpen">
+        class="more-btn"
+        (click)="toggleDropdown($event)">
         More ▾
       </button>
 
-      <div class="dropdown-content"
-           [class.show]="isDropdownOpen"
-           (click)="stopProp($event)">
+      <div
+        class="dropdown-content"
+        [class.show]="isDropdownOpen"
+        (click)="stopProp($event)">
 
-        <div class="dropdown-item"
-             *ngFor="let sub of hiddenSubmenus"
-             (click)="selectSubmenu(sub.route)">
+        <div
+          class="dropdown-item"
+          *ngFor="let sub of hiddenSubmenus"
+          (click)="selectSubmenu(sub.route)">
+
           <i *ngIf="sub.icon" [class]="sub.icon + ' me-1'"></i>
           {{ sub.title }}
         </div>

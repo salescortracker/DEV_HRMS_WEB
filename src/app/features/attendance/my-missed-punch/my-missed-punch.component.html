@@ -1,0 +1,100 @@
+    <div class="card p-4 shadow-sm mb-4">
+      <h5 class="mb-3">
+        {{ isEditMode ? 'Update Missed Punch Request' : 'Submit Missed Punch Request' }}
+      </h5>
+
+      <form [formGroup]="missedPunchForm" (ngSubmit)="submitMissedPunch()">
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" formControlName="missedDate">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Missed Type <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="missedType">
+              <option value="">Select</option>
+              <option value="Missed Clock In">Missed Clock In</option>
+              <option value="Missed Clock Out">Missed Clock Out</option>
+              <option value="Both In & Out">Both In & Out</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Correct Clock In</label>
+            <input type="time" class="form-control" formControlName="correctClockIn">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Correct Clock Out</label>
+            <input type="time" class="form-control" formControlName="correctClockOut">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Reason <span class="text-danger">*</span></label>
+          <textarea rows="3" class="form-control" formControlName="reason"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">HR Email (CC)</label>
+          <input type="email" class="form-control" formControlName="hrEmail">
+        </div>
+
+        <button   *ngIf="(!isEditMode && canCreateMyRequest) ||
+         (isEditMode && canEditMyRequest)" class="btn btn-primary">
+          {{ isEditMode ? 'Update' : 'Submit' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- MY REQUESTS LIST -->
+    <div class="card p-4 shadow-sm">
+      <h5 class="mb-3">My Missed Punch Requests</h5>
+
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>In</th>
+            <th>Out</th>
+            <th>Reason</th>
+            <th>Manager Remarks</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of myRequests">
+            <td>{{ item.missedDate | date }}</td>
+            <td>{{ item.missedType }}</td>
+            <td>{{ item.correctClockIn }}</td>
+            <td>{{ item.correctClockOut }}</td>
+            <td>{{ item.reason }}</td>
+            <td>{{ item.managerRemarks }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                  'bg-warning text-dark': item.status === 'Pending',
+                  'bg-success': item.status === 'Approved',
+                  'bg-danger': item.status === 'Rejected'
+                }">
+                {{ item.status }}
+              </span>
+            </td>
+            <td>
+              <i class="fa fa-edit text-primary" (click)="editMissedPunch(item)" *ngIf="item.status === 'Pending' && canEditMyRequest"></i>
+            </td>
+          </tr>
+
+          <tr *ngIf="myRequests.length === 0">
+            <td colspan="7" class="text-center text-muted">No records found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
