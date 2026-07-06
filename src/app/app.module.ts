@@ -144,6 +144,13 @@ import { SuperadminUsersfulldetailsComponent } from './superAdmin/superadmin-use
 import { CandidateDocumentsComponent } from './features/recruitment/candidate-documents/candidate-documents.component';
 import { DocumentsVerificationComponent } from './features/recruitment/documents-verification/documents-verification.component';
 import { WorkAuthComponent } from './work-auth/work-auth.component';
+import { MyRequestWfhComponent } from './features/attendance/my-request-wfh/my-request-wfh.component';
+import { ManagerApprovalWfhComponent } from './features/attendance/manager-approval-wfh/manager-approval-wfh.component';
+import { MyMissedPunchComponent } from './features/attendance/my-missed-punch/my-missed-punch.component';
+import { ManagerMissedPunchComponent } from './features/attendance/manager-missed-punch/manager-missed-punch.component';
+import { EmployeeSubmissionComponent } from './features/performance/employee-submission/employee-submission.component';
+import { ManagerReviewComponent } from './features/performance/manager-review/manager-review.component';
+import { PerformanceReportsComponent } from './features/performance/performance-reports/performance-reports.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -278,6 +285,13 @@ import { WorkAuthComponent } from './work-auth/work-auth.component';
           TicketReportsComponent,
           SuperadminUsersfulldetailsComponent,
           WorkAuthComponent,
+          MyRequestWfhComponent,
+          ManagerApprovalWfhComponent,
+          MyMissedPunchComponent,
+          ManagerMissedPunchComponent,
+          EmployeeSubmissionComponent,
+          ManagerReviewComponent,
+          PerformanceReportsComponent,
           
           
           

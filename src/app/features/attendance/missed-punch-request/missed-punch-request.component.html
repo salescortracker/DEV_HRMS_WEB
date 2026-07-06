@@ -1,8 +1,10 @@
 <app-header></app-header>
 <app-sidebar></app-sidebar>
 
+<!-- PAGE HEADER -->
 <div class="dashboard-header">
   <h2 class="dashboard-title">Missed Punch Requests</h2>
+
   <nav class="breadcrumb">
     <a href="#">Home</a> &gt;
     <a href="#">Attendance</a> &gt;
@@ -12,253 +14,32 @@
 
 <div class="tab-container mt-4">
 
-  <!-- Tabs -->
-  <input type="radio" id="tab1" name="tab" [checked]="selectedTab === 'tab1'">
-  <input type="radio" id="tab2" name="tab" [checked]="selectedTab === 'tab2'">
-
   <div class="tab-header">
-    <label class="tab-label" for="tab1" *ngIf="canViewPersonal">My Requests</label>
-    <label class="tab-label" for="tab2" *ngIf="canViewManager">Manager Approval</label>
+
+    <button
+      *ngIf="canViewPersonal"
+      type="button"
+      class="tab-label"
+      routerLink="/missed-punch-request/my-request"
+      routerLinkActive="active">
+      My Requests
+    </button>
+
+    <button
+      *ngIf="canViewManager"
+      type="button"
+      class="tab-label"
+      routerLink="/missed-punch-request/manager-approval"
+      routerLinkActive="active">
+      Manager Approval
+    </button>
+
   </div>
 
-  <!-- ================= MY REQUESTS ================= -->
-  <div id="content1" class="tab-content">
-    <div class="card p-4 shadow-sm mb-4">
-      <h5 class="mb-3">
-        {{ isEditMode ? 'Update Missed Punch Request' : 'Submit Missed Punch Request' }}
-      </h5>
-
-      <form [formGroup]="missedPunchForm" (ngSubmit)="submitMissedPunch()">
-
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label class="form-label">Date <span class="text-danger">*</span></label>
-            <input type="date" class="form-control" formControlName="missedDate">
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Missed Type <span class="text-danger">*</span></label>
-            <select class="form-select" formControlName="missedType">
-              <option value="">Select</option>
-              <option value="Missed Clock In">Missed Clock In</option>
-              <option value="Missed Clock Out">Missed Clock Out</option>
-              <option value="Both In & Out">Both In & Out</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label class="form-label">Correct Clock In</label>
-            <input type="time" class="form-control" formControlName="correctClockIn">
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Correct Clock Out</label>
-            <input type="time" class="form-control" formControlName="correctClockOut">
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Reason <span class="text-danger">*</span></label>
-          <textarea rows="3" class="form-control" formControlName="reason"></textarea>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">HR Email (CC)</label>
-          <input type="email" class="form-control" formControlName="hrEmail">
-        </div>
-
-        <button   *ngIf="(!isEditMode && canCreateMyRequest) ||
-         (isEditMode && canEditMyRequest)" class="btn btn-primary">
-          {{ isEditMode ? 'Update' : 'Submit' }}
-        </button>
-      </form>
-    </div>
-
-    <!-- MY REQUESTS LIST -->
-    <div class="card p-4 shadow-sm">
-      <h5 class="mb-3">My Missed Punch Requests</h5>
-
-      <table class="table table-bordered table-hover">
-        <thead class="table-light">
-          <tr>
-            <th>Date</th>
-            <th>Type</th>
-            <th>In</th>
-            <th>Out</th>
-            <th>Reason</th>
-            <th>Manager Remarks</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let item of myRequests">
-            <td>{{ item.missedDate | date }}</td>
-            <td>{{ item.missedType }}</td>
-            <td>{{ item.correctClockIn }}</td>
-            <td>{{ item.correctClockOut }}</td>
-            <td>{{ item.reason }}</td>
-            <td>{{ item.managerRemarks }}</td>
-            <td>
-              <span class="badge" [ngClass]="{
-                  'bg-warning text-dark': item.status === 'Pending',
-                  'bg-success': item.status === 'Approved',
-                  'bg-danger': item.status === 'Rejected'
-                }">
-                {{ item.status }}
-              </span>
-            </td>
-            <td>
-              <i class="fa fa-edit text-primary" (click)="editMissedPunch(item)" *ngIf="item.status === 'Pending' && canEditMyRequest"></i>
-            </td>
-          </tr>
-
-          <tr *ngIf="myRequests.length === 0">
-            <td colspan="7" class="text-center text-muted">No records found</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="tab-content">
+    <router-outlet></router-outlet>
   </div>
 
-  <!-- ================= MANAGER APPROVAL ================= -->
-  <div id="content2" class="tab-content">
-    <div class="card p-4 shadow-sm">
-      <h5 class="mb-3">Pending Approvals</h5>
-
-      <table class="table table-bordered table-hover">
-        <thead class="table-light">
-          <tr>
-            <th>
-              <input type="checkbox" (change)="selectAll($event)">
-            </th>
-            <th>Employee</th>
-            <th>Date</th>
-            <th>Type</th>
-            <th>In</th>
-            <th>Out</th>
-            <th>Reason</th>
-            <th>Remarks</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let item of pendingRequests">
-            <td>
-              <input type="checkbox" [(ngModel)]="item.selected">
-            </td>
-            <td>{{ item.employeeName }}</td>
-            <td>{{ item.missedDate | date }}</td>
-            <td>{{ item.missedType }}</td>
-            <td>{{ item.correctClockIn }}</td>
-            <td>{{ item.correctClockOut }}</td>
-            <td>{{ item.reason }}</td>
-            <td>
-              <input class="form-control form-control-sm" [(ngModel)]="item.managerRemarks">
-            </td>
-            <td>
-              <button class="btn btn-sm btn-outline-success me-2" (click)="approve(item)">
-                <i class="fa fa-check"></i>
-              </button>
-
-              <button class="btn btn-sm btn-outline-danger" (click)="reject(item)">
-                <i class="fa fa-times"></i>
-              </button>
-            </td>
-          </tr>
-
-          <tr *ngIf="pendingRequests.length === 0">
-            <td colspan="9" class="text-center text-muted">
-              No pending approvals
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="text-end mt-3">
-        <button class="btn btn-success btn-sm me-2" (click)="bulkApproveReject('Approved')">
-          Approve Selected
-        </button>
-        <button class="btn btn-danger btn-sm" (click)="bulkApproveReject('Rejected')">
-          Reject Selected
-        </button>
-      </div>
-    </div>
-    <div class="card p-4 shadow-sm mt-4">
-  <h5 class="mb-3 text-success">Approved Requests</h5>
-
-  <table class="table table-bordered table-hover">
-    <thead class="table-light">
-      <tr>
-        <th>Employee</th>
-        <th>Date</th>
-        <th>Type</th>
-        <th>In</th>
-        <th>Out</th>
-        <th>Reason</th>
-        <th>Remarks</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr *ngFor="let item of approvedRequests">
-        <td>{{ item.employeeName }}</td>
-        <td>{{ item.missedDate | date }}</td>
-        <td>{{ item.missedType }}</td>
-        <td>{{ item.correctClockIn }}</td>
-        <td>{{ item.correctClockOut }}</td>
-        <td>{{ item.reason }}</td>
-        <td>{{ item.managerRemarks }}</td>
-        <td><span class="badge bg-success">Approved</span></td>
-      </tr>
-
-      <tr *ngIf="approvedRequests.length === 0">
-        <td colspan="8" class="text-center text-muted">No approved records</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<div class="card p-4 shadow-sm mt-4">
-  <h5 class="mb-3 text-danger">Rejected Requests</h5>
-
-  <table class="table table-bordered table-hover">
-    <thead class="table-light">
-      <tr>
-        <th>Employee</th>
-        <th>Date</th>
-        <th>Type</th>
-        <th>In</th>
-        <th>Out</th>
-        <th>Reason</th>
-        <th>Remarks</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr *ngFor="let item of rejectedRequests">
-        <td>{{ item.employeeName }}</td>
-        <td>{{ item.missedDate | date }}</td>
-        <td>{{ item.missedType }}</td>
-        <td>{{ item.correctClockIn }}</td>
-        <td>{{ item.correctClockOut }}</td>
-        <td>{{ item.reason }}</td>
-        <td>{{ item.managerRemarks }}</td>
-        <td><span class="badge bg-danger">Rejected</span></td>
-      </tr>
-
-      <tr *ngIf="rejectedRequests.length === 0">
-        <td colspan="8" class="text-center text-muted">No rejected records</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-  </div>
 </div>
 
 <app-footer></app-footer>

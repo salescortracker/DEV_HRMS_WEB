@@ -104,6 +104,14 @@ import { InterviewComponent } from './features/recruitment/interview/interview.c
 import { ScreeningComponent } from './features/recruitment/screening/screening.component';
 import { ResumeUploadComponent } from './features/recruitment/resume-upload/resume-upload.component';
 import { ApplicationResumesComponent } from './features/recruitment/application-resumes/application-resumes.component';
+import { MyRequestWfhComponent } from './features/attendance/my-request-wfh/my-request-wfh.component';
+import { ManagerApprovalWfhComponent } from './features/attendance/manager-approval-wfh/manager-approval-wfh.component';
+import { ManagerMissedPunchComponent } from './features/attendance/manager-missed-punch/manager-missed-punch.component';
+import { MyMissedPunchComponent } from './features/attendance/my-missed-punch/my-missed-punch.component';
+import { PerformanceReportsComponent } from './features/performance/performance-reports/performance-reports.component';
+import { ManagerReviewComponent } from './features/performance/manager-review/manager-review.component';
+import { EmployeeSubmissionComponent } from './features/performance/employee-submission/employee-submission.component';
+
 const routes: Routes = [
   { path: '', component: LoginComponent },
    { path: 'forgot-password', component: ForgotPasswordComponent },
@@ -241,8 +249,46 @@ const routes: Routes = [
 { path: 'daily-working-hours', component: DailyWorkingHoursComponent },
 { path: 'late-arrivals', component: LateArrivalsComponent },  
 { path: 'early-departures', component: EarlyDeparturesComponent },
-{ path: 'wfh-remote-request', component: WfoRemoteRequestComponent },
-{ path: 'missed-punch-request', component: MissedPunchRequestComponent },
+// { path: 'wfh-remote-request', component: WfoRemoteRequestComponent },
+{
+  path: 'wfh-remote-request',
+  component: WfoRemoteRequestComponent,
+  children: [
+    {
+      path: '',
+      redirectTo: 'my-requests',
+      pathMatch: 'full'
+    },
+    {
+      path: 'my-requests',
+      component: MyRequestWfhComponent
+    },
+    {
+      path: 'manager-approval',
+      component: ManagerApprovalWfhComponent
+    }
+  ]
+},
+// { path: 'missed-punch-request', component: MissedPunchRequestComponent },
+{
+  path: 'missed-punch-request',
+  component: MissedPunchRequestComponent,
+  children: [
+    {
+      path: '',
+      redirectTo: 'my-request',
+      pathMatch: 'full'
+    },
+    {
+      path: 'my-request',
+      component: MyMissedPunchComponent
+    },
+    {
+      path: 'manager-approval',
+      component: ManagerMissedPunchComponent
+    }
+  ]
+},
 { path: 'early-logout-request', component: EarlyLogoutRequestComponent },
 // { path: 'leave-management', component: LeaveManagementComponent },
 {
@@ -356,7 +402,30 @@ const routes: Routes = [
     }
   ]
 },
-{ path: 'kpi-performance', component: KpiPerformanceComponent },
+// { path: 'kpi-performance', component: KpiPerformanceComponent },
+{
+  path: 'kpi-performance',
+  component: KpiPerformanceComponent,
+  children: [
+    {
+      path: '',
+      redirectTo: 'employee-submission',
+      pathMatch: 'full'
+    },
+    {
+      path: 'employee-submission',
+      component: EmployeeSubmissionComponent
+    },
+    {
+      path: 'manager-review',
+      component: ManagerReviewComponent
+    },
+    {
+      path: 'performance-reports',
+      component: PerformanceReportsComponent
+    }
+  ]
+},
 // { path: 'help-desk', component: HelpDeskManagementComponent },
 {
   path: 'help-desk',
@@ -490,7 +559,7 @@ const routes: Routes = [
       component: OnboardingComponent
     }
   ]
-},
+}, 
 {path:'superadmin-dashboard',component:SuperAdminLayoutComponent},
 { path: 'attendance-list', component: AttendanceListComponent },
 { path: 'my-calendar', component: MyCalendarComponent },

@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { AttendanceService, CreateWorkFromHomeRequest, UpdateWorkFromHomeRequest, BulkApproveRejectWorkFromHome } from '../service/attendance.service';
 import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
 @Component({
-  selector: 'app-wfo-remote-request',
+  selector: 'app-my-request-wfh',
   standalone: false,
-  templateUrl: './wfo-remote-request.component.html',
-  styleUrl: './wfo-remote-request.component.css'
+  templateUrl: './my-request-wfh.component.html',
+  styleUrl: './my-request-wfh.component.css'
 })
-export class WfoRemoteRequestComponent {
+export class MyRequestWfhComponent {
+
   /* ========= SESSION DATA ========= */
   userId = Number(sessionStorage.getItem('UserId'));
   employeeName = sessionStorage.getItem('Name') || '';
@@ -43,20 +43,12 @@ rejectedRequests: any[] = [];
 
   selectedTab: string = '';
 
-  constructor(private attendanceService: AttendanceService,   private router: Router
-) { }
+  constructor(private attendanceService: AttendanceService) { }
 
   ngOnInit(): void {
     this.loadMyRequests();
-      this.loadPermissions();
-
-  if (this.canViewPersonal) {
-    this.router.navigate(['/attendance/wfh-remote-request/my-requests']);
-  }
-  else if (this.canViewManager) {
-    this.router.navigate(['/attendance/wfh-remote-request/manager-approval']);
-  }
     this.loadApprovalRequests();
+    this.loadPermissions();
   }
 
   /* ================= SUBMIT REQUEST ================= */
