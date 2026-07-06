@@ -1167,8 +1167,10 @@ getroles(userId: number): Observable<RoleMaster[]> {
   return mapPermissions(rootMenus);
 }
 bulkInsertData(entityName: string, data: any[]): Observable<any> {
+  debugger;
   const payload = {
     entityName,
+    loggedInUserId: Number(sessionStorage.getItem("UserId")),
     data
   };
   return this.http.post(`${this.baseUrl}/UserManagement/BulkInsert`, payload);
