@@ -214,6 +214,13 @@
 
             <!-- Submit Button -->
             <div class="col-md-12 text-end mt-3">
+               <button
+    type="button"
+    class="btn btn-danger me-2"
+    (click)="cancelForm()">
+    <i class="fa-solid fa-times me-2"></i>
+    Cancel
+  </button>
               <button type="submit" class="btn btn-dark px-4" [disabled]="!userForm.valid">
                 <i class="fa-solid fa-save me-2"></i>
                 {{ isEditMode ? 'Update User' : 'Create User' }}
