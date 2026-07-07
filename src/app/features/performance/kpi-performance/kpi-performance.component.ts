@@ -88,11 +88,15 @@ designationName: string = '';
 
   this.service.getEmployeeSubmissions(userId).subscribe({
   next: (res: any) => {
+    debugger;
     this.employeeSubmissions = res?.data || [];
     if (this.employeeSubmissions.length > 0) {
       this.reviewForm.patchValue({
-        designation: this.employeeSubmissions[0].designation || '',
-        department: this.employeeSubmissions[0].department || ''
+        // designation: this.employeeSubmissions[0].designation || '',
+        // department: this.employeeSubmissions[0].department || ''
+
+         designation: this.employeeSubmissions[0].designation || sessionStorage.getItem('DesignationName') || '',
+  department: this.employeeSubmissions[0].department || sessionStorage.getItem('DepartmentName') || ''
       });
 //       this.reviewForm.patchValue({
 //   designation: this.employeeSubmissions[0]?.designation 
