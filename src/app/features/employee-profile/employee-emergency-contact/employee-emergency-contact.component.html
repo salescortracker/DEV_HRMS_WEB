@@ -15,10 +15,23 @@
 
         <div class="form-group">
           <label class="required">Relationship <span class="required">*</span></label>
-          <select formControlName="relationshipId" required>
+          <!-- <select formControlName="relationshipId" required>
             <option value="">Select relationship</option>
             <option *ngFor="let r of relationList" [value]="r.relationshipId">{{ r.relationshipName }}</option>
-         </select>
+         </select> -->
+         <select formControlName="relationshipId" required>
+
+    <option [ngValue]="0">Select relationship</option>
+
+    <option
+        *ngFor="let r of relationList"
+        [ngValue]="r.relationshipId">
+
+        {{ r.relationshipName }}
+
+    </option>
+
+</select>
         </div>
 
         <div class="form-group">
