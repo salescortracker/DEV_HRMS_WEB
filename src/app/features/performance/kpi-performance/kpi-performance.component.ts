@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminService } from '../../../admin/servies/admin.service';
 import Swal from 'sweetalert2';
 import { KpiPerformanceService } from '../kpi-performance.service';
+import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-kpi-performance',
   standalone: false,
@@ -26,8 +27,19 @@ designationName: string = '';
   selectedTab: string = '';
   canViewManagerReviewHrReview =false;
   performanceReports: any[] = [];
-  
+  projects: any[] = [];
+  selectedDraftId: number = 0;
   employeeSubmissions: any[] = [];
+  isSubmittingSelected = false;
+
+  pageSizeOptions = [5, 10, 20,50, 100];
+
+  employeeSubmissionCurrentPage = 1;
+  employeeSubmissionPageSize = 5;
+  managerReviewCurrentPage = 1;
+  managerReviewPageSize = 5;
+  performanceReportCurrentPage = 1;
+  performanceReportPageSize = 5;
 
   constructor(
     private fb: FormBuilder,
@@ -60,9 +72,27 @@ designationName: string = '';
     
     this.initializeForm();
     this.patchUserValues();
+    this.loadProjects();
     this.loadManagerReviews();
     this.loadPerformanceReports();
     this.loadEmployeeSubmissions();
+  }
+
+  loadProjects() {
+    const companyId = Number(sessionStorage.getItem('CompanyId') || 0);
+    const regionId = Number(sessionStorage.getItem('RegionId') || 0);
+
+    if (!companyId || !regionId) return;
+
+    this.service.getProjectNames(companyId, regionId).subscribe({
+      next: (res: any) => {
+        // handle different response shapes
+        this.projects = res?.data || res || [];
+      },
+      error: () => {
+        this.projects = [];
+      }
+    });
   }
   loadEmployeeSubmissions() {
 
@@ -88,8 +118,9 @@ designationName: string = '';
 
   this.service.getEmployeeSubmissions(userId).subscribe({
   next: (res: any) => {
-    debugger;
     this.employeeSubmissions = res?.data || [];
+    this.employeeSubmissionCurrentPage = 1;
+    this.calculateEmployeeSubmissionPages();
     if (this.employeeSubmissions.length > 0) {
       this.reviewForm.patchValue({
         // designation: this.employeeSubmissions[0].designation || '',
@@ -231,15 +262,103 @@ allowOnlyInteger(event: KeyboardEvent) {
     this.kpis.removeAt(index);
   }
 
+  sortByLatestDate(items: any[]): any[] {
+    return [...items].sort((a, b) => {
+      const dateA = new Date(
+        a.createdDate || a.createdOn || a.updatedDate || a.updatedOn || a.applicableStartDate || a.applicableEndDate || a.appraisalYear || 0
+      ).getTime();
+      const dateB = new Date(
+        b.createdDate || b.createdOn || b.updatedDate || b.updatedOn || b.applicableStartDate || b.applicableEndDate || b.appraisalYear || 0
+      ).getTime();
+      return dateB - dateA;
+    });
+  }
+
+  get paginatedEmployeeSubmissions(): any[] {
+    const start = (this.employeeSubmissionCurrentPage - 1) * this.employeeSubmissionPageSize;
+    return this.employeeSubmissions.slice(start, start + this.employeeSubmissionPageSize);
+  }
+
+  get employeeSubmissionTotalPages(): number {
+    return Math.max(1, Math.ceil(this.employeeSubmissions.length / this.employeeSubmissionPageSize));
+  }
+
+  calculateEmployeeSubmissionPages(): void {
+    this.employeeSubmissionCurrentPage = 1;
+  }
+
+  changeEmployeeSubmissionPage(page: number): void {
+    if (page >= 1 && page <= this.employeeSubmissionTotalPages) {
+      this.employeeSubmissionCurrentPage = page;
+    }
+  }
+
+  changeEmployeeSubmissionPageSize(size: number): void {
+    this.employeeSubmissionPageSize = size;
+    this.employeeSubmissionCurrentPage = 1;
+  }
+
+  get paginatedManagerReviews(): any[] {
+    const start = (this.managerReviewCurrentPage - 1) * this.managerReviewPageSize;
+    return this.managerReviews.slice(start, start + this.managerReviewPageSize);
+  }
+
+  get managerReviewTotalPages(): number {
+    return Math.max(1, Math.ceil(this.managerReviews.length / this.managerReviewPageSize));
+  }
+
+  calculateManagerReviewPages(): void {
+    this.managerReviewCurrentPage = 1;
+  }
+
+  changeManagerReviewPage(page: number): void {
+    if (page >= 1 && page <= this.managerReviewTotalPages) {
+      this.managerReviewCurrentPage = page;
+    }
+  }
+
+  changeManagerReviewPageSize(size: number): void {
+    this.managerReviewPageSize = size;
+    this.managerReviewCurrentPage = 1;
+  }
+
+  get paginatedPerformanceReports(): any[] {
+    const start = (this.performanceReportCurrentPage - 1) * this.performanceReportPageSize;
+    return this.performanceReports.slice(start, start + this.performanceReportPageSize);
+  }
+
+  get performanceReportTotalPages(): number {
+    return Math.max(1, Math.ceil(this.performanceReports.length / this.performanceReportPageSize));
+  }
+
+  calculatePerformanceReportPages(): void {
+    this.performanceReportCurrentPage = 1;
+  }
+
+  changePerformanceReportPage(page: number): void {
+    if (page >= 1 && page <= this.performanceReportTotalPages) {
+      this.performanceReportCurrentPage = page;
+    }
+  }
+
+  changePerformanceReportPageSize(size: number): void {
+    this.performanceReportPageSize = size;
+    this.performanceReportCurrentPage = 1;
+  }
 
   submit() {
+    
+      this.reviewForm.patchValue({
+          id: this.selectedDraftId
+        });
 
     console.log(this.reviewForm.value);
 
     this.service.submit(this.reviewForm.value)
       .subscribe({
+        
         next: () => {
-
+debugger;
           Swal.fire({
             icon: 'success',
             title: 'Submitted Successfully',
@@ -302,7 +421,9 @@ allowOnlyInteger(event: KeyboardEvent) {
     this.service.getManagerReviews(loggedInUserId)
       .subscribe((res: any) => {
         console.log("API Response:", res);
-        this.managerReviews = res?.data || [];
+        this.managerReviews = this.sortByLatestDate(res?.data || []);
+        this.managerReviewCurrentPage = 1;
+        this.calculateManagerReviewPages();
       });
   }
 
@@ -501,7 +622,9 @@ loadPerformanceReports() {
 
         console.log("Performance Reports:", res);
 
-        this.performanceReports = res?.data || res || [];
+        this.performanceReports = this.sortByLatestDate(res?.data || res || []);
+        this.performanceReportCurrentPage = 1;
+        this.calculatePerformanceReportPages();
       },
       error: (err: any) => {
         console.log("Performance Reports Error:", err);
@@ -537,6 +660,68 @@ viewReport(item: any) {
 
     width: 700
   });
+
+}
+
+  submitSelectedDrafts() {
+    debugger;
+    const selected = this.employeeSubmissions.filter((x: any) => x.isSelected && x.status === 'Draft');
+
+    if (!selected || selected.length === 0) {
+      Swal.fire('Please select at least one draft to submit');
+      return;
+    }
+
+    Swal.fire({
+      title: `Submit ${selected.length} selected draft(s)?`,
+      showCancelButton: true,
+      confirmButtonText: 'Submit',
+      confirmButtonColor: '#28a745'
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      this.isSubmittingSelected = true;
+
+      const requests = selected.map((item: any) => this.service.submit(item));
+
+      forkJoin(requests).subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Submitted Successfully',
+            text: `${selected.length} draft(s) submitted.`,
+            confirmButtonColor: '#28a745'
+          });
+
+          this.isSubmittingSelected = false;
+          this.loadEmployeeSubmissions();
+        },
+        error: (err: any) => {
+          console.error(err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Submission Failed',
+            text: 'One or more submissions failed.'
+          });
+          this.isSubmittingSelected = false;
+          this.loadEmployeeSubmissions();
+        }
+      });
+    });
+  }
+
+  onDraftSelect(item: any) {
+
+  if (item.isSelected) {
+
+    this.selectedDraftId = item.id;
+
+    this.reviewForm.patchValue({
+      id: item.id
+    });
+
+    console.log("Selected Draft Id =", item.id);
+  }
 
 }
 }
