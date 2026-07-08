@@ -18,6 +18,10 @@ export class TaskreportComponent {
   reportTasks: any[] = [];
   allReportTasks: any[] = [];
 
+  pageSize = 5;
+  currentPage = 1;
+  pageSizeOptions = [5, 10, 20, 50, 100];
+
   selectedEmployee = '';
   selectedStatus = '';
   selectedPriority = '';
@@ -51,65 +55,88 @@ export class TaskreportComponent {
         console.log('Tasks:', res.data);
 
         this.allReportTasks = res.data || [];
-        this.reportTasks = [...this.allReportTasks];
+        this.updatePagedReportTasks();
 
       });
 
   }
+
+  private getFilteredReportTasks(): any[] {
+    return this.allReportTasks.filter(task => {
+      const employeeMatch =
+        !this.selectedEmployee ||
+        task.assignedTo === this.selectedEmployee;
+
+      const statusMatch =
+        !this.selectedStatus ||
+        task.statusId == this.selectedStatus;
+
+      const priorityMatch =
+        !this.selectedPriority ||
+        task.priorityId == this.selectedPriority;
+
+      let dateMatch = true;
+
+      if (this.fromDate) {
+        dateMatch =
+          dateMatch &&
+          new Date(task.startDate) >=
+          new Date(this.fromDate);
+      }
+
+      if (this.toDate) {
+        dateMatch =
+          dateMatch &&
+          new Date(task.dueDate) <=
+          new Date(this.toDate);
+      }
+
+      return (
+        employeeMatch &&
+        statusMatch &&
+        priorityMatch &&
+        dateMatch
+      );
+    });
+  }
+
+  private updatePagedReportTasks(): void {
+    const filtered = this.getFilteredReportTasks();
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    this.reportTasks = filtered.slice(startIndex, startIndex + this.pageSize);
+  }
+
   searchReport() {
-
-    this.reportTasks =
-      this.allReportTasks.filter(task => {
-
-        const employeeMatch =
-          !this.selectedEmployee ||
-          task.assignedTo === this.selectedEmployee;
-
-        const statusMatch =
-          !this.selectedStatus ||
-          task.statusId == this.selectedStatus;
-
-        const priorityMatch =
-          !this.selectedPriority ||
-          task.priorityId == this.selectedPriority;
-
-        let dateMatch = true;
-
-        if (this.fromDate) {
-          dateMatch =
-            dateMatch &&
-            new Date(task.startDate) >=
-            new Date(this.fromDate);
-        }
-
-        if (this.toDate) {
-          dateMatch =
-            dateMatch &&
-            new Date(task.dueDate) <=
-            new Date(this.toDate);
-        }
-
-        return (
-          employeeMatch &&
-          statusMatch &&
-          priorityMatch &&
-          dateMatch
-        );
-
-      });
-
+    this.currentPage = 1;
+    this.updatePagedReportTasks();
   }
-  clearFilters() {
 
+  clearFilters() {
     this.selectedEmployee = '';
     this.selectedStatus = '';
     this.selectedPriority = '';
     this.fromDate = '';
     this.toDate = '';
+    this.currentPage = 1;
+    this.updatePagedReportTasks();
+  }
 
-    this.reportTasks =
-      [...this.allReportTasks];
+  get totalPages(): number {
+    const totalRecords = this.getFilteredReportTasks().length;
+    return Math.ceil(totalRecords / this.pageSize) || 1;
+  }
 
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagedReportTasks();
+    }
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.updatePagedReportTasks();
   }
   // Dropdown Data
   employees: any[] = [];
@@ -192,7 +219,7 @@ export class TaskreportComponent {
 
   exportToExcel(): void {
 
-    const data = this.reportTasks.map((task: any) => ({
+    const data = this.getFilteredReportTasks().map((task: any) => ({
       'Task Name': task.taskName || '',
       'Project': this.getProjectName(task.projectId),
       'Assigned To': task.assignedTo || '',
@@ -309,7 +336,7 @@ export class TaskreportComponent {
 
     /* ================= TABLE ================= */
 
-    const rows = this.reportTasks.map((task: any) => [
+    const rows = this.getFilteredReportTasks().map((task: any) => [
 
       task.taskName || '',
       this.getProjectName(task.projectId),
