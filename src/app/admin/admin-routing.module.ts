@@ -81,10 +81,13 @@ import { TaskStatusComponent } from './pages/master/task-status/task-status.comp
 import { CountryComponent } from './pages/master/country/country.component';
 import { EventtypeComponent } from './pages/eventtype/eventtype.component';
 import { WorkAuthComponent } from '../work-auth/work-auth.component';
+import { SubscriptionComponent } from './subscription/subscription.component';
+import { authGuard } from '../auth.guard';
 const routes: Routes = [
   {
     path: '',
-    component: AdminLayoutComponent,  // Layout wraps all admin pages
+    component: AdminLayoutComponent,
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: AdminDashboardComponent },
@@ -171,7 +174,8 @@ const routes: Routes = [
       {path:'Event-type',component:EventtypeComponent},
       {path: 'work-auth', component: WorkAuthComponent  }
     ]
-  }
+  },
+  {path: 'subscription', component: SubscriptionComponent},
 ];
 
 @NgModule({

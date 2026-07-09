@@ -144,6 +144,9 @@ import { SuperadminUsersfulldetailsComponent } from './superAdmin/superadmin-use
 import { CandidateDocumentsComponent } from './features/recruitment/candidate-documents/candidate-documents.component';
 import { DocumentsVerificationComponent } from './features/recruitment/documents-verification/documents-verification.component';
 import { WorkAuthComponent } from './work-auth/work-auth.component';
+import { SubscriptionComponent } from './admin/subscription/subscription.component';
+import { SuperAdminMenumasterComponent } from './superAdmin/super-admin-menumaster/super-admin-menumaster.component';
+import { SuperAdminRolesPermissionsComponent } from './superAdmin/super-admin-roles-permissions/super-admin-roles-permissions.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -278,6 +281,9 @@ import { WorkAuthComponent } from './work-auth/work-auth.component';
           TicketReportsComponent,
           SuperadminUsersfulldetailsComponent,
           WorkAuthComponent,
+          SubscriptionComponent,
+          SuperAdminMenumasterComponent,
+          SuperAdminRolesPermissionsComponent,
           
           
           
