@@ -278,3 +278,20 @@
 .file-link:hover {
   background: #e9ecef;
 }
+
+.custom-red-btn {
+  background-color: #b02828;
+  border-color: #b02828;
+  color: #fff;
+}
+
+.custom-red-btn:hover {
+  background-color: #8e0000;
+  border-color: #8e0000;
+  color: #fff;
+}
+
+.custom-red-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

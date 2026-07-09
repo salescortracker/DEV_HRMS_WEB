@@ -18,8 +18,35 @@
   background-color: #8e0000;
   border-color: #8e0000;
 }
+.custom-header {
+  background-color: #b02828;
+  border-color: #b02828;
+}
 
+.custom-btn {
+  background-color: #b02828;
+  border-color: #b02828;
+  color: #fff;
+}
+
+.custom-btn:hover {
+  background-color: #981f1f;
+  border-color: #981f1f;
+  color: #fff;
+}
+
+.custom-btn:focus,
+.custom-btn:active {
+  background-color: #981f1f !important;
+  border-color: #981f1f !important;
+  box-shadow: 0 0 0 0.2rem rgba(176, 40, 40, 0.25);
+}
 .table-dark {
-  background-color: #343a40 !important;
+  background-color: #b02828 !important;
   color: white;
+}
+
+.custom-red-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
