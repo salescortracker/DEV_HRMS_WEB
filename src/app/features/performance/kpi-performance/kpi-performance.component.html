@@ -76,7 +76,12 @@
 
         <div class="col-md-6">
           <label>Project</label>
-          <input type="text" formControlName="departmentProject" class="form-control">
+          <select formControlName="departmentProject" class="form-control">
+            <option value="">Select Project</option>
+            <option *ngFor="let p of projects" [value]="p.projectName || p.projectMasterName || p.projectMasterId">
+              {{ p.projectName || p.projectMasterName || p.projectNameEnglish || p.projectMasterId }}
+            </option>
+          </select>
         </div>
 
         <div class="col-md-6">
@@ -189,11 +194,20 @@
 
 <div class="table-responsive">
 
+  <div class="row mb-2">
+    <div class="col text-end">
+      <button class="btn btn-primary me-2" (click)="submitSelectedDrafts()" [disabled]="isSubmittingSelected">
+        Submit Selected
+      </button>
+    </div>
+  </div>
+
   <table class="table table-bordered table-striped">
 
     <thead class="table-dark">
 
       <tr>
+        <th>Select</th>
         <th>S.No</th>
         <th>Project</th>
         <th>Performance Cycle</th>
@@ -208,9 +222,17 @@
 
     <tbody>
 
-      <tr *ngFor="let item of employeeSubmissions; let i = index">
+      <tr *ngFor="let item of paginatedEmployeeSubmissions; let i = index">
 
-        <td>{{ i + 1 }}</td>
+        <td>
+           <input
+            type="checkbox"
+            [(ngModel)]="item.isSelected"
+            [disabled]="item.status !== 'Draft'"
+            (change)="onDraftSelect(item)">
+        </td>
+
+        <td>{{ ((employeeSubmissionCurrentPage - 1) * employeeSubmissionPageSize) + i + 1 }}</td>
 
         <td>{{ item.departmentProject }}</td>
 
@@ -249,7 +271,7 @@
 
       <tr *ngIf="employeeSubmissions.length == 0">
 
-        <td colspan="8" class="text-center">
+        <td colspan="9" class="text-center">
           No Records Found
         </td>
 
@@ -258,6 +280,30 @@
     </tbody>
 
   </table>
+
+  <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+    <div>
+      Show
+      <select class="form-select d-inline w-auto ms-2" [(ngModel)]="employeeSubmissionPageSize" (change)="changeEmployeeSubmissionPageSize(employeeSubmissionPageSize)">
+        <option *ngFor="let s of pageSizeOptions" [value]="s">{{ s }}</option>
+      </select>
+      entries
+    </div>
+
+    <div>
+      <button class="btn btn-outline-secondary btn-sm me-2" (click)="changeEmployeeSubmissionPage(employeeSubmissionCurrentPage - 1)" [disabled]="employeeSubmissionCurrentPage === 1">
+        Prev
+      </button>
+
+      <span class="fw-semibold">
+        Page {{ employeeSubmissionCurrentPage }} of {{ employeeSubmissionTotalPages }}
+      </span>
+
+      <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changeEmployeeSubmissionPage(employeeSubmissionCurrentPage + 1)" [disabled]="employeeSubmissionCurrentPage === employeeSubmissionTotalPages">
+        Next
+      </button>
+    </div>
+  </div>
 
 </div>
 
@@ -298,7 +344,7 @@
 
       <tbody>
 
-        <tr *ngFor="let review of managerReviews">
+        <tr *ngFor="let review of paginatedManagerReviews; let i = index">
 
           <!-- ✅ Checkbox -->
           <td>
@@ -306,7 +352,7 @@
               [disabled]="review.status === 'Approved' || review.status === 'Rejected'">
           </td>
 
-          <td>{{review.employeeName}}</td>
+          <td>{{ ((managerReviewCurrentPage - 1) * managerReviewPageSize) + i + 1 }}. {{review.employeeName}}</td>
           <td>{{review.departmentProject}}</td>
           <td>{{review.appraisalYear}}</td>
           <td>
@@ -353,6 +399,30 @@
 
     </table>
 
+    <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+      <div>
+        Show
+        <select class="form-select d-inline w-auto ms-2" [(ngModel)]="managerReviewPageSize" (change)="changeManagerReviewPageSize(managerReviewPageSize)">
+          <option *ngFor="let s of pageSizeOptions" [value]="s">{{ s }}</option>
+        </select>
+        entries
+      </div>
+
+      <div>
+        <button class="btn btn-outline-secondary btn-sm me-2" (click)="changeManagerReviewPage(managerReviewCurrentPage - 1)" [disabled]="managerReviewCurrentPage === 1">
+          Prev
+        </button>
+
+        <span class="fw-semibold">
+          Page {{ managerReviewCurrentPage }} of {{ managerReviewTotalPages }}
+        </span>
+
+        <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changeManagerReviewPage(managerReviewCurrentPage + 1)" [disabled]="managerReviewCurrentPage === managerReviewTotalPages">
+          Next
+        </button>
+      </div>
+    </div>
+
   </div>
 
   <!-----==================Manager HR View====================== ----->
@@ -376,8 +446,8 @@
 
         <tbody>
 
-         <tr *ngFor="let item of performanceReports">
-<td>{{item.employeeName}}</td>
+         <tr *ngFor="let item of paginatedPerformanceReports; let i = index">
+<td>{{ ((performanceReportCurrentPage - 1) * performanceReportPageSize) + i + 1 }}. {{item.employeeName}}</td>
 <td>{{item.department}}</td>
 <td>{{item.departmentProject}}</td>
 <td>{{item.appraisalYear}}</td>
@@ -405,6 +475,30 @@
         </tbody>
 
       </table>
+
+      <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+        <div>
+          Show
+          <select class="form-select d-inline w-auto ms-2" [(ngModel)]="performanceReportPageSize" (change)="changePerformanceReportPageSize(performanceReportPageSize)">
+            <option *ngFor="let s of pageSizeOptions" [value]="s">{{ s }}</option>
+          </select>
+          entries
+        </div>
+
+        <div>
+          <button class="btn btn-outline-secondary btn-sm me-2" (click)="changePerformanceReportPage(performanceReportCurrentPage - 1)" [disabled]="performanceReportCurrentPage === 1">
+            Prev
+          </button>
+
+          <span class="fw-semibold">
+            Page {{ performanceReportCurrentPage }} of {{ performanceReportTotalPages }}
+          </span>
+
+          <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changePerformanceReportPage(performanceReportCurrentPage + 1)" [disabled]="performanceReportCurrentPage === performanceReportTotalPages">
+            Next
+          </button>
+        </div>
+      </div>
 
     </div>
 

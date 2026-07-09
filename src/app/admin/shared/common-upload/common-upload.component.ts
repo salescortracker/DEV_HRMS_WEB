@@ -59,8 +59,11 @@ export class CommonUploadComponent {
       const sheet = workbook.Sheets[sheetName];
       this.fileData = XLSX.utils.sheet_to_json(sheet, {
   raw: false,
-  dateNF: 'dd-mm-yyyy'
+  dateNF: 'dd-mm-yyyy' 
 });
+this.fileData = this.fileData.filter((row: any) =>
+  Object.values(row).some(value => String(value ?? '').trim() !== '')
+);
       console.log('Excel Data:', this.fileData);
     };
     reader.readAsArrayBuffer(file);

@@ -170,6 +170,24 @@ export interface EmployeeEducationDto {
   result: string;
   certificateFilePath?: string;
 }
+export interface MenuMaster {
+  menuID: number;
+  menuName: string;
+  parentMenuID?: number|null;
+  url?: string;
+  icon?: string;
+  orderNo?: number;
+  isActive: boolean | number;
+  canView?: boolean;
+  canAdd?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  canApprove?: boolean;
+  CreatedBy?: string;
+  CreatedDate?: Date;
+  ModifiedBy?: string;
+  ModifiedAt?: Date;
+}
 export interface EmployeeCertificationDto {
   certificationId: number;
   companyId: number;
@@ -1167,8 +1185,10 @@ getroles(userId: number): Observable<RoleMaster[]> {
   return mapPermissions(rootMenus);
 }
 bulkInsertData(entityName: string, data: any[]): Observable<any> {
+  debugger;
   const payload = {
     entityName,
+    loggedInUserId: Number(sessionStorage.getItem("UserId")),
     data
   };
   return this.http.post(`${this.baseUrl}/UserManagement/BulkInsert`, payload);
@@ -3232,6 +3252,69 @@ getManagerEmployees(loginUserId: number) {
 getTodayNotifications(companyId: number, regionId: number): Observable<any[]> {
   return this.http.get<any[]>(
     `${this.baseUrl}/Employee/GetTodayNotifications?companyId=${companyId}&regionId=${regionId}`
+  );
+}
+getUserSubscription(userId: number) {
+  return this.http.get(`${this.baseUrl}/SubscriptionPlan/GetUserSubscription?userId=${userId}`);
+}
+subscribePlan(userId: number, planId: number) {
+  return this.http.post(`${this.baseUrl}/SubscriptionPlan/SubscribePlan`, {
+    userId,
+    planId
+  });
+}
+activateSubscription(payload: any) {
+  return this.http.post(
+    `${this.baseUrl}/SubscriptionPlan/activateSubscription`,
+    payload
+  );
+}
+createOrder(payload: any) {
+  return this.http.post(
+    `${this.baseUrl}/SubscriptionPlan/CreateOrder`,
+    payload
+  );
+}
+getSuperAdminMenus() {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/AdminMenuMaster/GetAllMenus`
+  );
+}
+
+createSuperAdminMenu(model: any) {
+  return this.http.post(
+    `${this.baseUrl}/AdminMenuMaster/CreateMenu`,
+    model
+  );
+}
+
+updateSuperAdminMenu(id: number, model: any) {
+  return this.http.post(
+    `${this.baseUrl}/AdminMenuMaster/UpdateMenu/${id}`,
+    model
+  );
+}
+
+deleteSuperAdminMenu(id: number) {
+  return this.http.post(
+    `${this.baseUrl}/AdminMenuMaster/DeleteMenu/${id}`,
+    {}
+  );
+}
+getAdmins() {
+  return this.http.get<any[]>(`${this.baseUrl}/UserManagement/GetAdmins`);
+}
+getCompaniesByAdmin(adminId: number) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/UserManagement/get-companies-by-admin/${adminId}`
+  );
+}
+getRolesByRegion(regionId: number) {
+  return this.getAll(`MasterData/GetRolesByRegion?regionId=${regionId}`);
+}
+getInvoiceByUser(userId: number) {
+  return this.http.get<any>(
+    `${this.baseUrl}/SubscriptionPlan/GetInvoiceByUser?userId=${userId}`
   );
 }
 }

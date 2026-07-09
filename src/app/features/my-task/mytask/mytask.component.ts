@@ -99,22 +99,7 @@ pageSizeOptions = [5, 10, 20, 50, 100];
   // ✅ INLINE STATUS UPDATE
  updateStatus(task: any) {
 
-  const formData = new FormData();
-
-  formData.append('TaskId', task.taskId);
-  formData.append('TaskName', task.taskName || '');
-  formData.append('ProjectId', task.projectId || '');
-  formData.append('AssignedTo', task.assignedTo || '');
-  formData.append('PriorityId', task.priorityId || '');
-  formData.append('StatusId', task.statusId || '');
-  formData.append('StartDate', task.startDate || '');
-  formData.append('DueDate', task.dueDate || '');
-  formData.append('Comment', task.comment || '');
-
-  // ✅ ADD THIS (important for consistency)
-  formData.append('UserId', this.userId.toString());
-  formData.append('CompanyId', this.companyId.toString());
-  formData.append('RegionId', this.regionId.toString());
+  const formData = this.buildTaskFormData(task);
 
   this.taskService.updateTask(formData).subscribe({
     next: () => {
@@ -147,12 +132,31 @@ pageSizeOptions = [5, 10, 20, 50, 100];
     this.showModal = false;
   }
 
+  buildTaskFormData(task: any): FormData {
+    const formData = new FormData();
+
+    formData.append('TaskId', task.taskId ?? task.TaskId ?? '');
+    formData.append('TaskName', task.taskName || task.TaskName || '');
+    formData.append('ProjectId', task.projectId ?? task.ProjectId ?? '');
+    formData.append('AssignedTo', task.assignedTo || task.AssignedTo || '');
+    formData.append('PriorityId', task.priorityId ?? task.PriorityId ?? '');
+    formData.append('StatusId', task.statusId ?? task.StatusId ?? '');
+    formData.append('StartDate', task.startDate || task.StartDate || '');
+    formData.append('DueDate', task.dueDate || task.DueDate || '');
+    formData.append('Comment', task.comment || task.Comment || '');
+
+    formData.append('UserId', this.userId.toString());
+    formData.append('CompanyId', this.companyId.toString());
+    formData.append('RegionId', this.regionId.toString());
+
+    return formData;
+  }
+
   // ✅ SAVE FROM MODAL
   saveTask() {
+    const formData = this.buildTaskFormData(this.selectedTask);
 
-    this.selectedTask.userId = this.userId;
-
-    this.taskService.updateTask(this.selectedTask).subscribe({
+    this.taskService.updateTask(formData).subscribe({
       next: () => {
         Swal.fire('Updated!', 'Task updated successfully', 'success');
         this.loadTasks();

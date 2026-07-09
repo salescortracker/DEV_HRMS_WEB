@@ -1,5 +1,6 @@
 import { Component,OnInit } from '@angular/core';
 import { AdminService } from '../../admin/servies/admin.service';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-subscription-plans',
   standalone: false,
@@ -61,17 +62,20 @@ this.showModal=false;
 
 }
 
-deletePlan(id:any){
-
-if(confirm("Delete plan?")){
-
-this.adminService.deletePlan(id)
-.subscribe(()=>{
-this.loadPlans();
-});
-
-}
-
+deletePlan(id: number) {
+  this.adminService.deletePlan(id).subscribe({
+    next: () => {
+      Swal.fire('Success', 'Plan deleted successfully.', 'success');
+      this.loadPlans();
+    },
+    error: (err) => {
+      Swal.fire(
+        'Warning',
+        err.error?.message || 'Unable to delete plan.',
+        'warning'
+      );
+    }
+  });
 }
 collapsed=false;
 submenus:any[]=[];

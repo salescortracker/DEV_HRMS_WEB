@@ -190,7 +190,7 @@
   <div>
 
     <button
-      class="btn btn-outline-secondary btn-sm me-2"
+      class="btn btn-sm custom-red-btn me-2"
       (click)="changePage(currentPage - 1)"
       [disabled]="currentPage === 1">
 
@@ -203,7 +203,7 @@
     </span>
 
     <button
-      class="btn btn-outline-secondary btn-sm ms-2"
+      class="btn btn-sm custom-red-btn ms-2"
       (click)="changePage(currentPage + 1)"
       [disabled]="currentPage === totalPages">
 
@@ -223,7 +223,8 @@
       <div class="modal-dialog">
         <div class="modal-content">
 
-          <div class="modal-header bg-primary text-white">
+          <div class="modal-header text-white"
+              style="background-color:#b02828; border-color:#b02828;">
             <h5>Edit Task</h5>
             <button class="btn-close btn-close-white" (click)="closeModal()"></button>
           </div>
@@ -269,8 +270,8 @@
           </div>
 
           <div class="modal-footer">
-            <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-            <button class="btn btn-primary" (click)="saveTask()">Update</button>
+            <button class="btn btn-secondary"  (click)="closeModal()">Cancel</button>
+            <button class="btn btn-primary" style="background-color:#b02828; border-color:#b02828;" (click)="saveTask()">Update</button>
           </div>
 
         </div>

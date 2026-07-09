@@ -74,7 +74,7 @@
       </div>
 
       <div class="col-md-3 d-flex align-items-end">
-        <button class="btn btn-secondary w-100" (click)="clearFilters()">
+        <button class="btn custom-red-btn w-100" (click)="clearFilters()">
           Clear Filters
         </button>
       </div>
@@ -101,7 +101,7 @@
 
       <tbody>
         <tr *ngFor="let task of reportTasks; let i=index">
-          <td>{{i+1}}</td>
+          <td>{{ ((currentPage - 1) * pageSize) + i + 1 }}</td>
           <td>{{task.taskName}}</td>
           <td>{{getProjectName(task.projectId)}}</td>
           <td>{{task.assignedTo}}</td>
@@ -130,6 +130,26 @@
       </tbody>
 
     </table>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div>
+      <label class="me-2">Show:</label>
+      <select class="form-select d-inline w-auto" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+      </select>
+      <span class="ms-2">entries</span>
+    </div>
+
+    <div>
+      <button class="btn btn-sm custom-red-btn me-2" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+        Previous
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button class="btn btn-sm custom-red-btn ms-2" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
   </div>
 
 </div>

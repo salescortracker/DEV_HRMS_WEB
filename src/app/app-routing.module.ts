@@ -104,6 +104,8 @@ import { InterviewComponent } from './features/recruitment/interview/interview.c
 import { ScreeningComponent } from './features/recruitment/screening/screening.component';
 import { ResumeUploadComponent } from './features/recruitment/resume-upload/resume-upload.component';
 import { ApplicationResumesComponent } from './features/recruitment/application-resumes/application-resumes.component';
+import { SuperAdminMenumasterComponent } from './superAdmin/super-admin-menumaster/super-admin-menumaster.component';
+import { SuperAdminRolesPermissionsComponent } from './superAdmin/super-admin-roles-permissions/super-admin-roles-permissions.component';
 const routes: Routes = [
   { path: '', component: LoginComponent },
    { path: 'forgot-password', component: ForgotPasswordComponent },
@@ -502,7 +504,8 @@ const routes: Routes = [
 { path: 'empdashboard', component: EmployeeDashboardComponent },
 { path: 'demo-users', component: SuperAdminDemousersComponent },
 { path: 'subscription-plans', component: SubscriptionPlansComponent },
-  
+{ path: 'super-admin-menumaster', component: SuperAdminMenumasterComponent},
+{ path: 'super-admin-roles', component: SuperAdminRolesPermissionsComponent},  
   {path: 'timesheet-Report', component:TimesheetReportComponent},
   {
     path: 'admin',
