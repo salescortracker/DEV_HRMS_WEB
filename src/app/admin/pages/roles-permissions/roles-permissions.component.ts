@@ -339,12 +339,12 @@ next: () => {
   this.selectedRegionId = 0;
   this.filteredRoles = [];
 },
-    error: () => {
+    error: (err) => {
       Swal.fire(
-        'Error',
-        `Failed to ${this.isEditMode ? 'update' : 'create'} role.`,
-        'error'
-      );
+    'Role already exists!',
+    err.error.message,
+    'warning'
+  );
     }
   });
 }
