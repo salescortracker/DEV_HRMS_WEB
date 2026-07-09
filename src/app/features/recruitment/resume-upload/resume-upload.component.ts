@@ -870,33 +870,67 @@ getResumeUrl(fileName: string): string {
       }
     });
   }
-  removeCandidate(c: any) {
+  // removeCandidate(c: any) {
 
-    Swal.fire({
-      title: 'Delete candidate?',
-      text: 'This will permanently remove the candidate',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'Yes, Delete'
-    }).then(result => {
+  //   Swal.fire({
+  //     title: 'Delete candidate?',
+  //     text: 'This will permanently remove the candidate',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#d33',
+  //     confirmButtonText: 'Yes, Delete'
+  //   }).then(result => {
 
-      if (result.isConfirmed) {
-        this.recruitmentService
-          .deleteCandidate(c.candidateId)
-          .subscribe({
-            next: () => {
-              Swal.fire('Deleted', 'Candidate removed successfully', 'success');
-              this.loadAllData();
-            },
-            error: () => Swal.fire('Error', 'Delete failed', 'error')
-          });
-      }
+  //     if (result.isConfirmed) {
+  //       this.recruitmentService
+  //         .deleteCandidate(c.candidateId)
+  //         .subscribe({
+  //           next: () => {
+  //             Swal.fire('Deleted', 'Candidate removed successfully', 'success');
+  //             this.loadAllData();
+  //           },
+  //           error: () => Swal.fire('Error', 'Delete failed', 'error')
+  //         });
+  //     }
 
-    });
-  }
+  //   });
+  // }
 
+removeCandidate(c: any) {
 
+  Swal.fire({
+    title: 'Reject candidate?',
+    text: 'Candidate will be moved to Rejected stage.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Yes, Reject'
+  }).then(result => {
+
+    if (result.isConfirmed) {
+
+      this.recruitmentService
+        .rejectCandidate(c.candidateId)   // <-- New API
+        .subscribe({
+          next: () => {
+
+            Swal.fire('Success', 'Candidate rejected successfully', 'success');
+
+            this.loadAllData();
+
+          },
+          error: () => {
+
+            Swal.fire('Error', 'Failed to reject candidate', 'error');
+
+          }
+        });
+
+    }
+
+  });
+
+}
 
   viewCandidates() {
     return this.candidates || [];

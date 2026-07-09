@@ -562,15 +562,21 @@
             [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)">
             Shortlist
           </button>
-          <button *ngIf="canDeleteResumeUpload" class="btn btn-sm btn-outline-danger"
-            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)"
-            (click)="removeCandidate(c)">
-            Delete
-          </button>
+         
           <button *ngIf="canEditResumeUpload" class="btn btn-sm btn-outline-primary me-1"
             [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)"
             (click)="editCandidate(c)">
             Edit
+          </button>
+
+           <button *ngIf="canDeleteResumeUpload" class="btn btn-sm btn-outline-danger me-1"
+            [disabled]="
+                c.stageName === 'Rejected' ||
+                ['Screening','Interview','Appointment','Offer','Onboarding','Selected'].includes(c.stageName)
+              "
+           
+            (click)="removeCandidate(c)">
+            Reject
           </button>
 
         </td>

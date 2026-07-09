@@ -61,6 +61,13 @@ deleteCandidate(candidateId: number) {
   );
 }
 
+rejectCandidate(candidateId: number) {
+  return this.http.put(
+    `${this.baseUrl}/Recruitment/RejectCandidate/${candidateId}`,
+    {}
+  );
+}
+
 getCandidateById(candidateId: number) {
   return this.http.get<any>(
     `${this.baseUrl}/Recruitment/GetCandidateById/${candidateId}`
