@@ -3317,4 +3317,9 @@ getInvoiceByUser(userId: number) {
     `${this.baseUrl}/SubscriptionPlan/GetInvoiceByUser?userId=${userId}`
   );
 }
+getPlanModules(planId: number) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/SubscriptionPlan/GetPlanModules/${planId}`
+  );
+}
 }
