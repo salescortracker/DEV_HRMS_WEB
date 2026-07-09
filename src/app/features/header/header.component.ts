@@ -1480,7 +1480,7 @@ formatDuration(totalMinutes: number): string {
 }
 
 calculateStatus() {
-
+debugger;
   const refTime = this.getReferenceTime();
 
   if (!refTime || !this.shiftStartTime || !this.graceTime) {
@@ -1516,15 +1516,13 @@ calculateStatus() {
 
     this.earlyLateStatus = `Early by ${this.formatDuration(mins)}`;
   }
-
-  // ON TIME (0-5 mins)
-  else if (time <= onTimeEnd) {
+   // ON TIME (0-5 mins)
+  else if (time <= onTimeEnd && time==time) {
 
     this.earlyLateStatus = 'On Time';
   }
-
-  // GRACE
-  else if (time <= graceEnd) {
+// GRACE
+  else if (time <= onTimeEnd) {
 
     const mins = Math.floor(
       (time.getTime() - shiftStart.getTime()) / 60000
@@ -1532,12 +1530,15 @@ calculateStatus() {
 
     this.earlyLateStatus = `Grace ${this.formatDuration(mins)}`;
   }
+ 
+
+  
 
   // LATE
   else {
 
     const mins = Math.floor(
-      (time.getTime() - graceEnd.getTime()) / 60000
+      (time.getTime() - onTimeEnd.getTime()) / 60000
     );
 
     this.earlyLateStatus = `Late by ${this.formatDuration(mins)}`;

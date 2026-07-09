@@ -19,9 +19,14 @@ interface AttendanceRecord {
   styleUrl: './clockin-clockout.component.css'
 })
 export class ClockinClockoutComponent {
+  shiftStartTime: string = ''; // e.g. "09:00"
+  earlyLateStatus: string = '';  // FINAL TEXT to show in UI
+  graceTime: string = '';        // from API
+  lastClockOut: string | null = null;
+  isClockedIn = false;
   attendanceForm!: FormGroup;
   attendanceRecords: AttendanceRecord[] = [];
-  graceTime: string = '';
+  
   currentUser: any;
   loading = false;
   lateLoginText: string = '';
@@ -153,6 +158,98 @@ firstClockIn: any;
       this.calculateLateLogin();
     });
   }
+  calculateStatus() {
+debugger;
+  const refTime = this.getReferenceTime();
+
+  if (!refTime || !this.shiftStartTime || !this.graceTime) {
+    this.earlyLateStatus = '';
+    return;
+  }
+
+  const time = this.parseTime(refTime);
+
+  const [sH, sM] = this.shiftStartTime.split(':').map(Number);
+
+  const shiftStart = new Date();
+  shiftStart.setHours(sH, sM, 0, 0);
+
+  // On Time Window = 5 mins
+  const onTimeEnd = new Date(
+    shiftStart.getTime() + (5 * 60000)
+  );
+
+  // Grace Window
+  const [gH, gM] = this.graceTime.split(':').map(Number);
+
+  const graceEnd = new Date(
+    shiftStart.getTime() + ((gH * 60) + gM) * 60000
+  );
+
+  // EARLY
+  if (time < shiftStart) {
+
+    const mins = Math.floor(
+      (shiftStart.getTime() - time.getTime()) / 60000
+    );
+
+    this.earlyLateStatus = `Early by ${this.formatDuration(mins)}`;
+  }
+   // ON TIME (0-5 mins)
+  else if (time <= onTimeEnd && time==time) {
+
+    this.earlyLateStatus = 'On Time';
+  }
+// GRACE
+  else if (time <= onTimeEnd) {
+
+    const mins = Math.floor(
+      (time.getTime() - shiftStart.getTime()) / 60000
+    );
+
+    this.earlyLateStatus = `Grace ${this.formatDuration(mins)}`;
+  }
+ 
+
+  
+
+  // LATE
+  else {
+
+    const mins = Math.floor(
+      (time.getTime() - onTimeEnd.getTime()) / 60000
+    );
+
+    this.earlyLateStatus = `Late by ${this.formatDuration(mins)}`;
+  }
+}
+
+  getEarlyLateClass(): string {
+
+  if (!this.earlyLateStatus) {
+    return '';
+  }
+
+  const status = this.earlyLateStatus.toLowerCase();
+
+  if (status.includes('on time')) {
+    return 'status-ontime';
+  }
+
+  if (status.includes('early')) {
+    return 'status-early';
+  }
+
+  if (status.includes('grace')) {
+    return 'status-grace';
+  }
+
+  if (status.includes('late')) {
+    return 'status-late';
+  }
+
+  return '';
+}
 
 
   parseTime(time: string): Date {
@@ -314,8 +411,17 @@ this.todayDuration =
   return `${minutes} min`;
 }
   
+ getReferenceTime(): string | null {
+
+  if (this.isClockedIn) {
+    return this.firstClockIn;   // 🟢 running state
+  }
+
+  return this.lastClockOut;     // 🔴 completed state
+}
 calculateLateLogin() {
 
+    const refTime = this.getReferenceTime();
   if (!this.firstClockIn || !this.ShiftstartTime || !this.graceTime) {
     this.lateLoginText = '';
     return;
@@ -327,6 +433,9 @@ calculateLateLogin() {
   const shiftStart = new Date();
   shiftStart.setHours(sH, sM, 0, 0);
 
+  const onTimeEnd = new Date(
+    shiftStart.getTime() + (5 * 60000)
+  );
   const [gH, gM] = this.graceTime.split(':').map(Number);
   const graceEnd = new Date(
     shiftStart.getTime() + ((gH * 60) + gM) * 60000
@@ -343,13 +452,13 @@ calculateLateLogin() {
   }
 
   // ON TIME (includes grace)
-  else if (clockIn <= graceEnd) {
+  else if (clockIn <= onTimeEnd && clockIn == clockIn) {
 
     this.lateLoginText = 'On Time';
   }
 
   // LATE
-  else if (clockIn <= graceEnd) {
+  else if (clockIn <= onTimeEnd) {
 
   const mins = Math.floor(
     (clockIn.getTime() - shiftStart.getTime()) / 60000

@@ -244,6 +244,9 @@ const routes: Routes = [
 { path: 'wfh-remote-request', component: WfoRemoteRequestComponent },
 { path: 'missed-punch-request', component: MissedPunchRequestComponent },
 { path: 'early-logout-request', component: EarlyLogoutRequestComponent },
+ { path: 'offer-documents/:companyId/:branchId/:employeeId/:offerId',
+    component: OfferComponent
+  },
 // { path: 'leave-management', component: LeaveManagementComponent },
 {
   path: 'leave-management',
