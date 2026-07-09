@@ -1,0 +1,159 @@
+<div class="subscription-wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <h2>Subscription Management</h2>
+    <p>Manage your plan, billing & renewal</p>
+  </div>
+
+  <!-- Status Card -->
+  <div class="status-card"
+       [ngClass]="subscription?.status">
+
+    <div class="status-left">
+      <h3>{{ subscriptionStatusTitle || 'No Subscription' }}</h3>
+      <p>{{ subscriptionStatusMessage || 'Please choose a plan to continue' }}</p>
+    </div>
+
+    <div class="status-badge">
+      {{ subscription?.status || 'NO_SUBSCRIPTION' }}
+    </div>
+
+  </div>
+
+  <!-- Current Plan -->
+  <div class="card">
+    <h3>Current Plan</h3>
+
+    <div class="row">
+      <span>Plan Name</span>
+      <b>{{ subscription?.plan?.planName || '-' }}</b>
+    </div>
+
+    <div class="row">
+      <span>Price</span>
+      <b>₹ {{ subscription?.plan?.price || 0 }} / Month</b>
+    </div>
+
+    <div class="row">
+      <span>Start Date</span>
+      <b>{{ subscription?.startDate ? (subscription?.startDate | date:'dd-MMM-yyyy') : '-' }}</b>
+    </div>
+
+    <div class="row">
+      <span>Expiry Date</span>
+      <b>{{ subscription?.endDate ? (subscription?.endDate | date:'dd-MMM-yyyy') : '-' }}</b>
+    </div>
+
+  </div>
+
+  <!-- Features -->
+  <div class="card">
+    <h3>Included Features</h3>
+
+    <ul class="features">
+
+      <li *ngFor="let module of getModules(subscription?.plan?.planName)">
+        ✔ {{ module }}
+      </li>
+
+    </ul>
+  </div>
+  <div class="card" *ngIf="invoice" id="invoiceCard">
+
+  <h3>Invoice</h3>
+
+  <div class="row">
+    <span>Invoice Number</span>
+    <b>{{ invoice.invoiceNumber }}</b>
+  </div>
+
+  <div class="row">
+    <span>Amount</span>
+    <b>₹ {{ invoice.amount }}</b>
+  </div>
+
+  <div class="row">
+    <span>Tax</span>
+    <b>{{ invoice.taxPercentage }}%</b>
+  </div>
+
+  <div class="row">
+    <span>Total</span>
+    <b>₹ {{ invoice.totalAmount }}</b>
+  </div>
+
+  <div class="row">
+    <span>Status</span>
+    <b>{{ invoice.status }}</b>
+  </div>
+
+  <!-- DOWNLOAD BUTTON -->
+  <button class="btn-primary">
+    Download Invoice PDF
+  </button>
+
+</div>
+
+  <!-- Available Plans -->
+  <div class="card">
+    <h3>Available Plans</h3>
+
+    <div class="plans-container">
+
+      <div class="plan-card" *ngFor="let plan of plans">
+
+  <div class="plan-header">
+    <h2>{{ plan.planName }}</h2>
+
+    <!-- Optional badge -->
+    <span class="badge" *ngIf="plan.price >= 500">
+      Best Value
+    </span>
+  </div>
+
+  <p class="price">
+    ₹ {{ plan.price || 0 }} / Month
+  </p>
+
+  <!-- hover hidden details -->
+  <div class="plan-features">
+    <ul>
+
+  <li *ngFor="let module of getModules(plan.planName)">
+    ✔ {{ module }}
+  </li>
+
+</ul>
+  </div>
+
+  <button class="btn-primary"
+          (click)="subscribe(plan.planId)">
+    Subscribe
+  </button>
+
+</div>
+
+    </div>
+
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+
+    <button class="btn-primary" (click)="viewPlans()">
+  Renew Now
+</button>
+
+    <button class="btn-outline" (click)="viewPlans()">
+  View Plans
+</button>
+
+  </div>
+
+  <!-- Support -->
+  <div class="support">
+    Need help? <a href="#">Contact Support</a>
+  </div>
+
+</div>

@@ -52,10 +52,65 @@ export class LoginComponent {
         this.loading = false;
         if (response && response.message) {
           // ✅ Save session or token
-          if(response.user.error)          {
-            Swal.fire('Login Failed', response.user.error, 'error');
-            return;
-          }
+          if (response.user.error) {
+
+  // Subscription expired
+  if (response.user.error === 'SUBSCRIPTION_EXPIRED') {
+
+  sessionStorage.setItem('UserId', response.user.userId.toString());
+
+  Swal.fire({
+    icon: 'warning',
+    title: 'Subscription Expired',
+    text: response.user.message,
+    allowOutsideClick: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.router.navigate(['/admin/subscription']);
+    }
+  });
+
+  return;
+}
+if (response.user.error === 'NO_SUBSCRIPTION') {
+
+  sessionStorage.setItem('UserId', response.user.userId.toString());
+
+  Swal.fire({
+    icon: 'warning',
+    title: 'No Active Subscription',
+    text: response.user.message,
+    allowOutsideClick: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.router.navigate(['/admin/subscription']);
+    }
+  });
+
+  return;
+}
+if (response.user.error === 'PLAN_DISABLED') {
+
+  sessionStorage.setItem('UserId', response.user.userId.toString());
+
+  Swal.fire({
+    icon: 'error',
+    title: 'Plan Disabled',
+    text: response.user.message,
+    allowOutsideClick: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.router.navigate(['/admin/subscription']);
+    }
+  });
+
+  return;
+}
+
+  // Default login error
+  Swal.fire('Login Failed', response.user.error, 'error');
+  return;
+}
           
           sessionStorage.setItem('CompanyId', response.user.companyId);
           sessionStorage.setItem('RegionId', response.user.regionId.toString());
@@ -79,7 +134,13 @@ export class LoginComponent {
            sessionStorage.setItem('DesignationId', response.user.designationId?.toString() ?? '');
         sessionStorage.setItem('reportingManagerId',response.user.reportingManagerId?.toString() ?? '');
         sessionStorage.setItem('userCompanyId',response.user.userCompanyId?.toString() ?? '');
+        sessionStorage.setItem('allowedModules',JSON.stringify(response.allowedModules ?? []));
           Swal.fire('Login Successful', response.message, 'success');
+
+          if (response.user.roleId === 0) {
+        this.router.navigate(['/superadmin-dashboard']);
+        return;
+      }
            
           if(response.user.paswordChanged == null){
             Swal.fire('Change Password', 'You must change your password before proceeding.', 'info');

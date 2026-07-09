@@ -1,0 +1,107 @@
+<div class="admin-layout">
+
+    <!-- Topbar -->
+    <app-super-admin-topbar
+        (toggleSidebar)="toggleSidebar()">
+    </app-super-admin-topbar>
+
+    <div class="main-content">
+
+        <!-- Sidebar -->
+        <app-super-admin-sidebar
+            [collapsed]="collapsed"
+            (menuSelected)="onMenuSelected($event)">
+        </app-super-admin-sidebar>
+
+        <!-- Content -->
+        <div class="content-body">
+
+            <!-- Sub Menu -->
+            <app-super-admin-submenu
+                [submenus]="submenus">
+            </app-super-admin-submenu>
+
+            <h4 class="mb-3">
+                Roles & Permissions
+            </h4>
+
+            <div class="roles-permission-container p-3 border rounded shadow-sm">
+
+                <!-- Admin -->
+                <div class="mb-3">
+                    <label class="form-label">Admin</label>
+
+                    <select class="form-select"
+                            [(ngModel)]="selectedAdminId"
+                            (change)="onAdminChange($event)">
+
+                        <option value="">-- Select Admin --</option>
+
+                        <option *ngFor="let a of admins"
+                                [value]="a.userId">
+                            {{a.fullName}}
+                        </option>
+
+                    </select>
+                </div>
+
+                <!-- Company -->
+                <div class="mb-3">
+                    <label class="form-label">Company</label>
+
+                    <select class="form-select"
+                            [(ngModel)]="selectedCompanyId"
+                            (change)="onCompanyChange($event)">
+
+                        <option value="">-- Select Company --</option>
+
+                        <option *ngFor="let c of companies"
+                                [value]="c.companyId">
+                            {{c.companyName}}
+                        </option>
+
+                    </select>
+                </div>
+
+                <!-- Region -->
+                <div class="mb-3">
+                    <label class="form-label">Region</label>
+
+                    <select class="form-select"
+                            [(ngModel)]="selectedRegionId"
+                            (change)="onRegionChange($event)">
+
+                        <option value="">-- Select Region --</option>
+
+                        <option *ngFor="let r of regions"
+                                [value]="r.regionId">
+                            {{r.regionName}}
+                        </option>
+
+                    </select>
+                </div>
+
+                <!-- Role -->
+                <div class="mb-3">
+                    <label class="form-label">Role</label>
+
+                    <select class="form-select"
+                            [(ngModel)]="selectedRoleId">
+
+                        <option value="">-- Select Role --</option>
+
+                        <option *ngFor="let r of roles"
+                                [value]="r.roleId">
+                            {{r.roleName}}
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

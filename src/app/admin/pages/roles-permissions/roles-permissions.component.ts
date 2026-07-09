@@ -90,15 +90,23 @@ userId: number = Number(sessionStorage.getItem('UserId'));
   permissions: MenuItem[] = [];
 
 selectAll: boolean = false;
+allowedModules: any[] = [];
   constructor(private roleService: AdminService) { }
 
   ngOnInit(): void {
       this.loadCompanies();
   this.loadRegions();
+  const modules = JSON.parse(sessionStorage.getItem('allowedModules') || '[]');
+
+  this.allowedModules = modules.map((x: any) => x.moduleName);
+
+  console.log('Allowed Modules', this.allowedModules);
 
     this.loadRoles();
-    this.loadMenuPermissions(); // ✅ Fetch MenuMaster hierarchy dynamically
+    this.loadMenuPermissions();
   }
+  
+  
   loadCompanies(): void {
   this.roleService.getCompanies(null, this.userId).subscribe({
     next: (res: any) => {
@@ -580,52 +588,7 @@ this.permissionRegions = [];
       error: () => Swal.fire('Error', 'Failed to load menu permissions.', 'error')
     });
   }
-  // loadMenuPermissions(): void {
-  //   if (!this.role.roleId) return;
-
-  //   // Load both menus and role permissions
-  //   forkJoin({
-  //     menus: this.roleService.getMenus(),
-  //     rolePerms: this.roleService.getPermissionsByRole(this.role.roleId)
-  //   }).subscribe({
-  //     next: ({ menus, rolePerms }) => {
-  //       const menuMap = new Map<number, MenuItem>();
-
-  //       menus.forEach(m => {
-  //         const perm = rolePerms.find((p: any) => p.menuId === m.menuID);
-  //         menuMap.set(m.menuID, {
-  //           menuID: m.menuID,
-  //           parentMenuID: m.parentMenuID,
-  //           name: m.menuName,
-  //           selected: perm ? perm.isActive : false,
-  //           expanded: false,
-  //           permissions: {
-  //             view: perm ? perm.canView : false,
-  //             create: perm ? perm.canAdd : false,
-  //             edit: perm ? perm.canEdit : false,
-  //             delete: perm ? perm.canDelete : false,
-  //             approve: perm ? perm.canApprove : false
-  //           },
-  //           children: []
-  //         });
-  //       });
-
-  //       // build hierarchy
-  //       const roots: MenuItem[] = [];
-  //       menuMap.forEach(menu => {
-  //         if (menu.parentMenuID) {
-  //           const parent = menuMap.get(menu.parentMenuID);
-  //           parent?.children.push(menu);
-  //         } else {
-  //           roots.push(menu);
-  //         }
-  //       });
-
-  //       this.permissions = roots;
-  //     },
-  //     error: () => Swal.fire('Error', 'Failed to load menu permissions.', 'error')
-  //   });
-  // }
+ 
   fnChangeRoles(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const roleId = Number(selectElement.value);
