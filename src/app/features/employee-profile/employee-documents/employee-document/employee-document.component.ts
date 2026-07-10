@@ -51,14 +51,17 @@ titleRegex = /^[A-Za-z0-9\s\-\/&]+$/;
   constructor(private adminService: AdminService) {}
 ngOnInit() {
     this.loadPermissions();
-  this.loadDocumentTypes();
-      this.userId = Number(sessionStorage.getItem("UserId"));
-    this.companyId = Number(sessionStorage.getItem("CompanyId"));
-    this.regionId = Number(sessionStorage.getItem("RegionId"));
- 
+    this.userId = Number(sessionStorage.getItem('UserId'));
+    this.companyId = Number(sessionStorage.getItem('CompanyId'));
+    this.regionId = Number(sessionStorage.getItem('RegionId'));
+    this.loadDocumentTypes();
 }
 
  loadEmployeeDocument() {
+  if (!this.userId) {
+    console.error('Employee ID is not available for document load');
+    return;
+  }
   this.adminService.getEmployeeDocumentByEmployeeId(this.userId).subscribe({
     next: (res: any[]) => {
       this.documents = res.map(x => ({
@@ -69,10 +72,18 @@ ngOnInit() {
         issuedDate: x.issuedDate,
         expiryDate: x.expiryDate,
         fileName: x.fileName,
-         filePath: x.filePath, 
+        filePath: x.filePath,
         confidential: x.isConfidential,
         remarks: x.remarks
       }));
+      // Adjust current page after reload
+      if (this.currentPage > this.totalPages) {
+        this.currentPage = this.totalPages;
+      }
+
+      if (this.currentPage < 1) {
+        this.currentPage = 1;
+      }
     },
     error: (err) => console.error(err)
   });
@@ -379,26 +390,33 @@ if (!this.editId) {
 
   // ---------------------- DELETE --------------------------
   deleteDocument(id: number) {
-  Swal.fire({
-    title: 'Are you sure you want to delete this employee document?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, Delete',
-    cancelButtonText: 'Cancel'
-  }).then(result => {
-    if (result.isConfirmed) {
+    Swal.fire({
+      title: 'Are you sure you want to delete this employee document?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Delete',
+      cancelButtonText: 'Cancel'
+    }).then(result => {
+      if (result.isConfirmed) {
 
-      this.adminService.deleteEmployeeDocument(id).subscribe({
-        next: () => {
-          Swal.fire('Deleted!', 'Document deleted.', 'success');
-          this.loadEmployeeDocument(); // refresh table
-        },
-        error: () => Swal.fire('Error', 'Failed to delete document', 'error')
-      });
+        this.adminService.deleteEmployeeDocument(id).subscribe({
+          next: () => {
+            console.log('Deleted Successfully');
+            this.documents = this.documents.filter(doc => doc.id !== id);
+            if (this.currentPage > this.totalPages) {
+              this.currentPage = this.totalPages;
+            }
+            if (this.currentPage < 1) {
+              this.currentPage = 1;
+            }
+            Swal.fire('Deleted!', 'Document deleted.', 'success');
+          },
+          error: () => Swal.fire('Error', 'Failed to delete document', 'error')
+        });
 
-    }
-  });
-}
+      }
+    });
+  }
 
 
   // ---------------------- RESET --------------------------

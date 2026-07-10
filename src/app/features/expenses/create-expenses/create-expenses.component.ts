@@ -132,7 +132,7 @@ this.loadPermissions();
         ]
       ],
       expenseCategoryId: ['', Validators.required],
-      departmentName: [this.departmentName],
+      departmentName: [this.departmentName, Validators.required],
       currencyCode: ['INR', Validators.required],
       amount: [
         '',
