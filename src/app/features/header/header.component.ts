@@ -53,6 +53,9 @@ export class HeaderComponent {
 lastClockOut: string | null = null;
 notifications: any[] = [];
 notificationCount: number = 0;
+unreadCount = 0;
+showNotifications = false;
+private timer:any;
   constructor(private router: Router, private employeeResignationService: EmployeeResignationService,
     private adminService: AdminService, private ngZone: NgZone, private attendanceService: AttendanceService) { }
   ngOnInit() {
@@ -83,24 +86,61 @@ notificationCount: number = 0;
 
 
   }
-  loadNotifications() {
+  loadNotifications(){
 
-  const companyId = Number(sessionStorage.getItem('CompanyId'));
-  const regionId = Number(sessionStorage.getItem('RegionId'));
+  const userId = Number(sessionStorage.getItem('UserId'));
 
-  if (!companyId || !regionId) return;
+  this.adminService.getUserNotifications(userId)
+  .subscribe({
+    next:(res:any)=>{
 
-  this.adminService.getTodayNotifications(companyId, regionId)
+      this.notifications = res;
+
+      this.unreadCount = this.notifications
+      .filter(x => x.isRead == false)
+      .length;
+
+    },
+    error:(err)=>{
+      console.log(err);
+    }
+  });
+
+}
+openNotifications(){
+    clearTimeout(this.timer);
+    this.showNotifications = true;
+}
+
+closeNotifications(){
+    this.timer = setTimeout(()=>{
+        this.showNotifications = false;
+    },200);
+}
+readNotification(notification:any){
+
+  if(!notification.isRead){
+
+    this.adminService.markAsRead(notification.notificationId)
     .subscribe({
-      next: (res: any[]) => {
-        this.notifications = res ?? [];
-        this.notificationCount = this.notifications.length;
+
+      next:()=>{
+
+        notification.isRead = true;
+
+        this.unreadCount =
+        this.notifications.filter(x=> !x.isRead).length;
+
       },
-      error: () => {
-        this.notifications = [];
-        this.notificationCount = 0;
+
+      error:(err)=>{
+        console.log(err);
       }
+
     });
+
+  }
+
 }
   loadEmployeeCompanyLogo() {
     const companyId = Number(sessionStorage.getItem('CompanyId'));

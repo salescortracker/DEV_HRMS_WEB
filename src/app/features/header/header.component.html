@@ -58,34 +58,73 @@
     <!-- Quick Links -->
     <!-- <button class="icon-btn" title="Quick Links"><i class="fas fa-link"></i></button> -->
 
-    <!-- Notifications -->
-     <div class="top-right-icons"> 
-     Notifications 
-    <div class="icon-dropdown">
-  <i class="fas fa-bell"></i>
+    <div class="notification-wrapper"
+     (mouseenter)="openNotifications()"
+     (mouseleave)="closeNotifications()">
 
-  <span class="count" *ngIf="notificationCount > 0">
-    {{ notificationCount }}
-  </span>
 
-  <div class="dropdown-content">
-    <p><strong>Notifications</strong></p>
 
-    <div *ngIf="notifications.length === 0">
-      No notifications today
-    </div>
+<button class="bell-btn">
 
-    <a *ngFor="let n of notifications">
-      <i class="fa" 
-         [ngClass]="{
-           'fa-birthday-cake': n.type === 'Birthday',
-           'fa-gift': n.type === 'Anniversary'
-         }"></i>
+ 🔔
 
-      {{ n.message }}
-    </a>
+ <span class="badge"
+ *ngIf="unreadCount > 0">
 
-  </div>
+ {{unreadCount}}
+
+ </span>
+
+</button>
+
+
+
+<div class="notification-dropdown"
+     *ngIf="showNotifications">
+
+
+<div class="notification-header">
+
+ Notifications
+
+</div>
+
+
+
+<div class="notification-item"
+     *ngFor="let item of notifications"
+     (click)="readNotification(item)"
+     [class.unread]="!item.isRead">
+
+
+<div class="title">
+
+{{item.title}}
+
+</div>
+
+
+<div class="message">
+
+{{item.message}}
+
+</div>
+
+
+<small>
+
+{{item.createdDate | date:'dd MMM hh:mm a'}}
+
+</small>
+
+
+</div>
+
+
+
+</div>
+
+
 </div>
 
     <!-- Messages -->

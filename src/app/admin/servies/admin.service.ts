@@ -3249,11 +3249,6 @@ getManagerEmployees(loginUserId: number) {
     `${this.baseUrl}/Employee/manager-employees?loginUserId=${loginUserId}`
   );
 }
-getTodayNotifications(companyId: number, regionId: number): Observable<any[]> {
-  return this.http.get<any[]>(
-    `${this.baseUrl}/Employee/GetTodayNotifications?companyId=${companyId}&regionId=${regionId}`
-  );
-}
 getUserSubscription(userId: number) {
   return this.http.get(`${this.baseUrl}/SubscriptionPlan/GetUserSubscription?userId=${userId}`);
 }
@@ -3322,4 +3317,16 @@ getPlanModules(planId: number) {
     `${this.baseUrl}/SubscriptionPlan/GetPlanModules/${planId}`
   );
 }
+getUserNotifications(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.baseUrl}/Notification/GetByUser/${userId}`
+    );
+  }
+
+  markAsRead(notificationId: number): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/Notification/MarkAsRead/${notificationId}`,
+      {}
+    );
+  }
 }

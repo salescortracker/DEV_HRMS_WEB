@@ -2564,3 +2564,134 @@ button:hover {
   opacity: 0.6;
   cursor: not-allowed;
 }
+.notification-wrapper{
+    position: relative;
+    display: inline-block;
+    padding-bottom: 15px;   
+}
+.unread{
+
+background:#eef5ff;
+
+}
+
+.bell-btn{
+    background:transparent;
+    border:none;
+    padding:8px;
+}
+
+
+.badge{
+
+ position:absolute;
+ top:-8px;
+ right:-10px;
+
+ background:red;
+ color:white;
+
+ border-radius:50%;
+ width:18px;
+ height:18px;
+
+ font-size:11px;
+
+ display:flex;
+ align-items:center;
+ justify-content:center;
+
+}
+.notification-dropdown{
+
+    position:absolute;
+
+    right:0;
+    top:45px;   /* bell kindha open avvadaniki */
+
+    width:330px;
+
+    background:#fff;
+
+    border-radius:10px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.25);
+
+    z-index:10000;
+
+    overflow:hidden;
+
+}
+@keyframes slideDown{
+
+from{
+opacity:0;
+transform:translateY(-10px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+.notification-header{
+
+padding:12px;
+
+font-weight:bold;
+
+border-bottom:1px solid #ddd;
+
+}
+
+
+
+.notification-item{
+
+padding:12px;
+
+transition:.2s;
+
+cursor:pointer;
+
+}
+
+
+
+.notification-item:hover{
+
+background:#f3f6ff;
+}
+
+
+
+.notification-item.unread{
+
+background:#eef6ff;
+
+}
+
+
+
+.title{
+
+font-weight:600;
+
+}
+
+
+.message{
+
+font-size:13px;
+
+color:#555;
+
+}
+
+
+small{
+
+color:#999;
+
+}
