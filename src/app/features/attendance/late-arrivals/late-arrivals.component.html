@@ -1,162 +1,314 @@
 <app-header></app-header>
 <app-sidebar></app-sidebar>
 
-<!-- DAILY WORKING HOURS - MULTIPLE EMPLOYEE SELECTION -->
 <div class="dashboard-header">
   <h2 class="dashboard-title">Late Arrivals</h2>
   <nav class="breadcrumb">
     <a href="#">Home</a> &gt;
-    <a href="#">HRMS</a> &gt;
+    <a href="#">Attendance</a> &gt;
     <span>Late Arrivals</span>
   </nav>
 </div>
 
 <div class="tab-container mt-4">
-<div class="card p-4 shadow-sm">
-  <h5 class="mb-3">Early Departures</h5>
 
-  <!-- Filter Form -->
-  <form class="row g-3 mb-4">
-    <div class="col-md-4">
-      <label class="form-label">Select Employee</label>
-      <select class="form-select" required>
-        <option value="">All Employees</option>
-        <option>John Doe (EMP001)</option>
-        <option>Anita Sharma (EMP003)</option>
-        <option>Rahul Kumar (EMP007)</option>
-        <option>Priya Singh (EMP010)</option>
-      </select>
-    </div>
+  <!-- Tabs -->
+  <input type="radio" id="tab1" name="tab" [checked]="selectedTab === 'tab1'">
+  <input type="radio" id="tab2" name="tab" [checked]="selectedTab === 'tab2'">
+  <input type="radio" id="tab3" name="tab" [checked]="selectedTab === 'tab3'">
 
-    <div class="col-md-3">
-      <label class="form-label">From Date</label>
-      <input type="date" class="form-control" required>
-    </div>
-
-    <div class="col-md-3">
-      <label class="form-label">To Date</label>
-      <input type="date" class="form-control" required>
-    </div>
-
-    <div class="col-md-2 d-flex align-items-end">
-      <button type="submit" class="btn btn-primary w-100">Filter</button>
-    </div>
-  </form>
-
-  <!-- Early Departures Table -->
-  <div class="table-responsive">
-    <table class="table table-bordered table-hover align-middle">
-      <thead class="table-light">
-        <tr>
-          <th>Employee Name</th>
-          <th>Employee ID</th>
-          <th>Date</th>
-          <th>Scheduled End</th>
-          <th>Clock Out Time</th>
-          <th>Left Early By</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>John Doe</td>
-          <td>EMP001</td>
-          <td>2025-10-14</td>
-          <td>05:30 PM</td>
-          <td>05:10 PM</td>
-          <td>20 mins</td>
-          <td><span class="badge bg-warning text-dark">Early</span></td>
-          <td class="text-center">
-            <!-- View Icon -->
-            <a href="#" data-bs-toggle="modal" data-bs-target="#viewEarlyModal1" class="me-2">
-              <i class="fa-solid fa-eye text-primary"></i>
-            </a>
-            <!-- Mark Excuse Icon -->
-            <a href="#" data-bs-toggle="modal" data-bs-target="#excuseEarlyModal1">
-              <i class="fa-solid fa-pen-to-square text-success"></i>
-            </a>
-          </td>
-        </tr>
-        <tr>
-          <td>Anita Sharma</td>
-          <td>EMP003</td>
-          <td>2025-10-14</td>
-          <td>05:30 PM</td>
-          <td>05:00 PM</td>
-          <td>30 mins</td>
-          <td><span class="badge bg-warning text-dark">Early</span></td>
-          <td class="text-center">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#viewEarlyModal2" class="me-2">
-              <i class="fa-solid fa-eye text-primary"></i>
-            </a>
-            <a href="#" data-bs-toggle="modal" data-bs-target="#excuseEarlyModal2">
-              <i class="fa-solid fa-pen-to-square text-success"></i>
-            </a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="tab-header">
+    <label class="tab-label" for="tab1" *ngIf="canViewPersonal">My request</label>
+    <label class="tab-label" for="tab2" *ngIf="canViewManager">Manager Approvel</label>
+    <label class="tab-label" for="tab3" *ngIf="canViewHR || canViewManager">HR And Manager</label>
   </div>
-</div>
 
-<!-- VIEW EARLY DEPARTURE MODAL -->
-<div class="modal fade" id="viewEarlyModal1" tabindex="-1" aria-labelledby="viewEarlyModalLabel1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="viewEarlyModalLabel1">Early Departure Details - John Doe</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p><strong>Employee ID:</strong> EMP001</p>
-        <p><strong>Date:</strong> 2025-10-14</p>
-        <p><strong>Scheduled End:</strong> 05:30 PM</p>
-        <p><strong>Clock Out Time:</strong> 05:10 PM</p>
-        <p><strong>Left Early By:</strong> 20 mins</p>
-        <p><strong>Status:</strong> Early</p>
-        <p><strong>Remarks:</strong> -</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+  <!-- ================= MY REQUESTS ================= -->
+  <div id="content1" class="tab-content">
+    <div class="card p-4 shadow-sm mb-4">
+      <h5 class="mb-3">Submit Late Arrival</h5>
 
-<!-- MARK EXCUSE MODAL -->
-<div class="modal fade" id="excuseEarlyModal1" tabindex="-1" aria-labelledby="excuseEarlyModalLabel1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form>
-        <div class="modal-header">
-          <h5 class="modal-title" id="excuseEarlyModalLabel1">Mark Excuse - John Doe</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Reason for Excuse <span class="text-danger">*</span></label>
-            <textarea class="form-control" placeholder="Enter reason..." required></textarea>
+      <form [formGroup]="earlyLogoutForm" (ngSubmit)="submitEarlyLogout()">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" formControlName="requestDate">
           </div>
-          <div class="mb-3">
-            <label class="form-label">Adjust Attendance</label>
-            <select class="form-select">
-              <option value="">Select Option</option>
-              <option>Full Excuse</option>
-              <option>Partial Excuse</option>
-              <option>None</option>
-            </select>
+
+          <div class="col-md-6">
+            <label class="form-label">Clock In Time <span class="text-danger">*</span></label>
+            <input type="time" class="form-control" formControlName="requestedLateLoginTime">
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Save Excuse</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+        <div class="mb-3">
+          <label class="form-label">Reason <span class="text-danger">*</span></label>
+          <textarea rows="3" class="form-control" formControlName="reason"></textarea>
         </div>
+
+        <div class="mb-3">
+          <label class="form-label">HR Email (CC)</label>
+          <input type="email" class="form-control" formControlName="hrEmail">
+        </div>
+
+        <button  *ngIf="(!isEditMode && canCreateMyRequest) || (isEditMode && canEditMyRequest)" class="btn" type="submit" style="background-color: #b02828; color: white; border-color: #b02828;">
+          {{ isEditMode ? 'Update' : 'Submit' }}
+        </button>
       </form>
+
+    </div>
+
+    <div class="card p-4 shadow-sm mb-4">
+      <h5 class="mb-3">My Late Arrivals</h5>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Date</th>
+              <!-- <th>Employee</th> -->
+              <th>Clock In</th>
+              <th>Late By</th>
+              <th>Status</th>
+              <!-- <th>Action</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of pagedMyRequests">
+              <td>{{ item.requestDate | date:'dd-MM-yyyy' }}</td>
+              <td>{{ item.requestedLateLoginTime }}</td>
+              <td>{{ item.requestedLateLoginTime }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'bg-warning text-dark': item.status === 'Pending',
+                  'bg-success': item.status === 'Approved',
+                  'bg-danger': item.status === 'Rejected'
+                }">
+                  {{ item.status }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="pagedMyRequests.length === 0">
+              <td colspan="4" class="text-center text-muted">No records found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          <label>
+            Show:
+            <select class="form-select d-inline w-auto ms-2" [(ngModel)]="myPageSize" (change)="changeMyPageSize(myPageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+            </select>
+            entries
+          </label>
+        </div>
+        <div>
+          <button class="btn btn-sm me-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeMyPage(myCurrentPage - 1)" [disabled]="myCurrentPage === 1">Previous</button>
+          <span>Page {{ myCurrentPage }} of {{ myTotalPages }}</span>
+          <button class="btn btn-sm ms-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeMyPage(myCurrentPage + 1)" [disabled]="myCurrentPage === myTotalPages">Next</button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
+  <!-- ================= MANAGER APPROVAL ================= -->
+  <div id="content2" class="tab-content" *ngIf="canViewManager">
+    <div class="card p-4 shadow-sm">
+      <h5 class="mb-3">Pending Approvals</h5>
+
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>
+              <input type="checkbox" (change)="selectAll($event)">
+            </th>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Late By</th>
+            <th>Reason</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of pagedPendingRequests">
+            <td>
+              <input type="checkbox" [(ngModel)]="item.selected">
+            </td>
+            <td>{{ item.employeeName || 'N/A' }}</td>
+            <td>{{ item.requestDate | date:'dd-MM-yyyy' }}</td>
+            <td>{{ item.requestedLateLoginTime }}</td>
+            <td>{{ item.reason }}</td>
+            <td>
+              <input class="form-control form-control-sm" [(ngModel)]="item.managerRemarks">
+            </td>
+          </tr>
+          <tr *ngIf="pagedPendingRequests.length === 0">
+            <td colspan="7" class="text-center text-muted">No pending approvals</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="text-right-end mt-3">
+        <button class="btn btn-success btn-sm me-2" style="background-color: #b02828; color: white; border-color: #b02828;" (click)="bulkApproveReject('Approved')">
+          Approve Selected
+        </button>
+        <button class="btn btn-danger btn-sm" style="background-color: #b02828; color: white; border-color: #b02828;" (click)="bulkApproveReject('Rejected')">
+          Reject Selected
+        </button>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          <label>
+            Show:
+            <select class="form-select d-inline w-auto ms-2" [(ngModel)]="managerPageSize" (change)="changeManagerPageSize(managerPageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+            </select>
+            entries
+          </label>
+        </div>
+        <div>
+          <button class="btn btn-sm me-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changePendingPage(pendingCurrentPage - 1)" [disabled]="pendingCurrentPage === 1">Previous</button>
+          <span>Page {{ pendingCurrentPage }} of {{ pendingTotalPages }}</span>
+          <button class="btn btn-sm ms-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changePendingPage(pendingCurrentPage + 1)" [disabled]="pendingCurrentPage === pendingTotalPages">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-4 shadow-sm mt-4">
+      <h5 class="mb-3 text-success">Approved Requests</h5>
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Late By</th>
+            <th>Reason</th>
+            <th>Remarks</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of pagedApprovedRequests">
+            <td>{{ item.employeeName || item.employeeCode || 'N/A' }}</td>
+            <td>{{ item.requestDate | date:'dd-MM-yyyy' }}</td>
+            <td>{{ item.requestedLateLoginTime }}</td>  
+            <td>{{ item.reason }}</td>
+            <td>{{ item.managerRemarks }}</td>
+            <td><span class="badge bg-success">Approved</span></td>
+          </tr>
+          <tr *ngIf="pagedApprovedRequests.length === 0">
+            <td colspan="6" class="text-center text-muted">No approved records</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div></div>
+        <div>
+          <button class="btn btn-sm me-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeApprovedPage(approvedCurrentPage - 1)" [disabled]="approvedCurrentPage === 1">Previous</button>
+          <span>Page {{ approvedCurrentPage }} of {{ approvedTotalPages }}</span>
+          <button class="btn btn-sm ms-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeApprovedPage(approvedCurrentPage + 1)" [disabled]="approvedCurrentPage === approvedTotalPages">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-4 shadow-sm mt-4">
+      <h5 class="mb-3 text-danger">Rejected Requests</h5>
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Late By</th>
+            <th>Reason</th>
+            <th>Remarks</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of pagedRejectedRequests">
+            <td>{{ item.employeeName || item.employeeCode || 'N/A' }}</td>
+            <td>{{ item.requestDate | date:'dd-MM-yyyy' }}</td>
+            <td>{{ item.requestedLateLoginTime }}</td>
+            <td>{{ item.reason }}</td>
+            <td>{{ item.managerRemarks }}</td>
+            <td><span class="badge bg-danger">Rejected</span></td>
+          </tr>
+          <tr *ngIf="pagedRejectedRequests.length === 0">
+            <td colspan="6" class="text-center text-muted">No rejected records</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div></div>
+        <div>
+          <button class="btn btn-sm me-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeRejectedPage(rejectedCurrentPage - 1)" [disabled]="rejectedCurrentPage === 1">Previous</button>
+          <span>Page {{ rejectedCurrentPage }} of {{ rejectedTotalPages }}</span>
+          <button class="btn btn-sm ms-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeRejectedPage(rejectedCurrentPage + 1)" [disabled]="rejectedCurrentPage === rejectedTotalPages">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= HR+MANAGER VIEW ================= -->
+  <div id="content3" class="tab-content" *ngIf="canViewHR">
+    <div class="card p-4 shadow-sm">
+      <h5 class="mb-3">HR + Manager Overview</h5>
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Late By</th>
+            <th>Reason</th>
+            <th>HR Email</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of pagedCombinedRequests">
+            <td>{{ item.employeeName || item.employeeCode || 'N/A' }}</td>
+            <td>{{ item.requestDate | date:'dd-MM-yyyy' }}</td>
+            <td>{{ item.requestedLateLoginTime }}</td>
+            <td>{{ item.reason }}</td>
+            <td>{{ item.hrEmail }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'bg-warning text-dark': item.status === 'Pending',
+                'bg-success': item.status === 'Approved',
+                'bg-danger': item.status === 'Rejected'
+              }">
+                {{ item.status }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="combinedRequests.length === 0">
+            <td colspan="6" class="text-center text-muted">No records found</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          <label>
+            Show:
+            <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+            </select>
+            entries
+          </label>
+        </div>
+
+        <div>
+          <button class="btn btn-sm me-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+          <button class="btn btn-sm ms-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <app-footer></app-footer>

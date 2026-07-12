@@ -19,14 +19,30 @@ export class EarlyLogoutRequestComponent implements OnInit {
   approvedRequests: any[] = [];
   rejectedRequests: any[] = [];
   hrRequests: any[] = [];
-currentPage = 1;
-pageSize = 5;
-pageSizeOptions = [5, 10, 25, 50];
 
-totalRecords = 0;
-totalPages = 0;
-pagedMyRequests: any[] = [];
-pagedCombinedRequests: any[] = [];
+  currentPage = 1;
+  pageSize = 5;
+  pageSizeOptions = [5, 10, 25, 50];
+
+  totalRecords = 0;
+  totalPages = 0;
+  pagedMyRequests: any[] = [];
+  pagedCombinedRequests: any[] = [];
+
+  myCurrentPage = 1;
+  myPageSize = 5;
+  myTotalPages = 1;
+
+  pendingCurrentPage = 1;
+  approvedCurrentPage = 1;
+  rejectedCurrentPage = 1;
+  managerPageSize = 5;
+  pendingTotalPages = 1;
+  approvedTotalPages = 1;
+  rejectedTotalPages = 1;
+  pagedPendingRequests: any[] = [];
+  pagedApprovedRequests: any[] = [];
+  pagedRejectedRequests: any[] = [];
   selectedTab = '';
   canViewPersonal = false;
   canViewManager = false;
@@ -177,11 +193,9 @@ canEditMyRequest = false;
       .getEarlyLogoutRequest(this.companyId, this.regionId, this.userId)
       .subscribe((res: any) => {
         this.myRequests = this.normalizeList(res);
-         this.currentPage = 1;
-      this.updatePagination();
+        this.myCurrentPage = 1;
+        this.updateMyPagination();
         this.cdr.detectChanges();
-
-        
       });
   }
 
@@ -200,6 +214,10 @@ canEditMyRequest = false;
           selected: false,
           managerRemarks: x.managerRemarks || ''
         }));
+        this.pendingCurrentPage = 1;
+        this.approvedCurrentPage = 1;
+        this.rejectedCurrentPage = 1;
+        this.updateManagerPagination();
         this.currentPage = 1;
         this.updatePagination();
         this.cdr.detectChanges();
@@ -384,28 +402,98 @@ else if (this.canViewHR) {
 
 updatePagination(): void {
   this.totalRecords = this.combinedRequests.length;
-  this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
+    this.totalPages = Math.max(1, Math.ceil(this.totalRecords / this.pageSize));
 
-  const start = (this.currentPage - 1) * this.pageSize;
-  const end = start + this.pageSize;
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
 
-  this.pagedCombinedRequests =
-    this.combinedRequests.slice(start, end);
-}
-
-
-changePage(page: number): void {
-  if (page < 1 || page > this.totalPages) {
-    return;
+    this.pagedCombinedRequests =
+      this.combinedRequests.slice(start, end);
   }
 
-  this.currentPage = page;
-  this.updatePagination();
-}
+  updateMyPagination(): void {
+    const totalRecords = this.myRequests.length;
+    this.myTotalPages = Math.max(1, Math.ceil(totalRecords / this.myPageSize));
+    const start = (this.myCurrentPage - 1) * this.myPageSize;
+    this.pagedMyRequests = this.myRequests.slice(start, start + this.myPageSize);
+  }
 
-changePageSize(size: number): void {
-  this.pageSize = size;
-  this.currentPage = 1;
-  this.updatePagination();
-}
+  updateManagerPagination(): void {
+    this.pendingTotalPages = Math.max(1, Math.ceil(this.pendingRequests.length / this.managerPageSize));
+    this.approvedTotalPages = Math.max(1, Math.ceil(this.approvedRequests.length / this.managerPageSize));
+    this.rejectedTotalPages = Math.max(1, Math.ceil(this.rejectedRequests.length / this.managerPageSize));
+
+    const pendingStart = (this.pendingCurrentPage - 1) * this.managerPageSize;
+    const approvedStart = (this.approvedCurrentPage - 1) * this.managerPageSize;
+    const rejectedStart = (this.rejectedCurrentPage - 1) * this.managerPageSize;
+
+    this.pagedPendingRequests = this.pendingRequests.slice(pendingStart, pendingStart + this.managerPageSize);
+    this.pagedApprovedRequests = this.approvedRequests.slice(approvedStart, approvedStart + this.managerPageSize);
+    this.pagedRejectedRequests = this.rejectedRequests.slice(rejectedStart, rejectedStart + this.managerPageSize);
+  }
+
+  changePage(page: number): void {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
+
+    this.currentPage = page;
+    this.updatePagination();
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  changeMyPage(page: number): void {
+    if (page < 1 || page > this.myTotalPages) {
+      return;
+    }
+
+    this.myCurrentPage = page;
+    this.updateMyPagination();
+  }
+
+  changeMyPageSize(size: number): void {
+    this.myPageSize = size;
+    this.myCurrentPage = 1;
+    this.updateMyPagination();
+  }
+
+  changePendingPage(page: number): void {
+    if (page < 1 || page > this.pendingTotalPages) {
+      return;
+    }
+
+    this.pendingCurrentPage = page;
+    this.updateManagerPagination();
+  }
+
+  changeApprovedPage(page: number): void {
+    if (page < 1 || page > this.approvedTotalPages) {
+      return;
+    }
+
+    this.approvedCurrentPage = page;
+    this.updateManagerPagination();
+  }
+
+  changeRejectedPage(page: number): void {
+    if (page < 1 || page > this.rejectedTotalPages) {
+      return;
+    }
+
+    this.rejectedCurrentPage = page;
+    this.updateManagerPagination();
+  }
+
+  changeManagerPageSize(size: number): void {
+    this.managerPageSize = size;
+    this.pendingCurrentPage = 1;
+    this.approvedCurrentPage = 1;
+    this.rejectedCurrentPage = 1;
+    this.updateManagerPagination();
+  }
 }

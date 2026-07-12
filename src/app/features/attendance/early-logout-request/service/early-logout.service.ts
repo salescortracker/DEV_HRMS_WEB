@@ -50,4 +50,47 @@ export class EarlyLogoutService {
   bulkApproveRejectEarlyLogout(payload: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/bulkapproverejectearlylogout`, payload);
   }
+
+  createLateArrivalRequest(data: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/CreateLateArrivalRequest`,
+      data
+    );
+  }
+
+  getLateArrivalRequest(
+    companyId: number,
+    regionId: number,
+    userId: number
+  ): Observable<any> {
+
+    return this.http.get(
+      `${this.baseUrl}/getLateArrivalRequest?companyId=${companyId}&regionId=${regionId}&userId=${userId}`
+    );
+  }
+
+  getApprovalLateArrivalRequest(
+    companyId: number,
+    regionId: number,
+    userId: number
+  ): Observable<any> {
+
+    return this.http.get(
+      `${this.baseUrl}/getApprovalLateArrivalRequest?companyId=${companyId}&regionId=${regionId}&userId=${userId}`
+    );
+  }
+
+  updateLateArrival(data: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/updateLateArrival`,
+      data
+    );
+  }
+
+  bulkApproveRejectLateArrival(data: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/bulkapproverejectlatearrival`,
+      data
+    );
+  }
 }

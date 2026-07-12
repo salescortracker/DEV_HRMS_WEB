@@ -77,7 +77,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let item of myRequests">
+          <tr *ngFor="let item of pagedMyRequests">
             <td>{{ item.requestDate | date }}</td>
             <td>{{ item.requestedLogoutTime }}</td>
             <td>{{ item.reason }}</td>
@@ -96,11 +96,27 @@
             </td>
           </tr>
 
-          <tr *ngIf="myRequests.length === 0">
+          <tr *ngIf="pagedMyRequests.length === 0">
             <td colspan="6" class="text-center text-muted">No records found</td>
           </tr>
         </tbody>
       </table>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          <label>
+            Show:
+            <select class="form-select d-inline w-auto ms-2" [(ngModel)]="myPageSize" (change)="changeMyPageSize(myPageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+            </select>
+            entries
+          </label>
+        </div>
+        <div>
+          <button class="btn btn-sm me-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeMyPage(myCurrentPage - 1)" [disabled]="myCurrentPage === 1">Previous</button>
+          <span>Page {{ myCurrentPage }} of {{ myTotalPages }}</span>
+          <button class="btn btn-sm ms-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeMyPage(myCurrentPage + 1)" [disabled]="myCurrentPage === myTotalPages">Next</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -125,7 +141,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let item of pendingRequests">
+          <tr *ngFor="let item of pagedPendingRequests">
             <td>
               <input type="checkbox" [(ngModel)]="item.selected">
             </td>
@@ -136,18 +152,9 @@
             <td>
               <input class="form-control form-control-sm" [(ngModel)]="item.managerRemarks">
             </td>
-            <!-- <td>
-              <button class="btn btn-sm btn-outline-success me-2" (click)="approve(item)">
-                <i class="fa fa-check"></i>
-              </button>
-
-              <button class="btn btn-sm btn-outline-danger" (click)="reject(item)">
-                <i class="fa fa-times"></i>
-              </button>
-            </td> -->
           </tr>
 
-          <tr *ngIf="pendingRequests.length === 0">
+          <tr *ngIf="pagedPendingRequests.length === 0">
             <td colspan="7" class="text-center text-muted">
               No pending approvals
             </td>
@@ -162,6 +169,22 @@
         <button class="btn btn-danger btn-sm" style="background-color: #b02828; color: white; border-color: #b02828;" (click)="bulkApproveReject('Rejected')">
           Reject Selected
         </button>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          <label>
+            Show:
+            <select class="form-select d-inline w-auto ms-2" [(ngModel)]="managerPageSize" (change)="changeManagerPageSize(managerPageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+            </select>
+            entries
+          </label>
+        </div>
+        <div>
+          <button class="btn btn-sm me-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changePendingPage(pendingCurrentPage - 1)" [disabled]="pendingCurrentPage === 1">Previous</button>
+          <span>Page {{ pendingCurrentPage }} of {{ pendingTotalPages }}</span>
+          <button class="btn btn-sm ms-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changePendingPage(pendingCurrentPage + 1)" [disabled]="pendingCurrentPage === pendingTotalPages">Next</button>
+        </div>
       </div>
     </div>
 
@@ -181,7 +204,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let item of approvedRequests">
+          <tr *ngFor="let item of pagedApprovedRequests">
             <td>{{ item.employeeName }}</td>
             <td>{{ item.requestDate | date }}</td>
             <td>{{ item.requestedLogoutTime }}</td>
@@ -190,11 +213,19 @@
             <td><span class="badge bg-success">Approved</span></td>
           </tr>
 
-          <tr *ngIf="approvedRequests.length === 0">
+          <tr *ngIf="pagedApprovedRequests.length === 0">
             <td colspan="6" class="text-center text-muted">No approved records</td>
           </tr>
         </tbody>
       </table>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div></div>
+        <div>
+          <button class="btn btn-sm me-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeApprovedPage(approvedCurrentPage - 1)" [disabled]="approvedCurrentPage === 1">Previous</button>
+          <span>Page {{ approvedCurrentPage }} of {{ approvedTotalPages }}</span>
+          <button class="btn btn-sm ms-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeApprovedPage(approvedCurrentPage + 1)" [disabled]="approvedCurrentPage === approvedTotalPages">Next</button>
+        </div>
+      </div>
     </div>
 
     <div class="card p-4 shadow-sm mt-4">
@@ -213,7 +244,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let item of rejectedRequests">
+          <tr *ngFor="let item of pagedRejectedRequests">
             <td>{{ item.employeeName }}</td>
             <td>{{ item.requestDate | date }}</td>
             <td>{{ item.requestedLogoutTime }}</td>
@@ -222,11 +253,19 @@
             <td><span class="badge bg-danger">Rejected</span></td>
           </tr>
 
-          <tr *ngIf="rejectedRequests.length === 0">
+          <tr *ngIf="pagedRejectedRequests.length === 0">
             <td colspan="6" class="text-center text-muted">No rejected records</td>
           </tr>
         </tbody>
       </table>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div></div>
+        <div>
+          <button class="btn btn-sm me-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeRejectedPage(rejectedCurrentPage - 1)" [disabled]="rejectedCurrentPage === 1">Previous</button>
+          <span>Page {{ rejectedCurrentPage }} of {{ rejectedTotalPages }}</span>
+          <button class="btn btn-sm ms-2" style="background:#b02828;color:#fff;border-color:#b02828;font-weight:600" (click)="changeRejectedPage(rejectedCurrentPage + 1)" [disabled]="rejectedCurrentPage === rejectedTotalPages">Next</button>
+        </div>
+      </div>
     </div>
   </div>
 
