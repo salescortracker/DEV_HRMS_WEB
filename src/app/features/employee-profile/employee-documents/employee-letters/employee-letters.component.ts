@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { EmployeeLetter } from '../../../../admin/layout/models/employee-letter.model';
 import Swal from 'sweetalert2';
 import { AdminService } from '../../../../admin/servies/admin.service';
@@ -34,6 +34,9 @@ export class EmployeeLettersComponent {
   documentTypes: any[] = [];
   showEmpDropdown = false;
 
+  @ViewChild('employeeDropdownToggle', { read: ElementRef }) employeeDropdownToggle!: ElementRef;
+  @ViewChild('employeeDropdownContainer', { read: ElementRef }) employeeDropdownContainer!: ElementRef;
+
   selectedEmployees: any[] = [];   // multiple employees
   selectedFiles: File[] = [];      // multiple files
   isSubmitted = false;
@@ -42,7 +45,7 @@ canEditLetter = false;
 canDeleteLetter = false;
 canViewLetter = false;
 
-  constructor(private adminService: AdminService) { }
+  constructor(private adminService: AdminService, private elementRef: ElementRef) { }
   ngOnInit() {
      this.loadPermissions();
     this.loadDocumentTypes();
@@ -52,6 +55,7 @@ canViewLetter = false;
     this.loadEmployeeLetters();
     this.loadEmployees();
   }
+
   loadPermissions(): void {
 
   const menus = JSON.parse(sessionStorage.getItem('Menus') || '[]');
@@ -117,6 +121,21 @@ canViewLetter = false;
       x => x.employeeCode === emp.employeeCode
     );
   }
+
+  isAllSelected(): boolean {
+  return this.employees.length > 0 &&
+         this.selectedEmployees.length === this.employees.length;
+}
+
+toggleSelectAll(event: any): void {
+
+  if (event.target.checked) {
+    this.selectedEmployees = [...this.employees];
+  } else {
+    this.selectedEmployees = [];
+  }
+
+}
 
   loadEmployeeLetters() {
     this.adminService.getEmployeeLettersByEmployeeId(this.userId).subscribe({
@@ -416,6 +435,26 @@ canViewLetter = false;
   }
 
 
+  toggleEmpDropdown(event: MouseEvent) {
+    event.stopPropagation();
+    this.showEmpDropdown = true;
+  }
+
+  @HostListener('document:mousedown', ['$event'])
+  handleOutsideClick(event: MouseEvent) {
+    if (!this.showEmpDropdown) {
+      return;
+    }
+
+    const target = event.target as Node;
+    const clickedOnToggle = this.employeeDropdownToggle?.nativeElement.contains(target);
+    const clickedOnDropdown = this.employeeDropdownContainer?.nativeElement.contains(target);
+
+    if (!clickedOnToggle && !clickedOnDropdown) {
+      this.showEmpDropdown = false;
+    }
+  }
+
   onEmployeeChange(code: any) {
 
     const emp = this.employees.find(x => x.employeeCode == code);
@@ -437,4 +476,6 @@ canViewLetter = false;
         error: (err) => console.error(err)
       });
   }
+
+
 }
