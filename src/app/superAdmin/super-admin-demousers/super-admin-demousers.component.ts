@@ -367,15 +367,22 @@ export class SuperAdminDemousersComponent {
 
         error: (err: any) => {
 
-          Swal.fire(
-            'Error',
-            'Failed to create admin user',
-            'error'
-          );
+        let errorMessage = 'Failed to create admin user';
 
+        if (err.error && err.error.message) {
+          errorMessage = err.error.message;
         }
 
-      });
+        Swal.fire(
+          'Error',
+          errorMessage,
+          'error'
+        );
+
+      }
+
+    });
+
 
   }
 }
