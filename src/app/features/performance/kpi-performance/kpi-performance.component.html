@@ -143,7 +143,12 @@
             </td>
 
             <td>
-              <input type="number" formControlName="weightage" (keydown)="allowOnlyInteger($event)" class="form-control">
+              <!-- <input type="number" formControlName="weightage" (keydown)="allowOnlyInteger($event)" class="form-control"> -->
+           <input
+  type="number"
+  formControlName="weightage"
+  (keydown)="allowDecimal($event)"
+  class="form-control">
             </td>
 
             <td>
@@ -155,7 +160,12 @@
             </td>
 
             <td>
-              <input type="number" formControlName="selfRating" (keydown)="allowOnlyInteger($event)" class="form-control">
+              <!-- <input type="number" formControlName="selfRating" (keydown)="allowOnlyInteger($event)" class="form-control"> -->
+            <input
+  type="number"
+  formControlName="selfRating"
+  (keydown)="allowDecimal($event)"
+  class="form-control">
             </td>
 
             <td>
