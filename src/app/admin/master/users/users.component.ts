@@ -77,6 +77,25 @@ export class UsersComponent {
     this.loadDesignations();
   }
 
+cancelForm(): void {
+
+  Swal.fire({
+    title: 'Cancel?',
+    text: 'All entered values will be cleared.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Clear',
+    cancelButtonText: 'No'
+  }).then(result => {
+
+    if (result.isConfirmed) {
+      this.resetForm();
+    }
+
+  });
+
+}
+
   loadDepartments(): void {
   this.userService.getDepartments(this.userId).subscribe({
     next: (res: any) => {
