@@ -87,7 +87,7 @@
           <td>{{ f.alternatePhone || '-' }}</td>
           <td>{{ f.email || '-' }}</td>
           <td>{{ f.address || '-' }}</td>
-         <td *ngIf="canEdit || canDelete" class="action-icons">
+         <td *ngIf="canEdit || canDelete" class="action-icons text-center">
           <i class="fa-solid fa-pen" (click)="edit(f)" style="margin-right: 12px;" *ngIf="canEdit"></i>
           <i class="fa-solid fa-trash" style="color: #B02828;" (click)="delete(f.emergencyContactId)" *ngIf="canDelete"></i>
         </td>
