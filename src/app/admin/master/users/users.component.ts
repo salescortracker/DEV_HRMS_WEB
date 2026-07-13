@@ -303,12 +303,13 @@ onRegionChange(regionId: number): void {
     this.filteredDesignations = [];
     return;
   }
+  // this.filterRoles();
 
   this.filteredRoles = this.roles.filter(r =>
     Number(r.companyId) === Number(this.user.companyId) &&
     Number(r.regionId) === Number(regionId)
   );
-
+  console.log("Filtered Roles:", this.filteredRoles);
   this.filterDepartments();
   this.loadReportingToUsers(this.user.companyId, regionId);
   this.loadHrUsers(this.user.companyId, regionId);
@@ -316,6 +317,9 @@ onRegionChange(regionId: number): void {
   this.filteredDesignations = [];
   this.loadUsersForEmployeeCode();
   this.generateNextEmployeeCode();
+    console.log("Selected Company:", this.user.companyId);
+  console.log("Selected Region:", this.user.regionId);
+  console.log("Filtered Roles:", this.filteredRoles);
 }
 
 filterDepartments(): void {
@@ -360,13 +364,36 @@ filterDepartments(): void {
     next: (roles: RoleMaster[]) => {
      
       this.roles = roles;
+        console.log("All Roles:", this.roles);
       this.totalCount = roles.length;
+      // this.filteredRoles();
+      if (this.user.companyId && this.user.regionId) {
+        this.filteredRoles = this.roles.filter(r =>
+          Number(r.companyId) === Number(this.user.companyId) &&
+          Number(r.regionId) === Number(this.user.regionId)
+        );
+      }
+        console.log("Filtered Roles:", this.filteredRoles);
     },
     error: (err) => {
       console.error(err);
       Swal.fire('Error', 'Failed to load roles.', 'error');
     }
   });
+}
+filterRoles(): void {
+  debugger;
+  if (!this.user.companyId || !this.user.regionId) {
+    this.filteredRoles = [];
+    return;
+  }
+
+  this.filteredRoles = this.roles.filter(r =>
+    Number(r.companyId) === Number(this.user.companyId) &&
+    Number(r.regionId) === Number(this.user.regionId)
+  );
+
+  console.log("Filtered Roles:", this.filteredRoles);
 }
 
  // 🔹 Auto-generate Employee Code (Frontend only)

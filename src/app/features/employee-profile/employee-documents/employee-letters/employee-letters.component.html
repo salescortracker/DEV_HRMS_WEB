@@ -41,17 +41,17 @@
 
 
     <!-- Employee Code -->
-    <div class="col-md-4 position-relative">
+    <!-- <div class="col-md-4 position-relative">
       <label class="form-label">
         Employee Name <span class="text-danger">*</span>
       </label>
 
-      <!-- Click Box -->
+    
       <div class="form-control" (click)="showEmpDropdown = !showEmpDropdown" style="cursor:pointer;">
         {{ selectedEmployees.length ? selectedEmployees.length + ' Selected' : 'Select Employees' }}
       </div>
 
-      <!-- Dropdown -->
+      
       <div *ngIf="showEmpDropdown" class="border p-2 position-absolute w-100 bg-white"
         style="max-height:150px; overflow-y:auto; z-index:100;">
 
@@ -61,7 +61,54 @@
         </div>
 
       </div>
+    </div> -->
+
+    <div class="col-md-4 position-relative">
+
+  <label class="form-label">
+    Employee Name <span class="text-danger">*</span>
+  </label>
+
+  <div
+    class="form-control"
+    style="cursor:pointer"
+    (click)="toggleEmpDropdown($event)"
+    #employeeDropdownToggle>
+
+    {{ selectedEmployees.length
+      ? selectedEmployees.length + ' Selected'
+      : 'Select Employees' }}
+
+  </div>
+
+  <div
+    *ngIf="showEmpDropdown"
+    class="border p-2 position-absolute w-100 bg-white"
+    style="max-height:180px;overflow-y:auto;z-index:100;"
+    (click)="$event.stopPropagation()"
+    #employeeDropdownContainer>
+
+    <!-- Select All -->
+    <div class="mb-2 border-bottom pb-2">
+      <input
+        type="checkbox"
+        [checked]="isAllSelected()"
+        (change)="toggleSelectAll($event)">
+      <strong>Select All</strong>
     </div>
+
+    <!-- Employee List -->
+    <div *ngFor="let emp of employees">
+      <input
+        type="checkbox"
+        [checked]="isEmployeeSelected(emp)"
+        (change)="onEmployeeToggle(emp,$event)">
+      {{ emp.employeeName }} 
+    </div>
+
+  </div>
+
+</div>
 
   </div>
 
