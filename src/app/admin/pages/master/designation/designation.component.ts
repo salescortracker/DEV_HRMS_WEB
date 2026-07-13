@@ -64,7 +64,8 @@ filterDepartments(): void {
 
   this.filteredDepartments = this.departments.filter(d =>
     Number(d.companyId) === Number(this.designation.companyId) &&
-    Number(d.regionId) === Number(this.designation.regionId)
+    Number(d.regionId) === Number(this.designation.regionId) &&
+    d.isActive === true
   );
 
   console.log('Filtered Departments', this.filteredDepartments);

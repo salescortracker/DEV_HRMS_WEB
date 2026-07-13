@@ -102,7 +102,6 @@ userId: number = sessionStorage.getItem('UserId') ? Number(sessionStorage.getIte
   onSubmit(): void {
     debugger;
     if (this.isEditMode) {
-      this.department.departmentName=this.department.description;
       this.departmentService.updateDepartment(this.department.departmentId, this.department).subscribe({
         next: () => {
           Swal.fire('Updated!', 'Department updated successfully.', 'success');
