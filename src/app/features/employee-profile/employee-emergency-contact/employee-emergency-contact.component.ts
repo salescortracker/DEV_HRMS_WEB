@@ -40,8 +40,15 @@ export class EmployeeEmergencyContactComponent {
     this.emergencyForm = this.fb.group({
       emergencyContactId: [0],
       contactName: ['', Validators.required],
-      relationshipId: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
+      relationshipId: [0, Validators.required],
+      // phoneNumber: ['', Validators.required],
+      phoneNumber: [
+  '',
+  [
+    Validators.required,
+    Validators.pattern('^[0-9]{10}$')
+  ]
+],
       alternatePhone: [''],
       email: [''],
       address: [''],
@@ -98,9 +105,52 @@ debugger;
   // ➕ Add / ✏️ Update
   onSubmit() {
     //if (this.emergencyForm.invalid) return;
+  if (this.emergencyForm.invalid) {
 
+    this.emergencyForm.markAllAsTouched();
+
+    Swal.fire(
+      'Validation',
+      'Please fill all required fields.',
+      'warning'
+    );
+
+    return;
+  }
+    if (this.emergencyForm.value.relationshipId === 0) {
+
+    Swal.fire(
+      'Validation',
+      'Please select a relationship.',
+      'warning'
+    );
+
+    return;
+  }
     const payload = this.emergencyForm.value;
 
+  const duplicate = this.emergencyList.find(x =>
+
+    x.contactName.trim().toLowerCase() === payload.contactName.trim().toLowerCase()
+
+    &&
+
+    x.phoneNumber.trim() === payload.phoneNumber.trim()
+
+    &&
+
+    (!this.isEdit || x.emergencyContactId !== payload.emergencyContactId)
+
+  );
+
+  if (duplicate) {
+    Swal.fire(
+      'Duplicate',
+      'Emergency contact already exists.',
+      'warning'
+    );
+    return;
+  }
     if (this.isEdit) {
       this.empFamilyService.updateEmergencyContact(payload).subscribe({
   next: () => {
@@ -168,11 +218,29 @@ error: (err) => {
   }
 }
 
+  // resetForm() {
+  //   this.emergencyForm.reset();
+  //   this.emergencyForm.patchValue({ emergencyContactId: 0, userId: this.userId, companyId: this.companyId,
+  //   regionId: this.regionId });
+  //   this.isEdit = false;
+  // }
   resetForm() {
-    this.emergencyForm.reset();
-    this.emergencyForm.patchValue({ userId: this.userId });
-    this.isEdit = false;
-  }
+
+  this.emergencyForm.reset({
+    emergencyContactId: 0,
+    contactName: '',
+    relationshipId: 0,
+    phoneNumber: '',
+    alternatePhone: '',
+    email: '',
+    address: '',
+    userId: this.userId,
+    companyId: this.companyId,
+    regionId: this.regionId
+  });
+
+  this.isEdit = false;
+}
 canCreate: boolean = true;
 canEdit: boolean = false;
 canDelete: boolean = false;
