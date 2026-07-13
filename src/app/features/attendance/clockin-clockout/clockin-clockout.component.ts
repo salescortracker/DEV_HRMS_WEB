@@ -395,20 +395,20 @@ this.todayDuration =
       this.loadAll();
     });
   }
-  formatDuration(totalMinutes: number): string {
+ formatDuration(totalMinutes: number): string {
 
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
 
   if (hours > 0 && minutes > 0) {
-    return `${hours} hr ${minutes} min`;
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
   }
 
   if (hours > 0) {
-    return `${hours} hr`;
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
   }
 
-  return `${minutes} min`;
+  return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
 }
   
  getReferenceTime(): string | null {
