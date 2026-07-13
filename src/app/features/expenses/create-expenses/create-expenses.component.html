@@ -64,8 +64,8 @@
     </div>
     <!-- (change)="onCategoryChange($event)" -->
     <div class="col-md-4">
-      <label class="form-label">Department</label>
-      <input type="text" class="form-control" formControlName="departmentName">
+      <label class="form-label">Department<span class="text-danger"> *</span></label>
+      <input type="text" class="form-control" formControlName="departmentName" placeholder="Enter department">
     </div>
 
     <div class="col-md-4">
@@ -80,7 +80,18 @@
           </option>
         </select>
 
-        <input type="number" class="form-control" formControlName="amount" placeholder="Enter amount">
+        <input
+            type="number"
+            class="form-control"
+            formControlName="amount"
+            placeholder="Enter amount"
+            min="1"
+            required>
+      </div>
+      <div class="text-danger" *ngIf="expenseForm.get('amount')?.invalid && expenseForm.get('amount')?.touched">
+        <span *ngIf="expenseForm.get('amount')?.errors?.['required']">Amount is required.</span>
+        <span *ngIf="expenseForm.get('amount')?.errors?.['min']">Amount must be at least 1.</span>
+        <span *ngIf="expenseForm.get('amount')?.errors?.['pattern']">Enter a valid amount.</span>
       </div>
     </div>
   </div>
@@ -106,6 +117,13 @@
         Upload Receipt <span class="text-danger">*</span>
       </label>
       <input type="file" class="form-control" (change)="onFileChange($event)">
+
+        <div
+          class="text-danger"
+          *ngIf="expenseForm.get('receipt')?.invalid &&
+                expenseForm.get('receipt')?.touched">
+          Receipt is required.
+        </div>
     </div>
     <div class="mb-3">
       <label class="form-label">HR Email (CC)</label>
@@ -115,9 +133,21 @@
 
   <!-- SUBMIT -->
   <div class="text-end mt-3">
-    <button *ngIf="canCreateExpense" type="submit" class="btn btn-primary">
-      Create Expense
-    </button>
+    <button
+  *ngIf="canCreateExpense"
+  type="submit"
+  class="btn btn-primary"
+  [disabled]="
+      !expenseForm.get('projectName')?.value ||
+      !expenseForm.get('location')?.value ||
+      !expenseForm.get('country')?.value ||
+      !expenseForm.get('expenseCategoryId')?.value ||
+      !expenseForm.get('amount')?.value ||
+      !expenseForm.get('expenseDate')?.value ||
+      !expenseForm.get('reason')?.value ||
+      !selectedFile">
+  Create Expense
+</button>
   </div>
 </form>
 
