@@ -250,10 +250,17 @@ canDeleteEmployeeSubmission = false;
       })
     );
   }
-allowOnlyInteger(event: KeyboardEvent) {
-  const invalidKeys = ['.', ',', 'e', 'E', '-', '+'];
+allowDecimal(event: KeyboardEvent) {
+  const input = event.target as HTMLInputElement;
 
-  if (invalidKeys.includes(event.key)) {
+  // Allow only one decimal point
+  if (event.key === '.' && input.value.includes('.')) {
+    event.preventDefault();
+    return;
+  }
+
+  // Prevent scientific notation and negative values
+  if (['e', 'E', '+', '-'].includes(event.key)) {
     event.preventDefault();
   }
 }
