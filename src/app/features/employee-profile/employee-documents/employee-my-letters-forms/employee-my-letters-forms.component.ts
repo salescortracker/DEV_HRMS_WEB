@@ -47,37 +47,59 @@ loadMyLetters() {
     this.regionId
   ).subscribe({
     next: (res: any[]) => {
-      this.letters = res.map(x => ({
-        id: x.id,
-        documentType: x.documentTypeId,   // FIX
-        title: x.documentName,            // FIX
-        empCode: x.employeeCode,
-        empName: x.employeeName,
-        issuedDate: x.issuedDate,
-        validityDate: x.validityDate,
-        fileName: x.fileName,
-        remarks: x.remarks,
-        confidential: x.isConfidential
-      }));
+      this.letters = res.map(x => {
+        const allFiles = (x.fileName || '').toString().split(',').map((f: string) => f.trim()).filter((f: string) => f);
+        const latestFile = allFiles.length ? allFiles[allFiles.length - 1] : '';
+
+        return {
+          id: x.id,
+          documentType: x.documentTypeId,
+          title: x.documentName,
+          empCode: x.employeeCode,
+          empName: x.employeeName,
+          issuedDate: x.issuedDate,
+          validityDate: x.validityDate,
+          fileName: latestFile,
+          remarks: x.remarks,
+          confidential: x.isConfidential
+        };
+      });
     },
     error: (err) => console.error(err)
   });
 }
 
-
-
-  viewDocument(file: string) {
-    if (!file) {
-      return;
-    }
-
-    const trimmedFile = file.trim();
-    const isAbsolute = /^https?:\/\//i.test(trimmedFile);
-    const path = isAbsolute
-      ? trimmedFile
-      : `${environment.baseurl}/${environment.LettersPath.replace(/^\/+/, '')}${trimmedFile}`;
-
-    window.open(path, '_blank');
+viewDocument(file: string) {
+  if (!file) {
+    return;
   }
 
+  const trimmedFile = file.trim();
+  const isAbsolute = /^https?:\/\//i.test(trimmedFile);
+  const filePath = isAbsolute
+    ? trimmedFile
+    : `${environment.baseurl.replace(/\/+$/, '')}/${environment.LettersPath.replace(/^\/+|\/+$/g, '')}/${trimmedFile.split('/').map(encodeURIComponent).join('/')}`;
+
+  fetch(filePath)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Download failed with status ${response.status}`);
+      }
+      return response.blob();
+    })
+    .then(blob => {
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = trimmedFile.split('/').pop() || 'document';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    })
+    .catch(err => {
+      console.error('Download failed', err);
+    });
+}
 }
