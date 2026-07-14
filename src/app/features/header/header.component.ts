@@ -445,6 +445,7 @@ loadProfilePicture() {
       next: () => {
 
         this.loadAttendance();
+        this.attendanceService.notifyAttendanceChanged();
 
       },
 
@@ -515,6 +516,7 @@ loadProfilePicture() {
       next: () => {
 
         this.loadAttendance();
+        this.attendanceService.notifyAttendanceChanged();
 
         Swal.fire(
           'Clock Out Successful',
@@ -890,7 +892,18 @@ this.clockInDisplay = this.firstClockIn ?? '--:--';
   // =========================
   // FINAL OUTPUT
   // =========================
-  this.totalHoursDisplay = this.formatDuration(totalMs);
+  // this.totalHoursDisplay = this.formatDuration(totalMs);
+
+  const totalSeconds = Math.floor(totalMs / 1000);
+
+const hours = Math.floor(totalSeconds / 3600);
+const minutes = Math.floor((totalSeconds % 3600) / 60);
+const seconds = totalSeconds % 60;
+
+this.totalHoursDisplay =
+  `${hours.toString().padStart(2,'0')}:` +
+  `${minutes.toString().padStart(2,'0')}:` +
+  `${seconds.toString().padStart(2,'0')}`;
 }
 formatDuration(totalMinutes: number): string {
 
@@ -1519,35 +1532,114 @@ formatDuration(totalMinutes: number): string {
   return this.lastClockOut;     // 🔴 completed state
 }
 
+// calculateStatus() {
+// debugger;
+//   const refTime = this.getReferenceTime();
+
+//   if (!refTime || !this.shiftStartTime || !this.graceTime) {
+//     this.earlyLateStatus = '';
+//     return;
+//   }
+
+//   const time = this.parseTime(refTime);
+
+//   const [sH, sM] = this.shiftStartTime.split(':').map(Number);
+
+//   const shiftStart = new Date();
+//   shiftStart.setHours(sH, sM, 0, 0);
+
+//   // On Time Window = 5 mins
+//   const onTimeEnd = new Date(
+//     shiftStart.getTime() + (5 * 60000)
+//   );
+
+//   // Grace Window
+//   const [gH, gM] = this.graceTime.split(':').map(Number);
+
+//   const graceEnd = new Date(
+//     shiftStart.getTime() + ((gH * 60) + gM) * 60000
+//   );
+
+//   // EARLY
+//   if (time < shiftStart) {
+
+//     const mins = Math.floor(
+//       (shiftStart.getTime() - time.getTime()) / 60000
+//     );
+
+//     this.earlyLateStatus = `Early by ${this.formatDuration(mins)}`;
+//   }
+//    // ON TIME (0-5 mins)
+//   else if (time <= onTimeEnd && time==time) {
+
+//     this.earlyLateStatus = 'On Time';
+//   }
+// // GRACE
+//   else if (time <= onTimeEnd) {
+
+//     const mins = Math.floor(
+//       (time.getTime() - shiftStart.getTime()) / 60000
+//     );
+
+//     this.earlyLateStatus = `Grace ${this.formatDuration(mins)}`;
+//   }
+ 
+
+  
+
+//   // LATE
+//   else {
+
+//     const mins = Math.floor(
+//       (time.getTime() - onTimeEnd.getTime()) / 60000
+//     );
+
+//     this.earlyLateStatus = `Late by ${this.formatDuration(mins)}`;
+//   }
+// }
+
+
 calculateStatus() {
-debugger;
+
+  if (!this.isClockedIn && this.lastClockOut) {
+  this.earlyLateStatus = `Clocked Out At ${this.lastClockOut}`;
+  return;
+}
+
   const refTime = this.getReferenceTime();
 
-  if (!refTime || !this.shiftStartTime || !this.graceTime) {
-    this.earlyLateStatus = '';
-    return;
-  }
+  // if (!refTime || !this.shiftStartTime || !this.graceTime) {
+  //   this.earlyLateStatus = '';
+  //   return;
+  // }
 
-  const time = this.parseTime(refTime);
+  // const time = this.parseTime(refTime);
+  if (!this.firstClockIn || !this.shiftStartTime || !this.graceTime) {
+  this.earlyLateStatus = '';
+  return;
+}
+
+const time = this.parseTime(this.firstClockIn);
 
   const [sH, sM] = this.shiftStartTime.split(':').map(Number);
 
   const shiftStart = new Date();
   shiftStart.setHours(sH, sM, 0, 0);
 
-  // On Time Window = 5 mins
-  const onTimeEnd = new Date(
-    shiftStart.getTime() + (5 * 60000)
-  );
-
-  // Grace Window
-  const [gH, gM] = this.graceTime.split(':').map(Number);
+  // 5 minute on-time window
+  const onTimeEnd = new Date(shiftStart.getTime() + 5 * 60000);
+console.log('Shift Start:', this.shiftStartTime);
+console.log('Clock In:', refTime);
+console.log('Grace Time:', this.graceTime);
+  // Grace end
+  const [gH, gM, gS] = this.graceTime.split(':').map(Number);
 
   const graceEnd = new Date(
-    shiftStart.getTime() + ((gH * 60) + gM) * 60000
+    shiftStart.getTime() +
+    (((gH * 60) + gM) * 60000) +
+    ((gS || 0) * 1000)
   );
 
-  // EARLY
   if (time < shiftStart) {
 
     const mins = Math.floor(
@@ -1556,29 +1648,25 @@ debugger;
 
     this.earlyLateStatus = `Early by ${this.formatDuration(mins)}`;
   }
-   // ON TIME (0-5 mins)
-  else if (time <= onTimeEnd && time==time) {
+
+  else if (time <= onTimeEnd) {
 
     this.earlyLateStatus = 'On Time';
   }
-// GRACE
-  else if (time <= onTimeEnd) {
+
+  else if (time <= graceEnd) {
 
     const mins = Math.floor(
-      (time.getTime() - shiftStart.getTime()) / 60000
+      (graceEnd.getTime() - time.getTime()) / 60000
     );
 
     this.earlyLateStatus = `Grace ${this.formatDuration(mins)}`;
   }
- 
 
-  
-
-  // LATE
   else {
 
     const mins = Math.floor(
-      (time.getTime() - onTimeEnd.getTime()) / 60000
+      (time.getTime() - graceEnd.getTime()) / 60000
     );
 
     this.earlyLateStatus = `Late by ${this.formatDuration(mins)}`;
@@ -1608,6 +1696,9 @@ debugger;
   if (status.includes('late')) {
     return 'status-late';
   }
+  if (status.includes('clocked out')) {
+  return 'status-clockout';
+}
 
   return '';
 }
