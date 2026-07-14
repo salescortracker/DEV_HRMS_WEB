@@ -133,40 +133,102 @@ canCreate: boolean = false;
 
   constructor(private leaveService: EmployeeResignationService, private userService: AdminService) { }
 
+  // validateLeaveLimit() {
+  //   let available = 0;
+  //   if (this.leaveType === "Sick Leave") {
+  //     available = this.sickAvailable;
+  //   }
+
+  //   if (this.leaveType === "Casual Leave") {
+  //     available = this.casualAvailable;
+  //   }
+  //    this.leavedays= this.leaveList.reduce((sum, l) => sum + l.totalDays, 0);
+
+
+  //   // If half day -> allow only if available >= 0.5
+  //   if (this.isHalfDay) {
+  //     if (this.availableLeaves < 0.5) {
+  //       Swal.fire("Not Allowed", "You do not have enough leave balance.", "warning");
+  //       this.totalDays = 0;
+  //       this.endDate = "";
+  //     }
+  //     return;
+  //   }
+
+  //   // If applying full leave days
+  //   if (this.totalDays > this.availableLeaves) {
+  //     Swal.fire(
+  //       "Not Allowed",
+  //       `You only have ${this.availableLeaves} days available.`,
+  //       "warning"
+  //     );
+
+  //     this.totalDays = 0;
+  //     this.endDate = "";
+  //   }
+  // }
+
+
   validateLeaveLimit() {
-    let available = 0;
-    if (this.leaveType === "Sick Leave") {
-      available = this.sickAvailable;
-    }
 
-    if (this.leaveType === "Casual Leave") {
-      available = this.casualAvailable;
-    }
-     this.leavedays= this.leaveList.reduce((sum, l) => sum + l.totalDays, 0);
+  if (!this.leaveType) {
 
+    Swal.fire(
+      "Not Allowed",
+      "Please select a Leave Type first.",
+      "warning"
+    ).then(() => {
+      this.isHalfDay = false;   // ✅ Uncheck after OK
+    });
 
-    // If half day -> allow only if available >= 0.5
-    if (this.isHalfDay) {
-      if (this.availableLeaves < 0.5) {
-        Swal.fire("Not Allowed", "You do not have enough leave balance.", "warning");
-        this.totalDays = 0;
-        this.endDate = "";
-      }
-      return;
-    }
+    this.totalDays = 0;
+    this.endDate = "";
+    return;
+  }
 
-    // If applying full leave days
-    if (this.totalDays > this.availableLeaves) {
+  const balance = this.leaveBalances.find(
+    x => x.leaveTypeName === this.leaveType
+  );
+
+  const available = Number(balance?.remainingLeaves ?? 0);
+
+  this.leavedays = this.leaveList.reduce(
+    (sum, l) => sum + (l.isHalfDay ? 0.5 : l.totalDays),
+    0
+  );
+
+  // Half Day validation
+  if (this.isHalfDay) {
+
+    if (available < 0.5) {
+
       Swal.fire(
         "Not Allowed",
-        `You only have ${this.availableLeaves} days available.`,
+        "You do not have enough leave balance.",
         "warning"
-      );
+      ).then(() => {
+        this.isHalfDay = false;   // ✅ Automatically uncheck after OK
+      });
 
       this.totalDays = 0;
       this.endDate = "";
+      return;
     }
   }
+
+  // Full Day validation
+  if (this.totalDays > available) {
+
+    Swal.fire(
+      "Not Allowed",
+      `You only have ${available} days available.`,
+      "warning"
+    );
+
+    this.totalDays = 0;
+    this.endDate = "";
+  }
+}
   loadPermission() {
   const userId = Number(sessionStorage.getItem("UserId"));
   const menus = JSON.parse(sessionStorage.getItem("Menus") || "[]");
@@ -491,6 +553,19 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
   }
   onHalfDayChange() {
     if (this.isHalfDay) {
+      // Leave Type mandatory
+    if (!this.leaveType) {
+      Swal.fire(
+        "Not Allowed",
+        "Please select a Leave Type first.",
+        "warning"
+      ).then(() => {
+        this.isHalfDay = false;
+      });
+
+      return;
+    }
+
       this.totalDays = 0.5;
       this.validateLeaveLimit();
       // If half day selected, force same date
