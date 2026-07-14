@@ -80,25 +80,9 @@
                         {{ emp.clockIn ? emp.clockIn : '--:--' }}
                     </td>
                     <td>
-
-                        <span *ngIf="emp.arrivalStatus?.includes('Late')" class="text-danger fw-bold">
-
+                        <span *ngIf="emp.arrivalStatus" [ngClass]="getArrivalClass(emp)">
                             {{ emp.arrivalStatus }}
-
                         </span>
-
-                        <span *ngIf="emp.arrivalStatus?.includes('Early')" class="text-success fw-bold">
-
-                            {{ emp.arrivalStatus }}
-
-                        </span>
-
-                        <span *ngIf="emp.arrivalStatus === 'On Time'" class="text-primary fw-bold">
-
-                            {{ emp.arrivalStatus }}
-
-                        </span>
-
                     </td>
 
                     <td>
