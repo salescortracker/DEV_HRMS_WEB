@@ -13,7 +13,14 @@
     input[type="radio"] {
       display: none;
     }
-
+.status-late {
+  background: #f8d7da;
+  color: #dc3545;
+}
+.status-early{
+  background: #f8d7da;
+  color: #dc3545;
+}
     /* Tab Header */
     .tab-header {
       display: flex;

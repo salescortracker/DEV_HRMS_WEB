@@ -13,8 +13,9 @@
         <i *ngIf="earlyLateStatus.includes('Early')" class="fa fa-arrow-up"></i>
         <i *ngIf="earlyLateStatus.includes('On Time')" class="fa fa-check"></i>
         <i *ngIf="earlyLateStatus.includes('Grace')" class="fa fa-hourglass-half"></i>
+        <i *ngIf="earlyLateStatus.includes('Clocked Out')" class="fa fa-sign-out-alt"></i>
 
-        Status: {{ clockStatus }} {{ earlyLateStatus }}
+        Status:  {{ earlyLateStatus }}
       </span>
       <!-- ✅ CLOCK IN BADGE -->
       <span class="status-badge fancy-badge badge-clockin">

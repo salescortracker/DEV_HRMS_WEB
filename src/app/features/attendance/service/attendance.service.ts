@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export interface CreateWorkFromHomeRequest {
@@ -38,7 +38,14 @@ export interface BulkApproveRejectWorkFromHome {
 })
 export class AttendanceService {
 private baseUrl = `${environment.apiUrl}/attendance`;
+  private attendanceRefreshSubject = new BehaviorSubject<void>(undefined);
+  attendanceRefresh$ = this.attendanceRefreshSubject.asObservable();
+
   constructor(private http: HttpClient) { }
+
+  notifyAttendanceChanged(): void {
+    this.attendanceRefreshSubject.next();
+  }
   // 🔹 CREATE WFH / REMOTE REQUEST
   createRequest(payload: CreateWorkFromHomeRequest): Observable<any> {
     return this.http.post(`${this.baseUrl}/createWorkfromhome`, payload);

@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { finalize } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { AdminService } from '../../../admin/servies/admin.service';
 import { EmployeeResignationService } from '../../employee-profile/employee-services/employee-resignation.service';
+import { AttendanceService } from '../service/attendance.service';
 import { timeEnd } from 'node:console';
 
 interface AttendanceRecord {
@@ -18,7 +20,7 @@ interface AttendanceRecord {
   templateUrl: './clockin-clockout.component.html',
   styleUrl: './clockin-clockout.component.css'
 })
-export class ClockinClockoutComponent {
+export class ClockinClockoutComponent implements OnInit, OnDestroy {
   shiftStartTime: string = ''; // e.g. "09:00"
   earlyLateStatus: string = '';  // FINAL TEXT to show in UI
   graceTime: string = '';        // from API
@@ -37,6 +39,7 @@ export class ClockinClockoutComponent {
   todayDuration = '--:--';
   currentDate = new Date();
   records: any[] = [];
+  private destroy$ = new Subject<void>();
 
   fromDate: string = '';
   toDate: string = '';
@@ -47,14 +50,31 @@ export class ClockinClockoutComponent {
   clockInRecords: any[] = [];
 clockOutRecords: any[] = [];
 firstClockIn: any;
-  constructor(private fb: FormBuilder, private adminService: AdminService, private employeeResignationService: EmployeeResignationService) { }
+  constructor(
+    private fb: FormBuilder,
+    private adminService: AdminService,
+    private employeeResignationService: EmployeeResignationService,
+    private attendanceService: AttendanceService
+  ) { }
 
   ngOnInit(): void {
     this.loadSessionUser();
     this.initForm();
     this.patchEmployeeData();
+
+    this.attendanceService.attendanceRefresh$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadAttendance();
+      });
+
     this.loadAttendance();
     this.getshiftallocationName();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   initForm() {
@@ -456,7 +476,15 @@ calculateLateLogin() {
 
     this.lateLoginText = 'On Time';
   }
+// GRACE (after 5 mins and before grace end)
+else if (clockIn <= graceEnd) {
 
+  const mins = Math.floor(
+    (graceEnd.getTime() - clockIn.getTime()) / 60000
+  );
+
+  this.lateLoginText = `Grace ${this.formatDuration(mins)}`;
+}
   // LATE
   else if (clockIn <= onTimeEnd) {
 
@@ -477,18 +505,45 @@ else {
   this.lateLoginText = `Late by ${this.formatDuration(mins)}`;
 }
 }
+  // getStatusClass(): string {
+
+  //   if (!this.lateLoginText) return '';
+
+  //   const text = this.lateLoginText.toLowerCase();
+
+  //   if (text.includes('late')) return 'badge-late';
+  //   if (text.includes('early')) return 'badge-early';
+  //   if (text.includes('on time')) return 'badge-ontime';
+
+  //   return 'badge-default';
+  // }
+
   getStatusClass(): string {
 
-    if (!this.lateLoginText) return '';
-
-    const text = this.lateLoginText.toLowerCase();
-
-    if (text.includes('late')) return 'badge-late';
-    if (text.includes('early')) return 'badge-early';
-    if (text.includes('on time')) return 'badge-ontime';
-
-    return 'badge-default';
+  if (!this.lateLoginText) {
+    return '';
   }
+
+  const status = this.lateLoginText.toLowerCase();
+
+  if (status.includes('late')) {
+    return 'status-late';
+  }
+
+  if (status.includes('grace')) {
+    return 'status-late';   // Same style as Late
+  }
+
+  if (status.includes('early')) {
+    return 'status-early';
+  }
+
+  if (status.includes('on time')) {
+    return 'status-ontime';
+  }
+
+  return '';
+}
 
   searchAttendance() {
 
