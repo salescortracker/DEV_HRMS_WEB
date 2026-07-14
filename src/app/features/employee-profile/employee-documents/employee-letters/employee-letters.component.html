@@ -272,7 +272,7 @@
           </th>
 
           <th>File</th>
-          <th *ngIf="canEditLetter || canDeleteLetter">Actions</th>
+          <!-- <th *ngIf="canEditLetter || canDeleteLetter">Actions</th> -->
         </tr>
       </thead>
 
@@ -303,10 +303,10 @@
             </span>
           </td>
 
-          <td *ngIf="canEditLetter || canDeleteLetter" class="action-icons">
+          <!-- <td *ngIf="canEditLetter || canDeleteLetter" class="action-icons">
             <i *ngIf="canEditLetter" class="fa-solid fa-pen me-2" style="color: black;" (click)="editLetter(l)"></i>
             <i *ngIf="canDeleteLetter" class="fa-solid fa-trash" style="color: black;" (click)="deleteLetter(l.id)"></i>
-          </td>
+          </td> -->
         </tr>
       </tbody>
 
