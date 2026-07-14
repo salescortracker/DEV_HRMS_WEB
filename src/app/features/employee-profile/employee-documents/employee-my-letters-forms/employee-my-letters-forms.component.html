@@ -24,12 +24,10 @@
 
           <td>
             <span *ngIf="l.fileName">
-              <span *ngFor="let f of l.fileName.split(',')">
-                <a style="cursor:pointer;color:blue"
-                   (click)="viewDocument(f)">
-                  View / Download
-                </a><br>
-              </span>
+              <a style="cursor:pointer;color:blue"
+                 (click)="viewDocument(l.fileName)">
+                View / Download
+              </a>
             </span>
           </td>
         </tr>
