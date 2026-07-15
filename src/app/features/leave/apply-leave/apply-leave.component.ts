@@ -565,6 +565,10 @@ shouldCountLeaveForBalance(leave: LeaveRequest): boolean {
 
       return;
     }
+     // ✅ If start date already selected
+    if (this.startDate) {31
+      this.endDate = this.startDate;
+    }
 
       this.totalDays = 0.5;
       this.validateLeaveLimit();
@@ -709,6 +713,10 @@ onStartDateChange() {
   `Leave cannot be applied on ${this.getDayName(date)} because it is configured as a Week Off.`;
     this.startDate = "";
     return;
+  }
+  // ✅ Half Day -> End Date should always be same as Start Date
+  if (this.isHalfDay) {
+    this.endDate = this.startDate;
   }
 
   this.calculateTotalDays();

@@ -50,12 +50,16 @@ helpdeskPageSize = 5;
   weeklyData: any[] = [];
   weekoffDates: string[] = [];
 
-  leaveApprovalSummary = {
-    approved: 0,
-    pending: 0,
-    rejected: 0
-  };
 
+
+leaveApprovalSummary: any = {
+  approved: 0,
+  pending: 0,
+  rejected: 0,
+  approvedDetails: [],
+  pendingDetails: [],
+  rejectedDetails: []
+};
   leaveCards: any[] = [];
 
   statCards: any[] = [];
@@ -359,7 +363,7 @@ updateTodayHoursCard() {
   const isToday = dateStr === todayStr;
 
   let hours = 0;
-  let color = '#007bff';
+  let color = '#f4f5f6';
 
   // ================= WEEKOFF =================
   if (isWeekoff) {
@@ -443,29 +447,100 @@ updateChartTodayHours(totalHours: number) {
       });
   }
 
+  // calculateLeaveSummary() {
+  //   let approved = 0, pending = 0, rejected = 0;
+
+  //   this.userLeaves.forEach(l => {
+  //     const s = l.status?.toLowerCase();
+  //     if (s === 'approved') approved++;
+  //     else if (s === 'rejected') rejected++;
+  //     else pending++;
+  //   });
+
+  //   this.leaveApprovalSummary = { approved, pending, rejected };
+
+  //   this.leaveCards = [
+  //     { label: 'Approved', value: approved, icon: 'fas fa-check-circle' },
+  //     { label: 'Pending', value: pending, icon: 'fas fa-hourglass-half' },
+  //     { label: 'Rejected', value: rejected, icon: 'fas fa-times-circle' }
+  //   ];
+  // }
+
   calculateLeaveSummary() {
-    let approved = 0, pending = 0, rejected = 0;
 
-    this.userLeaves.forEach(l => {
-      const s = l.status?.toLowerCase();
-      if (s === 'approved') approved++;
-      else if (s === 'rejected') rejected++;
-      else pending++;
-    });
+  let approved = 0, pending = 0, rejected = 0;
 
-    this.leaveApprovalSummary = { approved, pending, rejected };
+  const approvedDetails: any[] = [];
+  const pendingDetails: any[] = [];
+  const rejectedDetails: any[] = [];
 
-    this.leaveCards = [
-      { label: 'Approved', value: approved, icon: 'fas fa-check-circle' },
-      { label: 'Pending', value: pending, icon: 'fas fa-hourglass-half' },
-      { label: 'Rejected', value: rejected, icon: 'fas fa-times-circle' }
-    ];
-  }
+  this.userLeaves.forEach(l => {
+
+    const status = (l.status || '').toLowerCase();
+    const leaveType = l.leaveTypeName || l.leaveType || 'Unknown';
+
+    if (status === 'approved') {
+
+      approved++;
+
+      const item = approvedDetails.find(x => x.leaveType === leaveType);
+
+      if (item)
+        item.count++;
+      else
+        approvedDetails.push({ leaveType, count: 1 });
+
+    }
+    else if (status === 'rejected') {
+
+      rejected++;
+
+      const item = rejectedDetails.find(x => x.leaveType === leaveType);
+
+      if (item)
+        item.count++;
+      else
+        rejectedDetails.push({ leaveType, count: 1 });
+
+    }
+    else {
+
+      pending++;
+
+      const item = pendingDetails.find(x => x.leaveType === leaveType);
+
+      if (item)
+        item.count++;
+      else
+        pendingDetails.push({ leaveType, count: 1 });
+
+    }
+
+  });
+
+  this.leaveApprovalSummary = {
+    approved,
+    pending,
+    rejected,
+    approvedDetails,
+    pendingDetails,
+    rejectedDetails
+  };
+
+  this.leaveCards = [
+    { label: 'Approved', value: approved, icon: 'fas fa-check-circle' },
+    { label: 'Pending', value: pending, icon: 'fas fa-hourglass-half' },
+    { label: 'Rejected', value: rejected, icon: 'fas fa-times-circle' }
+  ];
+}
 
   // ================= TICKETS =================
   loadTickets() {
     this.helpdeskService.getMyTickets(this.userId)
-      .subscribe(res => this.tickets = res || []);
+      .subscribe(res => {
+        this.tickets = res || [];
+        this.helpdeskPage = 1;
+      });
   }
 
   navigateToLeaveApprovals(label: string) {
@@ -481,6 +556,7 @@ updateChartTodayHours(totalHours: number) {
           ...t,
           timesheetDate: new Date(t.timesheetDate)
         }));
+        this.timesheetPage = 1;
       });
   }
 
@@ -508,9 +584,15 @@ updateChartTodayHours(totalHours: number) {
 }
 
 get totalTimesheetPages() {
-  return Math.ceil(
-    this.submittedTimesheets.length / this.timesheetPageSize
-  );
+  return Math.max(1, Math.ceil(this.submittedTimesheets.length / this.timesheetPageSize));
+}
+
+get timesheetPages(): number[] {
+  return Array.from({ length: this.totalTimesheetPages }, (_, index) => index + 1);
+}
+
+goToTimesheetPage(page: number): void {
+  this.timesheetPage = Math.min(Math.max(page, 1), this.totalTimesheetPages);
 }
 
 get paginatedTickets() {
@@ -523,8 +605,15 @@ get paginatedTickets() {
 }
 
 get totalTicketPages() {
-  return Math.ceil(
-    this.tickets.length / this.helpdeskPageSize
-  );
+  return Math.max(1, Math.ceil(this.tickets.length / this.helpdeskPageSize));
 }
+
+get ticketPages(): number[] {
+  return Array.from({ length: this.totalTicketPages }, (_, index) => index + 1);
+}
+
+goToTicketPage(page: number): void {
+  this.helpdeskPage = Math.min(Math.max(page, 1), this.totalTicketPages);
+}
+
 }

@@ -42,12 +42,44 @@
     <h3>Leave Summary</h3>
 
     <div class="leave-summary">
-      <div *ngFor="let s of leaveCards" class="leave-box clickable" [routerLink]="['/leave-management']" [queryParams]="{ tab: 'approvals' }">
-        <i [class]="s.icon"></i>
-        <p>{{ s.label }}</p>
-        <h4>{{ s.value }}</h4>
-      </div>
+
+  <div *ngFor="let s of leaveCards" class="leave-box">
+
+    <i [class]="s.icon"></i>
+
+    <p>{{ s.label }}</p>
+
+    <h4>{{ s.value }}</h4>
+
+    <!-- Tooltip -->
+    <div class="tooltip-box">
+
+      <!-- Approved -->
+      <ng-container *ngIf="s.label === 'Approved'">
+        <div *ngFor="let x of leaveApprovalSummary.approvedDetails">
+          {{ x.leaveType }} : {{ x.count }}
+        </div>
+      </ng-container>
+
+      <!-- Pending -->
+      <ng-container *ngIf="s.label === 'Pending'">
+        <div *ngFor="let x of leaveApprovalSummary.pendingDetails">
+          {{ x.leaveType }} : {{ x.count }}
+        </div>
+      </ng-container>
+
+      <!-- Rejected -->
+      <ng-container *ngIf="s.label === 'Rejected'">
+        <div *ngFor="let x of leaveApprovalSummary.rejectedDetails">
+          {{ x.leaveType }} : {{ x.count }}
+        </div>
+      </ng-container>
+
     </div>
+
+  </div>
+
+</div>
   </div>
 
   <!-- QUICK ACTIONS -->
