@@ -351,6 +351,15 @@ viewDocument(path: string) {
   const url = `${environment.fileBaseUrl}${cleanPath}`;
   window.open(url, '_blank');
 }
+getSelectedEmployeeNames(): string {
+  if (!this.selectedEmployees || this.selectedEmployees.length === 0) {
+    return '';
+  }
+
+  return this.selectedEmployees
+    .map((e: any) => e.employeeName)
+    .join(', ');
+}
 
   // ---------------- ADD / UPDATE FORM ----------------
 onSubmit() {

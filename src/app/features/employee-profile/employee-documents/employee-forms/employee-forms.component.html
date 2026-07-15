@@ -28,9 +28,9 @@
       <label class="form-label">
         Employee Name <span class="text-danger">*</span>
       </label>
-
+     <div class="employee-dropdown-wrapper">
       <div class="form-control" (click)="showEmpDropdown = !showEmpDropdown">
-        {{ selectedEmployees.length ? selectedEmployees.length + ' Selected' : 'Select Employees' }}
+        {{ getSelectedEmployeeNames() || 'Select Employees' }}
       </div>
 
       <div *ngIf="showEmpDropdown" class="border p-2 position-absolute w-100 bg-white">
@@ -39,6 +39,8 @@
           {{ emp.employeeName }} 
         </div>
       </div>
+    </div>
+
 
 
     </div>
