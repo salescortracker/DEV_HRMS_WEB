@@ -50,6 +50,21 @@ regionName: string = '';
   shiftAllocationName: string = '';
   ShiftstartTime: string = '';
   ShiftendTime: string = '';
+  getLinkedInUrl(value: string): string {
+  if (!value) {
+    return '#';
+  }
+
+  value = value.trim();
+
+  // If full URL is already stored
+  if (value.startsWith('http://') || value.startsWith('https://')) {
+    return value;
+  }
+
+  // If only username is stored
+  return `https://www.linkedin.com/in/${value}`;
+}
   getshiftallocationName() {
     debugger;
     this.employeeCode = sessionStorage.getItem('EmployeeCode') as unknown as number;

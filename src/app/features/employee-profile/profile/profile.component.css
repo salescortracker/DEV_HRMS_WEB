@@ -127,6 +127,15 @@
   font-size: 24px;
   color: #b02828;
 }
+.detail-box a {
+  color: #0a66c2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.detail-box a:hover {
+  text-decoration: underline;
+}
     /* --- Red Menu Bar --- */
     .navbar {
       display: flex;

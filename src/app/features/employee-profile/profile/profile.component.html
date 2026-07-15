@@ -100,10 +100,29 @@
             <i class="fa-solid fa-clock"></i>
             <div><span>Shift</span><p>{{ shiftAllocationName}}-{{ ShiftstartTime }} to {{ ShiftendTime }}</p></div>
           </div>
-          <div class="detail-box">
+          <!-- <div class="detail-box">
             <i class="fa-brands fa-linkedin"></i>
             <div><span>Linkedin ID</span><p>{{ profile.skypeId }}</p></div>
-          </div>
+          </div> -->
+          <div class="detail-box">
+  <i class="fa-brands fa-linkedin"></i>
+  <div>
+    <span>LinkedIn</span>
+    <p *ngIf="profile.skypeId; else noLinkedIn">
+      <a
+        [href]="getLinkedInUrl(profile.skypeId)"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ profile.skypeId }}
+      </a>
+    </p>
+
+    <ng-template #noLinkedIn>
+      <p>-</p>
+    </ng-template>
+  </div>
+</div>
         </div>
       </div>
     </div>
