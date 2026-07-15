@@ -52,22 +52,24 @@
 
     <!-- Department -->
     <!-- Department MULTI CHECKBOX DROPDOWN -->
-<div class="col-md-6 position-relative">
-
+<div class="col-md-6 position-relative" #departmentDropdown>
   <label class="form-label">Departments<span class="text-danger">*</span></label>
 
   <!-- clickable box -->
-  <div class="form-select"
-       style="cursor:pointer"
-       (click)="showDeptDropdown = !showDeptDropdown">
+<div
+  class="form-select"
+  style="cursor:pointer"
+  (click)="toggleDepartmentDropdown($event)">
 
     {{ news.departmentIds.length + ' Selected' }}
   </div>
 
   <!-- dropdown -->
-  <div *ngIf="showDeptDropdown"
-       class="border bg-white shadow p-2 position-absolute w-100"
-       style="z-index:1000; max-height:250px; overflow:auto;">
+  <div
+  *ngIf="showDeptDropdown"
+  class="border bg-white shadow p-2 position-absolute w-100"
+  style="z-index:1000; max-height:250px; overflow:auto;"
+  (click)="$event.stopPropagation()">
 
     <!-- Select All -->
     <div class="form-check mb-2">

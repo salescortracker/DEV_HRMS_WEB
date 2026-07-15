@@ -1,5 +1,9 @@
-import { Component } from '@angular/core';
-import { AdminService } from '../../servies/admin.service';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  HostListener
+} from '@angular/core';import { AdminService } from '../../servies/admin.service';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CompanyEventsService } from '../../../features/company-events/company-events.service';
@@ -10,7 +14,8 @@ import { CompanyEventsService } from '../../../features/company-events/company-e
   styleUrl: './company-events.component.css'
 })
 export class CompanyEventsComponent {
-
+@ViewChild('departmentDropdown')
+departmentDropdown!: ElementRef;
   companies: any[] = [];
   regions: any[] = [];
   departments: any[] = [];
@@ -36,7 +41,25 @@ filteredDepartments: any[] = [];
   totalPages = 1;
 
   constructor(private cmpservice: AdminService, private adminService: CompanyEventsService, private spinner: NgxSpinnerService) { }
+@HostListener('document:click', ['$event'])
+onDocumentClick(event: MouseEvent): void {
 
+  if (
+    this.showDepartmentDropdown &&
+    this.departmentDropdown &&
+    !this.departmentDropdown.nativeElement.contains(event.target)
+  ) {
+    this.showDepartmentDropdown = false;
+  }
+
+}
+
+toggleDepartmentDropdown(event: MouseEvent): void {
+
+  event.stopPropagation();
+  this.showDepartmentDropdown = !this.showDepartmentDropdown;
+
+}
   ngOnInit() {
 
     this.userId = Number(sessionStorage.getItem("UserId"));

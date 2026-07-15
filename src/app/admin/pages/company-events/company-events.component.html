@@ -57,21 +57,24 @@
 <input class="form-control" [(ngModel)]="event.EventTitle" name="EventTitle">
 </div>
 
-<div class="col-md-6 position-relative">
+<div class="col-md-6 position-relative" #departmentDropdown>
 
   <label>Departments</label>
 
-  <div class="form-select"
-       style="cursor:pointer"
-       (click)="showDepartmentDropdown=!showDepartmentDropdown">
+<div
+  class="form-select"
+  style="cursor:pointer"
+  (click)="toggleDepartmentDropdown($event)">
 
     {{ getSelectedDepartmentNames() }}
 
   </div>
 
-  <div *ngIf="showDepartmentDropdown"
-       class="border rounded bg-white shadow mt-1 p-2 position-absolute w-100"
-       style="z-index:1000;max-height:250px;overflow-y:auto;">
+  <div
+  *ngIf="showDepartmentDropdown"
+  class="border rounded bg-white shadow mt-1 p-2 position-absolute w-100"
+  style="z-index:1000;max-height:250px;overflow-y:auto;"
+  (click)="$event.stopPropagation()">
 
     <div class="form-check mb-2">
 

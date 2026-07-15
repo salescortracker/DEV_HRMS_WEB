@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { AdminService, Department } from '../../servies/admin.service';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { ViewChild, ElementRef } from '@angular/core';
+import { ViewChild, ElementRef,  HostListener } from '@angular/core';
+
 
 interface Policy {
   Title: string;
@@ -20,6 +21,8 @@ interface Policy {
 })
 export class CompanyPoliciesComponent {
    @ViewChild('fileInput') fileInput!: ElementRef;
+   @ViewChild('departmentDropdown')
+departmentDropdown!: ElementRef;
  companies: any[] = []
   regions: any[] = []
   departments: Department[] = []
@@ -53,6 +56,27 @@ showDepartmentDropdown = false;
     private adminService: AdminService,
     private spinner: NgxSpinnerService
   ) { }
+
+@HostListener('document:click', ['$event'])
+onDocumentClick(event: MouseEvent): void {
+
+  if (
+    this.showDepartmentDropdown &&
+    this.departmentDropdown &&
+    !this.departmentDropdown.nativeElement.contains(event.target)
+  ) {
+    this.showDepartmentDropdown = false;
+  }
+
+}
+
+toggleDepartmentDropdown(event: MouseEvent): void {
+
+  event.stopPropagation();
+
+  this.showDepartmentDropdown = !this.showDepartmentDropdown;
+
+}
 
   ngOnInit() {
 
