@@ -185,6 +185,24 @@ loadCertifications() {
       this.certificationForm.markAllAsTouched();
       return;
     }
+    // Duplicate Certification Name validation
+const certificationName = this.certificationForm.value.certificationName
+  ?.trim()
+  .toLowerCase();
+
+const duplicate = this.certificationList.find(c =>
+  c.certificationName?.trim().toLowerCase() === certificationName &&
+  c.certificationId !== this.editId // Ignore current record while editing
+);
+
+if (duplicate) {
+  Swal.fire(
+    'Warning',
+    'Certification Name already exists.',
+    'warning'
+  );
+  return;
+}
 console.log(this.certificationForm.value);
     const payload: any = {
       CertificationId: this.editId ?? 0,
