@@ -159,6 +159,7 @@ loadgender() {
   this.personalForm = this.fb.group({
     firstName: ['', Validators.required],
     lastName: [''],
+    employeeName:[''],
 
     dateOfBirth: ['', Validators.required],
 
@@ -199,8 +200,31 @@ loadgender() {
 }
 
   onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+
+  this.selectedFile = event.target.files[0];
+
+  if(this.selectedFile){
+
+    const firstName = this.personalForm.get('firstName')?.value || '';
+    const lastName = this.personalForm.get('lastName')?.value || '';
+
+    const employeeName = 
+       (firstName + '_' + lastName)
+       .replace(/\s+/g,'_');
+
+
+    this.personalForm.patchValue({
+
+      employeeName:
+      this.personalForm.get('firstName')?.value +
+      "_" +
+      this.personalForm.get('lastName')?.value
+
+      });
+
   }
+
+}
 
   // CREATE OR UPDATE
   onSubmit() {
@@ -227,9 +251,19 @@ loadgender() {
 });
 
     if (this.selectedFile) {
-      formData.append("profilePicture", this.selectedFile);
-      
-    }
+
+        formData.append(
+          "profilePicture",
+          this.selectedFile
+        );
+
+
+        formData.append(
+          "ProfilePictureName",
+          this.personalForm.get('ProfilePictureName')?.value
+        );
+
+        }
  
 
     if (this.editId == null) {
