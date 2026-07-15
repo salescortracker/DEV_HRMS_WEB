@@ -32,6 +32,7 @@ export class AdminDashboardComponent {
 
   ngOnInit(): void {
     this.userId = Number(sessionStorage.getItem('UserId'));
+    this.loadAdminDashboardCount();
     this.loadDepartments();
     this.loadEmployees();
     this.loadDesignations(); 
@@ -91,6 +92,42 @@ mapDepartmentNames() {
     ...emp,
     departmentName: this.departmentMap[emp.departmentId] || '-'
   }));
+}
+loadAdminDashboardCount() {
+
+  this.payrollService
+    .getAdminDashboardCount(this.userId)
+    .subscribe((res:any)=> {
+
+      this.stats = [
+        {
+          title: 'Companies',
+          value: res.totalCompanies,
+          icon: 'fa-building',
+          color: '#1e88e5'
+        },
+        {
+          title: 'Regions',
+          value: res.totalRegions,
+          icon: 'fa-map-location-dot',
+          color: '#43a047'
+        },
+        {
+          title: 'Employees',
+          value: res.totalEmployees,
+          icon: 'fa-users',
+          color: '#922b21'
+        },
+        {
+          title: 'Payroll',
+          value: '₹' + this.totalPayrollAmount.toLocaleString(),
+          icon: 'fa-rupee-sign',
+          color: '#f39c12'
+        }
+      ];
+
+    });
+
 }
 loadDesignations() {
   this.payrollService.getDesignations(this.userId)

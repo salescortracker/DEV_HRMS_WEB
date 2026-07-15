@@ -164,6 +164,11 @@ export class EmployeePayRollService {
       `${environment.apiUrl}/UserManagement/GetAllUsers/${userId}`
     );
   }
+  getAdminDashboardCount(userId: number): Observable<any> {
+  return this.http.get<any>(
+    `${environment.apiUrl}/UserManagement/AdminDashboardCount/${userId}`
+  );
+}
 
 
   // ================= Assign Salary =================
