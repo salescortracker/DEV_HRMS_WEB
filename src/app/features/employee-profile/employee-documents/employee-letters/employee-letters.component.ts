@@ -296,6 +296,15 @@ toggleSelectAll(event: any): void {
   removeFile(index: number) {
     this.selectedFiles.splice(index, 1);
   }
+  getSelectedEmployeeNames(): string {
+  if (!this.selectedEmployees || this.selectedEmployees.length === 0) {
+    return '';
+  }
+
+  return this.selectedEmployees
+    .map((e: any) => e.employeeName)
+    .join(', ');
+}
   // ------------------- SAVE LETTER (VALIDATION + SAVE) ------------------------
   saveLetter(form: any) {
      this.isSubmitted = true;
