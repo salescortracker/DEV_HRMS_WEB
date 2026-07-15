@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { EmployeeResignationService } from '../employee-services/employee-resignation.service';
 import Swal from 'sweetalert2';
 import { AdminService } from '../../../admin/servies/admin.service';
@@ -9,6 +9,7 @@ import { AdminService } from '../../../admin/servies/admin.service';
   templateUrl: './employee-emergency-contact.component.html',
   styleUrl: './employee-emergency-contact.component.css'
 })
+
 export class EmployeeEmergencyContactComponent {
    emergencyForm!: FormGroup;
   emergencyList: any[] = [];
@@ -20,6 +21,24 @@ export class EmployeeEmergencyContactComponent {
   userId = Number(sessionStorage.getItem('UserId'));
   companyId =Number(sessionStorage.getItem('CompanyId'));
   regionId =Number(sessionStorage.getItem('RegionId'));
+  
+  phoneNumberNotSameValidator(control: AbstractControl): ValidationErrors | null {
+
+  const phone = control.get('phoneNumber')?.value;
+  const alternate = control.get('alternatePhone')?.value;
+
+  if (
+    phone &&
+    alternate &&
+    phone.trim() !== '' &&
+    alternate.trim() !== '' &&
+    phone === alternate
+  ) {
+    return { samePhone: true };
+  }
+
+  return null;
+}
 
   constructor(
     private fb: FormBuilder,
@@ -38,24 +57,35 @@ export class EmployeeEmergencyContactComponent {
 
   initForm() {
     this.emergencyForm = this.fb.group({
-      emergencyContactId: [0],
-      contactName: ['', Validators.required],
-      relationshipId: [0, Validators.required],
-      // phoneNumber: ['', Validators.required],
-      phoneNumber: [
-  '',
-  [
-    Validators.required,
-    Validators.pattern('^[0-9]{10}$')
-  ]
-],
-      alternatePhone: [''],
-      email: [''],
-      address: [''],
-      userId: [this.userId],
-      companyId: [this.companyId],
-      regionId: [this.regionId],
-    });
+  emergencyContactId: [0],
+  contactName: ['', Validators.required],
+  relationshipId: [0, Validators.required],
+
+  phoneNumber: [
+    '',
+    [
+      Validators.required,
+      Validators.pattern('^[0-9]{10}$')
+    ]
+  ],
+
+  alternatePhone: [
+    '',
+    [
+      Validators.pattern('^[0-9]{10}$')
+    ]
+  ],
+
+  email: ['', Validators.email],
+  address: [''],
+
+  userId: [this.userId],
+  companyId: [this.companyId],
+  regionId: [this.regionId],
+},
+{
+  validators: this.phoneNumberNotSameValidator
+});
   }
 relationshipMap: { [key: number]: string } = {};
 
@@ -91,7 +121,6 @@ loadrelationship() {
  getEmergencyContacts() {
   this.empFamilyService.getEmergencyContactsByUserId(this.userId)
     .subscribe((res: any[]) => {
-debugger;
       this.emergencyList = res.map(contact => ({
         ...contact,
         relationshipName: this.relationList.find(
@@ -105,13 +134,13 @@ debugger;
   // ➕ Add / ✏️ Update
   onSubmit() {
     //if (this.emergencyForm.invalid) return;
-  if (this.emergencyForm.invalid) {
+  if (this.emergencyForm.hasError('samePhone')) {
 
     this.emergencyForm.markAllAsTouched();
 
     Swal.fire(
       'Validation',
-      'Please fill all required fields.',
+      'Phone Number and Alternate Phone should not be the same.',
       'warning'
     );
 

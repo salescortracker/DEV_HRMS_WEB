@@ -44,7 +44,14 @@
         <div class="form-group">
           <label>Alternate Phone</label>
           <input type="tel" formControlName="alternatePhone" placeholder="Enter alternate phone">
+          <div
+            class="text-danger"
+            *ngIf="emergencyForm.hasError('samePhone') &&
+                  emergencyForm.get('alternatePhone')?.touched">
+            Phone Number and Alternate Phone should not be the same.
+          </div>
         </div>
+        
 
         <div class="form-group">
           <label>Email</label>
