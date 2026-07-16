@@ -46,9 +46,16 @@
               <input type="time" class="form-control" [(ngModel)]="shift.shiftEndTime" name="shiftEndTime" required>
             </div>
             <div class="col-md-4">
-              <label class="form-label fw-semibold">Grace Time</label>
-              <input type="time" class="form-control" [(ngModel)]="shift.graceTime" name="graceTime">
-            </div>
+  <label class="form-label fw-semibold">Grace Time (Minutes)</label>
+  <input
+    type="number"
+    class="form-control"
+    [(ngModel)]="graceMinutes"
+    name="graceMinutes"
+    min="0"
+    max="59"
+    placeholder="Enter Minutes">
+</div>
 
             <div class="col-md-2 d-flex align-items-center">
               <div class="form-check form-switch mt-3">
