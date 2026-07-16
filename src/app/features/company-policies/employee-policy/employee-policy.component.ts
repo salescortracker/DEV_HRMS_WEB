@@ -82,8 +82,9 @@ export class EmployeePolicyComponent {
 
     const companyId = Number(sessionStorage.getItem("CompanyId"));
     const regionId = Number(sessionStorage.getItem("RegionId"));
+    const userId = Number(sessionStorage.getItem("UserId"));
 
-    this.adminService.getTodayPolicies(companyId, regionId)
+    this.adminService.getTodayPolicies(companyId, regionId, userId)
       .subscribe((res: any[]) => {
 
         console.log("Policy API Response:", res)

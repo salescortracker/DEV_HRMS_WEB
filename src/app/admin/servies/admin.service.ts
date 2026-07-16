@@ -1448,9 +1448,9 @@ getPolicyCategoriesByCompanyRegion(
   }
 
   // Get Today's Policies
-  getTodayPolicies(companyId: number, regionId: number) {
+  getTodayPolicies(companyId: number, regionId: number, userId: number) {
     return this.http.get<any[]>(
-      `${this.baseUrl}/MasterData/GetTodayPolicies?companyId=${companyId}&regionId=${regionId}`
+      `${this.baseUrl}/MasterData/GetTodayPolicies?companyId=${companyId}&regionId=${regionId}&userId=${userId}`
     )
   }
 
