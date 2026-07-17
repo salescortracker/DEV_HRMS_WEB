@@ -15,6 +15,7 @@
     <h3>My Team / Subordinates</h3>
 
     <div class="org-chart">
+      <div class="org-wrapper">
       <ul class="org-ul">
         <ng-container *ngFor="let emp of tree">
           <ng-container
@@ -23,6 +24,7 @@
         </ng-container>
       </ul>
     </div>
+  </div>
 
     <ng-template #recursiveList let-employee>
       <li>
