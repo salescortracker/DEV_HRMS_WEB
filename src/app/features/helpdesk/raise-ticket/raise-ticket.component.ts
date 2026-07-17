@@ -198,13 +198,19 @@ canCreateTicket = false;
 }
 
 viewDocument(filePath?: string): void {
+
   if (!filePath) {
     Swal.fire('Error', 'No file available.', 'error');
     return;
   }
 
-  const fullPath = `${environment.apiUrl}/${filePath}`;
-  window.open(fullPath, '_blank');
+  const baseUrl = environment.apiUrl.replace('/api','');
+
+  const fullPath = `${baseUrl}/${filePath}`;
+
+  console.log("Opening File:", fullPath);
+
+  window.open(encodeURI(fullPath), '_blank');
 }
 
 resetForm(form: NgForm) {
