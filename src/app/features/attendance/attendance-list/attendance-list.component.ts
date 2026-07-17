@@ -406,6 +406,8 @@ setDefaultLogo() {
 
           // ✅ VERY IMPORTANT
           this.calculateLate(emp);
+          // Ensure HalfDay status respects gross-time (>= 4 hours)
+          this.normalizeEmployeeStatus(emp);
 
           },
           error: () => {
@@ -419,37 +421,144 @@ setDefaultLogo() {
 
   }
 
+parseTimeString(value: string | undefined): { hours: number; minutes: number } {
+  if (!value) {
+    return { hours: 0, minutes: 0 };
+  }
+
+  const parts = value.split(':').map(part => Number(part));
+  return {
+    hours: parts[0] || 0,
+    minutes: parts[1] || 0
+  };
+}
+
+parseGraceTime(value: string | number | undefined): { hours: number; minutes: number } {
+  if (value === undefined || value === null || value === '') {
+    return { hours: 0, minutes: 0 };
+  }
+
+  if (typeof value === 'number') {
+    const hours = Math.floor(value / 60);
+    const minutes = value % 60;
+    return { hours, minutes };
+  }
+
+  const parts = String(value).split(':').map(part => Number(part));
+  if (parts.length === 1) {
+    return { hours: 0, minutes: parts[0] || 0 };
+  }
+  return {
+    hours: parts[0] || 0,
+    minutes: parts[1] || 0
+  };
+}
+
 calculateLate(emp: any) {
 
   if (!emp.clockIn || !emp.shiftStartTime || !emp.graceTime) {
     emp.lateMinutes = 0;
+    emp.arrivalStatus = '';
     return;
   }
 
-  const [sh, sm] = emp.shiftStartTime.split(':').map(Number);
+  const shiftTime = this.parseTimeString(emp.shiftStartTime);
   const shiftStart = new Date();
-  shiftStart.setHours(sh, sm, 0, 0);
+  shiftStart.setHours(shiftTime.hours, shiftTime.minutes, 0, 0);
 
-  const [gh, gm] = emp.graceTime.split(':').map(Number);
-  const graceEnd = new Date(shiftStart.getTime() + ((gh * 60 + gm) * 60000));
+  const onTimeEnd = new Date(shiftStart.getTime() + 5 * 60000);
+  const graceTime = this.parseGraceTime(emp.graceTime);
+  const graceEnd = new Date(shiftStart.getTime() + ((graceTime.hours * 60 + graceTime.minutes) * 60000));
 
-  const [ih, im] = emp.clockIn.split(':').map(Number);
+  const clockTime = this.parseTimeString(emp.clockIn);
   const clockIn = new Date();
-  clockIn.setHours(ih, im, 0, 0);
+  clockIn.setHours(clockTime.hours, clockTime.minutes, 0, 0);
 
-  if (clockIn > graceEnd) {
-    const diff = clockIn.getTime() - graceEnd.getTime();
-    emp.lateMinutes = Math.floor(diff / (1000 * 60));
-  } else {
+  if (clockIn < shiftStart) {
+    const diff = Math.floor((shiftStart.getTime() - clockIn.getTime()) / 60000);
+    emp.arrivalStatus = `Early by ${this.formatLateMinutes(diff)}`;
     emp.lateMinutes = 0;
+    return;
   }
+
+  if (clockIn <= onTimeEnd) {
+    emp.arrivalStatus = 'On Time';
+    emp.lateMinutes = 0;
+    return;
+  }
+
+  if (clockIn <= graceEnd) {
+    const diff = Math.floor((graceEnd.getTime() - clockIn.getTime()) / 60000);
+    emp.arrivalStatus = `Grace ${this.formatLateMinutes(diff)}`;
+    emp.lateMinutes = 0;
+    return;
+  }
+
+  const diff = Math.floor((clockIn.getTime() - graceEnd.getTime()) / 60000);
+  emp.lateMinutes = diff;
+  emp.arrivalStatus = `Late by ${this.formatLateMinutes(diff)}`;
 }
+
+  // compute minutes from HH:mm string like '07:15' or '0:17'
+  parseHoursMinutesToMinutes(value: string | undefined | null): number {
+    if (!value) return 0;
+
+    const parts = String(value).trim().split(':').map(part => Number(part));
+    if (parts.length === 0) return 0;
+
+    const hours = Number(parts[0] || 0);
+    const minutes = Number(parts[1] || 0);
+
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) return 0;
+
+    return hours * 60 + minutes;
+  }
+
+  normalizeEmployeeStatus(emp: any) {
+    if (!emp || !emp.status) return;
+
+    const status = String(emp.status).toLowerCase();
+
+    if (status === 'halfday' || status === 'half day') {
+      // Prefer explicit grossTime
+      let minutes = this.parseHoursMinutesToMinutes(emp.grossTime);
+
+      // If grossTime missing, compute from clockIn/clockOut
+      if ((!minutes || minutes === 0) && emp.clockIn && emp.clockOut) {
+        const inParts = String(emp.clockIn).split(':').map(Number);
+        const outParts = String(emp.clockOut).split(':').map(Number);
+
+        const inDate = new Date();
+        inDate.setHours(inParts[0] || 0, inParts[1] || 0, 0, 0);
+
+        const outDate = new Date();
+        outDate.setHours(outParts[0] || 0, outParts[1] || 0, 0, 0);
+
+        let diff = Math.floor((outDate.getTime() - inDate.getTime()) / 60000);
+        if (diff < 0) diff += 24 * 60; // handle overnight
+
+        minutes = diff;
+      }
+
+      emp.status = minutes >= 240 ? 'HalfDay' : 'Absent';
+    }
+  }
+
+  getArrivalClass(emp: any): string {
+    if (!emp || !emp.arrivalStatus) return '';
+    const text = String(emp.arrivalStatus).toLowerCase();
+    if (text.includes('late')) return 'text-danger fw-bold';
+    if (text.includes('early')) return 'text-success fw-bold';
+    if (text.includes('grace')) return 'text-success fw-bold';
+    if (text.includes('on time')) return 'text-primary fw-bold';
+    return '';
+  }
 
 
   getLateLoginText(emp: any): string {
 
-    if (emp.lateMinutes && emp.lateMinutes > 0) {
-      return `(Late by ${emp.lateMinutes} mins)`;
+    if (emp.arrivalStatus) {
+      return emp.arrivalStatus;
     }
 
     return '';
@@ -551,80 +660,59 @@ async generatePDF() {
     `${r.shiftName} (${r.shiftStartTime} - ${r.shiftEndTime})`,
     new Date(r.attendanceDate).toLocaleDateString(),
     r.clockIn,
-    r.lateMinutes ? `Late by ${this.formatLateMinutes(r.lateMinutes)}` : '',
+    r.arrivalStatus || (r.lateMinutes ? `Late by ${this.formatLateMinutes(r.lateMinutes)}` : ''),
     r.clockOut,
     r.grossTime,
     r.status
   ]);
 
-autoTable(doc, {
-  startY: 45,
-
-  head: [[
-    'Emp Code', 'Emp Name', 'Shift', 'Date',
-    'Clock In', 'Late Arrivals', 'Clock Out', 'Gross Time', 'Status'
-  ]],
-
-  body: tableData,
-
-  // ✅ IMPORTANT: Add full grid (borders)
-  theme: 'plain',
-
-  // ✅ Global styles (applies to all cells)
-  styles: {
-    fontSize: 9,
-    cellPadding: 3,
-    halign: 'center',     // horizontal align
-    valign: 'middle',     // vertical align
-    lineWidth: 0.2,       // border thickness
-    lineColor: [0, 0, 0]  // border color (black)
-  },
-
-  // ✅ Header styling
-  headStyles: {
-    fillColor: [200, 0, 0],       // red
-    textColor: [255, 255, 255],   // white
-    halign: 'center',
-    valign: 'middle',
-    fontStyle: 'bold',
-    lineWidth: 0.3
-  },
-
-  // ✅ Column specific alignment (VERY IMPORTANT)
-  columnStyles: {
-    0: { halign: 'center' }, // Emp Code
-    1: { halign: 'left' },   // Emp Name
-    2: { halign: 'center' },   // Shift
-    3: { halign: 'center' }, // Date
-    4: { halign: 'center' }, // Clock In
-    5: { halign: 'center' }, // Late
-    6: { halign: 'center' }, // Clock Out
-    7: { halign: 'center' }, // Gross Time
-    8: { halign: 'center' }  // Status
-  },
-
-
-  didParseCell: function (data: any) {
-  // Body only (skip header)
-  if (data.section === 'body') {
-
-    // 👉 Make Employee Name bold (column index 1)
-    if (data.column.index === 1) {
-      data.cell.styles.fontStyle = 'bold';
+  autoTable(doc, {
+    startY: 45,
+    head: [[
+      'Emp Code', 'Emp Name', 'Shift', 'Date',
+      'Clock In', 'Late Arrivals', 'Clock Out', 'Gross Time', 'Status'
+    ]],
+    body: tableData,
+    theme: 'plain',
+    styles: {
+      fontSize: 9,
+      cellPadding: 3,
+      halign: 'center',     // horizontal align
+      valign: 'middle',     // vertical align
+      lineWidth: 0.2,       // border thickness
+      lineColor: [0, 0, 0]  // border color (black)
+    },
+    headStyles: {
+      fillColor: [200, 0, 0],       // red
+      textColor: [255, 255, 255],   // white
+      halign: 'center',
+      valign: 'middle',
+      fontStyle: 'bold',
+      lineWidth: 0.3
+    },
+    columnStyles: {
+      0: { halign: 'center' }, // Emp Code
+      1: { halign: 'left' },   // Emp Name
+      2: { halign: 'center' },   // Shift
+      3: { halign: 'center' }, // Date
+      4: { halign: 'center' }, // Clock In
+      5: { halign: 'center' }, // Late Arrivals
+      6: { halign: 'center' }, // Clock Out
+      7: { halign: 'center' }, // Gross Time
+      8: { halign: 'center' }  // Status
+    },
+    didParseCell: function (data: any) {
+      if (data.section === 'body') {
+        if (data.column.index === 1) {
+          data.cell.styles.fontStyle = 'bold';
+        }
+        if (data.column.index === 8) {
+          data.cell.styles.fontStyle = 'bold';
+        }
+      }
     }
+  });
 
-    // 👉 Make Status bold (column index 8)
-    if (data.column.index === 8) {
-      data.cell.styles.fontStyle = 'bold';
-    }
-  }
-}
-
-  // ✅ Alternate row color (optional but nice)
-  // alternateRowStyles: {
-  //   fillColor: [245, 245, 245]
-  // }
-});
 
   // ================= FOOTER =================
   const finalY = (doc as any).lastAutoTable.finalY || 30;
@@ -688,7 +776,7 @@ autoTable(doc, {
       'Shift': `${r.shiftName} (${r.shiftStartTime} - ${r.shiftEndTime})`,
       'Date': new Date(r.attendanceDate).toLocaleDateString(),
       'Clock In': r.clockIn,
-      'Late': r.lateMinutes ? `Late by ${this.formatLateMinutes(r.lateMinutes)}` : '',
+      'Late Arrivals': r.arrivalStatus || (r.lateMinutes ? `Late by ${this.formatLateMinutes(r.lateMinutes)}` : ''),
       'Clock Out': r.clockOut,
       'Gross Time': r.grossTime,
       'Status': r.status
