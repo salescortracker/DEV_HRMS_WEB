@@ -109,29 +109,6 @@ export class PolicyCategoryComponent {
     });
   }
 
-  // editCategory(c: PolicyCategory) {
-  //   this.category = { ...c };
-
-  //   this.companyId = c.CompanyID;
-  //   this.regionId = c.RegionID;
-    
-
-  //   this.loadRegions();
-  //   this.isEditMode = true;
-  // }
-
-//   editCategory(c: PolicyCategory) {
-//     debugger;
-//   this.category = { ...c };
-//   c.companyName,
-//   c.regionName,
-
-//   // this.companyId = c.companyName;   // ✅ FIX
-//   // this.regionId = c.regionName;     // ✅ FIX
-
-//   this.loadRegions();
-//   this.isEditMode = true;
-// }
 
 editCategory(c: any) {
   this.category = { ...c };
@@ -143,29 +120,7 @@ editCategory(c: any) {
   this.loadRegions();
   this.isEditMode = true;
 }
-  // deleteCategory(c: PolicyCategory) {
-  //   Swal.fire({
-  //     title: `Delete "${c.PolicyCategoryName}"?`,
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#d33'
-  //   }).then(result => {
-  //     if (result.isConfirmed) {
-  //       this.spinner.show();
-  //       this.adminService.deletePolicyCategory(c.PolicyCategoryID).subscribe({
-  //         next: () => {
-  //           this.spinner.hide();
-  //           Swal.fire('Deleted!', 'Deleted successfully.', 'success');
-  //           this.loadCategories();
-  //         },
-  //         error: () => {
-  //           this.spinner.hide();
-  //           Swal.fire('Error', 'Delete failed.', 'error');
-  //         }
-  //       });
-  //     }
-  //   });
-  // }
+ 
 
   deleteCategory(c: any) {
   Swal.fire({
@@ -203,49 +158,55 @@ editCategory(c: any) {
   }
 
   loadCompanies() {
-    this.adminService.getCompanies(null, this.userId).subscribe({
-      next: (res: Company[]) => {
-        this.companies = res || [];
-        this.companyMap = {};
-        this.companies.forEach(c => this.companyMap[c.companyId] = c.companyName);
-        this.loadRegions();
-      }
-    });
-  }
+  this.adminService.getCompanies(null, this.userId).subscribe({
+    next: (res: Company[]) => {
+
+      this.companies = (res || []).filter(
+        (c: any) => c.isActive === true || c.isActive === 1
+      );
+
+      this.companyMap = {};
+      this.companies.forEach(c => {
+        this.companyMap[c.companyId] = c.companyName;
+      });
+
+      this.loadRegions();
+    }
+  });
+}
   loadRegions() {
   this.adminService.getRegions(null, this.userId).subscribe({
     next: (res: Region[]) => {
-      const all = res || [];
 
-      this.regions = all.filter(r => r.companyID == this.companyId);
+      const activeRegions = (res || []).filter(
+        (r: any) => (r.isActive === true || r.isActive === 1)
+      );
 
-      // ✅ important for edit
+      this.regionMap = {};
+      activeRegions.forEach(r => {
+        this.regionMap[r.regionID] = r.regionName;
+      });
+
+      this.regions = activeRegions.filter(
+        r => r.companyID == this.companyId
+      );
+
       if (this.isEditMode) {
         this.category.RegionId = this.regionId;
-      } else if (!this.regionId && this.regions.length > 0) {
-        this.regionId = this.regions[0].regionID;
-        this.category.RegionId = this.regionId;
+      } else {
+        this.regionId = null as any;
+        this.category.RegionId = null as any;
       }
     }
   });
 }
+onCompanyChange(): void {
 
-  // loadRegions() {
-  //   this.adminService.getRegions(null, this.userId).subscribe({
-  //     next: (res: Region[]) => {
-  //       const all = res || [];
-  //       this.regionMap = {};
-  //       all.forEach(r => this.regionMap[r.regionID] = r.regionName);
+  this.regionId = null as any;
+  this.category.RegionId = null as any;
 
-  //       this.regions = all.filter(r => r.companyID == this.companyId);
-
-  //       if (!this.regionId && this.regions.length > 0)
-  //         this.regionId = this.regions[0].regionID;
-
-  //       this.category.RegionID = this.regionId;
-  //     }
-  //   });
-  // }
+  this.loadRegions();
+}
 
 clearForm() {
 

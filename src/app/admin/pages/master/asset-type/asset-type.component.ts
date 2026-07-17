@@ -60,15 +60,22 @@ categoryMap: Record<number, string> = {};
   }
 loadCategories() {
   this.adminService.getAssetCategoriestype(this.userId).subscribe((res: any) => {
+
     const data = res.data || res;
 
-    this.assetCategories = data;   // ✅ FIX
+    // Show only Active Categories
+    this.assetCategories = data.filter((c: any) =>
+      c.isActive === true || c.isActive === 1
+    );
+
+    this.categoryMap = {};
 
     this.assetCategories.forEach(c => {
       this.categoryMap[c.assetCategoryId] = c.assetCategoryName;
     });
 
-    console.log("Categories:", this.assetCategories); // debug
+    console.log("Active Categories:", this.assetCategories);
+
   });
 }
 

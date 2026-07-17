@@ -92,32 +92,53 @@ toggleDepartmentDropdown(event: MouseEvent): void {
 
   }
   loadCategories() {
-    this.adminService.getPolicyCategories(this.userId).subscribe({
-      next: (res: any) => {
-        const data = res.data || [];
+
+  this.adminService.getPolicyCategories(this.userId).subscribe({
+    next: (res: any) => {
+
+      const data = (res.data || []).filter(
+        (x: any) => x.isActive === true || x.isActive === 1
+      );
+
       this.categories = data.map((x: any) => ({
-  PolicyCategoryId: x.policyCategoryId,
 
-  // 🔥 FIX HERE (case-sensitive)
-  CompanyId: x.companyId ?? x.CompanyId,
-  RegionId: x.regionId ?? x.RegionId,
+        PolicyCategoryId: x.policyCategoryId,
 
-  companyName: x.companyName,
-  regionName: x.regionName,
-  userId: x.userId,
+        CompanyId: x.companyId ?? x.CompanyId,
 
-  PolicyCategoryName: x.policyCategoryName,
-  Description: x.description,
-  IsActive: x.isActive
-}));
-        this.spinner.hide();
-      },
-      error: () => {
-        this.spinner.hide();
-        Swal.fire('Error', 'Failed to load policy categories', 'error');
-      }
-    });
-  }
+        RegionId: x.regionId ?? x.RegionId,
+
+        companyName: x.companyName,
+
+        regionName: x.regionName,
+
+        userId: x.userId,
+
+        PolicyCategoryName: x.policyCategoryName,
+
+        Description: x.description,
+
+        IsActive: x.isActive
+
+      }));
+
+      this.spinner.hide();
+
+    },
+    error: () => {
+
+      this.spinner.hide();
+
+      Swal.fire(
+        'Error',
+        'Failed to load policy categories',
+        'error'
+      );
+
+    }
+  });
+
+}
 
   resetPolicy() {
 
@@ -138,20 +159,47 @@ toggleDepartmentDropdown(event: MouseEvent): void {
 
 }
 
-  loadCompanies() {
+ loadCompanies() {
 
-    this.adminService.getCompanies(null, this.userId)
-      .subscribe(res => {
-        this.companies = res
-      })
+  this.adminService.getCompanies(null, this.userId)
+    .subscribe({
+      next: (res: any) => {
 
-  }
+        this.companies = (res || []).filter(
+          (c: any) => c.isActive === true || c.isActive === 1
+        );
 
-  loadRegions() {
-  this.adminService.getRegions(null, this.userId)
-    .subscribe(res => {
-      this.regions = res;
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load companies', 'error');
+      }
     });
+
+}
+loadRegions() {
+
+  this.adminService.getRegions(null, this.userId)
+    .subscribe({
+      next: (res: any) => {
+
+        this.regions = (res || [])
+          .filter((r: any) => r.isActive === true || r.isActive === 1)
+          .map((r: any) => ({
+
+            regionId: Number(r.regionID || r.regionId),
+
+            regionName: r.regionName,
+
+            companyID: Number(r.companyID || r.companyId)
+
+          }));
+
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load regions', 'error');
+      }
+    });
+
 }
 onCompanyChange() {
   this.policy.RegionId = null;

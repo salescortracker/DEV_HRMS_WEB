@@ -42,13 +42,13 @@ export class EmploymentTypeComponent {
   ngOnInit(): void {
 
     this.userId = Number(sessionStorage.getItem("UserId"));
-    this.companyId = Number(sessionStorage.getItem("CompanyId"));
-    this.regionId = Number(sessionStorage.getItem("RegionId"));
+    this.companyId = 0;
+    this.regionId = 0;
 
     this.employment = {
       EmploymenttypeID: 0,
-      CompanyID: this.companyId,
-      RegionID: this.regionId,
+      CompanyID: 0,
+      RegionID: 0,
       EmploymenttypeName: '',
       Description: '',
       IsActive: true
@@ -179,51 +179,59 @@ export class EmploymentTypeComponent {
   }
 
   loadCompanies(): void {
-    this.adminService.getCompanies(null, this.userId).subscribe({
-      next: (res: Company[]) => {
-        this.companies = res || [];
 
-        this.companyMap = {};
-        this.companies.forEach(c =>
-          this.companyMap[c.companyId] = c.companyName
-        );
+  this.adminService.getCompanies(null, this.userId).subscribe({
 
-        if (this.companyId) {
-          this.loadRegions();
-        }
-      }
-    });
-  }
+    next: (res: Company[]) => {
+
+      this.companies = (res || []).filter(c => c.isActive);
+
+      this.companyMap = {};
+
+      this.companies.forEach(c => {
+        this.companyMap[c.companyId] = c.companyName;
+      });
+
+    }
+
+  });
+
+}
 
   loadRegions(): void {
-    this.adminService.getRegions(null, this.userId).subscribe({
-      next: (res: Region[]) => {
 
-        const allRegions = res || [];
+  this.adminService.getRegions(null, this.userId).subscribe({
 
-        this.regionMap = {};
-        allRegions.forEach(r =>
-          this.regionMap[r.regionID] = r.regionName
-        );
+    next: (res: Region[]) => {
 
-        this.regions = allRegions.filter(r =>
-          r.companyID == this.companyId
-        );
+      const allRegions = (res || []).filter(r => r.isActive);
 
-        if (!this.regionId && this.regions.length > 0) {
-          this.regionId = this.regions[0].regionID;
-        }
+      this.regionMap = {};
 
-        this.employment.RegionID = this.regionId;
-      }
-    });
-  }
+      allRegions.forEach(r => {
+        this.regionMap[r.regionID] = r.regionName;
+      });
+
+      this.regions = allRegions.filter(
+        r => r.companyID == this.companyId
+      );
+
+    }
+
+  });
+
+}
 
   onCompanyChange(): void {
-    sessionStorage.setItem('CompanyId', this.companyId.toString());
-    this.regionId = 0;
+
+  this.regionId = 0;
+  this.regions = [];
+
+  if (this.companyId) {
     this.loadRegions();
   }
+
+}
 
   onRegionChange(): void {
     sessionStorage.setItem('RegionId', this.regionId.toString());
@@ -243,14 +251,19 @@ export class EmploymentTypeComponent {
   }
 
   clearForm() {
-    this.employment = {
-      EmploymenttypeID: 0,
-      CompanyID: this.companyId,
-      RegionID: this.regionId,
-      EmploymenttypeName: '',
-      Description: '',
-      IsActive: true
-    };
-    this.isEditMode = false;
-  }
+
+  this.companyId = 0;
+  this.regionId = 0;
+  this.regions = [];
+  this.employment = {
+    EmploymenttypeID: 0,
+    CompanyID: 0,
+    RegionID: 0,
+    EmploymenttypeName: '',
+    Description: '',
+    IsActive: true
+  };
+  this.isEditMode = false;
+
+}
 }

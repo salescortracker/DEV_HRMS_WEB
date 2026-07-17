@@ -93,16 +93,21 @@ loadComponents() {
 }
 
 loadCompanies() {
-    this.payrollService.getCompanies(this.userId)
-      .subscribe((res: any) => {
-        this.companies = res || [];
-        // map for table display
-        this.companyMap = {};
-        this.companies.forEach(c => {
-          this.companyMap[c.companyId] = c.companyName;
-        });
+  this.payrollService.getCompanies(this.userId)
+    .subscribe((res: any) => {
+
+      // Show only Active Companies
+      this.companies = (res || []).filter((c: any) =>
+        c.isActive === true || c.isActive === 1
+      );
+
+      this.companyMap = {};
+
+      this.companies.forEach(c => {
+        this.companyMap[c.companyId] = c.companyName;
       });
-  }
+    });
+}
 
   // ------------------ Load Regions ------------------
 loadRegions() {
@@ -111,20 +116,22 @@ loadRegions() {
 
       const raw = res?.data ?? res ?? [];
 
-      // ✅ Normalize keys
-      this.regions = raw.map((r: any) => ({
-        regionId: r.regionID,        // FIX HERE
-        regionName: r.regionName,
-        companyId: r.companyID
-      }));
+      // Show only Active Regions
+      this.regions = raw
+        .filter((r: any) => r.isActive === true || r.isActive === 1)
+        .map((r: any) => ({
+          regionId: r.regionID,
+          regionName: r.regionName,
+          companyId: r.companyID
+        }));
 
-      // ✅ Build map correctly
       this.regionMap = {};
+
       this.regions.forEach(r => {
         this.regionMap[r.regionId] = r.regionName;
       });
 
-      console.log("Normalized Regions:", this.regions);
+      console.log("Active Regions:", this.regions);
     });
 }
 
@@ -132,13 +139,9 @@ loadRegions() {
 onCompanyChange() {
   this.component.regionId = '';
 
-  if (this.component.companyId) {
-    this.filteredRegions = this.regions.filter(r =>
-      Number(r.companyId) === Number(this.component.companyId)
-    );
-  } else {
-    this.filteredRegions = [];
-  }
+  this.filteredRegions = this.regions.filter(r =>
+    Number(r.companyId) === Number(this.component.companyId)
+  );
 }
 
  onSubmit() {

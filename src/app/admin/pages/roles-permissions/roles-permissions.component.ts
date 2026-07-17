@@ -106,11 +106,14 @@ allowedModules: any[] = [];
     this.loadMenuPermissions();
   }
   
-  
   loadCompanies(): void {
   this.roleService.getCompanies(null, this.userId).subscribe({
     next: (res: any) => {
-      this.companies = res;
+
+      this.companies = res.filter(
+        (x: any) => x.isActive === true || x.isActive === 1
+      );
+
     },
     error: () => {
       Swal.fire('Error', 'Failed to load companies.', 'error');
@@ -121,7 +124,11 @@ allowedModules: any[] = [];
 loadRegions(): void {
   this.roleService.getRegions(null, this.userId).subscribe({
     next: (res: any) => {
-      this.regions = res;
+
+      this.regions = res.filter(
+        (x: any) => x.isActive === true || x.isActive === 1
+      );
+
     },
     error: () => {
       Swal.fire('Error', 'Failed to load regions.', 'error');
@@ -264,7 +271,8 @@ filterRoles(): void {
   this.filteredRoles = this.roles.filter(
     x =>
       Number(x.companyId) === Number(this.selectedCompanyId) &&
-      Number(x.regionId) === Number(this.selectedRegionId)
+      Number(x.regionId) === Number(this.selectedRegionId) &&
+      (x.isActive === true )
   );
 }
 

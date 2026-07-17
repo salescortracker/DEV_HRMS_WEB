@@ -92,14 +92,18 @@ export class PayGroupsComponent {
   // ================= Dropdown Loads =================
 
   loadCompanies() {
-    this.payrollService.getCompanies(this.userId)
-      .subscribe((res:any) => {
-        this.companies = res || [];
-        this.companies.forEach(c => {
-          this.companyMap[c.companyId] = c.companyName;
-        });
+  this.payrollService.getCompanies(this.userId)
+    .subscribe((res: any) => {
+
+      this.companies = (res || []).filter((c: any) => c.isActive);
+
+      this.companyMap = {};
+
+      this.companies.forEach(c => {
+        this.companyMap[c.companyId] = c.companyName;
       });
-  }
+    });
+}
 
 loadRegions() {
   this.payrollService.getRegions(this.userId)
@@ -107,19 +111,20 @@ loadRegions() {
 
       const raw = res?.data ?? res ?? [];
 
-      this.regions = raw.map((r: any) => ({
-        regionId: String(r.regionID),   // ✅ MAKE STRING
-        regionName: r.regionName,
-        companyId: String(r.companyID)
-      }));
+      this.regions = raw
+        .filter((r: any) => r.isActive)
+        .map((r: any) => ({
+          regionId: String(r.regionID),
+          regionName: r.regionName,
+          companyId: String(r.companyID),
+          isActive: r.isActive
+        }));
 
-      // ✅ IMPORTANT: Map keys also as STRING
       this.regionMap = {};
+
       this.regions.forEach(r => {
         this.regionMap[String(r.regionId)] = r.regionName;
       });
-
-      console.log("Region Map:", this.regionMap);
 
       this.applyEmployeeFilter();
     });
@@ -145,19 +150,28 @@ onRegionChange() {
 }
 
   loadEmployees() {
-    this.payrollService.getEmployees(this.userId)
-      .subscribe((res:any) => {
-        const raw = Array.isArray(res) ? res : (res?.data ?? res?.data?.data ?? []);
+  this.payrollService.getEmployees(this.userId)
+    .subscribe((res: any) => {
 
-        this.employees = raw.map((e: any) => ({
+      const raw = Array.isArray(res)
+        ? res
+        : (res?.data ?? res?.data?.data ?? []);
+
+      this.employees = raw
+        .filter((e: any) => e.isActive)
+        .map((e: any) => ({
           ...e,
-          companyId: Number(e.companyId ?? e.companyID ?? e.CompanyId ?? e.CompanyID),
-          regionId: Number(e.regionId ?? e.regionID ?? e.RegionId ?? e.RegionID)
+          companyId: Number(
+            e.companyId ?? e.companyID ?? e.CompanyId ?? e.CompanyID
+          ),
+          regionId: Number(
+            e.regionId ?? e.regionID ?? e.RegionId ?? e.RegionID
+          )
         }));
 
-        this.applyEmployeeFilter();
-      });
-  }
+      this.applyEmployeeFilter();
+    });
+}
 
   private applyEmployeeFilter() {
     this.filteredEmployees = this.employees.filter(e => {
@@ -168,9 +182,13 @@ onRegionChange() {
   }
 
   loadStructures() {
-    this.payrollService.getAllSalaryStructures(this.userId)
-      .subscribe((res:any) => this.structures = res || []);
-  }
+  this.payrollService.getAllSalaryStructures(this.userId)
+    .subscribe((res: any) => {
+
+      this.structures = (res || []).filter((s: any) => s.isActive);
+
+    });
+}
 
   // ================= Assign Salary =================
 
