@@ -76,20 +76,106 @@ loadLocations() {
     error: () => this.spinner.hide()
   });
 }
+onSubmit() {
 
-  onSubmit() {
+  // Trim text fields
+  this.location.locationName = this.location.locationName?.trim();
+  this.location.address = this.location.address?.trim();
 
-    this.location.userId = this.userId;
+  // Company
+  if (!this.location.companyId) {
+    Swal.fire('Validation', 'Please select Company.', 'warning');
+    return;
+  }
 
-    const req = this.isEditMode
-      ? this.service.updateGeoLocation(this.location.geoLocationId, this.location)
-      : this.service.createGeoLocation(this.location);
+  // Region
+  if (!this.location.regionId) {
+    Swal.fire('Validation', 'Please select Region.', 'warning');
+    return;
+  }
 
-    req.subscribe(() => {
+  // Location Name
+  if (!this.location.locationName) {
+    Swal.fire('Validation', 'Location Name is required.', 'warning');
+    return;
+  }
+
+  // Address
+  if (!this.location.address) {
+    Swal.fire('Validation', 'Address is required.', 'warning');
+    return;
+  }
+
+  // Latitude
+  if (
+  this.location.latitude === null ||
+  this.location.latitude === undefined ||
+  isNaN(this.location.latitude) ||
+  this.location.latitude === 0
+) {
+  Swal.fire('Validation', 'Latitude is required.', 'warning');
+  return;
+}
+
+  // Longitude
+  if (
+  this.location.longitude === null ||
+  this.location.longitude === undefined ||
+  isNaN(this.location.longitude) ||
+  this.location.longitude === 0
+) {
+  Swal.fire('Validation', 'Longitude is required.', 'warning');
+  return;
+}
+
+  // Radius
+  if (
+    this.location.radius === null ||
+    this.location.radius === undefined ||
+    this.location.radius <= 0
+  ) {
+    Swal.fire('Validation', 'Radius is required.', 'warning');
+    return;
+  }
+
+  this.location.userId = this.userId;
+
+  this.spinner.show();
+
+  const req = this.isEditMode
+    ? this.service.updateGeoLocation(this.location.geoLocationId, this.location)
+    : this.service.createGeoLocation(this.location);
+
+  req.subscribe({
+    next: () => {
+
+      Swal.fire(
+        'Success',
+        this.isEditMode
+          ? 'Geo Location updated successfully.'
+          : 'Geo Location added successfully.',
+        'success'
+      );
+
       this.loadLocations();
       this.resetForm();
-    });
-  }
+      this.spinner.hide();
+    },
+
+    error: (err) => {
+
+      this.spinner.hide();
+
+      Swal.fire(
+        'Error',
+        err?.error?.message || 'Operation failed.',
+        'error'
+      );
+
+    }
+  });
+
+}
 
   edit(g: GeoLocation) {
     this.location = { ...g };
