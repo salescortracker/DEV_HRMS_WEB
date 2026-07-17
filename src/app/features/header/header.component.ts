@@ -32,6 +32,7 @@ export class HeaderComponent {
   isClockedIn = false;
   isMobileMenuOpen = false;
   shiftStartTime: string = ''; // e.g. "09:00"
+shiftEndTime: string = '';
   showClockButton: boolean = false;
   allowedClockTimeText: string = '';
   isWFHApproved: boolean = false;
@@ -372,6 +373,35 @@ loadProfilePicture() {
     );
 
     return;
+  }
+  // Only validate shift end while CLOCKING IN
+  if (!this.isClockedIn) {
+
+    const now = this.getSystemTime();
+
+    const [endHours, endMinutes] =
+      this.shiftEndTime.split(':').map(Number);
+
+    const shiftEnd = new Date();
+
+    shiftEnd.setHours(
+      endHours,
+      endMinutes,
+      0,
+      0
+    );
+
+    if (now > shiftEnd) {
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Clock In Not Allowed',
+        text: `You cannot clock in because your shift time has already ended at ${this.formatDisplayTime(shiftEnd)}.`,
+        confirmButtonText: 'OK'
+      });
+
+      return; // ⭐ VERY IMPORTANT
+    }
   }
 
   // ✅ STEP 2: CHECK WFH APPROVAL
@@ -1498,6 +1528,7 @@ formatDuration(totalMinutes: number): string {
 
             // ✅ SET SHIFT START
             this.shiftStartTime = shift.shiftStartTime;
+            this.shiftEndTime = shift.shiftEndTime;
 
             console.log('Shift Start Time 👉', this.shiftStartTime);
 
