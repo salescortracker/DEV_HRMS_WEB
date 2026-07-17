@@ -1380,135 +1380,143 @@ button:hover {
 .hierarchy-list li em {
   color: #6c757d;
 }
-
-
-.org-chart-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
+.org-chart {
+  width: 100%;
+  overflow-x: auto;
+  padding: 40px 20px;
 }
 
-.org-chart {
+
+.org-wrapper {
+  min-width: max-content;
+  display: flex;
+  justify-content: center;
+}
+
+
+/* Parent level */
+.org-ul {
+  display: flex;
+  justify-content: center;
+  position: relative;
   list-style: none;
-  padding-left: 0;
-  text-align: center;
+  padding: 20px 0 0;
+  margin: 0;
 }
 
-.org-chart ul {
-  padding-left: 20px;
-  position: relative;
-}
 
-.org-chart li {
-  display: inline-block;
-  vertical-align: top;
-  margin: 20px;
-  position: relative;
-}
-
-.org-chart li::before,
-.org-chart li::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 50%;
-  border-top: 1px solid #ccc;
-  width: 50%;
-  height: 20px;
-}
-
-.org-chart li::after {
-  right: auto;
-  left: 50%;
-  border-left: 1px solid #ccc;
-}
-
-.org-chart li:only-child::before,
-.org-chart li:only-child::after {
-  display: none;
-}
-
-.employee-card {
-  border: 1px solid #007bff;
-  padding: 10px 15px;
-  border-radius: 8px;
-  background-color: #f8f9fa;
-  min-width: 140px;
-  display: inline-block;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.employee-card strong {
-  display: block;
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-.employee-card span {
-  font-size: 12px;
-  color: #555;
-}
-.org-chart {
-  display: flex;
-  justify-content: center;
-  margin: 2rem 0;
-}
-
-.org-ul, .org-ul ul {
-  padding-top: 20px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  list-style-type: none;
-}
-
-.org-ul li {
-  text-align: center;
-  position: relative;
-  padding: 20px 5px 0 5px;
-  transition: all 0.5s;
-}
-
-.org-ul li::before, .org-ul li::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 50%;
-  border-top: 2px solid #ccc;
-  width: 50%;
-  height: 20px;
-}
-
-.org-ul li::after {
-  right: auto;
-  left: 50%;
-  border-left: 2px solid #ccc;
-}
-
-.org-ul li:only-child::before, .org-ul li:only-child::after {
-  display: none;
-}
-
-.org-ul li:only-child {
-  padding-top: 0;
-}
-
-.org-ul li > .employee-card {
-  border: 2px solid #007bff;
-  padding: 10px 15px;
-  display: inline-block;
-  border-radius: 8px;
-  background: #f8f9fa;
-  min-width: 140px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  position: relative;
-}
-
+/* Child level */
 .org-ul ul {
   display: flex;
   justify-content: center;
+  gap: 40px;
+  position: relative;
+  padding: 50px 0 0;
+  margin: 0;
+  list-style: none;
 }
 
-.org-ul ul li {
-  margin: 0 10px;
+
+/* Vertical line from parent */
+.org-ul li {
+  position: relative;
+  text-align: center;
+  padding-top: 20px;
+}
+
+
+/* Line from parent card down */
+.org-ul > li > ul::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 2px;
+  height: 30px;
+  background: #ccc;
+}
+
+
+/* Horizontal line connecting employees */
+.org-ul > li > ul::after {
+  content:"";
+  position:absolute;
+  top:50px;
+  left:10%;
+  right:10%;
+  height:2px;
+  background:#ccc;
+}
+
+
+/* Each employee vertical connector */
+.org-ul ul li::before {
+  content:"";
+  position:absolute;
+  top:0;
+  left:50%;
+  height:50px;
+  border-left:2px solid #ccc;
+}
+
+
+
+/* Employee Card */
+.employee-card {
+
+  min-width:180px;
+  padding:15px 25px;
+
+  background:#fff;
+  border:2px solid #007bff;
+  border-radius:12px;
+
+  box-shadow:0 4px 10px rgba(0,0,0,.12);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+}
+
+
+.employee-card strong {
+  font-size:15px;
+  color:#000;
+}
+
+
+.employee-card span {
+  font-size:13px;
+  color:#666;
+}
+
+
+
+/* Mobile */
+@media(max-width:768px){
+
+ .org-chart{
+   padding:20px 10px;
+ }
+
+ .employee-card{
+   min-width:140px;
+ }
+
+ .org-ul ul{
+   gap:20px;
+ }
+
+}
+.tree-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.tree {
+  max-width: 100%;
+  transform: scale(0.9);
 }
