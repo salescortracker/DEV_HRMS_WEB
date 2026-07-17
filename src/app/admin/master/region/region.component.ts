@@ -88,25 +88,114 @@ export class RegionComponent {
   }
 
   // ✅ Save / Update Region
-  onSubmit(): void {
-    this.spinner.show();
-    const operation = this.isEditMode
-      ? this.adminService.updateRegion(this.region.regionID, this.region)
-      : this.adminService.createRegion(this.region);
+onSubmit(): void {
 
-    operation.subscribe({
-      next: () => {
-        Swal.fire('Success!', this.isEditMode ? 'Region updated.' : 'Region added.', 'success');
-        this.loadRegions();
-        this.resetForm();
-        this.spinner.hide();
-      },
-      error: () => {
-        this.spinner.hide();
-        Swal.fire('Error!', 'Operation failed. Contact admin.', 'error');
-      }
-    });
+  // Normalize input
+  this.region.regionName = this.region.regionName
+    ?.trim()
+    .replace(/\s+/g, ' ');
+
+  this.region.country = this.region.country
+    ?.trim()
+    .replace(/\s+/g, ' ');
+
+  // Company Validation
+  if (!this.region.companyID) {
+    Swal.fire('Validation', 'Please select company.', 'warning');
+    return;
   }
+
+  // Region Validation
+  if (!this.region.regionName) {
+    Swal.fire('Validation', 'Region Name is required.', 'warning');
+    return;
+  }
+
+  if (this.region.regionName.length > 100) {
+    Swal.fire('Validation', 'Region Name cannot exceed 100 characters.', 'warning');
+    return;
+  }
+
+  if (!/^[A-Za-z ]+$/.test(this.region.regionName)) {
+    Swal.fire(
+      'Validation',
+      'Region Name should contain only alphabets and single spaces.',
+      'warning'
+    );
+    return;
+  }
+
+  // Country Validation
+  if (!this.region.country) {
+    Swal.fire('Validation', 'Country is required.', 'warning');
+    return;
+  }
+
+  if (this.region.country.length > 100) {
+    Swal.fire('Validation', 'Country cannot exceed 100 characters.', 'warning');
+    return;
+  }
+
+  if (!/^[A-Za-z ]+$/.test(this.region.country)) {
+    Swal.fire(
+      'Validation',
+      'Country should contain only alphabets and single spaces.',
+      'warning'
+    );
+    return;
+  }
+
+  this.spinner.show();
+
+  const operation = this.isEditMode
+    ? this.adminService.updateRegion(this.region.regionID, this.region)
+    : this.adminService.createRegion(this.region);
+
+  operation.subscribe({
+
+    next: () => {
+
+      Swal.fire(
+        'Success!',
+        this.isEditMode
+          ? 'Region updated successfully.'
+          : 'Region added successfully.',
+        'success'
+      );
+
+      this.loadRegions();
+      this.resetForm();
+      this.spinner.hide();
+
+    },
+
+    error: (err) => {
+
+      this.spinner.hide();
+
+      let errorMessage = 'Operation failed.';
+
+      if (err?.error) {
+
+        if (typeof err.error === 'string') {
+          errorMessage = err.error;
+        }
+        else if (err.error.message) {
+          errorMessage = err.error.message;
+        }
+        else if (err.error.title) {
+          errorMessage = err.error.title;
+        }
+
+      }
+
+      Swal.fire('Error!', errorMessage, 'error');
+
+    }
+
+  });
+
+}
 
   editRegion(r: Region): void {
     this.region = { ...r };
