@@ -1205,6 +1205,7 @@ getDepartmentById(id: number): Observable<Department> {
 }
 
 createDepartment(model: Department): Observable<any> {
+  debugger;
   return this.create<Department>(`MasterData/CreateDepartment`, model);
 }
 

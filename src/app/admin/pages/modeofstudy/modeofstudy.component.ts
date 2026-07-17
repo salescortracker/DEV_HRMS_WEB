@@ -43,15 +43,33 @@ loadModes() {
     });
   }
 
-  loadCompanies() {
-    this.service.getCompanies(null, this.userId).subscribe((res: any) => {
-      this.companies = res;
+  loadCompanies(): void {
+    this.service.getCompanies(null, this.userId).subscribe({
+      next: (res: any) => {
+  
+        this.companies = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load companies.', 'error');
+      }
     });
   }
-
-  loadRegions() {
-    this.service.getRegions(null, this.userId).subscribe((res: any) => {
-      this.regions = res;
+  
+  loadRegions(): void {
+    this.service.getRegions(null, this.userId).subscribe({
+      next: (res: any) => {
+  
+        this.regions = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load regions.', 'error');
+      }
     });
   }
   onCompanyChange() {

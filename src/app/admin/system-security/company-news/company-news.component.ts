@@ -86,13 +86,18 @@ toggleDepartmentDropdown(event: MouseEvent): void {
   this.setPagination();
 }
   loadCompanies(): void {
-    this.adminService.getCompanies(null, this.userId).subscribe({
-      next: (res: any) => {
-        this.companies = res;
-      },
-      error: () => Swal.fire('Error', 'Failed to load companies', 'error')
-    });
-  }
+  this.adminService.getCompanies(null, this.userId).subscribe({
+    next: (res: any) => {
+
+      this.companies = (res || []).filter(
+        (c: any) => c.isActive === true || c.isActive === 1
+      );
+
+      console.log("Active Companies:", this.companies);
+    },
+    error: () => Swal.fire('Error', 'Failed to load companies', 'error')
+  });
+}
 
 loadRegions(): void {
 
@@ -100,7 +105,9 @@ loadRegions(): void {
 
     next: (res: any) => {
 
-      this.regions = (res || []).map((r: any) => ({
+      this.regions = (res || [])
+.filter((r:any) => r.isActive === true || r.isActive === 1)
+.map((r: any) => ({
 
         regionId: Number(r.regionID || r.regionId),
 
@@ -139,14 +146,29 @@ loadRegions(): void {
   console.log('Filtered Departments', this.filteredDepartments);
 }
   loadCategories(): void {
-    this.adminService.getCompanyNewsCategoryList(this.userId).subscribe({
-      next: (res: any) => {
-        console.log("Categories:", res);
-        this.categories = res;
-      },
-      error: () => Swal.fire('Error', 'Failed to load categories', 'error')
-    });
-  }
+
+  this.adminService.getCompanyNewsCategoryList(this.userId)
+  .subscribe({
+
+    next: (res: any) => {
+
+      console.log("Categories:", res);
+
+      this.categories = (res || []).filter(
+        (c:any) => c.isActive === true || c.isActive === 1
+      );
+
+      console.log("Active Categories:", this.categories);
+
+    },
+
+    error: () => Swal.fire(
+      'Error',
+      'Failed to load categories',
+      'error'
+    )
+  });
+}
   getDepartmentName(departmentIds?: number[] | null): string {
   if (!departmentIds || departmentIds.length === 0) return '-';
 

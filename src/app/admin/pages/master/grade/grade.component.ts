@@ -152,6 +152,10 @@ loadRegions(): void {
   this.service.getRegions(null, this.userId).subscribe({
     next: (res: any) => {
       this.regions = res?.data ?? res ?? [];
+      this.regions = res.filter(
+        (x: any) => x.isActive === true || x.isActive === 1
+      );
+
     },
     error: () => Swal.fire('Error', 'Failed to load regions.', 'error')
   });

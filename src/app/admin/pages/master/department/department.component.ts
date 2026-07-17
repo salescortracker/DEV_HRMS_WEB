@@ -73,19 +73,32 @@ userId: number = sessionStorage.getItem('UserId') ? Number(sessionStorage.getIte
   }
 
   loadCompanies(): void {
-    this.departmentService.getCompanies(null,this.userId).subscribe({
-      next: (res:any) => {
-        debugger;
-        this.companies = res;
+    this.departmentService.getCompanies(null, this.userId).subscribe({
+      next: (res: any) => {
+  
+        this.companies = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
       },
-      error: () => Swal.fire('Error', 'Failed to load companies.', 'error')
+      error: () => {
+        Swal.fire('Error', 'Failed to load companies.', 'error');
+      }
     });
   }
-
+  
   loadRegions(): void {
-    this.departmentService.getRegions(null,this.userId).subscribe({
-      next: (res:any) => (this.regions = res),
-      error: () => Swal.fire('Error', 'Failed to load regions.', 'error')
+    this.departmentService.getRegions(null, this.userId).subscribe({
+      next: (res: any) => {
+  
+        this.regions = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load regions.', 'error');
+      }
     });
   }
   onCompanyChange(): void {

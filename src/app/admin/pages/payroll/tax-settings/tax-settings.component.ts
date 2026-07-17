@@ -87,36 +87,48 @@ export class TaxSettingsComponent implements OnInit {
   }
 
   loadCompanies() {
-    this.payrollService.getCompanies(this.userId).subscribe((res: any) => {
-      this.companies = res || [];
-      this.companies.forEach(c => {
-        this.companyMap[c.companyId] = c.companyName;
-      });
-      this.syncDependentDropdowns();
+  this.payrollService.getCompanies(this.userId).subscribe((res: any) => {
+
+    this.companies = (res || []).filter((c: any) =>
+      c.isActive === true || c.isActive === 1
+    );
+
+    this.companyMap = {};
+
+    this.companies.forEach(c => {
+      this.companyMap[c.companyId] = c.companyName;
     });
-  }
+
+    this.syncDependentDropdowns();
+  });
+}
 
   loadRegions() {
-    this.payrollService.getRegions(this.userId).subscribe((res: any) => {
-      if (res && Array.isArray(res)) {
-        this.regions = res.map((r: any) => ({
-          regionId: Number(r.regionID ?? r.regionId ?? r.RegionID ?? r.RegionId),
+  this.payrollService.getRegions(this.userId).subscribe((res: any) => {
+
+    if (Array.isArray(res)) {
+
+      this.regions = res
+        .filter((r: any) => r.isActive === true || r.isActive === 1)
+        .map((r: any) => ({
+          regionId: Number(r.regionID ?? r.regionId),
           regionName: r.regionName,
-          companyID: Number(r.companyID ?? r.companyId ?? r.CompanyID ?? r.CompanyId)
+          companyID: Number(r.companyID ?? r.companyId)
         }));
 
-        this.regionMap = {};
-        this.regions.forEach(r => {
-          this.regionMap[r.regionId] = r.regionName;
-        });
-      } else {
-        this.regions = [];
-      }
+      this.regionMap = {};
 
-      this.syncDependentDropdowns();
-      console.log('Region Map:', this.regionMap);
-    });
-  }
+      this.regions.forEach(r => {
+        this.regionMap[r.regionId] = r.regionName;
+      });
+
+    } else {
+      this.regions = [];
+    }
+
+    this.syncDependentDropdowns();
+  });
+}
 
   onCompanyChange() {
     this.structure.regionId = null;
@@ -176,43 +188,50 @@ export class TaxSettingsComponent implements OnInit {
   }
 
   loadDepartments() {
-    this.payrollService.getDepartments(this.userId).subscribe((res: any) => {
-      console.log('Departments API:', res);
+  this.payrollService.getDepartments(this.userId).subscribe((res: any) => {
 
-      if (res && res.success && Array.isArray(res.data.data)) {
-        this.departments = res.data.data;
-        this.departments.forEach((d: any) => {
-          this.departmentMap[d.departmentId] = d.description;
-        });
-      } else {
-        this.departments = [];
-      }
+    if (res?.success && Array.isArray(res.data.data)) {
 
-      this.syncDependentDropdowns();
-    });
-  }
+      this.departments = res.data.data.filter((d: any) =>
+        d.isActive === true || d.isActive === 1
+      );
+
+      this.departmentMap = {};
+
+      this.departments.forEach((d: any) => {
+        this.departmentMap[d.departmentId] = d.description;
+      });
+
+    } else {
+      this.departments = [];
+    }
+
+    this.syncDependentDropdowns();
+  });
+}
 
   loadDesignations() {
-    this.payrollService.getDesignations(this.userId).subscribe((res: any) => {
-      const data = Array.isArray(res)
-        ? res
-        : (res?.data?.data ?? res?.data ?? res ?? []);
+  this.payrollService.getDesignations(this.userId).subscribe((res: any) => {
 
-      this.designations = Array.isArray(data)
-        ? data.map((d: any) => ({
-            designationId: Number(d.designationID ?? d.designationId ?? d.DesignationID ?? d.DesignationId),
-            designationName: d.designationName ?? d.DesignationName ?? '',
-            gradeId: d.gradeID ?? d.gradeId ?? d.GradeID ?? d.GradeId,
-            gradeName: d.gradeName ?? d.GradeName ?? '',
-            companyId: d.companyId ?? d.companyID ?? d.CompanyId ?? d.CompanyID,
-            regionId: d.regionId ?? d.regionID ?? d.RegionId ?? d.RegionID,
-            departmentId: d.departmentId ?? d.departmentID ?? d.DepartmentId ?? d.DepartmentID
-          }))
-        : [];
+    const data = Array.isArray(res)
+      ? res
+      : (res?.data?.data ?? res?.data ?? res ?? []);
 
-      this.syncDependentDropdowns();
-    });
-  }
+    this.designations = (Array.isArray(data) ? data : [])
+      .filter((d: any) => d.isActive === true || d.isActive === 1)
+      .map((d: any) => ({
+        designationId: Number(d.designationID ?? d.designationId),
+        designationName: d.designationName ?? d.DesignationName,
+        gradeId: d.gradeID ?? d.gradeId,
+        gradeName: d.gradeName ?? d.GradeName,
+        companyId: d.companyId ?? d.companyID,
+        regionId: d.regionId ?? d.regionID,
+        departmentId: d.departmentId ?? d.departmentID
+      }));
+
+    this.syncDependentDropdowns();
+  });
+}
 
   addComponent() {
     this.structure.components.push({

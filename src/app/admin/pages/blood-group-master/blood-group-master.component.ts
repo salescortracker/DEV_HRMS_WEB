@@ -85,24 +85,34 @@ onBloodGroupInput() {
   });
   }
   loadCompanies(): void {
-  this.adminService.getCompanies(null, this.userId).subscribe({
-    next: (res: any) => {
-      console.log('COMPANIES 👉', res);
-      this.companies = res;
-    },
-    error: () => Swal.fire('Error', 'Failed to load companies', 'error')
-  });
-}
-
-loadRegions(): void {
-  this.adminService.getRegions(null, this.userId).subscribe({
-    next: (res: any) => {
-      console.log('REGIONS 👉', res);
-      this.regions = res;
-    },
-    error: () => Swal.fire('Error', 'Failed to load regions', 'error')
-  });
-}
+    this.adminService.getCompanies(null, this.userId).subscribe({
+      next: (res: any) => {
+  
+        this.companies = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load companies.', 'error');
+      }
+    });
+  }
+  
+  loadRegions(): void {
+    this.adminService.getRegions(null, this.userId).subscribe({
+      next: (res: any) => {
+  
+        this.regions = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load regions.', 'error');
+      }
+    });
+  }
 
 onCompanyChange(): void {
   this.bloodGroup.regionID = 0;

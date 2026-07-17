@@ -307,7 +307,8 @@ onRegionChange(regionId: number): void {
 
   this.filteredRoles = this.roles.filter(r =>
     Number(r.companyId) === Number(this.user.companyId) &&
-    Number(r.regionId) === Number(regionId)
+    Number(r.regionId) === Number(regionId) &&
+    r.isActive === true
   );
   console.log("Filtered Roles:", this.filteredRoles);
   this.filterDepartments();
@@ -336,17 +337,28 @@ filterDepartments(): void {
   console.log("Filtered Departments:", this.filteredDepartments);
 }
 
-    loadCompanies(): void {
-      this.userService.getCompanies(null,this.userId).subscribe({
-        next: (res:any) => (this.companies = res),
-        error: () => Swal.fire('Error', 'Failed to load companies.', 'error')
-      });
-    }
+   loadCompanies(): void {
+     this.userService.getCompanies(null, this.userId).subscribe({
+       next: (res: any) => {
+   
+         this.companies = res.filter(
+           (x: any) => x.isActive === true || x.isActive === 1
+         );
+   
+       },
+       error: () => {
+         Swal.fire('Error', 'Failed to load companies.', 'error');
+       }
+     });
+   }
  
     loadRegions(): void {
       this.userService.getRegions(null, this.userId).subscribe({
       next: (res: any) => {
         this.regions = res;
+        this.regions = res.filter(
+        (x: any) => x.isActive === true || x.isActive === 1
+      );
         this.filteredRegions = [];
         this.filterRegions = [...this.regions];
       },
@@ -370,7 +382,8 @@ filterDepartments(): void {
       if (this.user.companyId && this.user.regionId) {
         this.filteredRoles = this.roles.filter(r =>
           Number(r.companyId) === Number(this.user.companyId) &&
-          Number(r.regionId) === Number(this.user.regionId)
+          Number(r.regionId) === Number(this.user.regionId) &&
+          r.isActive === true
         );
       }
         console.log("Filtered Roles:", this.filteredRoles);
@@ -382,7 +395,6 @@ filterDepartments(): void {
   });
 }
 filterRoles(): void {
-  debugger;
   if (!this.user.companyId || !this.user.regionId) {
     this.filteredRoles = [];
     return;
@@ -390,7 +402,8 @@ filterRoles(): void {
 
   this.filteredRoles = this.roles.filter(r =>
     Number(r.companyId) === Number(this.user.companyId) &&
-    Number(r.regionId) === Number(this.user.regionId)
+    Number(r.regionId) === Number(this.user.regionId) &&
+    (r.isActive === true)
   );
 
   console.log("Filtered Roles:", this.filteredRoles);

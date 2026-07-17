@@ -73,17 +73,32 @@ filterDepartments(): void {
 companies:any;
 regions:any;
   loadCompanies(): void {
-   
-    this.adminservice.getCompanies(null,this.userId).subscribe({
-      next: (res:any) => (this.companies = res),
-      error: () => Swal.fire('Error', 'Failed to load companies.', 'error')
+    this.adminservice.getCompanies(null, this.userId).subscribe({
+      next: (res: any) => {
+  
+        this.companies = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load companies.', 'error');
+      }
     });
   }
-
+  
   loadRegions(): void {
-    this.adminservice.getRegions(null,this.userId).subscribe({
-      next: (res:any) => (this.regions = res),
-      error: () => Swal.fire('Error', 'Failed to load regions.', 'error')
+    this.adminservice.getRegions(null, this.userId).subscribe({
+      next: (res: any) => {
+  
+        this.regions = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load regions.', 'error');
+      }
     });
   }
   onCompanyChange(): void {

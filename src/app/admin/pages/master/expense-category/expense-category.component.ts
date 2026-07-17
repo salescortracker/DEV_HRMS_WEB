@@ -299,16 +299,32 @@ sortTable(column: string): void {
   }
 }
   loadCompanies(): void {
-      this.admin.getCompanies(null,this.userId).subscribe({
-        next: (res:any) => (this.companies = res),
-        error: () => Swal.fire('Error', 'Failed to load companies.', 'error')
-      });
-    }
+    this.admin.getCompanies(null, this.userId).subscribe({
+      next: (res: any) => {
   
-    loadRegions(): void {
-      this.admin.getRegions(null,this.userId).subscribe({
-        next: (res:any) => (this.regions = res),
-        error: () => Swal.fire('Error', 'Failed to load regions.', 'error')
-      });
-    }
+        this.companies = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load companies.', 'error');
+      }
+    });
+  }
+  
+  loadRegions(): void {
+    this.admin.getRegions(null, this.userId).subscribe({
+      next: (res: any) => {
+  
+        this.regions = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load regions.', 'error');
+      }
+    });
+  }
 }

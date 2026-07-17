@@ -87,16 +87,46 @@ onCompanyChange() {
 this.filterDepartments();
 }
   loadCompanies() {
-    this.cmpservice.getCompanies(null, this.userId).subscribe((res: any) => {
-      this.companies = res;
-    });
-  }
+
+  this.cmpservice.getCompanies(null, this.userId).subscribe({
+    next: (res: any) => {
+
+      this.companies = (res || []).filter(
+        (c: any) => c.isActive === true || c.isActive === 1
+      );
+
+    },
+    error: () => {
+      Swal.fire('Error', 'Failed to load companies', 'error');
+    }
+  });
+
+}
 
   loadRegions() {
-    this.cmpservice.getRegions(null, this.userId).subscribe(res => {
-      this.regions = res;
-    });
-  }
+
+  this.cmpservice.getRegions(null, this.userId).subscribe({
+    next: (res: any) => {
+
+      this.regions = (res || [])
+        .filter((r: any) => r.isActive === true || r.isActive === 1)
+        .map((r: any) => ({
+
+          regionId: Number(r.regionID || r.regionId),
+
+          regionName: r.regionName,
+
+          companyID: Number(r.companyID || r.companyId)
+
+        }));
+
+    },
+    error: () => {
+      Swal.fire('Error', 'Failed to load regions', 'error');
+    }
+  });
+
+}
 
   loadDepartments() {
 

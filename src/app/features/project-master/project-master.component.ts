@@ -68,20 +68,34 @@ export class ProjectMasterComponent implements OnInit {
 }
 
   loadCompanies(): void {
-  this.service.getCompanies(null, this.userId).subscribe({
-    next: (res: any) => {
-       this.companies = res;
-    }
-      });
-    }
+    this.service.getCompanies(null, this.userId).subscribe({
+      next: (res: any) => {
   
-    loadRegions(): void {
-  this.service.getRegions(null, this.userId).subscribe({
-    next: (res: any) => {
-      this.regions = res;    
-    }
-  });
-}
+        this.companies = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load companies.', 'error');
+      }
+    });
+  }
+  
+  loadRegions(): void {
+    this.service.getRegions(null, this.userId).subscribe({
+      next: (res: any) => {
+  
+        this.regions = res.filter(
+          (x: any) => x.isActive === true || x.isActive === 1
+        );
+  
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load regions.', 'error');
+      }
+    });
+  }
 
   onSubmit() {
      this.userId = Number(sessionStorage.getItem("UserId"));
