@@ -229,7 +229,7 @@ export class ShiftsComponent {
   companies: Company[] = [];
   regions: Region[] = [];
   filteredRegions: Region[] = [];
-
+graceMinutes = 0;
   isEditMode = false;
   searchText = '';
   statusFilter: any = '';
@@ -348,6 +348,7 @@ export class ShiftsComponent {
       Swal.fire('Warning', 'Please fill all required fields', 'warning');
       return;
     }
+  this.shift.graceTime = `00:${String(this.graceMinutes).padStart(2, '0')}`;
 
     this.shift.userId = this.userId;
 
@@ -398,6 +399,12 @@ export class ShiftsComponent {
 
   editShift(s: any) {
     this.shift = { ...s };
+     
+  if (this.shift.graceTime) {
+    this.graceMinutes = Number(this.shift.graceTime.split(':')[1]);
+  } else {
+    this.graceMinutes = 0;
+  }
     this.isEditMode = true;
     this.showForm = true;
     this.filteredRegions = this.regions.filter(r => r.companyID === Number(this.shift.companyID));
