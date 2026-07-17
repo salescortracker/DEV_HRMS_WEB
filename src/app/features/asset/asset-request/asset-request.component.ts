@@ -34,65 +34,89 @@ companyId :any;
 
 
   constructor(private fb: FormBuilder, private service: AdminService, private helpdeskService: HelpdeskService
-    , private profileService: EmployeeResignationService, private assetService: AssetService) { }
+    , private profileService: EmployeeResignationService, private assetService: AssetService) {
+    }
 
   ngOnInit() {
     this.loadPermissions();
-     this.departmentName = sessionStorage.getItem('DepartmentName');
-        console.log('Department Name from session:', this.departmentName);
     this.companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
-  this. regionId = Number(sessionStorage.getItem('RegionId')) || 0;
-  this.userId = Number(sessionStorage.getItem('UserId')) || 0;
+    this.departmentName = sessionStorage.getItem('DepartmentName') || '';
+
+    this.regionId = Number(sessionStorage.getItem('RegionId')) || 0;
+    this.userId = Number(sessionStorage.getItem('UserId')) || 0;
+
     this.assetRequestForm = this.fb.group({
       employeeName: [''],
       employeeId: [''],
-       departmentName: this.departmentName , 
-
+      departmentName: [this.departmentName ],
       assetType: ['', Validators.required],
       assetCategory: [''],
       requiredDate: ['', Validators.required],
       priority: [''],
       reason: ['', Validators.required],
       file: [null],
-      hrEmail: [''] 
+      hrEmail: ['']
     });
-    this.loadRequests();
 
     this.loadProfile();
+    this.loadRequests();
     this.loadAssetTypes();
     this.loadAssetCategories();
     this.loadPriorities();
-this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
-  this.loadAssetTypes();   // ✅ reuse same method
-});
+
+    this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
+      this.loadAssetTypes();
+    });
   }
   viewDocument(filePath: string | undefined): void {
 
   }
 
-  loadProfile() {
-    if (!this.userId) return;
+  // normalizeDepartmentName(value: any): string {
+  //   return value == null || value === '' ? '' : String(value).trim();
+  // }
 
-    this.profileService.GetempProfile(this.userId).subscribe({
-      next: (res: any) => {
-        if (res && res.data) {
+  // applyDepartmentName(value: any) {
+  //   const normalized = this.normalizeDepartmentName(value);
+  //   if (!normalized) {
+  //     return;
+  //   }
 
-          const data = res.data;
+  //   this.departmentName = normalized;
+  //   if (this.assetRequestForm) {
+  //     this.assetRequestForm.patchValue({ departmentName: normalized });
+  //   }
+  // }
 
-          // ✅ Patch values into form
-          this.assetRequestForm.patchValue({
-            employeeName: data.fullName,
-            employeeId: data.employeeCode,
-             departmentName: this.departmentName || '',   // department = rolename   // department = rolename
-          });
+  // loadProfile() {
+  //   if (!this.userId) return;
 
-        }
-      },
-      error: (err) => {
-        console.error('Error loading profile', err);
-      }
-    });
-  }
+  //   this.profileService.GetempProfile(this.userId).subscribe({
+  //     next: (res: any) => {
+  //       const data = res?.data ?? res;
+  //       if (data) {
+  //         const deptName = this.normalizeDepartmentName(
+  //           data.departmentName || data.DepartmentName || data.department?.departmentName || data.roleName || this.departmentName
+  //         );
+
+  //         this.assetRequestForm?.patchValue({
+  //           employeeName: data.fullName || data.employeeName || '',
+  //           employeeId: data.employeeCode || data.employeeId || '',
+  //           departmentName: deptName || this.departmentName || ''
+  //         });
+
+  //         if (deptName) {
+  //           this.applyDepartmentName(deptName);
+  //         }
+  //       } else if (this.departmentName) {
+  //         this.applyDepartmentName(this.departmentName);
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error('Error loading profile', err);
+  //     }
+  //   });
+  // }
 
   loadAssetTypes() {
 
@@ -218,12 +242,55 @@ this.assetRequestForm.get('assetCategory')?.valueChanges.subscribe(() => {
     });
   }
 
-  loadRequests() {
-    this.assetService.getMyRequests(this.userId)
-      .subscribe(res => {
-        this.requests = res;
+  // loadRequests() {
+  //   this.assetService.getMyRequests(this.userId)
+  //     .subscribe(res => {
+  //       this.requests = res;
+  //       const firstRequest = Array.isArray(res) ? res[0] : null;
+  //       const requestDept = this.normalizeDepartmentName(
+  //         firstRequest?.departmentName || firstRequest?.DepartmentName || firstRequest?.department || this.departmentName
+  //       );
+
+  //       if (requestDept) {
+  //         this.applyDepartmentName(requestDept);
+  //       } else if (this.departmentName) {
+  //         this.applyDepartmentName(this.departmentName);
+  //       }
+  //     });
+  // }
+
+  loadProfile() {
+  if (!this.userId) return;
+
+  this.profileService.GetempProfile(this.userId).subscribe({
+    next: (res: any) => {
+      const data = res?.data || {};
+
+      this.assetRequestForm.patchValue({
+        employeeName: data.fullName || '',
+        employeeId: data.employeeCode || '',
+        departmentName:
+          data.departmentName ||
+          sessionStorage.getItem('DepartmentName') ||
+          this.requests[0]?.departmentName ||
+          ''
       });
-  }
+    },
+    error: err => console.error(err)
+  });
+}
+
+loadRequests() {
+  this.assetService.getMyRequests(this.userId).subscribe((res: any[]) => {
+    this.requests = res;
+
+    if (!this.assetRequestForm.get('departmentName')?.value && res.length) {
+      this.assetRequestForm.patchValue({
+        departmentName: res[0].departmentName || ''
+      });
+    }
+  });
+}
 
   cancel() {
     Swal.fire({

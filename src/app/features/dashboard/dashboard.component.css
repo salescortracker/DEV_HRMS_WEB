@@ -292,7 +292,7 @@ canvas {
 .present { background: #ffc107; } 
 .absent { background: #dc3545; }   
 .today { background: #28a745; }    
-.future { background: #007bff; }   
+.future { background: #f4f5f6; }   
 .weekoff { background: #000000; } 
 
 .leave-box {
@@ -302,6 +302,32 @@ canvas {
   text-align: center;
   transition: 0.3s;
   cursor: pointer;
+}
+
+.leave-box {
+  position: relative;
+  overflow: visible;
+  transition: all 0.3s ease;
+}
+
+.tooltip-box {
+  margin-top: 10px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+  padding: 10px;
+
+  max-height: 0;
+  overflow: hidden;
+
+  opacity: 0;
+  transition: all .3s ease;
+}
+
+.leave-box:hover .tooltip-box {
+  max-height: 250px;
+  opacity: 1;
 }
 
 .leave-box:hover {
@@ -339,7 +365,7 @@ canvas {
   border:none;
   padding:5px 12px;
   border-radius:5px;
-  background:#0d6efd;
+  background:#b02828;
   color:#fff;
 }
 
