@@ -50,23 +50,26 @@
             </div>
 
             <!-- Department -->
-        <div class="col-md-6 position-relative">
+        <div class="col-md-6 position-relative" #departmentDropdown>
 
   <label class="form-label fw-semibold">Departments<span class="text-danger">*</span></label>
 
   <!-- Dropdown Field -->
-  <div class="form-select"
-       style="cursor:pointer"
-       (click)="showDepartmentDropdown = !showDepartmentDropdown">
+  <div
+  class="form-select"
+  style="cursor:pointer"
+  (click)="toggleDepartmentDropdown($event)">
 
     {{ getSelectedDepartmentNames() }}
 
   </div>
 
   <!-- Dropdown Content -->
-  <div *ngIf="showDepartmentDropdown"
-       class="border rounded bg-white shadow mt-1 p-2 position-absolute w-100"
-       style="z-index:1000; max-height:250px; overflow-y:auto;">
+  <div
+  *ngIf="showDepartmentDropdown"
+  class="border rounded bg-white shadow mt-1 p-2 position-absolute w-100"
+  style="z-index:1000; max-height:250px; overflow-y:auto;"
+  (click)="$event.stopPropagation()">
 
     <!-- Select All -->
     <div class="form-check mb-2">

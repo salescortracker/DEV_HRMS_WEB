@@ -1,5 +1,9 @@
-import { Component } from '@angular/core';
-import { AdminService, Department, News } from '../../servies/admin.service';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  HostListener
+} from '@angular/core';import { AdminService, Department, News } from '../../servies/admin.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import Swal from 'sweetalert2';
 @Component({
@@ -9,6 +13,8 @@ import Swal from 'sweetalert2';
   styleUrl: './company-news.component.css'
 })
 export class CompanyNewsComponent {
+  @ViewChild('departmentDropdown')
+departmentDropdown!: ElementRef;
   companies: any[] = [];
   regions: any[] = [];
   userId!: number;
@@ -56,6 +62,26 @@ export class CompanyNewsComponent {
     this.getNewsList();
     this.loadCategories();
   }
+  @HostListener('document:click', ['$event'])
+onDocumentClick(event: MouseEvent): void {
+
+  if (
+    this.showDeptDropdown &&
+    this.departmentDropdown &&
+    !this.departmentDropdown.nativeElement.contains(event.target)
+  ) {
+    this.showDeptDropdown = false;
+  }
+
+}
+
+toggleDepartmentDropdown(event: MouseEvent): void {
+
+  event.stopPropagation();
+
+  this.showDeptDropdown = !this.showDeptDropdown;
+
+}
   ngOnChanges() {
   this.setPagination();
 }
