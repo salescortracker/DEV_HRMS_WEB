@@ -70,6 +70,22 @@ filterDepartments(): void {
 
   console.log('Filtered Departments', this.filteredDepartments);
 }
+filteredGrades: any[] = [];
+filterGrades(): void {
+
+  if (!this.designation.companyId || !this.designation.regionId) {
+    this.filteredGrades = [];
+    return;
+  }
+
+  this.filteredGrades = this.grades.filter(g =>
+      Number(g.companyID) === Number(this.designation.companyId) &&
+      Number(g.regionId) === Number(this.designation.regionId) &&
+      (g.isActive === true || g.isActive === 1)
+  );
+
+  console.log('Filtered Grades', this.filteredGrades);
+}
 companies:any;
 regions:any;
   loadCompanies(): void {
@@ -110,12 +126,16 @@ regions:any;
       )
     : [];
     this.filteredDepartments = [];
+      this.filteredGrades = [];
+
 }
 onRegionChange(): void {
 
   this.designation.departmentId = 0;
 
   this.filterDepartments();
+    this.filterGrades();
+
 }
   // getCompanyName(companyId: number): string {
   //   const c = this.companies.find((x:any) => x.companyID === companyId);
@@ -272,6 +292,8 @@ editDesignation(d: any): void {
   Number(r.companyID) === Number(this.designation.companyId)
 );
 this.filterDepartments();
+  this.filterGrades();
+
 }
 
   // ------------------------------------------------------------
