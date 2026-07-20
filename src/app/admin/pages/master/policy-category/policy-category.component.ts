@@ -28,7 +28,9 @@ export class PolicyCategoryComponent {
 
   isEditMode = false;
 
-  constructor(private adminService: AdminService, private spinner: NgxSpinnerService) {}
+  constructor(private adminService: AdminService, private spinner: NgxSpinnerService) {
+        this.userId = Number(sessionStorage.getItem("UserId"));
+  }
 
   ngOnInit(): void {
     this.userId = Number(sessionStorage.getItem("UserId"));
@@ -111,6 +113,8 @@ export class PolicyCategoryComponent {
 
 
 editCategory(c: any) {
+    this.isEditMode = true;   
+
   this.category = { ...c };
 
   // 🔥 MUST match property name
@@ -118,11 +122,21 @@ editCategory(c: any) {
   this.regionId = c.RegionId;
 
   this.loadRegions();
-  this.isEditMode = true;
+   setTimeout(() => {
+    const form = document.getElementById('policyCategoryForm');
+    if (form) {
+      form.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }, 300);
 }
  
 
   deleteCategory(c: any) {
+   c.userId = this.userId;
+    console.log("Attempting to delete category:", c);
   Swal.fire({
     title: `Delete "${c.PolicyCategoryName}"?`,
     icon: 'warning',
@@ -171,6 +185,7 @@ editCategory(c: any) {
       });
 
       this.loadRegions();
+      
     }
   });
 }
