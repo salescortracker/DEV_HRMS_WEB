@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { EmployeePayRollService } from '../../../employee-pay-roll.service';
 import Swal from 'sweetalert2';
+import { AdminService } from '../../../admin/servies/admin.service';
 @Component({
   selector: 'app-pay-groups',
   standalone: false,
@@ -29,7 +30,7 @@ export class PayGroupsComponent {
 
 
   filteredRegions: any[] = [];
-  constructor(private payrollService: EmployeePayRollService) { }
+  constructor(private payrollService: EmployeePayRollService, private admin: AdminService) { }
 
   // ================= Init =================
 
@@ -43,7 +44,6 @@ export class PayGroupsComponent {
 
     this.loadCompanies();
     this.loadRegions();
-    this.loadEmployees();
     this.loadStructures();
     this.loadAllAssignedSalaries();
   }
@@ -130,46 +130,46 @@ loadRegions() {
     });
 }
 onCompanyChange() {
+
   this.salary.regionId = null;
   this.salary.employeeId = null;
 
-  if (this.salary.companyId) {
-    this.filteredRegions = this.regions.filter(r =>
-      String(r.companyId) === String(this.salary.companyId)
-    );
-  } else {
-    this.filteredRegions = [];
-  }
+  this.filteredRegions = this.regions.filter(r =>
+    Number(r.companyId) === Number(this.salary.companyId)
+  );
 
-  this.applyEmployeeFilter();
+  // Clear employees until region selected
+  this.filteredEmployees = [];
 }
 
 onRegionChange() {
+
   this.salary.employeeId = null;
-  this.applyEmployeeFilter();
+
+  if (this.salary.companyId && this.salary.regionId) {
+    this.loadEmployees();
+  }
+  else {
+    this.filteredEmployees = [];
+  }
 }
+ loadEmployees() {
 
-  loadEmployees() {
-  this.payrollService.getEmployees(this.userId)
-    .subscribe((res: any) => {
+  const companyId = Number(this.salary.companyId);
+  const regionId = Number(this.salary.regionId);
 
-      const raw = Array.isArray(res)
-        ? res
-        : (res?.data ?? res?.data?.data ?? []);
+  this.admin.getUsersByCompanyRegion(companyId, regionId)
+    .subscribe({
+      next: (res: any[]) => {
 
-      this.employees = raw
-        .filter((e: any) => e.isActive)
-        .map((e: any) => ({
-          ...e,
-          companyId: Number(
-            e.companyId ?? e.companyID ?? e.CompanyId ?? e.CompanyID
-          ),
-          regionId: Number(
-            e.regionId ?? e.regionID ?? e.RegionId ?? e.RegionID
-          )
-        }));
+        this.filteredEmployees = res.filter(x => x.status === 'Active');
 
-      this.applyEmployeeFilter();
+        console.log(this.filteredEmployees);
+      },
+      error: (err) => {
+        console.error(err);
+        this.filteredEmployees = [];
+      }
     });
 }
 
