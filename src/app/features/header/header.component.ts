@@ -32,7 +32,7 @@ export class HeaderComponent {
   isClockedIn = false;
   isMobileMenuOpen = false;
   shiftStartTime: string = ''; // e.g. "09:00"
-shiftEndTime: string = '';
+  shiftEndTime: string = '';
   showClockButton: boolean = false;
   allowedClockTimeText: string = '';
   isWFHApproved: boolean = false;
@@ -55,6 +55,7 @@ lastClockOut: string | null = null;
 notifications: any[] = [];
 notificationCount: number = 0;
 unreadCount = 0;
+unreadNotifications: any[] = [];
 showNotifications = false;
 private timer:any;
   constructor(private router: Router, private employeeResignationService: EmployeeResignationService,
@@ -97,15 +98,29 @@ private timer:any;
 
       this.notifications = res;
 
-      this.unreadCount = this.notifications
-      .filter(x => x.isRead == false)
-      .length;
+      this.unreadNotifications = this.notifications
+        .filter(x => x.isRead == false);
+
+      this.unreadCount = this.unreadNotifications.length;
 
     },
     error:(err)=>{
       console.log(err);
     }
   });
+
+}
+toggleNotification(event: MouseEvent){
+
+    event.stopPropagation();
+
+    this.showNotifications = true;
+
+}
+@HostListener('document:click')
+clickOutside(){
+
+  this.showNotifications = false;
 
 }
 openNotifications(){
@@ -118,30 +133,132 @@ closeNotifications(){
         this.showNotifications = false;
     },200);
 }
-readNotification(notification:any){
+readNotification(notification: any): void {
 
-  if(!notification.isRead){
+  if (!notification.isRead) {
 
     this.adminService.markAsRead(notification.notificationId)
-    .subscribe({
+      .subscribe({
+        next: () => {
 
-      next:()=>{
 
-        notification.isRead = true;
+          // Remove from dropdown after read
+          this.unreadNotifications =
+            this.unreadNotifications.filter(
+              x => x.notificationId !== notification.notificationId
+            );
 
-        this.unreadCount =
-        this.notifications.filter(x=> !x.isRead).length;
 
-      },
+          this.unreadCount = this.unreadNotifications.length;
 
-      error:(err)=>{
-        console.log(err);
-      }
 
-    });
+          this.showNotifications = false;
+
+
+          this.navigateNotification(notification);
+
+        },
+        error: (err) => console.log(err)
+      });
 
   }
 
+}
+navigateNotification(notification: any): void {
+
+  const role = (sessionStorage.getItem('roleName') || '').toLowerCase();
+
+  switch (notification.type) {
+
+    case 'EmployeeLetter':
+      this.router.navigate(['/documents/my-letters']);
+      break;
+
+    case 'EmployeeForm':
+      this.router.navigate(['/documents/forms']);
+      break;
+
+    case 'Leave':
+      this.router.navigate([
+        role.includes('manager') || role.includes('hr')
+          ? '/leave-management/leave-approvals'
+          : '/leave-management/apply-leave'
+      ]);
+      break;
+
+    case 'Asset':
+      this.router.navigate([
+        role.includes('manager')
+          ? '/asset/asset-approval'
+          : '/asset/asset-request'
+      ]);
+      break;
+
+    case 'Expense':
+      this.router.navigate([
+        role.includes('manager')
+          ? '/expenses/approve-expenses'
+          : '/expenses/all-expenses'
+      ]);
+      break;
+
+    case 'Timesheet':
+      this.router.navigate([
+        role.includes('manager')
+          ? '/timesheet/approve-timesheet'
+          : '/timesheet/submit-timesheet'
+      ]);
+      break;
+
+    case 'Helpdesk':
+      this.router.navigate([
+        role.includes('manager') || role.includes('hr')
+          ? '/help-desk/ticket-approval'
+          : '/help-desk/my-tickets'
+      ]);
+      break;
+
+    case 'Attendance':
+      this.router.navigate([
+        role.includes('manager') || role.includes('hr')
+          ? '/attendance-list'
+          : '/missed-punch-request'
+      ]);
+      break;
+
+    case 'Work From Home':
+      this.router.navigate(['/wfh-remote-request']);
+      break;
+
+    case 'Employee Exit':
+      this.router.navigate([
+        role.includes('manager') || role.includes('hr')
+          ? '/resignation/manager-approval'
+          : '/resignation/details'
+      ]);
+      break;
+
+    case 'Birthday':
+    case 'Work Anniversary':
+      this.router.navigate(['/empdashboard']);
+      break;
+
+    case 'CompanyEvent':
+      this.router.navigate(['/my-event']);
+      break;
+
+    case 'CompanyPolicy':
+      this.router.navigate(['/company-policies']);
+      break;
+
+    case 'CompanyNews':
+      this.router.navigate(['/company-news']);
+      break;
+
+    default:
+      console.warn('Unknown Notification Type:', notification.type);
+      break;
+  }
 }
   loadEmployeeCompanyLogo() {
     const companyId = Number(sessionStorage.getItem('CompanyId'));

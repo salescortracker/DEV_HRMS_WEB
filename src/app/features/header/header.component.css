@@ -1,10 +1,3 @@
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
-
 /* Make tabbed card full row */
 .full-row {
   grid-column: 1 / -1; /* spans all columns */
@@ -156,17 +149,7 @@
     .dropdown {
       position: relative;
     }
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      background: #fff;
-      top: 38px;
-      left: 0;
-      border-radius: 8px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-      min-width: 180px;
-      z-index: 100;
-    }
+    
     .dropdown-content a {
       display: block;
       padding: 10px;
@@ -182,12 +165,7 @@
     }
 
     /* --- Dashboard Layout --- */
-    .dashboard {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      padding: 20px;
-    }
+    
     .card {
       background: #fff;
       border-radius: 12px;
@@ -2569,49 +2547,50 @@ button:hover {
   cursor: not-allowed;
 }
 .notification-wrapper{
-    position: relative;
-    display: inline-block;
-    padding-bottom: 15px;   
+    position: relative; 
 }
+
+
 .unread{
-
-background:#eef5ff;
-
+    background:#eef5ff;
 }
+
 
 .bell-btn{
     background:transparent;
     border:none;
     padding:8px;
+    cursor:pointer;
 }
 
 
-.badge{
+.notification-badge {
+    position:absolute;
+    top:-4px;
+    right:-5px;
 
- position:absolute;
- top:-8px;
- right:-10px;
+    background:red;
+    color:white;
 
- background:red;
- color:white;
+    width:18px;
+    height:18px;
 
- border-radius:50%;
- width:18px;
- height:18px;
+    border-radius:50%;
 
- font-size:11px;
+    font-size:11px;
 
- display:flex;
- align-items:center;
- justify-content:center;
-
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
-.notification-dropdown{
+/* Dropdown */
+.notification-dropdown {
 
     position:absolute;
 
     right:0;
-    top:45px;   /* bell kindha open avvadaniki */
+
+    top:45px;
 
     width:330px;
 
@@ -2626,26 +2605,29 @@ background:#eef5ff;
     overflow:hidden;
 
 }
-@keyframes slideDown{
 
-from{
-opacity:0;
-transform:translateY(-10px);
-}
 
-to{
-opacity:1;
-transform:translateY(0);
-}
+/* Show only 4 notifications */
+.notification-list{
+
+    max-height:320px;   /* adjust height */
+
+    overflow-y:auto;
 
 }
-.notification-header{
+/* Scrollbar */
+.notification-list::-webkit-scrollbar{
 
-padding:12px;
+    width:6px;
 
-font-weight:bold;
+}
 
-border-bottom:1px solid #ddd;
+
+.notification-list::-webkit-scrollbar-thumb{
+
+    background:#c5c5c5;
+
+    border-radius:10px;
 
 }
 
@@ -2653,26 +2635,18 @@ border-bottom:1px solid #ddd;
 
 .notification-item{
 
-padding:12px;
+    padding:12px;
 
-transition:.2s;
+    transition:.2s;
 
-cursor:pointer;
+    cursor:pointer;
+
+    border-bottom:1px solid #eee;
 
 }
-
-
-
-.notification-item:hover{
-
-background:#f3f6ff;
-}
-
-
-
 .notification-item.unread{
 
-background:#eef6ff;
+    background:#eef6ff;
 
 }
 
@@ -2680,22 +2654,110 @@ background:#eef6ff;
 
 .title{
 
-font-weight:600;
+    font-weight:600;
+
+    font-size:14px;
 
 }
 
 
 .message{
 
-font-size:13px;
+    font-size:13px;
 
-color:#555;
+    color:#555;
+
+    margin-top:4px;
+
+}
+
+small{
+
+    color:#999;
+
+    font-size:11px;
+
+}
+/* ================= Notification Header Fix ================= */
+
+.notification-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+
+.notification-wrapper .bell-btn {
+
+    background: transparent;
+
+    border: none;
+
+    padding: 6px;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
 
 }
 
 
-small{
+.notification-wrapper .badge {
 
-color:#999;
+    position: absolute;
+
+    top: -4px;
+
+    right: -5px;
+
+    background: red;
+
+    color: white;
+
+    width: 18px;
+
+    height: 18px;
+
+    border-radius: 50%;
+
+    font-size: 11px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* Items */
+.notification-wrapper .notification-item {
+
+    padding:12px;
+
+    cursor:pointer;
+
+    border-bottom:1px solid #eee;
+
+}
+
+
+.notification-wrapper .notification-item:hover {
+
+    background:#f3f6ff;
+
+}
+
+
+.notification-wrapper .notification-item.unread {
+
+    background:#eef6ff;
 
 }

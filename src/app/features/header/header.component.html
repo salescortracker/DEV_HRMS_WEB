@@ -59,72 +59,53 @@
     <!-- Quick Links -->
     <!-- <button class="icon-btn" title="Quick Links"><i class="fas fa-link"></i></button> -->
 
-    <div class="notification-wrapper"
+<div class="notification-wrapper"
      (mouseenter)="openNotifications()"
      (mouseleave)="closeNotifications()">
 
 
+    <button class="bell-btn"
+            (click)="toggleNotification($event)">
 
-<button class="bell-btn">
+        🔔
 
- 🔔
+        <span class="notification-badge"
+              *ngIf="unreadCount > 0">
+            {{unreadCount}}
+        </span>
 
- <span class="badge"
- *ngIf="unreadCount > 0">
-
- {{unreadCount}}
-
- </span>
-
-</button>
+    </button>
 
 
-
-<div class="notification-dropdown"
-     *ngIf="showNotifications">
-
-
-<div class="notification-header">
-
- Notifications
-
-</div>
+    <div class="notification-dropdown"
+         *ngIf="showNotifications"
+         (mouseenter)="openNotifications()"
+         (mouseleave)="closeNotifications()">
 
 
+        <div class="notification-list">
 
-<div class="notification-item"
-     *ngFor="let item of notifications"
-     (click)="readNotification(item)"
-     [class.unread]="!item.isRead">
+            <div class="notification-item"
+                 *ngFor="let item of unreadNotifications"
+                 (click)="readNotification(item)">
 
+                <div class="title">
+                    {{item.title}}
+                </div>
 
-<div class="title">
+                <div class="message">
+                    {{item.message}}
+                </div>
 
-{{item.title}}
+                <small>
+                    {{item.createdDate | date:'dd MMM hh:mm a'}}
+                </small>
 
-</div>
+            </div>
 
+        </div>
 
-<div class="message">
-
-{{item.message}}
-
-</div>
-
-
-<small>
-
-{{item.createdDate | date:'dd MMM hh:mm a'}}
-
-</small>
-
-
-</div>
-
-
-
-</div>
-
+    </div>
 
 </div>
 
