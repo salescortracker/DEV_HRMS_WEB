@@ -6,6 +6,7 @@ import { EmployeeResignationService } from '../employee-profile/employee-service
 import { HelpdeskService } from '../helpdesk/service/helpdesk.service';
 import { Chart } from 'chart.js/auto';
 import { TimesheetService } from '../timesheet/service/timesheet.service';
+import Swal from 'sweetalert2';
 interface ChatMessage {
    sender: 'User' | 'Bot';
   text?: string; 
@@ -614,6 +615,27 @@ get ticketPages(): number[] {
 
 goToTicketPage(page: number): void {
   this.helpdeskPage = Math.min(Math.max(page, 1), this.totalTicketPages);
+}
+openModule(route: string): void {
+
+  const allowedModules = JSON.parse(
+    sessionStorage.getItem('allowedModules') || '[]'
+  );
+
+  const isAllowed = allowedModules.some((m: any) =>
+    m.route?.toLowerCase() === route.toLowerCase()
+  );
+
+  if (isAllowed) {
+    this.router.navigate([route]);
+  } else {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Access Denied',
+      text: 'You do not have permission to access this module.'
+    });
+  }
+
 }
 
 }
