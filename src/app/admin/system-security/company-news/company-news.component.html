@@ -11,8 +11,8 @@
     <hr />
 
     <!-- Form -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
+<div class="card shadow-sm mb-4" id="newsFormSection">
+        <div class="card-body">
 <form (ngSubmit)="onSubmit()" #newsForm="ngForm">
 
   <div class="row g-3">
@@ -217,10 +217,10 @@
                {{ getDepartmentName(n.departmentIds) }}
               </td>
               <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-2" (click)="editNews(n)">
+                <button class="btn btn-sm btn-outline-primary me-2" type="button" (click)="editNews(n)">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(n)">
+                <button class="btn btn-sm btn-outline-danger" type="button" (click)="confirmDelete(n)">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </td>

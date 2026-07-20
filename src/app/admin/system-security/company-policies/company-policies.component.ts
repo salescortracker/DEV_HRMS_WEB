@@ -441,7 +441,12 @@ editPolicy(p: any) {
       Number(d.companyId) === Number(this.policy.CompanyId) &&
       Number(d.regionId) === Number(this.policy.RegionId)
   );
-
+setTimeout(() => {
+    document.getElementById('policyFormSection')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }, 100);
   console.log('Edit Policy:', this.policy);
 }
 

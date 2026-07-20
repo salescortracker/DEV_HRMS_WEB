@@ -10,8 +10,8 @@
     <hr />
 
     <!-- FORM -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
+<div class="card shadow-sm mb-4" id="policyCategoryForm"> 
+       <div class="card-body">
         <form #categoryForm="ngForm" (ngSubmit)="onSubmit()">
 
           <div class="row g-3">
@@ -114,10 +114,10 @@
                   [ngClass]="c.IsActive ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'"></i>
               </td>
               <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-2" (click)="editCategory(c)">
+                <button class="btn btn-sm btn-outline-primary me-2" type="button" (click)="editCategory(c)">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteCategory(c)">
+                <button class="btn btn-sm btn-outline-danger" type="button" (click)="deleteCategory(c)">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </td>

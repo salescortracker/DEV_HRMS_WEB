@@ -499,11 +499,17 @@ editNews(n: News) {
       Number(d.companyId) === Number(this.news.CompanyId) &&
       Number(d.regionId) === Number(this.news.RegionId)
   );
-}, 0);
+   document.getElementById('newsFormSection')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+
+  }, 100);
 
   console.log("EDIT NEWS:", this.news);
 
   console.log("FILTERED REGIONS:", this.filteredRegions);
+  
 }
 
   // -----------------------------
