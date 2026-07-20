@@ -108,7 +108,7 @@
       {{ g.gradeName }}
     </option> -->
                 <option [ngValue]="null">Select Grade</option>
-                <option *ngFor="let g of grades" [ngValue]="g.gradeID">
+                <option *ngFor="let g of filteredGrades" [ngValue]="g.gradeID">
                   {{ g.gradeName }}
                 </option>
               </select>
