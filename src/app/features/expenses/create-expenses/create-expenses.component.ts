@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { environment } from '../../../../environments/environment';
@@ -13,6 +13,8 @@ import { AdminService } from '../../../admin/servies/admin.service';
   styleUrl: './create-expenses.component.css'
 })
 export class CreateExpensesComponent {
+  @ViewChild('receiptInput') receiptInput?: ElementRef<HTMLInputElement>;
+
   expenseForm!: FormGroup;
 countries: any[] = [];
   userId!: number;
@@ -214,12 +216,14 @@ this.loadPermissions();
 
     if (!allowedTypes.includes(file.type)) {
       alert('Only PDF, JPG, PNG files allowed');
+      this.clearFileInput();
       event.target.value = '';
       return;
     }
 
     if (file.size > maxSize) {
       alert('File size must be less than 10MB');
+      this.clearFileInput();
       event.target.value = '';
       return;
     }
@@ -227,6 +231,16 @@ this.loadPermissions();
     this.selectedFile = file;
     this.expenseForm.patchValue({ receipt: file });
     this.expenseForm.get('receipt')?.updateValueAndValidity();
+  }
+
+  clearFileInput(): void {
+    this.selectedFile = null;
+    this.expenseForm.patchValue({ receipt: null });
+    this.expenseForm.get('receipt')?.updateValueAndValidity();
+
+    if (this.receiptInput?.nativeElement) {
+      this.receiptInput.nativeElement.value = '';
+    }
   }
 
   submitExpense(): void {
@@ -262,7 +276,7 @@ this.loadPermissions();
         departmentName: this.departmentName,
         currencyCode: 'INR'
       });
-      this.selectedFile = null;
+      this.clearFileInput();
       this.loadMyExpenses();
     });
   }

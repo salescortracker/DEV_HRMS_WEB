@@ -48,7 +48,8 @@ export class ApplyLeaveComponent {
 
   leaveTypes: any[] = [];
 
-
+holidays: any[] = [];
+holidayDates: Set<string> = new Set();
   userId!: number;
   companyId!: number;
   regionId!: number;
@@ -109,6 +110,7 @@ canCreate: boolean = false;
     this.loadMyLeaves();
     this.loadReportingManager();
     this.loadWeekoffs();
+    this.loadHolidays();
      this.loadPermission();
      this.loadPermissions();
 
@@ -768,10 +770,21 @@ onEndDateChange() {
 
     const current = new Date(d);
 
-    // Skip dynamic weekoffs
-    if (!this.isWeekoffDate(current)) {
-      total++;
-    }
+    // // Skip dynamic weekoffs
+    // if (!this.isWeekoffDate(current)) {
+    //   total++;
+    // }
+
+    // // Skip Holiday
+    // if (this.isHolidayDate(current)) {
+    //     continue;
+    // }
+     
+
+  if (!this.isWeekoffDate(current) && !this.isHolidayDate(current)) {
+    total++;
+  }
+  
   }
 
   this.totalDays = total;
@@ -1022,4 +1035,47 @@ this.loadLeaveBalances();
     this.pageSize = size;
     this.currentPage = 1;
   }
+
+  private loadHolidays() {
+
+  if (!this.companyId || !this.regionId) return;
+
+  this.userService.getHolidayCalendar(this.companyId, this.regionId)
+    .subscribe({
+      next: (res: any) => {
+
+        this.holidays = res.data || [];
+
+        this.holidayDates.clear();
+
+        this.holidays.forEach((h: any) => {
+
+          const date = (h.date || h.Date)?.substring(0, 10);
+
+          if (date) {
+            this.holidayDates.add(date);
+          }
+
+        });
+console.log(this.holidays);
+console.log(this.holidayDates);
+        console.log("Holiday Dates", Array.from(this.holidayDates));
+
+      },
+      error: err => console.error(err)
+    });
+
+}
+
+private isHolidayDate(date: Date): boolean {
+
+  const formatted =
+    date.getFullYear() + "-" +
+    String(date.getMonth() + 1).padStart(2, '0') + "-" +
+    String(date.getDate()).padStart(2, '0');
+ console.log("Checking:", formatted);
+  console.log("Holiday Set:", this.holidayDates);
+  return this.holidayDates.has(formatted);
+
+}
 }
