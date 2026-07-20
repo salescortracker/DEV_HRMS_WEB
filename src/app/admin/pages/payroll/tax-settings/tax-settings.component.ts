@@ -247,6 +247,8 @@ export class TaxSettingsComponent implements OnInit {
 
   onSubmit() {
     this.normalizeSelectedValues();
+    this.structure.companyId = String(this.structure.companyId);
+  this.structure.regionId = String(this.structure.regionId);
 
     console.log('Final Payload:', this.structure);
 
@@ -260,12 +262,38 @@ export class TaxSettingsComponent implements OnInit {
       ? this.payrollService.updateSalaryStructure(this.structure.structureId, this.userId, this.structure)
       : this.payrollService.createSalaryStructure(this.userId, this.structure);
 
-    request$.subscribe(() => {
-      Swal.close();
-      Swal.fire(this.isEditMode ? 'Updated!' : 'Created!', '', 'success');
-      this.loadStructures();
-      this.resetForm();
-    });
+    request$.subscribe({
+
+  next: () => {
+
+    Swal.close();
+
+    Swal.fire(
+      this.isEditMode ? 'Updated!' : 'Created!',
+      '',
+      'success'
+    );
+
+    this.loadStructures();
+    this.resetForm();
+
+  },
+
+  error: (err) => {
+
+    console.error(err);
+
+    Swal.close();
+
+    Swal.fire(
+      'Error',
+      'Something went wrong while saving',
+      'error'
+    );
+
+  }
+
+});
   }
 
   editStructure(s: any) {
