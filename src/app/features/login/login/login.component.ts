@@ -51,8 +51,32 @@ export class LoginComponent {
         console.log('login details',response);
         this.loading = false;
         if (response && response.message) {
+          const user = response?.user;
+          const isInactive = user?.status === 'Inactive' || user?.isActive === false || user?.isActive === 0 || user?.status === 'InActive';
+
+          if (isInactive) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Account Inactive',
+              text: 'Your account is inactive. Please contact the administrator to activate it.',
+              confirmButtonText: 'OK'
+            });
+            return;
+          }
+
           // ✅ Save session or token
           if (response.user.error) {
+            if (response.user.error === 'ACCOUNT_INACTIVE') {
+
+  Swal.fire({
+    icon: 'error',
+    title: 'Account Inactive',
+    text: response.user.message,
+    confirmButtonText: 'OK'
+  });
+
+  return;
+}
 
   // Subscription expired
   if (response.user.error === 'SUBSCRIPTION_EXPIRED') {

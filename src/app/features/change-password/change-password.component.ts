@@ -40,6 +40,25 @@ userId!: number;
       this.errorMessage = 'Passwords do not match';
       return;
     }
+    const passwordRegex =
+/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,13}$/;
+
+if (!passwordRegex.test(this.newPassword)) {
+  Swal.fire({
+    icon: 'warning',
+    title: 'Invalid Password',
+    html: `
+      Password must contain:<br><br>
+      ✔ 8 to 13 characters<br>
+      ✔ At least one uppercase letter (A-Z)<br>
+      ✔ At least one lowercase letter (a-z)<br>
+      ✔ At least one number (0-9)<br>
+      ✔ At least one special character (@$!%*?&)<br>
+      ✔ No spaces
+    `
+  });
+  return;
+}
 
     this.loading = true;
 
