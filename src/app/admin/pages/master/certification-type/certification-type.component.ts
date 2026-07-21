@@ -99,6 +99,10 @@ resetForm(): void {
   }
 
 editCertification(c: CertificationType): void {
+   console.log(c);
+    this.filteredRegions = this.regions.filter(
+    (r: any) => Number(r.companyID) === Number(c.companyID)
+  );
   this.certification = {
     certificationTypeID: c.certificationTypeID ?? 0,
     certificationTypeName: c.certificationTypeName ?? '',
