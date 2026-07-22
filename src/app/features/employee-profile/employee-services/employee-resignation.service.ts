@@ -327,7 +327,6 @@ deleteAllocation(id: number): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}/attendance/GetclockinoutById/${id}`);
   }
   getWeeklyByEmployee(employeeCode: string): Observable<any> {
-    debugger;
   return this.http.get<any[]>(
     `${environment.apiUrl}/attendance/GetWeeklyByEmployee?employeeCode=${employeeCode}`
   );

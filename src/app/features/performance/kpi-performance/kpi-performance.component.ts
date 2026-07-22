@@ -215,21 +215,40 @@ canDeleteEmployeeSubmission = false;
   // ✅ Patch Values FIX
   // =========================
   patchUserValues() {
+  debugger;
 
-    this.reviewForm.patchValue({
-      employeeName: sessionStorage.getItem('Name') || '',
-      employeeCode: sessionStorage.getItem('EmployeeCode') || '',
-      departmentProject: sessionStorage.getItem('DepartmentProject') || '',
+  const department =
+    sessionStorage.getItem('DepartmentName') ||
+    sessionStorage.getItem('Department') ||
+    '';
 
-      department: sessionStorage.getItem('DepartmentName') || '',
-      designation: sessionStorage.getItem('DesignationName') || '',
-      reportingManagerName: sessionStorage.getItem('ReportingManagerName') || '',
+  const designation =
+    sessionStorage.getItem('DesignationName') ||
+    sessionStorage.getItem('Designation') ||
+    '';
 
-    });
+  console.log("Department:", department);
+  console.log("Designation:", designation);
 
-    console.log("Patched Form:", this.reviewForm.value);
-    
-   }
+  this.reviewForm.patchValue({
+
+    employeeName: sessionStorage.getItem('Name') || '',
+
+    employeeCode: sessionStorage.getItem('EmployeeCode') || '',
+
+    departmentProject: sessionStorage.getItem('DepartmentProject') || '',
+
+    department: department,
+
+    designation: designation,
+
+    reportingManagerName:
+      sessionStorage.getItem('ReportingManagerName') || ''
+
+  });
+
+  console.log("Patched Form:", this.reviewForm.value);
+}
 
 
 
