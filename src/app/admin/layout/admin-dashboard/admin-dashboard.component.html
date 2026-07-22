@@ -107,7 +107,40 @@
 </div> -->
 
 <div class="dashboard-container">
+<!-- Welcome Banner -->
+<div class="welcome-banner" *ngIf="currentUser">
 
+  <div class="welcome-left">
+
+    <div class="welcome-avatar">
+      {{ currentUser.fullName?.charAt(0) }}
+    </div>
+
+    <div class="welcome-content">
+
+      <h2>{{ greeting }}, {{ currentUser.fullName }} 👋</h2>
+      <div class="user-details">
+
+        <div class="detail">
+          <i class="fa-solid fa-envelope"></i>
+          {{ currentUser.email }}
+        </div>
+
+        <div class="detail">
+          <i class="fa-solid fa-user-shield"></i>
+          {{ currentUser.roleName }}
+        </div>
+
+        
+      </div>
+
+    </div>
+
+  </div>
+
+ 
+
+</div>
   <!-- HEADER -->
   <div class="dashboard-header">
     <div>
