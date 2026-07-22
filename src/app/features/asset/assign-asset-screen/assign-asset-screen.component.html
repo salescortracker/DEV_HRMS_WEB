@@ -84,15 +84,39 @@
 <div class="card mt-3 p-3">
 
     <h4>Assigned Assets List</h4>
-<div class="d-flex gap-2 mb-3">
-    <button class="btn btn-danger" (click)="downloadPDF()">
-        Download PDF
-    </button>
+    <!-- ================= FILTER ================= -->
+    <div class="row mb-3 align-items-end">
 
-    <button class="btn btn-success" (click)="downloadExcel()">
-        Download Excel
-    </button>
-</div>
+        <div class="col-md-3">
+            <label>From Date</label>
+            <input type="date" class="form-control" [(ngModel)]="fromDate">
+        </div>
+
+        <div class="col-md-3">
+            <label>To Date</label>
+            <input type="date" class="form-control" [(ngModel)]="toDate">
+        </div>
+
+        <div class="col-md-3">
+            <button class="btn btn-primary me-2" (click)="filterAssignments()">
+                Filter
+            </button>
+
+            <button class="btn btn-secondary" (click)="clearFilter()">
+                Clear
+            </button>
+        </div>
+
+    </div>
+    <div class="d-flex gap-2 mb-3 align-items-center">
+        <button class="btn btn-danger" (click)="downloadPDF()">
+            Download PDF
+        </button>
+
+        <button class="btn btn-success" (click)="downloadExcel()">
+            Download Excel
+        </button>
+    </div>
     <table class="table table-bordered mt-2">
         <thead>
             <tr>
@@ -108,7 +132,7 @@
         </thead>
 
         <tbody>
-            <tr *ngFor="let item of assignedList">
+            <tr *ngFor="let item of filteredAssignedList">
                 <td>{{ item.requestId }}</td>
                 <td>{{ item.employeeName }}</td>
                 <td>{{ item.assetType }}</td>
@@ -119,7 +143,7 @@
                 <td>{{ item.remarks }}</td>
             </tr>
 
-            <tr *ngIf="assignedList.length === 0">
+            <tr *ngIf="filteredAssignedList.length === 0">
                 <td colspan="8" class="text-center">No Data</td>
             </tr>
         </tbody>
