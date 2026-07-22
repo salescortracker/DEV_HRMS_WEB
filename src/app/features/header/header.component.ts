@@ -295,7 +295,6 @@ navigateNotification(notification: any): void {
   }
 
 loadProfilePicture() {
-  debugger;
   this.employeeResignationService.GetByUserIdempProfile(this.userId)
     .subscribe({
       next: (res: any) => {
