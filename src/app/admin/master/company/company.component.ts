@@ -1,6 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
-import { AdminService,Company } from '../../servies/admin.service';
+import { NgForm } from '@angular/forms';
+import { AdminService, Company } from '../../servies/admin.service';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService } from 'ngx-spinner';
 import * as XLSX from 'xlsx';
@@ -94,6 +95,22 @@ closeUploadPopup() {
   }
 
   // ------------------------------------------------------------
+  // 🔹 Trim long input values on typing
+  // ------------------------------------------------------------
+  truncateMaxLength(event: Event, maxLength: number): void {
+    const target = event.target as HTMLInputElement | HTMLTextAreaElement;
+    if (!target) return;
+    if (target.value.length > maxLength) {
+      target.value = target.value.slice(0, maxLength);
+      const modelName = target.getAttribute('name');
+      if (modelName) {
+        const key = modelName.charAt(0).toLowerCase() + modelName.slice(1);
+        (this.company as any)[key] = target.value;
+      }
+    }
+  }
+
+  // ------------------------------------------------------------
   // 🔹 Load all companies
   // ------------------------------------------------------------
   loadCompanies(): void {
@@ -125,29 +142,32 @@ closeUploadPopup() {
   // ------------------------------------------------------------
   // 🔹 Submit form - Add or Update
   // ------------------------------------------------------------
-  onSubmit(): void {
-    debugger;
-     this.spinner.show();
-  //    if (this.selectedLogoFile) {
-  //   (this.company as any).companyLogo = this.selectedLogoFile;
-  // }
+  onSubmit(companyForm: NgForm): void {
+    if (companyForm.invalid) {
+      companyForm.control.markAllAsTouched();
+      Swal.fire('Validation Error', 'Please fill in the required fields and keep values under 100 characters.', 'warning');
+      return;
+    }
+
+    this.spinner.show();
+
     if (this.isEditMode) {
       // Update existing company
       this.adminservice.updateCompany(this.company.companyId, this.company).subscribe({
         next: () => {
-           this.spinner.hide();
-         Swal.fire({
-          icon: 'success',
-          title: 'Updated Successfully!',
-          text: `${this.company.companyName} has been updated.`,
-         showCloseButton: true,
-          showConfirmButton: false
-        });
+          this.spinner.hide();
+          Swal.fire({
+            icon: 'success',
+            title: 'Updated Successfully!',
+            text: `${this.company.companyName} has been updated.`,
+            showCloseButton: true,
+            showConfirmButton: false
+          });
           this.loadCompanies();
           this.resetForm();
         },
-        error: (err) =>{
-           this.spinner.hide();
+        error: (err) => {
+          this.spinner.hide();
           Swal.fire('Error', 'Update failed! Please contact IT Administrator.', 'error');
         }
       });
@@ -156,24 +176,20 @@ closeUploadPopup() {
       this.adminservice.createCompany(this.company).subscribe({
         next: () => {
           this.spinner.hide();
-           Swal.fire({
-          icon: 'success',
-          title: 'Added Successfully!',
-          text: `${this.company.companyName} has been Added Successfully.`,
-         
-          showConfirmButton: false
-          ,showCloseButton: true,
-        });
-         
+          Swal.fire({
+            icon: 'success',
+            title: 'Added Successfully!',
+            text: `${this.company.companyName} has been Added Successfully.`,
+            showConfirmButton: false,
+            showCloseButton: true,
+          });
           this.loadCompanies();
           this.resetForm();
         },
-        error: (err) =>{
+        error: (err) => {
           this.spinner.hide();
-              Swal.fire('Error', 'Create failed! Please contact IT Administrator.', 'error');
-       
+          Swal.fire('Error', 'Create failed! Please contact IT Administrator.', 'error');
         }
-          
       });
     }
   }
