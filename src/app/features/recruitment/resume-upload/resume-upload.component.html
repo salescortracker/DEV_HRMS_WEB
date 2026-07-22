@@ -17,6 +17,8 @@
               </label>
 
               <input
+               *ngIf="showResumeInput"
+               #resumeInput
                 type="file"
                 class="form-control"
                 [required]="!isEditMode"
