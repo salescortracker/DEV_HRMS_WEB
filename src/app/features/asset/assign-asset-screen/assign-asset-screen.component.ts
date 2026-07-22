@@ -15,7 +15,10 @@ import { environment } from '../../../../environments/environment';
 export class AssignAssetScreenComponent {
   companyId!: number;
   regionId!: number;
+filteredAssignedList: any[] = [];
 
+fromDate: string = '';
+toDate: string = '';
   requests: any[] = [];
   assetTypes: any[] = [];
 
@@ -67,8 +70,45 @@ this.form.get('assetCategory')?.valueChanges.subscribe(() => {
     .getAssignments$(this.companyId, this.regionId)
     .subscribe(res => {
       this.assignedList = res;
+       this.filteredAssignedList = [...res];
     });
 }
+
+clearFilter() {
+
+  this.fromDate = '';
+  this.toDate = '';
+
+  this.filteredAssignedList = [...this.assignedList];
+
+}
+
+filterAssignments() {
+
+  if (!this.fromDate || !this.toDate) {
+    alert('Please select From Date and To Date');
+    return;
+  }
+  if (new Date(this.toDate) < new Date(this.fromDate)) {
+    alert('To Date cannot be earlier than From Date.');
+    return;
+  }
+  const from = new Date(this.fromDate);
+  from.setHours(0, 0, 0, 0);
+
+  const to = new Date(this.toDate);
+  to.setHours(23, 59, 59, 999);
+
+  this.filteredAssignedList = this.assignedList.filter(item => {
+
+    const assignDate = new Date(item.assignDate);
+
+    return assignDate >= from && assignDate <= to;
+
+  });
+
+}
+
 loadCompanyDetails() {
 
   const companyId =
@@ -170,7 +210,7 @@ getBase64ImageFromURL(url: string): Promise<string> {
 }
 downloadPDF() {
 
-  if (!this.assignedList.length) {
+  if (!this.filteredAssignedList.length) {
 
     alert('No records found');
     return;
@@ -281,27 +321,25 @@ downloadPDF() {
 
   // ================= TABLE DATA =================
 
-  const tableData =
-    this.assignedList.map((item: any) => [
+  const tableData = this.filteredAssignedList.map((item: any) => [
 
-      item.requestId || '-',
-      item.employeeName || '-',
-      item.assetType || '-',
-      item.assetName || '-',
-      item.assetCode || '-',
+  item.requestId || '-',
+  item.employeeName || '-',
+  item.assetType || '-',
+  item.assetName || '-',
+  item.assetCode || '-',
 
-      item.assignDate
-        ? new Date(item.assignDate)
-            .toLocaleDateString()
-        : '-',
+  item.assignDate
+    ? new Date(item.assignDate).toLocaleDateString()
+    : '-',
 
-      item.returnDate
-        ? new Date(item.returnDate)
-            .toLocaleDateString()
-        : '-',
+  item.returnDate
+    ? new Date(item.returnDate).toLocaleDateString()
+    : '-',
 
-      item.remarks || '-'
-    ]);
+  item.remarks || '-'
+
+]);
 
   autoTable(doc, {
 
@@ -358,7 +396,7 @@ downloadPDF() {
 }
 downloadExcel(): void {
 
-  const exportData = this.assignedList.map((item: any) => ({
+  const exportData = this.filteredAssignedList.map((item: any) => ({
     'Request ID': item.requestId,
     'Employee': item.employeeName,
     'Asset Type': item.assetType,
