@@ -3330,4 +3330,11 @@ getUserNotifications(userId: number): Observable<any[]> {
       {}
     );
   }
+
+  getHolidayCalendar(companyId: number, regionId: number) {
+    debugger;
+  return this.http.get<any>(
+    `${this.baseUrl}/MasterData/holiday-listCalender?companyId=${companyId}&regionId=${regionId}`
+  );
+}
 }

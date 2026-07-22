@@ -13,12 +13,14 @@ export interface LeaveCalendar {
   fileName?: string;
   filePath?: string;
 }
+
 @Component({
   selector: 'app-leave-calendar',
   standalone: false,
   templateUrl: './leave-calendar.component.html',
   styleUrl: './leave-calendar.component.css'
 })
+
 export class LeaveCalendarComponent {
 // currentDate: Date = new Date();
 //   selectedView: 'month' | 'week' | 'day' = 'month';
@@ -246,7 +248,7 @@ currentDate: Date = new Date();
   currentYear: number = this.currentDate.getFullYear();
   dates: { dateStr: string, day: string }[] = [];
   weeks: (number | null)[][] = [];
- 
+ holidays: any[] = [];
   employees: { userId: number, employeeName: string }[] = [];
   selectedEmployee: number = 0; // 0 = All, else userId
 
@@ -270,6 +272,7 @@ regionId = Number(sessionStorage.getItem('RegionId') || 0);
     if (!userId) {
       console.error('UserId missing in sessionStorage');
       return;
+
     }
 
     // Load weekoffs (used in calendar rendering and leave-day calculations)
@@ -277,6 +280,7 @@ regionId = Number(sessionStorage.getItem('RegionId') || 0);
 
     // generate month grid
     this.generateMonthDates(this.currentYear, this.currentMonth);
+  this.loadHolidays(this.companyId, this.regionId);
 
     
 
@@ -524,4 +528,61 @@ if (this.isWeekendForDay(day)) return [];
     // example: open modal or go to leave details
     console.log('Leave clicked', l);
   }
+
+loadHolidays(companyId: number, regionId: number) {
+
+  debugger;
+
+  this.adminService.getHolidayCalendar(companyId, regionId)
+    .subscribe({
+      next: (res: any) => {
+
+        console.log("API Response:", res);
+
+        this.holidays = res.data || [];
+
+        console.log("Holidays:", this.holidays);
+
+      },
+      error: err => {
+        console.error(err);
+      }
+    });
+
+}
+
+isHoliday(day: number | null): boolean {
+
+  if (!day) return false;
+
+  const date =
+    `${this.currentYear}-${(this.currentMonth + 1)
+      .toString()
+      .padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+  return this.holidays.some((h: any) => {
+
+    const holidayDate =
+      (h.date || h.Date).substring(0, 10);
+
+    return holidayDate === date;
+  });
+
+}
+getHolidayName(day: number | null): string {
+
+  if (!day) return '';
+
+  const date =
+    `${this.currentYear}-${(this.currentMonth + 1)
+      .toString()
+      .padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+  const holiday = this.holidays.find((h: any) =>
+    (h.date || h.Date).substring(0, 10) === date
+  );
+
+  return holiday ? holiday.holidayListName : '';
+
+}
 }
