@@ -3,6 +3,7 @@ import { Router, NavigationStart,NavigationEnd } from '@angular/router';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
+import { AdminService } from './admin/servies/admin.service';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,7 @@ export class AppComponent {
   private readonly INACTIVITY_TIME = 20 * 60 * 1000; // 5 minutes
   private readonly WARNING_TIME = 30 * 1000; // 30 seconds
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(private router: Router, private loginService: AdminService, @Inject(PLATFORM_ID) private platformId: Object) {
     this.isBrowser = isPlatformBrowser(this.platformId);
      this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
@@ -183,7 +184,20 @@ showWarningPopup() {
 }
 
   logout(clearGlobal: boolean = true) {
-    debugger;
+
+  const userId = Number(sessionStorage.getItem('UserId'));
+
+  if (userId) {
+    this.loginService.logout(userId).subscribe({
+      next: () => this.finishLogout(clearGlobal),
+      error: () => this.finishLogout(clearGlobal)
+    });
+  } else {
+    this.finishLogout(clearGlobal);
+  }
+}
+
+private finishLogout(clearGlobal: boolean) {
 
   this.clearTimers();
 
@@ -195,7 +209,7 @@ showWarningPopup() {
 
   sessionStorage.clear();
 
-  this.router.navigate(['/login']);
+  this.router.navigate(['/']);
 }
 
   clearTimers() {
