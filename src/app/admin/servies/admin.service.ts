@@ -3337,4 +3337,12 @@ getUserNotifications(userId: number): Observable<any[]> {
     `${this.baseUrl}/MasterData/holiday-listCalender?companyId=${companyId}&regionId=${regionId}`
   );
 }
+logout(userId: number): Observable<any> {
+  return this.http.post<any>(
+    `${this.baseUrl}/UserManagement/Logout?userId=${userId}`,
+    {}
+  ).pipe(
+    catchError(this.handleError)
+  );
+}
 }
