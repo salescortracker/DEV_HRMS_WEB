@@ -48,7 +48,6 @@ export class EmployeeJobhistoryComponent {
     this.initializeForm();
     this.loadJobHistory();
     this.employeeName = sessionStorage.getItem("Name");
-    this.employeeCode = sessionStorage.getItem("EmployeeCode");
    //  this.jobHistoryForm.get('employer')?.setValue(this.employeeName);
  // this.jobHistoryForm.get('employer')?.disable();
     //this.jobHistoryForm.get('employeeCode')?.setValue(this.employeeCode);
@@ -127,7 +126,7 @@ onFileChange(event: any) {
     }
 
     const formValues = this.jobHistoryForm.value;
-    formValues.employeeCode = this.employeeCode;
+    // formValues.employeeCode = this.employeeCode;
     // formValues.employer = this.employeeName;
     const payload: any = {
       Id: this.editId ?? 0,

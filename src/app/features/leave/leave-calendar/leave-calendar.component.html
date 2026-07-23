@@ -32,6 +32,7 @@
     <ng-container *ngFor="let week of weeks">
       <div class="day-cell"
            *ngFor="let day of week"
+           [class.holiday]="isHoliday(day)"
            [class.today]="isToday(day)"
            [class.weekend]="isWeekendForDay(day)"
             [class.disabled]="isWeekendForDay(day)"
@@ -41,6 +42,9 @@
            (mouseleave)="onCellMouseLeave()">
 
         <div class="date">{{ day }}</div>
+        <div *ngIf="isHoliday(day)" class="holiday-label">
+        {{ getHolidayName(day) }}
+      </div>
 
         <!-- show small weekly-off dot -->
         <div *ngIf="isWeekendForDay(day)" class="weekoff-label" title="Weekly Off"></div>

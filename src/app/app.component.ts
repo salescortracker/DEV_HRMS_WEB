@@ -1,7 +1,9 @@
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, NavigationStart,NavigationEnd } from '@angular/router';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
+import { AdminService } from './admin/servies/admin.service';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +14,14 @@ import { filter } from 'rxjs/operators';
 export class AppComponent {
  private inactivityTimer: any;
   private warningTimer: any;
-
+  private isBrowser: boolean;
+  private sessionExpired = false;
+  private sessionCheckTimer: any;
   private readonly INACTIVITY_TIME = 20 * 60 * 1000; // 5 minutes
   private readonly WARNING_TIME = 30 * 1000; // 30 seconds
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private loginService: AdminService, @Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
      this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -39,9 +44,9 @@ export class AppComponent {
     url.startsWith(route)
   );
 
-  if (!user && !isPublic) {
-    this.logout();
-  }
+  if (!user && !isPublic && !this.sessionExpired) {
+    this.logout(false);
+}
 }
 
 
@@ -56,7 +61,82 @@ export class AppComponent {
           this.resetTimer();
         }
       });
+      if (this.isBrowser) {
+  window.addEventListener('storage', this.handleStorageChange);
+  this.sessionCheckTimer = setInterval(() => {
+
+      const browserSessionId =
+          localStorage.getItem('BrowserSessionId');
+
+
+        const myBrowserSessionId =
+    sessionStorage.getItem('BrowserSessionId');
+
+
+      if (
+  !this.sessionExpired &&
+  browserSessionId &&
+          myBrowserSessionId &&
+          browserSessionId !== myBrowserSessionId
+) {
+
+  this.sessionExpired = true;
+
+  Swal.fire({
+    icon: 'warning',
+    title: 'Session Expired',
+    text: 'Another user logged in from this browser.',
+    allowOutsideClick: false,
+    confirmButtonText: 'Logout'
+  }).then(() => {
+    this.logout(false);
+  });
+
+}
+    }, 2000);
+}
   }
+  handleStorageChange = (event: StorageEvent) => {
+    debugger;
+
+  console.log("Storage Changed");
+
+  console.log("Old Tab Session:",
+    sessionStorage.getItem('BrowserSessionId')
+  );
+
+  console.log("New LocalStorage Value:",
+    event.newValue
+  );
+
+
+  if(event.key === 'BrowserSessionId') {
+
+    const myBrowserSessionId =
+      sessionStorage.getItem('BrowserSessionId');
+
+    const latestBrowserSessionId =
+      event.newValue;
+
+
+    if(
+      myBrowserSessionId &&
+      latestBrowserSessionId &&
+      myBrowserSessionId !== latestBrowserSessionId
+    ){
+
+      Swal.fire({
+        icon:'warning',
+        title:'Logged Out',
+        text:'Another login happened in this browser.',
+        allowOutsideClick:false
+      }).then(()=>{
+          this.logout(false);
+      });
+
+    }
+  }
+};
 
   // Detect user activity globally
   @HostListener('document:mousemove')
@@ -103,11 +183,34 @@ showWarningPopup() {
   }, this.WARNING_TIME);
 }
 
-  logout() {
-    this.clearTimers();
-    sessionStorage.clear();
-    this.router.navigate(['/']);
+  logout(clearGlobal: boolean = true) {
+
+  const userId = Number(sessionStorage.getItem('UserId'));
+
+  if (userId) {
+    this.loginService.logout(userId).subscribe({
+      next: () => this.finishLogout(clearGlobal),
+      error: () => this.finishLogout(clearGlobal)
+    });
+  } else {
+    this.finishLogout(clearGlobal);
   }
+}
+
+private finishLogout(clearGlobal: boolean) {
+
+  this.clearTimers();
+
+  Swal.close();
+
+  if (clearGlobal) {
+    localStorage.removeItem('Token');
+  }
+
+  sessionStorage.clear();
+
+  this.router.navigate(['/']);
+}
 
   clearTimers() {
     if (this.inactivityTimer) {
@@ -119,6 +222,14 @@ showWarningPopup() {
   }
 
   ngOnDestroy() {
+    
     this.clearTimers();
+     if (this.sessionCheckTimer) {
+    clearInterval(this.sessionCheckTimer);
+  }
+
+  if (this.isBrowser) {
+    window.removeEventListener('storage', this.handleStorageChange);
+  }
   }
 }

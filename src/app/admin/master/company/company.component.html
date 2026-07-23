@@ -28,7 +28,7 @@
   <span class="fw-semibold">mandatory</span> and must be <span class="fw-semibold">unique</span>.
 </p>
 
-        <form (ngSubmit)="onSubmit()" #companyForm="ngForm" novalidate>
+        <form (ngSubmit)="onSubmit(companyForm)" #companyForm="ngForm" novalidate>
           <div class="row g-3">
 
             <!-- Company Name -->
@@ -40,8 +40,14 @@
                 name="CompanyName"
                 [(ngModel)]="company.companyName"
                 required
+                maxlength="100"
                 placeholder="Enter company name"
+                #companyName="ngModel"
+                (input)="truncateMaxLength($event, 100)"
               />
+              <small class="text-danger" *ngIf="companyName.invalid && companyName.touched">
+                Company Name is required and cannot exceed 100 characters.
+              </small>
             </div>
 
             <!-- Company Code -->
@@ -52,8 +58,15 @@
                 class="form-control"
                 name="CompanyCode"
                 [(ngModel)]="company.companyCode"
+                required
+                maxlength="100"
                 placeholder="Enter company code"
+                #companyCode="ngModel"
+                (input)="truncateMaxLength($event, 100)"
               />
+              <small class="text-danger" *ngIf="companyCode.invalid && companyCode.touched">
+                Company Code is required and cannot exceed 100 characters.
+              </small>
             </div>
             <!-- Company Email -->
             <div class="col-md-6">
@@ -63,7 +76,9 @@
                 class="form-control"
                 name="CompanyEmail"
                 [(ngModel)]="company.companyEmail"
+                maxlength="100"
                 placeholder="Enter company email"
+                (input)="truncateMaxLength($event, 100)"
               />
             </div>
 
@@ -75,7 +90,9 @@
                 class="form-control"
                 name="CompanyContact"
                 [(ngModel)]="company.companyContact"
+                maxlength="100"
                 placeholder="Enter contact number"
+                (input)="truncateMaxLength($event, 100)"
               />
             </div>
 
@@ -86,8 +103,10 @@
                 class="form-control"
                 name="CompanyAddress"
                 [(ngModel)]="company.companyAddress"
+                maxlength="100"
                 rows="2"
                 placeholder="Enter company address"
+                (input)="truncateMaxLength($event, 100)"
               ></textarea>
             </div>
 
@@ -121,7 +140,9 @@
                 class="form-control"
                 name="IndustryType"
                 [(ngModel)]="company.industryType"
+                maxlength="100"
                 placeholder="Enter industry type"
+                (input)="truncateMaxLength($event, 100)"
               />
             </div>
 
@@ -133,7 +154,9 @@
                 class="form-control"
                 name="Headquarters"
                 [(ngModel)]="company.headquarters"
+                maxlength="100"
                 placeholder="Enter headquarters location"
+                (input)="truncateMaxLength($event, 100)"
               />
             </div>
 

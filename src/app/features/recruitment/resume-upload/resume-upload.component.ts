@@ -5,7 +5,7 @@ import { EmployeeResignationService } from '../../employee-profile/employee-serv
 import { environment } from '../../../../environments/environment';
 import { AdminService } from '../../../admin/servies/admin.service';
 import { ResumeParserService } from '../../../services/resume-parser.service';
-
+import { ElementRef, ViewChild } from '@angular/core';
 
 interface ReferenceUser {
   userId: number;
@@ -39,7 +39,7 @@ isParsing: boolean = false;
 
   references: any[] = [];
 maritalStatuses: any[] = [];
-
+showResumeInput = true;
 
   designations: any[] = [];
   departments: any[] = [];
@@ -97,8 +97,8 @@ maritalStatuses: any[] = [];
 
   constructor(private recruitmentService: RecruitmentService, private empResignationService: EmployeeResignationService, private adminService: AdminService) { }
  
-
-
+@ViewChild('resumeInput', { static: false })
+resumeInput!: ElementRef<HTMLInputElement>;
   generateYears() {
     const currentYear = new Date().getFullYear();
     const startYear = currentYear - 40; // last 40 years
@@ -298,7 +298,7 @@ getOrganizationCount(): number {
           mobile: c.mobile,
           technology: c.designation,
           appliedDate: c.appliedDate,
-          fileName: c.fileName,
+          fileName: c.filePath,
           stageName: c.stageName,
           progressPercent: c.progress ?? 0,
 
@@ -684,6 +684,19 @@ private bindCandidateForm(res: any) {
     this.resumeFile = null;
     this.existingResumeName = '';
 
+ this.resumeFile = null;
+this.existingResumeName = '';
+this.showResumeInput = false;
+
+setTimeout(() => {
+  this.showResumeInput = true;
+});
+setTimeout(() => {
+  if (this.resumeInput?.nativeElement) {
+    this.resumeInput.nativeElement.value = '';
+  }
+});
+
     this.expForm = {
       from: '',
       to: '',
@@ -793,30 +806,27 @@ private bindCandidateForm(res: any) {
       this.currentPage = page;
     }
   }
-  viewDocument(fileName: string | undefined): void {
-  if (!fileName) return;
 
-  // If already full URL → open directly
-  if (fileName.startsWith('http://') || fileName.startsWith('https://')) {
-    window.open(fileName, '_blank');
+
+viewDocument(path: string | undefined) {
+
+  if (!path) return;
+
+  if (path.startsWith('http')) {
+    window.open(path, '_blank');
     return;
   }
 
-  // If it's relative path from backend
   const baseUrl = environment.apiUrl.replace('/api', '');
 
-  const cleanBase = baseUrl.endsWith('/')
-    ? baseUrl.slice(0, -1)
-    : baseUrl;
-
-  const cleanPath = fileName.startsWith('/')
-    ? fileName.substring(1)
-    : fileName;
-
-  const url = `${cleanBase}/${cleanPath}`;
+  const url =
+    baseUrl.replace(/\/$/, '') +
+    '/' +
+    path.replace(/^\//, '');
 
   window.open(url, '_blank');
 }
+
 getResumeUrl(fileName: string): string {
 
   if (
@@ -870,32 +880,7 @@ getResumeUrl(fileName: string): string {
       }
     });
   }
-  // removeCandidate(c: any) {
-
-  //   Swal.fire({
-  //     title: 'Delete candidate?',
-  //     text: 'This will permanently remove the candidate',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#d33',
-  //     confirmButtonText: 'Yes, Delete'
-  //   }).then(result => {
-
-  //     if (result.isConfirmed) {
-  //       this.recruitmentService
-  //         .deleteCandidate(c.candidateId)
-  //         .subscribe({
-  //           next: () => {
-  //             Swal.fire('Deleted', 'Candidate removed successfully', 'success');
-  //             this.loadAllData();
-  //           },
-  //           error: () => Swal.fire('Error', 'Delete failed', 'error')
-  //         });
-  //     }
-
-  //   });
-  // }
-
+  
 removeCandidate(c: any) {
 
   Swal.fire({

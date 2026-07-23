@@ -18,7 +18,7 @@ export class AdminDashboardComponent {
   totalPayrollAmount = 0;
   today: Date = new Date();
   stats: any[] = [];
-
+greeting = '';
   performanceChart: any;
   deptChart: any;
 
@@ -27,8 +27,26 @@ export class AdminDashboardComponent {
   pageSize = 5;
   departmentMap: { [key: number]: string } = {};
   designationMap: { [key: number]: string } = {};
+user : any;
+ currentUser: any = {};
+  constructor(private payrollService: EmployeePayRollService) {
+      this.user = sessionStorage.getItem('currentUser');
+if (this.user) {
+  this.currentUser = JSON.parse(this.user);
+}
+const hour = new Date().getHours();
 
-  constructor(private payrollService: EmployeePayRollService) {}
+  if(hour < 12){
+    this.greeting = 'Good Morning';
+  }
+  else if(hour < 17){
+    this.greeting = 'Good Afternoon';
+  }
+  else{
+    this.greeting = 'Good Evening';
+  }
+
+  }
 
   ngOnInit(): void {
     this.userId = Number(sessionStorage.getItem('UserId'));

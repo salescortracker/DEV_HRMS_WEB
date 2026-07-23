@@ -17,6 +17,8 @@
               </label>
 
               <input
+               *ngIf="showResumeInput"
+               #resumeInput
                 type="file"
                 class="form-control"
                 [required]="!isEditMode"
@@ -433,12 +435,14 @@
   <!-- ================= SAVE SECTION ================= -->
   <!-- <div class="card mb-4"> -->
   <div class="card-body text-end">
-    <button  *ngIf="canAddResumeUpload || (isEditMode && canEditResumeUpload)" class="btn btn-success px-4" [disabled]="!candidate.firstName || !candidate.email" (click)="saveCandidate()">
-      {{ isEditMode ? 'Update Candidate' : 'Save Candidate' }}
-    </button>
-    <button class="btn btn-success px-4" type="button" (click)="onReset()">
-      Reset
-    </button>
+    <div class="d-flex justify-content-end gap-2">
+      <button *ngIf="canAddResumeUpload || (isEditMode && canEditResumeUpload)" class="btn btn-success px-4" [disabled]="!candidate.firstName || !candidate.email" (click)="saveCandidate()">
+        {{ isEditMode ? 'Update Candidate' : 'Save Candidate' }}
+      </button>
+      <button class="btn btn-success px-4" type="button" (click)="onReset()">
+        Reset
+      </button>
+    </div>
   </div>
 </div>
 

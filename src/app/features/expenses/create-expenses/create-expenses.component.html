@@ -116,7 +116,7 @@
       <label class="form-label">
         Upload Receipt <span class="text-danger">*</span>
       </label>
-      <input type="file" class="form-control" (change)="onFileChange($event)">
+      <input #receiptInput type="file" class="form-control" (change)="onFileChange($event)">
 
         <div
           class="text-danger"

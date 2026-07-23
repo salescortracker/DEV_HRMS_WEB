@@ -1821,3 +1821,17 @@ button:hover {
   pointer-events: none;  /* ❌ no hover/click */
   opacity: 0.6;          /* faded look */
 }
+
+.holiday {
+  background: #ffe5e5;
+}
+
+.holiday-label {
+  background: #dc3545;
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-top: 3px;
+  text-align: center;
+}

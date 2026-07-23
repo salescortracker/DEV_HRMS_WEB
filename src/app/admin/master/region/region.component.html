@@ -143,13 +143,6 @@
               [(ngModel)]="searchText"
             />
           </div>
-          <div class="col-md-4">
-            <select class="form-select" [(ngModel)]="statusFilter">
-              <option value="">All Status</option>
-              <option [ngValue]="true">Active</option>
-              <option [ngValue]="false">Inactive</option>
-            </select>
-          </div>
         </div>
 
         <!-- Table -->
@@ -176,12 +169,6 @@
          [class.fa-sort-up]="sortDirection === 'asc'"
          [class.fa-sort-down]="sortDirection === 'desc'"></i>
     </th>
-    <th (click)="sortData('isActive')" class="text-center sortable">
-      Status
-      <i *ngIf="sortColumn === 'isActive'" class="fa-solid"
-         [class.fa-sort-up]="sortDirection === 'asc'"
-         [class.fa-sort-down]="sortDirection === 'desc'"></i>
-    </th>
     <th class="text-center" style="width:120px;">Actions</th>
   </tr>
 </thead>
@@ -192,19 +179,7 @@
                 <td>{{ r.regionName }}</td>
                 <td>{{ getCompanyName(r.companyID) }}</td>
                 <td>{{ r.country }}</td>
-                <td class="text-center">
-                  <div class="form-check form-switch d-inline-flex align-items-center justify-content-center">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      [(ngModel)]="r.isActive"
-                      (change)="toggleStatus(r)"
-                    />
-                    <label class="form-check-label small ms-2">
-                      {{ r.isActive ? 'Active' : 'Inactive' }}
-                    </label>
-                  </div>
-                </td>
+                
                 <td class="text-center">
                   <button class="btn btn-sm btn-outline-primary me-2" (click)="editRegion(r)">
                     <i class="fa-solid fa-pen-to-square"></i>
@@ -215,7 +190,7 @@
                 </td>
               </tr>
               <tr *ngIf="filteredRegions().length === 0">
-                <td colspan="6" class="text-center text-muted">No records found</td>
+                <td colspan="5" class="text-center text-muted">No records found</td>
               </tr>
             </tbody>
           </table>

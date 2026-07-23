@@ -59,7 +59,12 @@ export class LoginComponent {
   if (response.user.error === 'SUBSCRIPTION_EXPIRED') {
 
   sessionStorage.setItem('UserId', response.user.userId.toString());
+  sessionStorage.removeItem('BrowserSessionId');
 
+localStorage.setItem(
+  'BrowserSessionId',
+  response.browserSessionId
+);
   Swal.fire({
     icon: 'warning',
     title: 'Subscription Expired',
@@ -76,6 +81,12 @@ export class LoginComponent {
 if (response.user.error === 'NO_SUBSCRIPTION') {
 
   sessionStorage.setItem('UserId', response.user.userId.toString());
+  sessionStorage.removeItem('BrowserSessionId');
+
+localStorage.setItem(
+  'BrowserSessionId',
+  response.browserSessionId
+);
 
   Swal.fire({
     icon: 'warning',
@@ -93,6 +104,12 @@ if (response.user.error === 'NO_SUBSCRIPTION') {
 if (response.user.error === 'PLAN_DISABLED') {
 
   sessionStorage.setItem('UserId', response.user.userId.toString());
+  sessionStorage.removeItem('BrowserSessionId');
+
+localStorage.setItem(
+  'BrowserSessionId',
+  response.browserSessionId
+);
 
   Swal.fire({
     icon: 'error',
@@ -124,12 +141,26 @@ if (response.user.error === 'PLAN_DISABLED') {
           sessionStorage.setItem('Name', response.user.fullName);         
           sessionStorage.setItem('EmployeeCode', response.user.employeeCode);
           sessionStorage.setItem('UserId', response.user.userId.toString());
+          sessionStorage.setItem('SessionId',response.sessionId);
+
+sessionStorage.removeItem('BrowserSessionId');
+sessionStorage.setItem(
+  'BrowserSessionId',
+  response.browserSessionId
+);
+
+localStorage.setItem(
+  'BrowserSessionId',
+  response.browserSessionId
+);
+          if(response.token){
+    sessionStorage.setItem('Token', response.token);
+}
           sessionStorage.setItem('Email', response.user.personalEmail);
           sessionStorage.setItem('RegionName', response.user.regionName);
           sessionStorage.setItem('CompanyName', response.user.companyName);
    sessionStorage.setItem('DepartmentProject', response.user.departmentProject ?? '');
         sessionStorage.setItem('paswordChanged', response.user.paswordChanged ?? '');
-           sessionStorage.setItem('UserId', response.user.userId.toString());
           sessionStorage.setItem('repotingTo', response.user.reportingTo);
            sessionStorage.setItem('DepartmentId', response.user.departmentId?.toString() ?? '');
            sessionStorage.setItem('DesignationId', response.user.designationId?.toString() ?? '');
@@ -161,6 +192,19 @@ if (response.user.error === 'PLAN_DISABLED') {
             else {
               route = '/dashboard';
             }
+            if(response.browserSessionId){
+
+                sessionStorage.setItem(
+                  'BrowserSessionId',
+                  response.browserSessionId.toString()
+                );
+
+                localStorage.setItem(
+                  'BrowserSessionId',
+                  response.browserSessionId.toString()
+                );
+
+              }
 
           this.router.navigate([route]);
         } else {

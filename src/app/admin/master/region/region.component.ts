@@ -58,7 +58,6 @@ export class RegionComponent {
 
   // ✅ Get Company Name
   getCompanyName(companyID: number): string {
-    debugger;
     const company = this.companies.find(c => c.companyId === companyID);
     return  company ? company.companyName : '-';
   }
@@ -73,7 +72,6 @@ export class RegionComponent {
     this.spinner.show();
     this.adminService.getRegions(null,this.region.userId).subscribe({
       next: (data: Region[]) => {
-        debugger;
         // Sort by regionID descending → latest first
         this.regions = data.sort((a, b) => b.regionID - a.regionID);
         this.applySorting();

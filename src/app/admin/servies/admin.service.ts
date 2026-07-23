@@ -3332,4 +3332,19 @@ getUserNotifications(userId: number): Observable<any[]> {
       {}
     );
   }
+
+  getHolidayCalendar(companyId: number, regionId: number) {
+    debugger;
+  return this.http.get<any>(
+    `${this.baseUrl}/MasterData/holiday-listCalender?companyId=${companyId}&regionId=${regionId}`
+  );
+}
+logout(userId: number): Observable<any> {
+  return this.http.post<any>(
+    `${this.baseUrl}/UserManagement/Logout?userId=${userId}`,
+    {}
+  ).pipe(
+    catchError(this.handleError)
+  );
+}
 }

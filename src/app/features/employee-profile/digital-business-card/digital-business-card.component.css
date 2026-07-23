@@ -160,6 +160,23 @@
   .social-links a:hover {
     color: #ff4c4c;
   }
+
+  .download-buttons {
+    display: flex;
+    gap: 12px;
+    margin: 0 0 20px 20px;
+    flex-wrap: wrap;
+  }
+
+  .download-buttons button {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    background: #dc3545;
+    color: #fff;
+    cursor: pointer;
+  }
+
   .dashboard {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
