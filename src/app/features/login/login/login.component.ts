@@ -37,6 +37,7 @@ export class LoginComponent {
   //   }
   // }
   login() {
+    debugger;
     this.errorMessage = '';
 
     if (!this.username || !this.password) {

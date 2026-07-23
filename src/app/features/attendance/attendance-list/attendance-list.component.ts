@@ -892,7 +892,7 @@ getStatusClass(status: string): string {
     return 'badge-absent';
 
   if (status === 'halfday' || status === 'half day')
-    return 'badge-Halfday';
+    return 'badge-halfday';
 
   if (status.includes('leave'))
     return 'badge-leave';

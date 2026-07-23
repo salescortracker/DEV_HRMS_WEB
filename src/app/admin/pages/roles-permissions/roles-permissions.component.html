@@ -36,6 +36,8 @@
               <th (click)="toggleSort('roleId')" class="cursor-pointer">#</th>
               <th (click)="toggleSort('roleName')" class="cursor-pointer">Role Name</th>
               <th (click)="toggleSort('roleDescription')" class="cursor-pointer">Description</th>
+              <th (click)="toggleSort('companyName')" class="cursor-pointer">Company Name</th>
+               <th (click)="toggleSort('regionName')" class="cursor-pointer">Region Name</th>
               <th (click)="toggleSort('isActive')" class="cursor-pointer">Status</th>
               <th class="text-end">Actions</th>
             </tr>
@@ -46,6 +48,8 @@
               <td>{{ (pageNumber - 1) * pageSize + i + 1 }}</td>
               <td>{{ r.roleName }}</td>
               <td>{{ r.roleDescription || '-' }}</td>
+              <td>{{ r.companyName || '-' }}</td>
+              <td>{{ r.regionName || '-' }}</td>
               <td>
                 <span [class]="'badge ' + (r.isActive ? 'bg-success' : 'bg-secondary')">
                   {{ r.isActive ? 'Active' : 'Inactive' }}

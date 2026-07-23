@@ -589,6 +589,8 @@ export interface User {
   userCompanyId?: number; // ✅ added for tracking which company the user belongs to
   loginType?: string; // "Admin" or "User",
   designationId?: number;
+  userEmployeeCode?: string;
+  generatedEmployeeCode?: string;
 }
 export interface CompanyNewsCategory {
   categoryId: number;

@@ -64,11 +64,44 @@
             </div>
 
             <!-- Employee Code -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Employee Code <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" name="EmployeeCode" [(ngModel)]="user.employeeCode" required
-                placeholder="Enter employee code" disabled />
-            </div>
+            <div class="col-md-3">
+  <label class="form-label fw-semibold">
+    Employee Code <span class="text-danger">*</span>
+  </label>
+  <input
+    type="text"
+    class="form-control"
+    name="EmployeeCode"
+    [(ngModel)]="user.userEmployeeCode"
+    required
+     (ngModelChange)="generateEmployeeId()"
+    placeholder="EMP" />
+</div>
+
+<div class="col-md-3">
+  <label class="form-label fw-semibold">
+    Running Number <span class="text-danger">*</span>
+  </label>
+  <input
+    type="number"
+    class="form-control"
+    name="employeeCode"
+    [(ngModel)]="user.employeeCode"
+    required
+     disabled />
+</div>
+
+<div class="col-md-6">
+  <label class="form-label fw-semibold">
+    Generated Employee ID
+  </label>
+  <input
+  type="text"
+  class="form-control"
+  [value]=" (user.userEmployeeCode || '').toString().padStart(4, '0')+user.employeeCode"
+  disabled
+  readonly />
+</div>
 
             <!-- Full Name -->
             <div class="col-md-6">

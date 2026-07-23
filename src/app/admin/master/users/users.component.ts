@@ -411,7 +411,7 @@ filterRoles(): void {
 
  // 🔹 Auto-generate Employee Code (Frontend only)
  generateNextEmployeeCode(): void {
-
+debugger;
   // ✅ Only for Create Mode
   if (this.isEditMode) return;
 
@@ -431,7 +431,7 @@ filterRoles(): void {
 
   // ✅ No Employees
   if (filteredUsers.length === 0) {
-    this.user.employeeCode = 'EMP0001';
+    this.user.employeeCode = this.user.userEmployeeCode + '0001';
     return;
   }
 
@@ -448,7 +448,16 @@ filterRoles(): void {
   const nextCode = maxCode + 1;
 
   this.user.employeeCode =
-    `EMP${nextCode.toString().padStart(4, '0')}`;
+    `${nextCode.toString().padStart(4, '0')}`;
+}
+generateEmployeeId(): void {
+  debugger;
+  const code = this.user.employeeCode || '';
+  const number = (this.user.userEmployeeCode || 0)
+    .toString()
+    .padStart(4, '0');
+
+  this.user.generatedEmployeeCode = `${code}${number}`;
 }
 
   private extractEmployeeNumber(code: string | undefined): number {
@@ -470,6 +479,7 @@ filterRoles(): void {
   }
 
   onSubmit(): void {
+    this.user.employeeCode = this.user.userEmployeeCode + this.user.employeeCode;
     if (!this.user.companyId || this.user.companyId === 0) {
       Swal.fire('Validation', 'Please select company', 'warning');
       return;
