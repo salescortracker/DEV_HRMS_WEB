@@ -3325,7 +3325,7 @@ getUserNotifications(userId: number): Observable<any[]> {
   }
 
   markAsRead(notificationId: number): Observable<any> {
-    return this.http.put(
+    return this.http.post(
       `${this.baseUrl}/Notification/MarkAsRead/${notificationId}`,
       {}
     );
