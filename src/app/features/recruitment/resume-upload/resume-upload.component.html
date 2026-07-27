@@ -562,10 +562,15 @@
 
         <!-- Actions -->
         <td>
-          <button class="btn btn-sm btn-outline-success me-1" (click)="advanceStage(c)"
-            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)">
-            Shortlist
-          </button>
+           <button
+    class="btn btn-sm me-1"
+    [ngClass]="c.stageName === 'Resume Upload' ? 'btn-outline-success' : 'btn-secondary'"
+    (click)="advanceStage(c)"
+    [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)">
+
+    {{ c.stageName === 'Resume Upload' ? 'Shortlist' : 'Shortlisted' }}
+
+  </button>
          
           <button *ngIf="canEditResumeUpload" class="btn btn-sm btn-outline-primary me-1"
             [disabled]="['Screening','Interview','Appointment','Offer','Onboarding','Selected','Rejected'].includes(c.stageName)"

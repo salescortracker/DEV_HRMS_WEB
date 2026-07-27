@@ -477,10 +477,217 @@ loadProfilePicture() {
 
   // ========================================== Clock In Clock Out Function  ==================================================
 
- async toggleClock() {
+//  async toggleClock() {
+// debugger;
+//   // ✅ STEP 1: CHECK SHIFT
+//   if (!this.shiftStartTime) {
+
+//     Swal.fire(
+//       'Not Allowed',
+//       'You are not assigned to any shift. Please contact HR.',
+//       'warning'
+//     );
+
+//     return;
+//   }
+//   // Only validate shift end while CLOCKING IN
+//   if (!this.isClockedIn) {
+
+//     const now = this.getSystemTime();
+
+//     const [endHours, endMinutes] =
+//       this.shiftEndTime.split(':').map(Number);
+
+//     const shiftEnd = new Date();
+
+//     shiftEnd.setHours(
+//       endHours,
+//       endMinutes,
+//       0,
+//       0
+//     );
+
+//     if (now > shiftEnd) {
+
+//       Swal.fire({
+//         icon: 'warning',
+//         title: 'Clock In Not Allowed',
+//         text: `You cannot clock in because your shift time has already ended at ${this.formatDisplayTime(shiftEnd)}.`,
+//         confirmButtonText: 'OK'
+//       });
+
+//       return; // ⭐ VERY IMPORTANT
+//     }
+//   }
+
+//   // ✅ STEP 2: CHECK WFH APPROVAL
+//   let geoAllowed = true;
+
+//   if (!this.isWFHApproved) {
+
+//     geoAllowed = await this.checkGeoFence();
+
+//     if (!geoAllowed) return;
+
+//   } else {
+
+//     console.log('✅ WFH Approved → Skipping Geo Fence');
+//   }
+
+//   // ✅ CURRENT TIME
+//   const now = this.getSystemTime();
+
+//   // =====================================================
+//   // ✅ CLOCK IN
+//   // =====================================================
+//   if (!this.isClockedIn) {
+
+//     this.isClockedIn = true;
+
+//     this.clockInTime = now;
+
+//     sessionStorage.setItem(
+//       'clockInTime',
+//       now.toISOString()
+//     );
+
+//     this.clockStatus = 'Clocked In';
+
+//     this.clockInDisplay = this.formatTime(now);
+
+//     this.totalHoursDisplay = '00:00:00';
+
+//    this.startTimer(0, now);
+
+//     // ✅ API CALL
+//     this.employeeResignationService.addClockInOut({
+
+//       userId: Number(sessionStorage.getItem('UserId')),
+
+//       employeeCode: this.employeeCode,
+
+//       employeeName: sessionStorage.getItem('Name') || '',
+
+//       department: 0,
+
+//       attendanceDate: new Date(),
+
+//       actionType: 'ClockIn',
+
+//       actionTime: this.getSystemTime24(),
+
+//       clockInTime: this.getSystemTime24(),
+
+//       clockOutTime: '',
+
+//       totalWorkedHours: null,
+
+//       companyId: this.companyId,
+     
+//       regionId: this.regionId
+
+//     }).subscribe({
+
+//       next: () => {
+
+//         this.loadAttendance();
+//         this.attendanceService.notifyAttendanceChanged();
+
+//       },
+
+//       error: (err) => {
+
+//         console.error(err);
+
+//         Swal.fire(
+//           'Error',
+//           'Clock In Failed',
+//           'error'
+//         );
+//       }
+//     });
+//   }
+
+//   // =====================================================
+//   // ✅ CLOCK OUT
+//   // =====================================================
+//   else {
+
+//     this.isClockedIn = false;
+
+//     sessionStorage.removeItem('clockInTime');
+
+//     this.clockStatus = 'Clocked Out';
+
+//     this.stopTimer();
+
+//     // ✅ FORCE HH:mm:ss FORMAT
+//     const formattedTotalHours =
+//       this.formatWorkedHours();
+
+//     console.log(
+//       'Formatted Total Hours:',
+//       formattedTotalHours
+//     );
+
+//     // ✅ API CALL
+//     this.employeeResignationService.addClockInOut({
+
+//       userId: Number(sessionStorage.getItem('UserId')),
+
+//       employeeCode: this.employeeCode,
+
+//       employeeName: sessionStorage.getItem('Name') || '',
+
+//       department: 0,
+
+//       attendanceDate: new Date(),
+
+//       actionType: 'ClockOut',
+
+//       actionTime: this.getSystemTime24(),
+
+//       clockInTime: '',
+
+//       clockOutTime: this.getSystemTime24(),
+
+//       totalWorkedHours: formattedTotalHours,
+
+//       companyId: this.companyId,
+
+//       regionId: this.regionId
+
+//     }).subscribe({
+
+//       next: () => {
+
+//         this.loadAttendance();
+//         this.attendanceService.notifyAttendanceChanged();
+
+//         Swal.fire(
+//           'Clock Out Successful',
+//           `Total Worked Hours: ${formattedTotalHours}`,
+//           'success'
+//         );
+//       },
+
+//       error: (err) => {
+
+//         console.error(err);
+
+//         Swal.fire(
+//           'Error',
+//           'Clock Out Failed',
+//           'error'
+//         );
+//       }
+//     });
+//   }
+// }
+async toggleClock() {
 
   // ✅ STEP 1: CHECK SHIFT
-  if (!this.shiftStartTime) {
+  if (!this.shiftStartTime || !this.shiftEndTime) {
 
     Swal.fire(
       'Not Allowed',
@@ -490,22 +697,15 @@ loadProfilePicture() {
 
     return;
   }
-  // Only validate shift end while CLOCKING IN
+
+  const now = new Date();
+
+  const { shiftStart, shiftEnd } = this.getShiftDateTimes();
+
+  // =====================================================
+  // ✅ ONLY VALIDATE SHIFT END WHILE CLOCKING IN
+  // =====================================================
   if (!this.isClockedIn) {
-
-    const now = this.getSystemTime();
-
-    const [endHours, endMinutes] =
-      this.shiftEndTime.split(':').map(Number);
-
-    const shiftEnd = new Date();
-
-    shiftEnd.setHours(
-      endHours,
-      endMinutes,
-      0,
-      0
-    );
 
     if (now > shiftEnd) {
 
@@ -516,26 +716,28 @@ loadProfilePicture() {
         confirmButtonText: 'OK'
       });
 
-      return; // ⭐ VERY IMPORTANT
+      return;
     }
   }
 
-  // ✅ STEP 2: CHECK WFH APPROVAL
+  // =====================================================
+  // ✅ GEOFENCE / WFH CHECK
+  // =====================================================
   let geoAllowed = true;
 
   if (!this.isWFHApproved) {
 
     geoAllowed = await this.checkGeoFence();
 
-    if (!geoAllowed) return;
+    if (!geoAllowed) {
+      return;
+    }
 
   } else {
 
-    console.log('✅ WFH Approved → Skipping Geo Fence');
-  }
+    console.log('✅ WFH Approved → GeoFence Skipped');
 
-  // ✅ CURRENT TIME
-  const now = this.getSystemTime();
+  }
 
   // =====================================================
   // ✅ CLOCK IN
@@ -557,9 +759,8 @@ loadProfilePicture() {
 
     this.totalHoursDisplay = '00:00:00';
 
-   this.startTimer(0, now);
+    this.startTimer(0, now);
 
-    // ✅ API CALL
     this.employeeResignationService.addClockInOut({
 
       userId: Number(sessionStorage.getItem('UserId')),
@@ -583,7 +784,7 @@ loadProfilePicture() {
       totalWorkedHours: null,
 
       companyId: this.companyId,
-     
+
       regionId: this.regionId
 
     }).subscribe({
@@ -591,21 +792,55 @@ loadProfilePicture() {
       next: () => {
 
         this.loadAttendance();
+
         this.attendanceService.notifyAttendanceChanged();
 
       },
 
       error: (err) => {
 
-        console.error(err);
+  console.error("Clock In API Error:", err);
 
-        Swal.fire(
-          'Error',
-          'Clock In Failed',
-          'error'
-        );
-      }
+
+  this.isClockedIn = false;
+
+  this.stopTimer();
+
+
+  let errorMessage = "Clock In Failed";
+
+
+  if(err.error)
+  {
+
+    if(typeof err.error === 'string')
+    {
+      errorMessage = err.error;
+    }
+
+    else if(err.error.message)
+    {
+      errorMessage = err.error.message;
+    }
+
+    else if(err.error.title)
+    {
+      errorMessage = err.error.title;
+    }
+
+  }
+
+
+  Swal.fire(
+    'Clock In Failed',
+    errorMessage,
+    'error'
+  );
+
+}
+
     });
+
   }
 
   // =====================================================
@@ -621,16 +856,9 @@ loadProfilePicture() {
 
     this.stopTimer();
 
-    // ✅ FORCE HH:mm:ss FORMAT
     const formattedTotalHours =
       this.formatWorkedHours();
 
-    console.log(
-      'Formatted Total Hours:',
-      formattedTotalHours
-    );
-
-    // ✅ API CALL
     this.employeeResignationService.addClockInOut({
 
       userId: Number(sessionStorage.getItem('UserId')),
@@ -662,62 +890,152 @@ loadProfilePicture() {
       next: () => {
 
         this.loadAttendance();
+
         this.attendanceService.notifyAttendanceChanged();
 
         Swal.fire(
           'Clock Out Successful',
-          `Total Worked Hours: ${formattedTotalHours}`,
+          `Total Worked Hours : ${formattedTotalHours}`,
           'success'
         );
+
       },
 
       error: (err) => {
 
-        console.error(err);
+ console.error("Clock Out API Error:", err);
 
-        Swal.fire(
-          'Error',
-          'Clock Out Failed',
-          'error'
-        );
-      }
-    });
-  }
+
+ let errorMessage = "Clock Out Failed";
+
+
+ if(err.error)
+ {
+
+   if(typeof err.error === 'string')
+   {
+     errorMessage = err.error;
+   }
+
+   else if(err.error.message)
+   {
+     errorMessage = err.error.message;
+   }
+
+   else if(err.error.title)
+   {
+     errorMessage = err.error.title;
+   }
+
+ }
+
+
+ Swal.fire(
+   'Clock Out Failed',
+   errorMessage,
+   'error'
+ );
+
 }
 
-// ✅ RETURNS HH:mm:ss FORMAT
-formatWorkedHours(): string {
+    });
 
-  if (!this.clockInTime) {
-
-    return '00:00:00';
   }
+
+}
+private getShiftDateTimes() {
 
   const now = new Date();
 
-  const diffMs =
-    now.getTime() -
-    this.clockInTime.getTime();
+  const [startHour, startMinute] =
+    this.shiftStartTime.split(':').map(Number);
 
-  const totalSeconds =
-    Math.floor(diffMs / 1000);
+  const [endHour, endMinute] =
+    this.shiftEndTime.split(':').map(Number);
 
-  const hours =
-    Math.floor(totalSeconds / 3600);
+  let shiftStart = new Date(now);
+  shiftStart.setHours(startHour, startMinute, 0, 0);
 
-  const minutes =
-    Math.floor((totalSeconds % 3600) / 60);
+  let shiftEnd = new Date(now);
+  shiftEnd.setHours(endHour, endMinute, 0, 0);
 
-  const seconds =
-    totalSeconds % 60;
+  // Night Shift (Example: 18:30 -> 03:30)
+  const isNightShift =
+    endHour < startHour ||
+    (endHour === startHour && endMinute < startMinute);
 
-  return (
-    String(hours).padStart(2, '0') + ':' +
-    String(minutes).padStart(2, '0') + ':' +
-    String(seconds).padStart(2, '0')
-  );
+  if (isNightShift) {
+
+    // If after midnight but before shift end
+    if (now.getHours() < endHour ||
+       (now.getHours() === endHour && now.getMinutes() <= endMinute)) {
+
+      shiftStart.setDate(shiftStart.getDate() - 1);
+
+    } else {
+
+      shiftEnd.setDate(shiftEnd.getDate() + 1);
+
+    }
+
+  }
+
+  return {
+    shiftStart,
+    shiftEnd
+  };
+
 }
 
+// // ✅ RETURNS HH:mm:ss FORMAT
+// formatWorkedHours(): string {
+
+//   if (!this.clockInTime) {
+
+//     return '00:00:00';
+//   }
+
+//   const now = new Date();
+
+//   const diffMs =
+//     now.getTime() -
+//     this.clockInTime.getTime();
+
+//   const totalSeconds =
+//     Math.floor(diffMs / 1000);
+
+//   const hours =
+//     Math.floor(totalSeconds / 3600);
+
+//   const minutes =
+//     Math.floor((totalSeconds % 3600) / 60);
+
+//   const seconds =
+//     totalSeconds % 60;
+
+//   return (
+//     String(hours).padStart(2, '0') + ':' +
+//     String(minutes).padStart(2, '0') + ':' +
+//     String(seconds).padStart(2, '0')
+//   );
+// }
+
+formatWorkedHours(): string {
+
+    const totalMs =
+        this.accumulatedMs +
+        (new Date().getTime() - this.clockInTime.getTime());
+
+    const totalSeconds = Math.floor(totalMs / 1000);
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${hours.toString().padStart(2,'0')}:` +
+           `${minutes.toString().padStart(2,'0')}:` +
+           `${seconds.toString().padStart(2,'0')}`;
+}
   //================================================== Clock In Clock Out method =================================================
 
   checkGeoFence(): Promise<boolean> {
