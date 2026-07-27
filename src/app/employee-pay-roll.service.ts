@@ -127,7 +127,7 @@ export class EmployeePayRollService {
 
   // ✅ Update Salary Structure
   updateSalaryStructure(id: number, userId: number, data: SalaryStructure): Observable<SalaryStructure> {
-    return this.http.put<SalaryStructure>(
+    return this.http.post<SalaryStructure>(
       `${environment.apiUrl}/EmployeePayRoll/UpdateSalaryStructure/${id}/${userId}`,
       data
     );

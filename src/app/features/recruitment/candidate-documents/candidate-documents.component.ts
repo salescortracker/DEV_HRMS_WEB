@@ -26,23 +26,23 @@ export class CandidateDocumentsComponent implements OnInit  {
 
   this.route.params.subscribe(params => {
 
-    this.offerId = Number(params['offerId']);
-    this.candidateId = Number(params['candidateId']);
-    this.companyId = Number(params['companyId']);
-    this.regionId = Number(params['regionId']);
+  this.companyId = Number(params['companyId']);
+  this.regionId = Number(params['branchId']);
+  this.candidateId = Number(params['employeeId']);
+  this.offerId = Number(params['offerId']);
 
-    console.log(
-      this.offerId,
-      this.candidateId,
-      this.companyId,
-      this.regionId
-    );
-
-    if (this.offerId) {
-      this.loadOfferData();
-    }
-
+  console.log({
+    companyId: this.companyId,
+    branchId: this.regionId,
+    employeeId: this.candidateId,
+    offerId: this.offerId
   });
+
+  if(this.offerId){
+    this.loadOfferData();
+  }
+
+});
 
 }
 

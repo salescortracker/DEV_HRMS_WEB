@@ -106,6 +106,7 @@ import { ResumeUploadComponent } from './features/recruitment/resume-upload/resu
 import { ApplicationResumesComponent } from './features/recruitment/application-resumes/application-resumes.component';
 import { SuperAdminMenumasterComponent } from './superAdmin/super-admin-menumaster/super-admin-menumaster.component';
 import { SuperAdminRolesPermissionsComponent } from './superAdmin/super-admin-roles-permissions/super-admin-roles-permissions.component';
+import { CandidateDocumentsComponent } from './features/recruitment/candidate-documents/candidate-documents.component';
 const routes: Routes = [
   { path: '', component: LoginComponent },
    { path: 'forgot-password', component: ForgotPasswordComponent },
@@ -247,7 +248,7 @@ const routes: Routes = [
 { path: 'missed-punch-request', component: MissedPunchRequestComponent },
 { path: 'early-logout-request', component: EarlyLogoutRequestComponent },
  { path: 'offer-documents/:companyId/:branchId/:employeeId/:offerId',
-    component: OfferComponent
+    component: CandidateDocumentsComponent
   },
 // { path: 'leave-management', component: LeaveManagementComponent },
 {

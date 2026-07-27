@@ -6,6 +6,7 @@ import { AdminService } from '../../../admin/servies/admin.service';
 import { EmployeeResignationService } from '../../employee-profile/employee-services/employee-resignation.service';
 import { AttendanceService } from '../service/attendance.service';
 import { timeEnd } from 'node:console';
+import Swal from 'sweetalert2';
 
 interface AttendanceRecord {
   attendanceDate: string;
@@ -159,7 +160,27 @@ firstClockIn: any;
           this.loadAttendance();
           this.ngOnInit();
         },
-        error: () => this.message = 'Failed to save attendance'
+        error: (err) => {
+
+  console.log("Attendance Error:", err);
+
+  if (err.error) {
+
+    if (typeof err.error === 'string') {
+      this.message = err.error;
+    }
+    else if (err.error.message) {
+      this.message = err.error.message;
+    }
+    else {
+      this.message = "Attendance failed";
+    }
+
+  }
+  else {
+    this.message = "Attendance failed";
+  }
+}
       });
   }
 
@@ -401,13 +422,47 @@ this.todayDuration =
     };
 
     this.employeeResignationService.addClockInOut(payload)
-  .subscribe(() => {
+.subscribe({
+  
+  next: () => {
 
     this.loadAttendance(); 
-
     this.loadTodayAttendance();
 
-  });
+  },
+
+  error: (err) => {
+
+    console.log("Clock In API Error:", err);
+
+    let errorMessage = "Clock In Failed";
+
+
+    if(err.error)
+    {
+      if(typeof err.error === 'string')
+      {
+        errorMessage = err.error;
+      }
+      else if(err.error.message)
+      {
+        errorMessage = err.error.message;
+      }
+    }
+
+
+    this.message = errorMessage;
+
+
+    Swal.fire(
+      'Error',
+      errorMessage,
+      'error'
+    );
+
+  }
+
+});
   }
 
   delete(id: number) {
