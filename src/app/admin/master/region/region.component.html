@@ -89,6 +89,25 @@
                 placeholder="Enter country"
               />
             </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">
+                Time Zone <span class="text-danger">*</span>
+              </label>
+
+              <select
+                class="form-select"
+                name="TimeZoneId"
+                [(ngModel)]="region.timeZoneId"
+                required>
+
+                <option value="" disabled>Select Time Zone</option>
+
+                <option *ngFor="let tz of timeZones" [value]="tz.value">
+                  {{ tz.label }}
+                </option>
+
+              </select>
+            </div>
 
             <!-- Active Toggle -->
             <div class="col-md-6 d-flex align-items-center">
@@ -169,6 +188,7 @@
          [class.fa-sort-up]="sortDirection === 'asc'"
          [class.fa-sort-down]="sortDirection === 'desc'"></i>
     </th>
+    <th>Time Zone</th>
     <th class="text-center" style="width:120px;">Actions</th>
   </tr>
 </thead>
@@ -179,6 +199,7 @@
                 <td>{{ r.regionName }}</td>
                 <td>{{ getCompanyName(r.companyID) }}</td>
                 <td>{{ r.country }}</td>
+                <td>{{ getTimeZoneLabel(r.timeZoneId) }}</td>
                 
                 <td class="text-center">
                   <button class="btn btn-sm btn-outline-primary me-2" (click)="editRegion(r)">
@@ -190,7 +211,7 @@
                 </td>
               </tr>
               <tr *ngIf="filteredRegions().length === 0">
-                <td colspan="5" class="text-center text-muted">No records found</td>
+                <td colspan="6" class="text-center text-muted">No records found</td>
               </tr>
             </tbody>
           </table>

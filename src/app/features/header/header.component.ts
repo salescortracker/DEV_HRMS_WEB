@@ -707,17 +707,6 @@ async toggleClock() {
   // =====================================================
   if (!this.isClockedIn) {
 
-    if (now > shiftEnd) {
-
-      Swal.fire({
-        icon: 'warning',
-        title: 'Clock In Not Allowed',
-        text: `You cannot clock in because your shift time has already ended at ${this.formatDisplayTime(shiftEnd)}.`,
-        confirmButtonText: 'OK'
-      });
-
-      return;
-    }
   }
 
   // =====================================================

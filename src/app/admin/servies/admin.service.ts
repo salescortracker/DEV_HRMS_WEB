@@ -559,6 +559,7 @@ export interface Region {
   companyID: number;
   regionName: string;
   country: string;
+  timeZoneId: string;
   isActive: boolean;
   userId?: number;
 }

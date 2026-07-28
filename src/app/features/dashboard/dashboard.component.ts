@@ -448,24 +448,6 @@ updateChartTodayHours(totalHours: number) {
       });
   }
 
-  // calculateLeaveSummary() {
-  //   let approved = 0, pending = 0, rejected = 0;
-
-  //   this.userLeaves.forEach(l => {
-  //     const s = l.status?.toLowerCase();
-  //     if (s === 'approved') approved++;
-  //     else if (s === 'rejected') rejected++;
-  //     else pending++;
-  //   });
-
-  //   this.leaveApprovalSummary = { approved, pending, rejected };
-
-  //   this.leaveCards = [
-  //     { label: 'Approved', value: approved, icon: 'fas fa-check-circle' },
-  //     { label: 'Pending', value: pending, icon: 'fas fa-hourglass-half' },
-  //     { label: 'Rejected', value: rejected, icon: 'fas fa-times-circle' }
-  //   ];
-  // }
 
   calculateLeaveSummary() {
 
