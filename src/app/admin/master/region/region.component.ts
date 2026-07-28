@@ -64,7 +64,7 @@ export class RegionComponent {
 
   // ✅ Empty Region Template
   getEmptyRegion(): Region {
-    return { regionID: 0, companyID: 0, regionName: '', country: '', isActive: true,userId: sessionStorage.getItem('UserId') ? Number(sessionStorage.getItem('UserId')) : 0 };
+    return { regionID: 0, companyID: 0, regionName: '', country: '', timeZoneId: '', isActive: true,userId: sessionStorage.getItem('UserId') ? Number(sessionStorage.getItem('UserId')) : 0 };
   }
 
   // ✅ Load Regions (Latest First)
@@ -143,6 +143,15 @@ onSubmit(): void {
     return;
   }
 
+  if (!this.region.timeZoneId) {
+  Swal.fire(
+    'Validation',
+    'Please select Time Zone.',
+    'warning'
+  );
+  return;
+}
+
   this.spinner.show();
 
   const operation = this.isEditMode
@@ -193,6 +202,55 @@ onSubmit(): void {
 
   });
 
+}
+timeZones = [
+  {
+    label: 'India Standard Time (IST)',
+    value: 'Asia/Kolkata'
+  },
+  {
+    label: 'US Eastern Time (EST/EDT)',
+    value: 'America/New_York'
+  },
+  {
+    label: 'US Central Time (CST/CDT)',
+    value: 'America/Chicago'
+  },
+  {
+    label: 'US Mountain Time (MST/MDT)',
+    value: 'America/Denver'
+  },
+  {
+    label: 'US Pacific Time (PST/PDT)',
+    value: 'America/Los_Angeles'
+  },
+  {
+    label: 'Canada Eastern',
+    value: 'America/Toronto'
+  },
+  {
+    label: 'UK Time',
+    value: 'Europe/London'
+  },
+  {
+    label: 'UAE Time',
+    value: 'Asia/Dubai'
+  },
+  {
+    label: 'Singapore Time',
+    value: 'Asia/Singapore'
+  },
+  {
+    label: 'Australia Sydney',
+    value: 'Australia/Sydney'
+  }
+];
+getTimeZoneLabel(value: string): string {
+  const timezone = this.timeZones.find(
+    x => x.value === value
+  );
+
+  return timezone ? timezone.label : '-';
 }
 
   editRegion(r: Region): void {
