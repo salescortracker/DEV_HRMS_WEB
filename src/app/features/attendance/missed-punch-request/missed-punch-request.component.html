@@ -90,7 +90,7 @@
             <th>Reason</th>
             <th>Manager Remarks</th>
             <th>Status</th>
-            <th>Action</th>
+            <!-- <th>Action</th> -->
           </tr>
         </thead>
 
@@ -111,9 +111,9 @@
                 {{ item.status }}
               </span>
             </td>
-            <td>
+            <!-- <td>
               <i class="fa fa-edit text-primary" (click)="editMissedPunch(item)" *ngIf="item.status === 'Pending' && canEditMyRequest"></i>
-            </td>
+            </td> -->
           </tr>
 
           <tr *ngIf="myRequests.length === 0">

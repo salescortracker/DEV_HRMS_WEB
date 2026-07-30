@@ -127,7 +127,7 @@
     <div class="row mb-3">
         <div class="col-md-12 text-start">
             <button *ngIf="(!isEditMode && canAddResignation) || (isEditMode && canEditResignation)" type="submit" class="btn btn-primary me-2"  [disabled]="!isHR && !canSubmitResignation()">
-                {{ isEditMode ? 'Update Resignation' : 'Submit Resignation' }}
+                {{ isEditMode ? 'Update' : 'Submit' }}
             </button>
             <button type="button" class="btn btn-secondary" (click)="resetForm(resignForm)">
                 Reset

@@ -1,164 +1,870 @@
 <app-header></app-header>
 <app-sidebar></app-sidebar>
 
-<!-- DAILY WORKING HOURS - MULTIPLE EMPLOYEE SELECTION -->
 <div class="dashboard-header">
-  <h2 class="dashboard-title">Early Departures</h2>
+
+  <h2 class="dashboard-title">
+    Early Departures
+  </h2>
+
   <nav class="breadcrumb">
     <a href="#">Home</a> &gt;
     <a href="#">Attendance</a> &gt;
     <span>Early Departures</span>
   </nav>
+
 </div>
+
 
 <div class="tab-container mt-4">
- <div class="card p-4 shadow-sm">
-  <h5 class="mb-3">Early Departures</h5>
 
-  <!-- Filter Form -->
-  <form class="row g-3 mb-4">
-    <div class="col-md-4">
-      <label class="form-label">Select Employee</label>
-      <select class="form-select" required>
-        <option value="">All Employees</option>
-        <option>John Doe (EMP001)</option>
-        <option>Anita Sharma (EMP003)</option>
-        <option>Rahul Kumar (EMP007)</option>
-        <option>Priya Singh (EMP010)</option>
-      </select>
-    </div>
 
-    <div class="col-md-3">
-      <label class="form-label">From Date</label>
-      <input type="date" class="form-control" required>
-    </div>
+<!-- ================= TABS ================= -->
 
-    <div class="col-md-3">
-      <label class="form-label">To Date</label>
-      <input type="date" class="form-control" required>
-    </div>
+<input type="radio"
+       id="tab1"
+       name="tab"
+       [checked]="selectedTab === 'tab1'">
 
-    <div class="col-md-2 d-flex align-items-end">
-      <button type="submit" class="btn btn-primary w-100">Filter</button>
-    </div>
-  </form>
+<input type="radio"
+       id="tab2"
+       name="tab"
+       [checked]="selectedTab === 'tab2'">
 
-  <!-- Early Departures Table -->
-  <div class="table-responsive">
-    <table class="table table-bordered table-hover align-middle">
-      <thead class="table-light">
-        <tr>
-          <th>Employee Name</th>
-          <th>Employee ID</th>
-          <th>Date</th>
-          <th>Scheduled End</th>
-          <th>Clock Out Time</th>
-          <th>Left Early By</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>John Doe</td>
-          <td>EMP001</td>
-          <td>2025-10-14</td>
-          <td>05:30 PM</td>
-          <td>05:10 PM</td>
-          <td>20 mins</td>
-          <td><span class="badge bg-warning text-dark">Early</span></td>
-          <td class="text-center">
-            <!-- View Icon -->
-            <a href="#" data-bs-toggle="modal" data-bs-target="#viewEarlyModal1" class="me-2">
-              <i class="fa-solid fa-eye text-primary"></i>
-            </a>
-            <!-- Mark Excuse Icon -->
-            <a href="#" data-bs-toggle="modal" data-bs-target="#excuseEarlyModal1">
-              <i class="fa-solid fa-pen-to-square text-success"></i>
-            </a>
-          </td>
-        </tr>
-        <tr>
-          <td>Anita Sharma</td>
-          <td>EMP003</td>
-          <td>2025-10-14</td>
-          <td>05:30 PM</td>
-          <td>05:00 PM</td>
-          <td>30 mins</td>
-          <td><span class="badge bg-warning text-dark">Early</span></td>
-          <td class="text-center">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#viewEarlyModal2" class="me-2">
-              <i class="fa-solid fa-eye text-primary"></i>
-            </a>
-            <a href="#" data-bs-toggle="modal" data-bs-target="#excuseEarlyModal2">
-              <i class="fa-solid fa-pen-to-square text-success"></i>
-            </a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+<input type="radio"
+       id="tab3"
+       name="tab"
+       [checked]="selectedTab === 'tab3'">
 
-<!-- VIEW EARLY DEPARTURE MODAL -->
-<div class="modal fade" id="viewEarlyModal1" tabindex="-1" aria-labelledby="viewEarlyModalLabel1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="viewEarlyModalLabel1">Early Departure Details - John Doe</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p><strong>Employee ID:</strong> EMP001</p>
-        <p><strong>Date:</strong> 2025-10-14</p>
-        <p><strong>Scheduled End:</strong> 05:30 PM</p>
-        <p><strong>Clock Out Time:</strong> 05:10 PM</p>
-        <p><strong>Left Early By:</strong> 20 mins</p>
-        <p><strong>Status:</strong> Early</p>
-        <p><strong>Remarks:</strong> -</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- MARK EXCUSE MODAL -->
-<div class="modal fade" id="excuseEarlyModal1" tabindex="-1" aria-labelledby="excuseEarlyModalLabel1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form>
-        <div class="modal-header">
-          <h5 class="modal-title" id="excuseEarlyModalLabel1">Mark Excuse - John Doe</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Reason for Excuse <span class="text-danger">*</span></label>
-            <textarea class="form-control" placeholder="Enter reason..." required></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Adjust Attendance</label>
-            <select class="form-select">
-              <option value="">Select Option</option>
-              <option>Full Excuse</option>
-              <option>Partial Excuse</option>
-              <option>None</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Save Excuse</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+
+<div class="tab-header">
+
+  <label class="tab-label"
+         for="tab1"
+         *ngIf="canViewPersonal">
+    My Request
+  </label>
+
+
+  <label class="tab-label"
+         for="tab2"
+         *ngIf="canViewManager">
+    Manager Approval
+  </label>
+
+
+  <label class="tab-label"
+         for="tab3"
+         *ngIf="canViewHR || canViewManager">
+    HR And Manager
+  </label>
+
 
 </div>
 
+
+
+
+<!-- ================================================= -->
+<!-- ================= MY REQUEST ===================== -->
+<!-- ================================================= -->
+
+
+<div id="content1"
+     class="tab-content"
+     *ngIf="canViewPersonal">
+
+
+<div class="card p-4 shadow-sm mb-4">
+
+
+<h5 class="mb-3">
+  Submit Early Departure
+</h5>
+
+
+
+<form [formGroup]="earlyDepartureForm"
+      (ngSubmit)="submitEarlyDeparture()">
+
+
+
+<div class="row mb-3">
+
+
+<div class="col-md-6">
+
+<label class="form-label">
+ Date <span class="text-danger">*</span>
+</label>
+
+
+<input type="date"
+       class="form-control"
+       formControlName="requestDate">
+
+</div>
+
+
+
+
+<div class="col-md-6">
+
+<label class="form-label">
+ Clock Out Time <span class="text-danger">*</span>
+</label>
+
+
+<input type="time"
+       class="form-control"
+       formControlName="requestedEarlyLogoutTime">
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="mb-3">
+
+<label class="form-label">
+ Reason <span class="text-danger">*</span>
+</label>
+
+
+<textarea rows="3"
+          class="form-control"
+          formControlName="reason">
+</textarea>
+
+
+</div>
+
+
+
+
+
+<div class="mb-3">
+
+<label class="form-label">
+ HR Email (CC)
+</label>
+
+
+<input type="email"
+       class="form-control"
+       formControlName="hrEmail">
+
+</div>
+
+
+
+
+
+
+<button class="btn"
+        style="background:#b02828;color:white"
+        *ngIf="(!isEditMode && canCreateMyRequest)
+        || (isEditMode && canEditMyRequest)">
+
+
+{{isEditMode ? 'Update' : 'Submit'}}
+
+
+</button>
+
+
+
+</form>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="card p-4 shadow-sm">
+
+
+<h5>
+ My Early Departures
+</h5>
+
+
+
+<table class="table table-bordered">
+
+
+<thead>
+
+<tr>
+
+<th>
+ Date
+</th>
+
+<th>
+ Clock Out
+</th>
+
+<th>
+ Early By
+</th>
+
+<th>
+ Status
+</th>
+
+
+</tr>
+
+</thead>
+<tbody>
+
+<tr *ngFor="let item of pagedMyRequests">
+
+<td>
+{{item.requestDate | date:'dd-MM-yyyy'}}
+</td>
+
+<td>
+{{item.requestedLogoutTime}}
+</td>
+
+<td>
+{{item.requestedLogoutTime}}
+</td>
+
+<td>
+
+<span class="badge"
+[ngClass]="{
+'bg-warning text-dark': item.status==='Pending',
+'bg-success': item.status==='Approved',
+'bg-danger': item.status==='Rejected'
+}">
+
+{{item.status}}
+
+</span>
+
+</td>
+
+</tr>
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ================================================= -->
+<!-- ================ MANAGER APPROVAL =============== -->
+<!-- ================================================= -->
+
+
+
+<div id="content2"
+     class="tab-content"
+     *ngIf="canViewManager">
+
+
+
+<div class="card p-4 shadow-sm">
+
+
+<h5>
+ Pending Approvals
+</h5>
+
+
+
+<table class="table table-bordered">
+
+
+<thead>
+
+<tr>
+
+<th>
+
+<input type="checkbox"
+       (change)="selectAll($event)">
+
+</th>
+
+
+<th>
+ Employee
+</th>
+
+
+<th>
+ Date
+</th>
+
+
+<th>
+ Clock Out
+</th>
+
+
+<th>
+ Reason
+</th>
+
+
+<th>
+ Remarks
+</th>
+
+
+</tr>
+
+</thead>
+
+
+
+
+<tbody>
+
+
+<tr *ngFor="let item of pagedPendingRequests">
+
+
+<td>
+
+<input type="checkbox"
+       [(ngModel)]="item.selected">
+
+</td>
+
+
+<td>
+{{item.employeeName || item.employeeCode}}
+</td>
+
+
+<td>
+{{item.requestDate | date:'dd-MM-yyyy'}}
+</td>
+
+
+<td>
+{{item.requestedDepartureTime}}
+</td>
+
+
+<td>
+{{item.reason}}
+</td>
+
+
+<td>
+
+<input class="form-control"
+       [(ngModel)]="item.managerRemarks">
+
+</td>
+
+
+</tr>
+
+
+</tbody>
+
+
+</table>
+
+<div class="text-right-end mt-3">
+
+
+<button class="btn btn-sm me-2"
+        style="background:#b02828;color:white;border-color:#b02828"
+        (click)="bulkApproveReject('Approved')">
+
+Approve Selected
+
+</button>
+
+
+
+<button class="btn btn-sm"
+        style="background:#b02828;color:white;border-color:#b02828"
+        (click)="bulkApproveReject('Rejected')">
+
+Reject Selected
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+
+
+<div>
+
+
+<label>
+
+Show:
+
+
+<select 
+class="form-select d-inline w-auto ms-2"
+[(ngModel)]="managerPageSize"
+(change)="changeManagerPageSize(managerPageSize)">
+
+<option 
+*ngFor="let size of pageSizeOptions"
+[ngValue]="size">
+
+{{size}}
+
+</option>
+
+</select>
+
+
+entries
+
+
+</label>
+
+
+</div>
+
+
+
+
+
+
+
+<div>
+
+
+<button class="btn btn-sm me-2"
+        style="background:#b02828;color:white"
+        (click)="changePendingPage(pendingCurrentPage-1)"
+        [disabled]="pendingCurrentPage===1">
+
+Previous
+
+</button>
+
+
+
+
+<span>
+Page {{pendingCurrentPage}} of {{pendingTotalPages}}
+</span>
+
+
+
+
+<button class="btn btn-sm ms-2"
+        style="background:#b02828;color:white"
+        (click)="changePendingPage(pendingCurrentPage+1)"
+        [disabled]="pendingCurrentPage===pendingTotalPages">
+
+Next
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- APPROVED -->
+
+
+<div class="card p-4 shadow-sm mt-4">
+
+
+<h5 class="text-success">
+ Approved Requests
+</h5>
+
+
+
+<table class="table table-bordered">
+
+
+<thead>
+
+<tr>
+
+<th>
+Employee
+</th>
+
+<th>
+Date
+</th>
+
+<th>
+Clock Out
+</th>
+
+<th>
+Reason
+</th>
+
+<th>
+Remarks
+</th>
+
+<th>
+Status
+</th>
+
+
+</tr>
+
+</thead>
+
+
+
+<tbody>
+
+
+<tr *ngFor="let item of pagedApprovedRequests">
+
+
+<td>
+{{item.employeeName}}
+</td>
+
+
+<td>
+{{item.requestDate | date:'dd-MM-yyyy'}}
+</td>
+
+
+<td>
+{{item.requestedDepartureTime}}
+</td>
+
+
+<td>
+{{item.reason}}
+</td>
+
+
+<td>
+{{item.managerRemarks}}
+</td>
+
+
+<td>
+
+<span class="badge bg-success">
+Approved
+</span>
+
+</td>
+
+
+</tr>
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- REJECTED -->
+
+
+<div class="card p-4 shadow-sm mt-4">
+
+
+<h5 class="text-danger">
+Rejected Requests
+</h5>
+
+
+
+<table class="table table-bordered">
+
+
+<thead>
+
+<tr>
+
+<th>
+Employee
+</th>
+
+
+<th>
+Date
+</th>
+
+
+<th>
+Clock Out
+</th>
+
+
+<th>
+Reason
+</th>
+
+
+<th>
+Remarks
+</th>
+
+
+<th>
+Status
+</th>
+
+
+</tr>
+
+</thead>
+
+
+
+
+<tbody>
+
+
+<tr *ngFor="let item of pagedRejectedRequests">
+
+
+<td>
+{{item.employeeName}}
+</td>
+
+
+<td>
+{{item.requestDate | date:'dd-MM-yyyy'}}
+</td>
+
+
+<td>
+{{item.requestedDepartureTime}}
+</td>
+
+
+<td>
+{{item.reason}}
+</td>
+
+
+<td>
+{{item.managerRemarks}}
+</td>
+
+
+<td>
+
+<span class="badge bg-danger">
+Rejected
+</span>
+
+
+</td>
+
+
+</tr>
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ================================================= -->
+<!-- ================= HR VIEW ======================== -->
+<!-- ================================================= -->
+
+
+
+<div id="content3"
+     class="tab-content"
+     *ngIf="canViewHR || canViewManager">
+
+
+<div class="card p-4 shadow-sm">
+
+
+<h5>
+ HR + Manager Overview
+</h5>
+
+
+
+
+<table class="table table-bordered">
+
+
+<thead>
+
+<tr>
+
+<th>
+Employee
+</th>
+
+
+<th>
+Date
+</th>
+
+
+<th>
+Clock Out
+</th>
+
+
+<th>
+Status
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody>
+
+
+<tr *ngFor="let item of combinedRequests">
+
+
+<td>
+{{item.employeeName}}
+</td>
+
+
+<td>
+{{item.requestDate | date:'dd-MM-yyyy'}}
+</td>
+
+
+<td>
+{{item.requestedDepartureTime}}
+</td>
+
+
+<td>
+
+
+<span class="badge"
+[ngClass]="{
+
+'bg-warning text-dark':item.status==='Pending',
+
+'bg-success':item.status==='Approved',
+
+'bg-danger':item.status==='Rejected'
+
+}">
+
+
+{{item.status}}
+
+
+</span>
+
+
+</td>
+
+
+</tr>
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
 
 
 <app-footer></app-footer>

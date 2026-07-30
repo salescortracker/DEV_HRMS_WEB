@@ -387,12 +387,6 @@
               [disabled]="review.status === 'Approved' || review.status === 'Rejected'">
               Reject
             </button>
-
-            <!-- Request Button -->
-            <button class="btn btn-primary btn-sm" *ngIf="review.status === 'Approved' || review.status === 'Rejected'"
-              (click)="requestReview(review.id)">
-              Request
-            </button>
           </td>
 
         </tr>
