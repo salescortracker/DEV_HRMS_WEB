@@ -542,21 +542,7 @@ debugger;
 
     });
   }
-  requestReview(id: number) {
 
-  this.service.request(id)
-    .subscribe(() => {
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Requested Successfully',
-        timer: 1500,
-        showConfirmButton: false
-      });
-
-      this.loadManagerReviews();
-    });
-}
 bulkApprove() {
 
   const selected = this.managerReviews

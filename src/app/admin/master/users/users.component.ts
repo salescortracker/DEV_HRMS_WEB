@@ -42,6 +42,7 @@ export class UsersComponent {
   filteredDesignations: any[] = [];
 
   filteredUsers: User[] = [];
+  currentRunningNumber: number = 0;
   
   // Bulk Upload Properties
   showUploadPopup: boolean = false;
@@ -171,6 +172,7 @@ getEmptyUser(): User {
       userId: 0,
       companyId: 0,
       regionId: 0,
+      userEmployeeCode: 'EMP', 
       employeeCode: '',
       fullName: '',
       email: '',
@@ -411,17 +413,18 @@ filterRoles(): void {
 
  // 🔹 Auto-generate Employee Code (Frontend only)
  generateNextEmployeeCode(): void {
-debugger;
-  // ✅ Only for Create Mode
-  if (this.isEditMode) return;
+  debugger;
 
-  // ✅ Company + Region mandatory
+  if (this.isEditMode) {
+    return;
+  }
+
   if (!this.user.companyId || !this.user.regionId) {
+    this.currentRunningNumber = 0;
     this.user.employeeCode = '';
     return;
   }
 
-  // ✅ Filter users by Company + Region and sort in sequence
   const filteredUsers = this.sortUsersByEmployeeCode(
     this.users.filter(u =>
       Number(u.companyId) === Number(this.user.companyId) &&
@@ -429,35 +432,22 @@ debugger;
     )
   );
 
-  // ✅ No Employees
-  if (filteredUsers.length === 0) {
-    this.user.employeeCode = this.user.userEmployeeCode + '0001';
-    return;
+  // Current employee count
+  this.currentRunningNumber = filteredUsers.length;
+
+  let nextNumber = 1;
+
+  if (filteredUsers.length > 0) {
+    const maxCode = Math.max(
+      ...filteredUsers.map(u => this.extractEmployeeNumber(u.employeeCode))
+    );
+
+    nextNumber = maxCode + 1;
   }
 
-  // ✅ Extract numeric values
-  const numericCodes = filteredUsers
-    .map(u => this.extractEmployeeNumber(u.employeeCode))
-    .filter(num => num > 0);
-
-  // ✅ Safety check
-  const maxCode = numericCodes.length > 0
-    ? Math.max(...numericCodes)
-    : 0;
-
-  const nextCode = maxCode + 1;
-
+  // Complete employee code
   this.user.employeeCode =
-    `${nextCode.toString().padStart(4, '0')}`;
-}
-generateEmployeeId(): void {
-  debugger;
-  const code = this.user.employeeCode || '';
-  const number = (this.user.userEmployeeCode || 0)
-    .toString()
-    .padStart(4, '0');
-
-  this.user.generatedEmployeeCode = `${code}${number}`;
+    `${this.user.userEmployeeCode}${nextNumber.toString().padStart(4, '0')}`;
 }
 
   private extractEmployeeNumber(code: string | undefined): number {

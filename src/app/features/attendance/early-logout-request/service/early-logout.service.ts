@@ -93,4 +93,87 @@ export class EarlyLogoutService {
       data
     );
   }
+
+
+   // ================= EARLY DEPARTURE =================
+
+
+  createEarlyDepartureRequest(payload: any): Observable<any> {
+
+    return this.http.post(
+      `${this.baseUrl}/createearlydeparturerequest`,
+      payload
+    );
+
+  }
+
+
+
+  getEarlyDepartureRequest(
+    companyId: number,
+    regionId: number,
+    userId: number
+  ): Observable<any[]> {
+
+
+    let params = new HttpParams()
+      .set('companyId', companyId)
+      .set('regionId', regionId)
+      .set('userId', userId);
+
+
+    return this.http.get<any[]>(
+      `${this.baseUrl}/getearlydeparturerequest`,
+      { params }
+    );
+
+  }
+
+
+
+  getApprovalEarlyDepartureRequest(
+    companyId: number,
+    regionId: number,
+    managerId: number
+  ): Observable<any[]> {
+
+
+    let params = new HttpParams()
+      .set('companyId', companyId)
+      .set('regionId', regionId)
+      .set('managerId', managerId);
+
+
+
+    return this.http.get<any[]>(
+      `${this.baseUrl}/getapprovalearlydeparturerequest`,
+      { params }
+    );
+
+  }
+
+
+
+  updateEarlyDeparture(payload: any): Observable<any> {
+
+
+    return this.http.post(
+      `${this.baseUrl}/updateearlydeparture`,
+      payload
+    );
+
+  }
+
+
+
+
+  bulkApproveRejectEarlyDeparture(payload: any): Observable<any> {
+
+
+    return this.http.post(
+      `${this.baseUrl}/bulkapproverejectearlydeparture`,
+      payload
+    );
+
+  }
 }
