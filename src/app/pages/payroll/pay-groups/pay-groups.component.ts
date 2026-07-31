@@ -161,6 +161,7 @@ onRegionChange() {
   this.admin.getUsersByCompanyRegion(companyId, regionId)
     .subscribe({
       next: (res: any[]) => {
+        //  this.employees = res; 
 
         this.filteredEmployees = res.filter(x => x.status === 'Active');
 
@@ -168,6 +169,7 @@ onRegionChange() {
       },
       error: (err) => {
         console.error(err);
+          // this.employees = [];
         this.filteredEmployees = [];
       }
     });
