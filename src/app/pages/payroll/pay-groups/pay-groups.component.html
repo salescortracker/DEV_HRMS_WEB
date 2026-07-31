@@ -112,7 +112,7 @@
           <tbody>
             <tr *ngFor="let s of paginatedSalaries; let i = index">
               <td>{{ i + 1 }}</td>
-              <td>{{ getEmployeeName(s.employeeId) }}</td>
+              <td>{{ s.employeeName }}</td>
               <td>{{s.effectiveFrom}}</td>
               <td>{{ getStructureName(s.structureId) }}</td>
               <td>{{ companyMap[s.companyId] }}</td>

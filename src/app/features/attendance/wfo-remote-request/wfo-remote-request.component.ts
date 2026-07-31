@@ -140,7 +140,7 @@ rejectedRequests: any[] = [];
 
     this.attendanceService.bulkApproveReject(payload).subscribe({
       next: () => {
-        Swal.fire("Approved", `${status} successfully`, 'success');
+        Swal.fire( `${status} successfully`, 'success');
         this.managerRemarks = '';
         this.loadApprovalRequests();
       },

@@ -13,7 +13,7 @@ export class MissedPunchRequestComponent {
 missedPunchForm!: FormGroup;
   isEditMode = false;
   editId: number | null = null;
-
+maxDate: string = '';
   myRequests: any[] = [];
   approvalRequests: any[] = [];
 pendingRequests: any[] = [];
@@ -30,6 +30,7 @@ selectedTab: string = '';
   ) {}
 
   ngOnInit(): void {
+      this.maxDate = new Date().toISOString().split('T')[0];
     this.initializeForm();
     this.loadMyRequests();
     this.loadApprovalRequests();
