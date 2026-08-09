@@ -353,47 +353,33 @@ graceMinutes = 0;
     this.shift.userId = this.userId;
 
     if (this.isEditMode) {
-      this.userService.updateShift(this.shift).subscribe({
-        next: (res: any) => {
+     this.userService.updateShift(this.shift).subscribe({
+  next: (res: any) => {
 
-          if (!res.success) {
-            Swal.fire('Warning', res.message, 'warning');
-            return;
-          }
+    if (res === true) {
 
-          this.loadShifts();
+      this.loadShifts();
 
-          Swal.fire('Updated', res.message, 'success');
+      Swal.fire('Updated', 'Shift updated successfully', 'success');
 
-          this.resetForm();
-        },
+      this.resetForm();
 
-      });
     } else {
-      this.userService.addShift(this.shift).subscribe({
-        next: (res: any) => {
-          if (res.success) {
-            this.loadShifts();
-            Swal.fire('Created', res.message, 'success');
-            this.resetForm();
 
-          } else {
-            Swal.fire('Error', res.message, 'error');
-          }
-        },
-        error: (err: any) => {
+      Swal.fire('Warning', 'Shift update failed', 'warning');
 
-          console.error(err);
+    }
+  },
+  error: (err: any) => {
+    console.error(err);
 
-          // 🔥 SHOW BACKEND MESSAGE
-          Swal.fire(
-            'Warning',
-            err.error?.message || 'Operation failed',
-            'warning'
-          );
-        }
-      });
-
+    Swal.fire(
+      'Error',
+      err.error?.message || 'Failed to update shift',
+      'error'
+    );
+  }
+});
     }
   }
 
