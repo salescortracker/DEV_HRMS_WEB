@@ -1312,6 +1312,11 @@ deleteEventType(id: number) {
   debugger;
     return this.http.get(`${this.baseUrl}/MasterData/GetBloodGroupsById/${userID}`);
   }
+  getBloodGroupsbyIDs(userID: number): Observable<any> {
+  return this.http.get<any>(
+    `${this.baseUrl}/MasterData/GetAlluserIdAsync?userId=${userID}`
+  );
+}
 //   // ✅ CREATE
   createBloodGroup(data: BloodGroup): Observable<any> {
     debugger;
