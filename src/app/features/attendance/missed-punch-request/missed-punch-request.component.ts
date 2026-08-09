@@ -186,11 +186,13 @@ loadApprovalRequests() {
       this.rejectedRequests = res.filter((x: any) => x.status === 'Rejected');
 
       // add UI properties only for pending
-      this.pendingRequests = this.pendingRequests.map(x => ({
-        ...x,
-        selected: false,
-        managerRemarks: x.managerRemarks || ''
-      }));
+    this.pendingRequests = this.pendingRequests.map(x => ({
+  ...x,
+  selected: false,
+  managerRemarks: x.managerRemarks || ''
+}));
+
+this.currentPage = 1;
     });
 }
 
@@ -416,5 +418,35 @@ loadApprovalRequests() {
     });
 
   }
+  // Pagination
+pageSize = 5;
+currentPage = 1;
+pageSizeOptions = [5, 10, 20, 50, 100];
+
+// Returns only current page records
+getPaginatedPendingRequests() {
+  const startIndex = (this.currentPage - 1) * this.pageSize;
+  return this.pendingRequests.slice(startIndex, startIndex + this.pageSize);
+}
+
+// Total pages
+get totalPages(): number {
+  return Math.ceil(this.pendingRequests.length / this.pageSize) || 1;
+}
+
+// Change page
+changePage(page: number) {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+  }
+}
+
+// Change page size
+changePageSize(size: number) {
+  this.pageSize = size;
+  this.currentPage = 1;
+}
+
   
 }
+
