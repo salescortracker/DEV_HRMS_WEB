@@ -134,6 +134,108 @@
            [disabled]="!isGradeSelected(g.gradeID)" />
   </div>
 </div>
+<div class="col-md-12 mt-4">
+
+  <div class="card border shadow-sm">
+
+    <div class="card-header bg-light">
+      <h6 class="mb-0 fw-semibold">
+        Leave Policy Configuration
+      </h6>
+    </div>
+
+    <div class="card-body">
+
+      <div class="row g-3">
+
+        <div class="col-md-4">
+          <div class="form-check form-switch mt-4">
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="leave.isCarryForward"
+              name="isCarryForward">
+
+            <label class="form-check-label ms-2">
+              Carry Forward Allowed
+            </label>
+
+          </div>
+        </div>
+
+        <div class="col-md-4">
+
+          <label class="form-label fw-semibold">
+            Max Carry Forward Days
+          </label>
+
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="leave.maxCarryForwardDays"
+            name="maxCarryForwardDays">
+
+        </div>
+
+        <div class="col-md-4">
+
+          <label class="form-label fw-semibold">
+            Leaves Per Month
+          </label>
+
+          <input
+            type="number"
+            step="0.5"
+            class="form-control"
+            [(ngModel)]="leave.leavesPerMonth"
+            name="leavesPerMonth">
+
+        </div>
+
+      </div>
+
+      <div class="row mt-3">
+
+        <div class="col-md-4">
+
+          <label class="form-label fw-semibold">
+            Max Leaves Per Month
+          </label>
+
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="leave.maxLeavesPerMonth"
+            name="maxLeavesPerMonth">
+
+        </div>
+
+        <div class="col-md-4">
+
+          <div class="form-check form-switch mt-4">
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="leave.allowAdvanceLeave"
+              name="allowAdvanceLeave">
+
+            <label class="form-check-label ms-2">
+              Allow Advance Leave
+            </label>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
             <div class="col-md-12 mt-3">
               <button
                 type="submit"
@@ -189,7 +291,9 @@
                   <i class="fa" [ngClass]="getSortIcon('LeaveDays')"></i>
                 </th> -->
                   <th>Grades</th>
-               
+               <th>Carry Forward</th>
+<th>Leaves/Month</th>
+<th>Monthly Limit</th>
                 <th class="text-center">Actions</th>
               </tr>
             </thead>
@@ -206,7 +310,23 @@
     {{ g.gradename }} ({{ g.leaveDays }})<br>
   </span>
 </td>
-              
+              <td>
+  <span
+    class="badge"
+    [ngClass]="lt.isCarryForward ? 'bg-success' : 'bg-secondary'">
+
+    {{ lt.isCarryForward ? 'Yes' : 'No' }}
+
+  </span>
+</td>
+
+<td>
+  {{ lt.leavesPerMonth }}
+</td>
+
+<td>
+  {{ lt.maxLeavesPerMonth }}
+</td>
                 <td class="text-center">
                   <button
                     class="btn btn-sm btn-outline-primary me-2"

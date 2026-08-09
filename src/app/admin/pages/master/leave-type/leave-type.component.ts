@@ -60,19 +60,50 @@ loadGrades() {
   });
 }
   // ================= MASTER DATA =================
+// getEmptyLeaveType(): any {
+//   return {
+//     leaveTypeID: 0,
+//     leaveTypeName: '',
+//     leaveDays: 1,
+//     IsActive: true,
+//     CompanyID: this.companyId,
+//     RegionID: this.regionId,
+//     // companyName: this.companyMap[this.companyId] || '',
+//     // regionName: this.regionMap[this.regionId] || '',
+//     // userId: Number(sessionStorage.getItem("UserId"))
+//      gradeAllocations: [],
+//     userId: this.userId,
+//   };
+// }
 getEmptyLeaveType(): any {
+
   return {
+
     leaveTypeID: 0,
+
     leaveTypeName: '',
+
     leaveDays: 1,
+
     IsActive: true,
+
     CompanyID: this.companyId,
+
     RegionID: this.regionId,
-    // companyName: this.companyMap[this.companyId] || '',
-    // regionName: this.regionMap[this.regionId] || '',
-    // userId: Number(sessionStorage.getItem("UserId"))
-     gradeAllocations: [],
+
     userId: this.userId,
+
+    gradeAllocations: [],
+
+    isCarryForward: false,
+
+    maxCarryForwardDays: null,
+
+    leavesPerMonth: 1,
+
+    maxLeavesPerMonth: null,
+
+    allowAdvanceLeave: false
   };
 }
 
