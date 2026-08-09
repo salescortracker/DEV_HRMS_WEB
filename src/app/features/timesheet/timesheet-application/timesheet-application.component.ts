@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { TimesheetService } from '../service/timesheet.service';
+import Swal from 'sweetalert2';
 
 export interface TimesheetProject {
   projectName: string;
@@ -252,7 +253,12 @@ saveTimesheet(form: any) {
 }
 
   if (!form.valid || this.model.projects.length === 0) {
-    alert('Please complete the form');
+   // alert('Please complete the form');
+    Swal.fire({
+  icon: 'warning',
+  title: 'Incomplete Form',
+  text: 'Please complete all required fields.'
+});
     return;
   }
 
@@ -356,7 +362,12 @@ saveTimesheet(form: any) {
         },
         error: err => {
           console.error(err);
-          alert('Update failed');
+          // alert('Update failed');
+          Swal.fire({
+  icon: 'error',
+  title: 'Update Failed',
+  text: 'Unable to update timesheet'
+});
         }
       });
 
@@ -368,7 +379,13 @@ saveTimesheet(form: any) {
     .subscribe({
       next: () => {
 
-        alert('Timesheet saved successfully');
+        Swal.fire({
+  icon: 'success',
+  title: 'Success',
+  text: 'Timesheet saved successfully',
+  timer: 2000,
+  showConfirmButton: false
+});
 
         form.resetForm();
 
@@ -387,7 +404,11 @@ saveTimesheet(form: any) {
       },
       error: err => {
         console.error(err);
-        alert('Save failed');
+        Swal.fire({
+  icon: 'error',
+  title: 'Oops...',
+  text: 'Failed to save timesheet'
+});
       }
     });
 }
@@ -483,17 +504,33 @@ editTimesheet(row: any) {
   sendSelectedTimesheets() {
     const selectedIds = this.submittedTimesheets.filter(x => x.selected).map(x => x.timesheetId);
     if (!selectedIds.length) {
-      alert("Select at least one pending timesheet");
+      // alert("Select at least one pending timesheet");
+      Swal.fire({
+  icon: 'warning',
+  title: 'No Selection',
+  text: 'Select at least one pending timesheet'
+});
       return;
     }
     this.timesheetService.sendSelectedTimesheets(selectedIds).subscribe({
       next: () => {
-        alert("Timesheets sent successfully");
+       // alert("Timesheets sent successfully");
+       Swal.fire({
+  icon: 'success',
+  title: 'Sent',
+  text: 'Timesheets sent successfully'
+});
+       
         this.loadMyTimesheets();
       },
       error: err => {
         console.error(err);
-        alert("Failed to send timesheets");
+        // alert("Failed to send timesheets");
+        Swal.fire({
+  icon: 'error',
+  title: 'Failed',
+  text: 'Failed to send timesheets'
+});
       }
     });
   }
